@@ -15,42 +15,23 @@ var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 var ColorPicker = require('react-color');
 var colorparse = require('parse-color');
 
-var PatternsApi = require('../../api/patternsApi');
-
-var DeviceSummary = require('./deviceSummary');
+var VirtualBlink1 = require('./VirtualBlink1');
 var EventList = require('./eventList');
 var PatternList = require('./patternList');
 var BigButton = require('./bigButton');
 
-var remote = window.require('remote');
-var HID = remote.require('node-hid');
-var Blink1 = remote.require('node-blink1');
+var PatternsApi = require('../../api/patternsApi');
+var Blink1Api = require('../../api/Blink1DeviceApi');
 
-var blink1devices = Blink1.devices();
-
-var blink1;
-
-function blink1Fade( millis, r, g, b ) {
-	if( blink1devices.length ) {
-		blink1 = new Blink1();  // if we do this with no blink1, get error we can't catch
-		blink1.fadeToRGB( millis, r, g, b);
-		blink1.close();
-	}
-}
-//console.log("blink1 devices!!!!!: ", JSON.stringify(blink1devices));
-
-var title = (
-	<h1> Blink1Control </h1>
-	);
 
 var Blink1ControlView = React.createClass({
 
 	getInitialState: function() {
 		return {
 			blink1Color: "#33dd33",
-			status: "not connected",
-			serialNumber: "1234abcd",
-			iftttKey: "abbaabba1234abcd",
+			statusStr: Blink1Api.isConnected() ? "connected" : "not connected",
+			serialNumber: Blink1Api.serialNumberForDisplay(),
+			iftttKey: Blink1Api.iftttKey(),
 			currentPattern: "no potato for you",
 			events: [ 
 				{ date: 1234, text: "this happened"},
@@ -76,8 +57,8 @@ var Blink1ControlView = React.createClass({
 	setBlink1Color: function(colorstr) {
 		this.setState( {blink1Color: colorstr} );
 		var color = colorparse( colorstr ); // FIXME: must be better way
-		console.log("setBlink1Color: colorstr:", colorstr ); //, " : ", color);
-		blink1Fade( 200, color.rgb[0], color.rgb[1], color.rgb[2]);
+		//console.log("setBlink1Color: colorstr:", colorstr ); //, " : ", color);
+		Blink1Api.fadeToRGB( 200, color.rgb[0], color.rgb[1], color.rgb[2]);
 	},
 
 	clearEvents: function() {
@@ -127,11 +108,15 @@ var Blink1ControlView = React.createClass({
 			<Grid fluid>
 				<Row>
 					<Col md={4} >
-						<DeviceSummary blink1Color={this.state.blink1Color} 
-										status={this.state.status}
-										serialNumber={this.state.serialNumber}
-										iftttKey={this.state.iftttKey}
-										pattern={this.state.currentPattern} />
+						<Panel header="Device" style={{ width: 320, height: 360}}>
+							<VirtualBlink1 blink1Color={this.state.blink1Color} />
+							<Well bsSize="small">
+								<div> Status: <b>{this.state.statusStr}</b> </div>
+								<div> Serial number: <code>{this.state.serialNumber}</code> <br />
+										IFTTT Key: <code>{this.state.iftttKey} </code></div>
+								<div> Pattern: <b> {this.props.currentPattern}</b></div>
+							</Well>
+						</Panel>
 						<EventList events={this.state.events} onClear={this.clearEvents} />
 					</Col>
 					<Col md={8}>

@@ -24,6 +24,7 @@ var PatternList = React.createClass({
 		var patterns = PatternsApi.getAllPatterns();
 		//patterns[0].system = false;
 		//patterns[0].locked = false; // testing
+		console.log("patternList: getInitialState!");
 		return { 
 			editing: false,
 			editId: null,
@@ -33,7 +34,9 @@ var PatternList = React.createClass({
 
 	handleClickOutside: function(evt) { // part of react-onclickoutside
 		console.log("handleClickOutside: ", evt);
-		this.setState( { editing: false, editId: 0} ); 
+		if( this.state.editing ) {
+			this.setState( { editing: false, editId: 0} ); 
+		}
 	},
 	addPattern: function() {
 		console.log("addPattern: ");
@@ -57,7 +60,7 @@ var PatternList = React.createClass({
 	copyPattern: function(pattid) {
 		console.log("copyPattern:", pattid);
 		var p = PatternsApi.getPatternById( pattid );
-		p.id = 0; // unset to regen  // FIXME:!!!
+		p.id = 0; // unset to regen for Api // FIXME:!!!
 		p.name = p.name + " (copy)";
 		p.system = false;
 		p.locked = false;
@@ -67,7 +70,7 @@ var PatternList = React.createClass({
 	deletePattern: function(pattid) {
 		console.log("deletePattern:", pattid);
 		PatternsApi.deletePattern( pattid );
-		this.setState( {editing: false} );
+		this.setState( {editing: false, patterns: PatternsApi.getAllPatterns()});
 	},
 	onRepeatsClick: function(pattid) {
 		console.log("onRepeatsClick:", pattid);
