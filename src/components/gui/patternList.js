@@ -8,10 +8,19 @@ var DropdownButton = require('react-bootstrap').DropdownButton;
 
 var Pattern = require('./pattern');
 
+var PatternsApi = require('../../api/patternsApi');
+
+
 var PatternList = React.createClass({
 	propTypes: {
-		patterns: React.PropTypes.array.isRequired,
 		onPatternChange: React.PropTypes.func
+	},
+
+	getInitialState: function() {
+		return { 
+			editing: false,
+			patterns: PatternsApi.getAllPatterns()
+		};
 	},
 
 	handleRepeatsClick: function(pattern) {
@@ -19,20 +28,33 @@ var PatternList = React.createClass({
 		//this.props.onPatternChange( pattern );
 	},
 
-	playPattern: function(e) { 
-		console.log("playPattern: ", e);		
+	playPattern: function(e) {
+		console.log("playPattern: ", e);
+		//this.props.onPatternChange(pattern);
 	},
-	editPattern: function() {
-		console.log("editPattern:");
+	editPattern: function(p) {
+		console.log("editPattern:", p);
+		this.setState( {editing: true} );
 	},
-	lockPattern: function() {
-		console.log("lockPattern:");
+	lockPattern: function(p) {
+		console.log("lockPattern:", p);
+		p.locked = !p.locked;
+		PatternsApi.savePattern( p );
+		this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
 	},
-	copyPattern: function() {
-		console.log("copyPattern:");
+	copyPattern: function(p) {
+		console.log("copyPattern:", p);
+		p.id = 0; // unset to regen  // FIXME:!!!
+		p.name = p.name + " (copy)";
+		p.system = false;
+		p.locked = false;
+		PatternsApi.savePattern( p );
+		this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
 	},
-	deletePattern: function() {
-		console.log("deletPattern:");
+	deletePattern: function(p) {
+		console.log("deletePattern:", p);
+		PatternsApi.deletePattern( p.id );
+		this.setState( {editing: false} );
 	},
 	render: function() {
 
@@ -44,24 +66,33 @@ var PatternList = React.createClass({
 			var playButtStyle = {borderStyle: "none", background: "white", display: "inline", padding: 2 };
 			var editButtStyle = {borderStyle: "none", background: "white", borderLeftStyle: "solid", float: "right", padding: 4 };
 			var patternStateIcon = (pattern.playing) ? 'fa-stop' : 'fa-play';
+			var lockIcon = (pattern.locked) ? "fa fa-lock" : "fa fa-unlock-alt";
+			var lockText = (pattern.locked) ? "Unlock pattern" : "Lock pattern";
+			var editButton = 
+				<DropdownButton bsSize="xsmall" pullRight >
+					<MenuItem eventKey="1" onSelect={this.editPattern.bind(null, pattern)} disabled={pattern.system || pattern.locked}><i className="fa fa-pencil"></i> Edit pattern</MenuItem>
+					<MenuItem eventKey="2" onSelect={this.lockPattern.bind(null, pattern)} diabled={pattern.system || pattern.locked}><i className={lockIcon}></i> {lockText}</MenuItem>
+					<MenuItem eventKey="3" onSelect={this.copyPattern.bind(null, pattern)}><i className="fa fa-copy"></i> Copy pattern</MenuItem>
+					<MenuItem eventKey="4" onSelect={this.deletePattern.bind(null, pattern)} disabled={pattern.locked}><i className="fa fa-remove"></i> Delete pattern</MenuItem>
+				</DropdownButton>;
+			if( this.state.editing ) {
+				editButton = <Button onClick={this.deletePattern.bind(null, pattern)} style={playButtStyle}><i className="fa fa-remove"></i></Button>;
+			}
+
 			return (
 				<div key={pattern.id} style={patternStyle} disabled={true}>
 					<Button onClick={this.playPattern} bsSize="xsmall"><i className="fa fa-play"></i></Button>
 					<Pattern pattern={pattern} />
-					<DropdownButton bsSize="xsmall" pullRight >
-						<MenuItem eventKey="1" onSelect={this.editPattern}><i className="fa fa-pencil"></i> Edit pattern</MenuItem>
-						<MenuItem eventKey="2" onSelect={this.lockPattern}><i className="fa fa-lock"></i> Lock pattern</MenuItem>
-						<MenuItem eventKey="3" onSelect={this.copyPattern}><i className="fa fa-copy"></i> Copy pattern</MenuItem>
-						<MenuItem eventKey="3" onSelect={this.deletePattern}><i className="fa fa-remove"></i> Delete pattern</MenuItem>
-					</DropdownButton>
+					{editButton}
 				</div>
 			);
 		};
+
 		return (
 			<div style={{WebkitUserSelect: "none"}}>
 				<button type="button" style={{width: "100%"}}><i className="fa fa-plus"></i> add pattern</button>
 				<div>
-					{this.props.patterns.map( createPattern, this )}  // "this" is the magic
+					{this.state.patterns.map( createPattern, this )}
 				</div>
 			</div>
 

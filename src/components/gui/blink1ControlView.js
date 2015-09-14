@@ -68,8 +68,8 @@ var Blink1ControlView = React.createClass({
 				{ name: "Busy", type: "color", color: "#ffFF00" },
 				{ name: "Away", type: "color", color: "#ff0000" },
 				{ name: "Some Long Name", type: "color", color: "#336699" }
-			],
-			patterns: PatternsApi.getAllPatterns()
+			]
+			//patterns: PatternsApi.getAllPatterns()
 		};
 	},
 
@@ -114,11 +114,6 @@ var Blink1ControlView = React.createClass({
 
 	render: function() {
 
-		var createPatternView = function(pattern) {
-			return (
-				<li>patt:{pattern.id} : {pattern.name} : {pattern.patternstr}</li>
-			);
-		};
 		var createBigButton = function(button, index) {
 			return (
 				<BigButton key={index} name={button.name} type={button.type} color={button.color} 
@@ -185,7 +180,7 @@ var Blink1ControlView = React.createClass({
 								<ColorPicker type="sketch" color={this.state.blink1Color} onChange={this.handleColorPicker} />
 							</Panel>
 							<Panel style={{width: 350, height: 370, margin: 5, display: "inline-block", overflow: "scroll" }}>
-								<PatternList patterns={this.state.patterns} onPatternChange={this.handlePatternChange} />
+								<PatternList onPatternChange={this.handlePatternChange} />
 							</Panel>
 						</Row>
 						</Grid>

@@ -51,16 +51,12 @@ var _parsePatternStr = function(patternstr) {
 					ledn: Number(pattparts[i + 2]) };
 		colorlist.push( color );
 	}
-/*	for( var i = 0; i < pattparts[0]; i++ ) { //[0] is len
-		var color = { rgb: pattparts[ (i * 3) + 1 ],
-					time: Number(pattparts[ (i * 3) + 2]),
-					ledn: Number(pattparts[ (i * 3) + 3]) };
-		colorlist.push( color );
-    }*/
     return colorlist;
 };
-var _fixup = function(pattern) {
+var _systemFixup = function(pattern) {
 	pattern = _fixId(pattern);
+	pattern.system = true;
+	pattern.locked = true;
 	if( pattern.patternstr ) {
 		pattern.colors = _parsePatternStr(pattern.patternstr);
 	}
@@ -75,7 +71,7 @@ var _clone = function(item) {
 	return JSON.parse(JSON.stringify(item)); //return cloned copy so that the item is passed by value instead of by reference
 };
 
-var patterns = systemPatterns.map( _fixup );
+var patterns = systemPatterns.map( _systemFixup );
 //console.log("patterns:", JSON.stringify(patterns, null, ' '));
 
 var PatternsApi = {
@@ -95,7 +91,7 @@ var PatternsApi = {
 	
 	savePattern: function(pattern) {
 		//pretend an ajax call to web api is made here
-		console.log('Pretend this just saved the pattern to the DB via AJAX call...');
+		//console.log('Pretend this just saved the pattern to the DB via AJAX call...');
 		
 		if (pattern.id) {
 			var existingPatternIndex = _.indexOf(patterns, _.find(patterns, {id: pattern.id})); 
@@ -105,7 +101,7 @@ var PatternsApi = {
 			//The server would generate ids for new authors in a real app.
 			//Cloning so copy returned is passed by value rather than by reference.
 			pattern.id = _generateId(pattern);
-			pattern.push(pattern);
+			patterns.unshift(pattern);
 		}
 
 		return _clone(pattern);

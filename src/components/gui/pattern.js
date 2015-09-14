@@ -31,6 +31,8 @@ var Pattern = React.createClass({
 	render: function() {
 		var repstr = (this.props.pattern.repeats) ? 'x' + this.props.pattern.repeats : '';
 		var repeats = <i className="fa fa-repeat">{repstr}</i>;
+		var lockedIcon = (this.props.pattern.locked) ? <i className="fa fa-lock"></i> : <i></i>;
+
 		// this is kinda nuts, don't fully understand
 		// but coding pattern from https://facebook.github.io/react/tips/expose-component-functions.html
 		return (
@@ -46,24 +48,9 @@ var Pattern = React.createClass({
 					);
 				}, this)}
 				<span onClick={this.repeatsClick} style={repeatsStyle}>{repeats}</span>
-				<span style={{float: "right", marginRight: 5, marginTop: 5 }}><i className="fa fa-lock"></i></span>
+				<span style={{float: "right", marginRight: 5, marginTop: 5 }}>{lockedIcon}</span>
 			</span>
 		);
-/*
-		var createSwatch = function(color, index) {
-			return ( 
-				<button onClick={swatchClick} type="button" key={index} 
-					style={{background: color.rgb, height: 16, width: 16 }} ></button> 
-			);
-		};
-		return (
-			<span>
-				<span style={pattNameStyle}>{this.props.pattern.name}</span>
-				this.props.pattern.colors.map( createSwatch )
-				<span onClick={this.props.handleRepeatsClick} style={{ width: 30, padding: 5 }}>{repeats}</span>
-			</span>
-		);
-*/
 	}
 });
 
