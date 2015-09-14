@@ -9,7 +9,6 @@ var Col = require('react-bootstrap').Col;
 var TabbedArea = require('react-bootstrap').TabbedArea;
 var TabPane = require('react-bootstrap').TabPane;
 var Glyphicon = require('react-bootstrap').Glyphicon;
-//var ButtonGroup = require('react-bootstrap').ButtonGroup;
 var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 
 var ColorPicker = require('react-color');
@@ -19,6 +18,9 @@ var VirtualBlink1 = require('./VirtualBlink1');
 var EventList = require('./eventList');
 var PatternList = require('./patternList');
 var BigButton = require('./bigButton');
+
+var IftttTable = require('./iftttTable');
+var MailTable = require('./mailTable');
 
 var PatternsApi = require('../../api/patternsApi');
 var Blink1Api = require('../../api/Blink1DeviceApi');
@@ -33,10 +35,6 @@ var Blink1ControlView = React.createClass({
 			serialNumber: Blink1Api.serialNumberForDisplay(),
 			iftttKey: Blink1Api.iftttKey(),
 			currentPattern: "no potato for you",
-			events: [ 
-				{ date: 1234, text: "this happened"},
-				{ date: 1235, text: "this other thing happened"}
-			],
 			buttonsSys: [
 				{ name: "Color Cycle", type: "sys" },
 				{ name: "Mood Light", type: "sys" },
@@ -59,10 +57,6 @@ var Blink1ControlView = React.createClass({
 		var color = colorparse( colorstr ); // FIXME: must be better way
 		//console.log("setBlink1Color: colorstr:", colorstr ); //, " : ", color);
 		Blink1Api.fadeToRGB( 200, color.rgb[0], color.rgb[1], color.rgb[2]);
-	},
-
-	clearEvents: function() {
-		this.setState({events: []});
 	},
 
 	addBigButton: function() { // FIXME: this is hacky
@@ -119,7 +113,7 @@ var Blink1ControlView = React.createClass({
 								<div> Pattern: <b> {this.props.currentPattern}</b></div>
 							</Well>
 						</Panel>
-						<EventList events={this.state.events} onClear={this.clearEvents} />
+						<EventList />
 					</Col>
 					<Col md={8}>
 						<Grid fluid>
@@ -142,7 +136,7 @@ var Blink1ControlView = React.createClass({
 							</TabPane>
 							<TabPane eventKey={2} tab={<i className="fa fa-plug"> IFTTT </i>}>
 								<Panel style={{height: 200}}>
-									IFTTT goes here
+									<IftttTable />
 								</Panel>
 							</TabPane>
 							<TabPane eventKey={3} tab={<i className="fa fa-wrench"> Tools</i>}>
@@ -152,7 +146,7 @@ var Blink1ControlView = React.createClass({
 							</TabPane>
 							<TabPane eventKey={4} tab={<i className="fa fa-envelope"> Mail</i>}>
 								<Panel style={{height: 200}}>
-									Mail goes here
+									<MailTable />
 								</Panel>
 							</TabPane>
 							<TabPane eventKey={5} tab={<i className="fa fa-life-ring"> Help</i>}>

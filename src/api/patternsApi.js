@@ -75,6 +75,7 @@ var _clone = function(item) {
 
 var patterns = systemPatterns.map( _systemFixup );
 //console.log("patterns:", JSON.stringify(patterns, null, ' '));
+var playingPattern = '';
 
 var PatternsApi = {
 	getAllPatterns: function() {
@@ -128,6 +129,7 @@ var PatternsApi = {
 		pattern.playpos = 0;
 		pattern.playcount = 0;
 		pattern.playing = true;
+		playingPattern = id;
 		this.playPatternInternal(id, callback);
 	},
 
@@ -141,6 +143,7 @@ var PatternsApi = {
 			pattern.playcount++;
 			if( pattern.playcount === pattern.repeats ) {
 				callback();
+				playingPattern = '';
 				return;
 			}
 		}
@@ -153,6 +156,10 @@ var PatternsApi = {
 	stopPattern: function(id) {
 		var pattern = _.find(patterns, {id: id});
 		clearTimeout( pattern.timer );
+	},
+
+	getPlayingPattern: function() {
+		return playingPattern;
 	}
 };
 
