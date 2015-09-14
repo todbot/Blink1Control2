@@ -1,6 +1,6 @@
 {
-  "name": "blink1control-toy0",
-  "version": "1.0.0",
+  "name": "blink1controljs",
+  "version": "0.1.0",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "dependencies": {
     "bootstrap": "^3.3.5",
     "browserify": "^11.0.1",
-    "electron-prebuilt": "^0.30.5",
+    "electron-prebuilt": "^0.30.6",
     "flux": "^2.0.3",
     "font-awesome": "^4.4.0",
     "jquery": "^2.1.4",

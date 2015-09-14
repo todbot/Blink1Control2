@@ -18,11 +18,6 @@ require('crash-reporter').start();
 var mainWindow = null;
 var menu = null;
 
-ipc.on('tod-async-message', function(event, arg) {
-  console.log("main process: ",arg);  // prints "ping"
-  event.sender.send('tod-async-reply', HID.devices());
-});
-
 app.on('window-all-closed', function () {
   //if (process.platform !== 'darwin') {
     app.quit();

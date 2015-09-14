@@ -17,7 +17,6 @@ var colorparse = require('parse-color');
 
 var PatternsApi = require('../../api/patternsApi');
 
-//var Blink1Controls = require('./blink1Controls');
 var DeviceSummary = require('./deviceSummary');
 var EventList = require('./eventList');
 var PatternList = require('./patternList');

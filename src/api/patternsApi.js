@@ -17,7 +17,8 @@
  *      repeats: 3,
  *      playing: false,
  *      playcount: 0,
- *      playpos: 0
+ *      playpos: 0,
+ *      system: true
  * 	};
  *  "patternstr" is optional and can be generated with _toPatternStr
  * 	The "toString()" implementation can be considered to be: id:name:patternstr ?
