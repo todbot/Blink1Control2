@@ -107,9 +107,11 @@ var Blink1ControlView = React.createClass({
 						WebkitUserSelect: "none" }}>
 			<Grid fluid>
 				<Row>
-					<Col md={4} >
-						<Panel header="Device" style={{ width: 320, height: 360}}>
+					<Col md={4}>
+						<Panel header="Device" style={{ width: 280, height: 360}}>
+							<div style={{ width: 256, height: 192, margin: "auto" }}>
 							<VirtualBlink1 blink1Color={this.state.blink1Color} />
+							</div>
 							<Well bsSize="small">
 								<div> Status: <b>{this.state.statusStr}</b> </div>
 								<div> Serial number: <code>{this.state.serialNumber}</code> <br />

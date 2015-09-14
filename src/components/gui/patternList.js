@@ -13,11 +13,11 @@ var PatternsApi = require('../../api/patternsApi');
 
 
 var PatternList = React.createClass({
-	mixins: [
-		require('react-onclickoutside')
-	],
+	//mixins: [
+	//	require('react-onclickoutside')
+	//],
 	propTypes: {
-		onPatternChange: React.PropTypes.func
+		//onPatternChange: React.PropTypes.func
 	},
 
 	getInitialState: function() {
@@ -40,11 +40,25 @@ var PatternList = React.createClass({
 	},
 	addPattern: function() {
 		console.log("addPattern: ");
-		console.log(JSON.stringify(this.state.patterns));
+		PatternsApi.newPattern('new pattern', '#ff00ff');
+		this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
+		console.log(JSON.stringify(this.state.patterns)); // dump all patterns
 	},
-	playPattern: function(pattid) {
-		console.log("playPattern: ", pattid);
-		//this.props.onPatternChange(pattern);
+	playStopPattern: function(pattid) {
+		var p = PatternsApi.getPatternById( pattid );
+		p.playing = !p.playing;
+		PatternsApi.savePattern( p );
+		console.log("playStopPattern: ", pattid, p.playing);
+		if( p.playing ) {
+			PatternsApi.playPattern(pattid, function() { 
+				console.log("done playing");
+				this.setState( {patterns: PatternsApi.getAllPatterns()} );   
+			});
+		} 
+		else {
+			PatternsApi.stopPattern(pattid);
+		}
+		this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
 	},
 	editPattern: function(pattid) {
 		console.log("editPattern:", pattid);
@@ -108,7 +122,7 @@ var PatternList = React.createClass({
 			if( this.state.editing && this.state.editId === pid ) {
 				editOptions = 
 					<ButtonGroup>
-						<Button onClick={this.deletePattern.bind(null, patt)} style={playButtStyle}><i className="fa fa-remove"></i></Button>
+						<Button onClick={this.deletePattern.bind(null, pid)} style={playButtStyle}><i className="fa fa-remove"></i></Button>
 						<Button onClick={this.handleClickOutside} style={playButtStyle}><i className="fa fa-check"></i></Button>
 					</ButtonGroup>;
 				patternStyle.borderColor = "#f99";
@@ -116,7 +130,7 @@ var PatternList = React.createClass({
 
 			return (
 				<div key={patt.id} style={patternStyle} >
-					<Button onClick={this.playPattern} bsSize="xsmall"><i className="fa fa-play"></i></Button>
+					<Button onClick={this.playStopPattern.bind(null, pid)} bsSize="xsmall"><i className={(patt.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
 					<Pattern pattern={patt} editing={this.state.editing} onRepeatsClick={this.onRepeatsClick} />
 					<Button style={lockButtStyle}><i className={(patt.locked) ? "fa fa-lock" : ""}></i></Button>
 					{editOptions}

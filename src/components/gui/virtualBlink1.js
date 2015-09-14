@@ -23,6 +23,7 @@ var VirtualBlink1 = React.createClass({
 		//var c = colr.rgba;
 		var img0style = { width: 240, height: 192, 
 			//background: this.props.blink1Color
+			
 			backgroundImage: [	
 								//'radial-gradient( rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.5} 0%, rgba(255,255,255,0.1) 65%)',
 								"url(images/device-light-mask.png)",
@@ -30,6 +31,7 @@ var VirtualBlink1 = React.createClass({
 								"url(images/device-light-bg-top.png)", 
 								"url(images/device-light-bg.png)"
 								]
+								
 		};
 		//	<img style={img2style} src="images/device-light-bg.png" />
 		//	<img style={img3style} src="images/device-light-mask.png" />

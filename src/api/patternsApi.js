@@ -28,6 +28,8 @@
 
 var _ = require('lodash');
 
+var Blink1DeviceApi = require('./blink1DeviceApi');
+
 //This file is mocking a web API by hitting hard coded data.
 var systemPatterns = require('./systemPatterns').patterns;
 
@@ -107,9 +109,50 @@ var PatternsApi = {
 		return _clone(pattern);
 	},
 
+	newPattern: function(name, color) {
+		var pattern = { name: name, colors: [{rgb: color, time: 0.2, ledn: 0}] };  // FIXME
+		pattern.id = _generateId(pattern);
+		patterns.unshift(pattern);
+	},
+
 	deletePattern: function(id) {
-		console.log('Pretend this just deleted the author from the DB via an AJAX call...');
+		//console.log('Pretend this just deleted the pattern from the DB via an AJAX call...');
 		_.remove(patterns, { id: id});
+	},
+
+	playPattern: function(id, callback) {
+		var pattern = _.find(patterns, {id: id});
+		if( pattern.playing ) {
+			clearTimeout(pattern.timer);
+		}
+		pattern.playpos = 0;
+		pattern.playcount = 0;
+		pattern.playing = true;
+		this.playPatternInternal(id, callback);
+	},
+
+	playPatternInternal: function(id, callback) {
+		var pattern = _.find(patterns, {id: id});
+		console.log("playPatternInternal: " + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
+		//var pattern = _.find(patterns, {id: id});
+		pattern.playpos++;
+		if( pattern.playpos === pattern.colors.length ) {
+			pattern.playpos = 0;
+			pattern.playcount++;
+			if( pattern.playcount === pattern.repeats ) {
+				callback();
+				return;
+			}
+		}
+		pattern.timer = setTimeout(function() {
+			PatternsApi.playPatternInternal(id, callback);
+		}, pattern.colors[ pattern.playpos ].time * 1000 );
+
+	},
+
+	stopPattern: function(id) {
+		var pattern = _.find(patterns, {id: id});
+		clearTimeout( pattern.timer );
 	}
 };
 
