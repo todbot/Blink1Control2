@@ -1,0 +1,73 @@
+"use strict";
+
+var React = require('react');
+var _ = require('lodash');
+
+var pattNameStyle = {width: 100, display: "inline-block", padding: 5, textAlign: "right", textOverflow: "ellipsis", whiteSpace: "no-wrap" };
+var swatchStyle = { width: 16, height: 16 };
+var repeatsStyle = { width: 30, padding: 5 };
+
+var _clone = function(item) {
+        return JSON.parse(JSON.stringify(item)); //return cloned copy so that the item is passed by value instead of by reference
+};
+
+var Pattern = React.createClass({
+	propTypes: {
+		pattern: React.PropTypes.object.isRequired,
+		onPatternChange: React.PropTypes.func,
+		handleRepeatsClick: React.PropTypes.func
+	},
+
+	swatchClick: function(coloridx) {
+		console.log("swatchClick!", this.props.pattern.id, coloridx);
+	},
+	repeatsClick: function() {
+		console.log("repeatsClick!", this.props.pattern.id, this.props.pattern.repeats);
+		this.props.pattern.repeats++;  // FIXME: hmmm.
+		this.forceUpdate(); // FIXME: hmmm.
+	},
+
+	render: function() {
+		var repstr = (this.props.pattern.repeats) ? 'x' + this.props.pattern.repeats : '';
+		var repeats = <i className="fa fa-repeat">{repstr}</i>;
+		// this is kinda nuts, don't fully understand
+		// but coding pattern from https://facebook.github.io/react/tips/expose-component-functions.html
+		return (
+			<span>
+				<span style={pattNameStyle}>{this.props.pattern.name}</span>
+				{this.props.pattern.colors.map( function(color, i) { 
+					var ss = _clone(swatchStyle);
+					ss.background = color.rgb;
+					//ss.background = color.rgb;
+					//var ss = { width: 16, height: 16, background: color.rgb };
+					//var ss = swatchStyle;  // why don't these two lines work?
+					//ss.background = color.rgb;
+					var boundClick = this.swatchClick.bind(this, i);
+					return (
+						<button onClick={boundClick} type="button" key={i} 
+						style={ss}></button> 
+					);
+				}, this)}
+				<span onClick={this.repeatsClick} style={repeatsStyle}>{repeats}</span>
+
+			</span>
+		);
+/*
+		var createSwatch = function(color, index) {
+			return ( 
+				<button onClick={swatchClick} type="button" key={index} 
+					style={{background: color.rgb, height: 16, width: 16 }} ></button> 
+			);
+		};
+		return (
+			<span>
+				<span style={pattNameStyle}>{this.props.pattern.name}</span>
+				this.props.pattern.colors.map( createSwatch )
+				<span onClick={this.props.handleRepeatsClick} style={{ width: 30, padding: 5 }}>{repeats}</span>
+			</span>
+		);
+*/
+	}
+});
+
+module.exports = Pattern;

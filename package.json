@@ -1,0 +1,46 @@
+{
+  "name": "blink1control-toy0",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^3.3.5",
+    "browserify": "^11.0.1",
+    "electron-prebuilt": "^0.30.5",
+    "flux": "^2.0.3",
+    "font-awesome": "^4.4.0",
+    "jquery": "^2.1.4",
+    "lodash": "^3.10.1",
+    "node-blink1": "^0.2.1",
+    "node-hid": "^0.4.0",
+    "object-assign": "^4.0.1",
+    "parse-color": "^1.0.0",
+    "react": "^0.13.3",
+    "react-bootstrap": "^0.24.5",
+    "react-color": "^1.0.5",
+    "react-color-picker": "^2.1.9",
+    "react-colorpickr": "^1.4.4",
+    "react-fontawesome": "^0.2.5",
+    "react-router": "^0.13.3",
+    "reactify": "^1.1.1",
+    "toastr": "^2.1.2",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "devDependencies": {
+    "electron-connect": "^0.3.3",
+    "electron-rebuild": "^1.0.0",
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^3.0.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-connect": "^2.2.0",
+    "gulp-eslint": "^0.15.0",
+    "gulp-livereload": "^3.8.0",
+    "gulp-open": "^1.0.0",
+    "gulp-rename": "^1.2.2"
+  }
+}
