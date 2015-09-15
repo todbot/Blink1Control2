@@ -29,12 +29,11 @@ var PatternList = React.createClass({
 		console.log("patternList: getInitialState!");
 		return { 
 			editing: false,
-			editId: null,
+			editId: '',
 			patterns: patterns
 		};
 	},
-
-	updateState: function() { 
+	updatePatternState: function() { 
 		console.log("done it");
 		this.setState( {patterns: PatternsApi.getAllPatterns()} );   
 	},
@@ -42,7 +41,7 @@ var PatternList = React.createClass({
 	handleClickOutside: function(evt) { // part of react-onclickoutside
 		console.log("handleClickOutside: ", evt);
 		if( this.state.editing ) {
-			this.setState( { editing: false, editId: 0} ); 
+			this.setState( { editing: false, editId: ''} ); 
 		}
 	},
 	addPattern: function() {
@@ -57,7 +56,7 @@ var PatternList = React.createClass({
 		PatternsApi.savePattern( p );
 		console.log("playStopPattern: ", pattid, p.playing);
 		if( p.playing ) {
-			PatternsApi.playPattern(pattid, this.updateState);
+			PatternsApi.playPattern(pattid, this.updatePatternState);
 			/*function() { 
 				console.log("done playing");
 				//this.setState( {patterns: PatternsApi.getAllPatterns()} );   
@@ -111,40 +110,45 @@ var PatternList = React.createClass({
 		var createPatternRow = function(patt) {
 			var pid = patt.id;
 			var noEdit = patt.system || patt.locked;
+			var editingThis = (this.state.editing && (this.state.editId === pid));
+			//console.log("editingThis: ", editingThis);
 			var patternStyle = {
 				borderStyle: "solid", borderWidth: 1, borderRadius: "4%", borderColor: "#eee", padding: 2, margin: 0,
 				background: "#fff"
 			};
 			var playButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2 };
-			var editButtStyle = {borderStyle: "none", background: "inherit", borderLeftStyle: "solid", float: "right", padding: 4 };
+			var editButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, borderLeftStyle: "solid", float: "right" };
 			var lockButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, width: 15 };
 			var patternStateIcon = (patt.playing) ? 'fa-stop' : 'fa-play';
 			var lockMenuIcon = (patt.locked) ? "fa fa-lock" : "fa fa-unlock-alt";
 			var lockMenuText = (patt.locked) ? "Unlock pattern" : "Lock pattern";
+			//var lockIcon = 
+
 			var editOptions = 
-				<DropdownButton bsSize="xsmall" pullRight >
+				<DropdownButton style={editButtStyle} pullRight >
 					<MenuItem eventKey="1" onSelect={this.editPattern.bind(null, pid)} disabled={patt.system || patt.locked}><i className="fa fa-pencil"></i> Edit pattern</MenuItem>
 					<MenuItem eventKey="2" onSelect={this.lockPattern.bind(null, pid)} disabled={patt.system}><i className={lockMenuIcon}></i> {lockMenuText}</MenuItem>
 					<MenuItem eventKey="3" onSelect={this.copyPattern.bind(null, pid)}><i className="fa fa-copy"></i> Copy pattern</MenuItem>
 					<MenuItem eventKey="4" onSelect={this.deletePattern.bind(null, pid)} disabled={patt.locked}><i className="fa fa-remove"></i> Delete pattern</MenuItem>
 				</DropdownButton>;
-			if( this.state.editing && this.state.editId === pid ) {
+			if( editingThis ) {
 				editOptions = 
-					<ButtonGroup>
+					<span>
 						<Button onClick={this.deletePattern.bind(null, pid)} style={playButtStyle}><i className="fa fa-remove"></i></Button>
 						<Button onClick={this.handleClickOutside} style={playButtStyle}><i className="fa fa-check"></i></Button>
-					</ButtonGroup>;
+					</span>;
 				patternStyle.borderColor = "#f99";
 			}
 
 			return (
 				<tr key={patt.id} ><td style={{margin: 0, padding: 0}}>
-					<Button onClick={this.playStopPattern.bind(null, pid)} bsSize="xsmall"><i className={(patt.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
-					<Pattern pattern={patt} editing={this.state.editing} onRepeatsClick={this.onRepeatsClick} />
-					<Button style={lockButtStyle}><i className={(patt.locked) ? "fa fa-lock" : ""}></i></Button>
+					<Button onClick={this.playStopPattern.bind(null, pid)} style={playButtStyle}><i className={(patt.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
+					<Pattern pattern={patt} editing={editingThis} onRepeatsClick={this.onRepeatsClick} />
+					{(!editingThis) ? <Button style={lockButtStyle}><i className={patt.locked ? "fa fa-lock" : ""}></i></Button> : null }
 					{editOptions}
 				</td></tr>
 			);
+				//(patt.locked<Button style={lockButtStyle}><i className={(patt.locked) ? "fa fa-lock" : ""}></i></Button>					<Button style={lockButtStyle}><i className={(patt.locked) ? "fa fa-lock" : ""}></i></Button>
 		};
 
 		return (

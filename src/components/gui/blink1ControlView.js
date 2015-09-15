@@ -97,11 +97,11 @@ var Blink1ControlView = React.createClass({
 		};
 
 		return (
-			<div style={{ width: 1000, height: 700, background: "#f5f5f5", marginn: 0, padding: 10, 
+			<div style={{ width: 1200, height: 700, background: "#f5f5f5", marginn: 0, padding: 10, 
 						WebkitUserSelect: "none" }}>
 			<Grid fluid>
 				<Row>
-					<Col md={4}>
+					<Col md={3}>
 						<Panel header="Device" style={{ width: 280, height: 360}}>
 							<div style={{ width: 256, height: 192, margin: "auto" }}>
 							<VirtualBlink1 blink1Color={this.state.blink1Color} />
@@ -115,7 +115,7 @@ var Blink1ControlView = React.createClass({
 						</Panel>
 						<EventList />
 					</Col>
-					<Col md={8}>
+					<Col md={9}>
 						<Grid fluid>
 						<Row>
 						<TabbedArea >
@@ -157,7 +157,7 @@ var Blink1ControlView = React.createClass({
 						</TabbedArea>
 						</Row>
 						<Row>
-							<Panel style={{width: 250, height: 350, margin: 5, display: "inline-block", verticalAlign: "top"}}>
+							<Panel style={{width: 450, height: 350, margin: 5, display: "inline-block", verticalAlign: "top"}}>
 								<ColorPicker type="sketch" color={this.state.blink1Color} onChange={this.handleColorPicker} />
 							</Panel>
 							<Panel style={{width: 350, height: 370, margin: 5, display: "inline-block", overflow: "scroll" }}>
