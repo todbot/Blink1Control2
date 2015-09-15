@@ -2,7 +2,7 @@
 
 var React = require('react');
 
-var colorparse = require('parse-color');
+//var colorparse = require('parse-color');
 
 var mystyle = {
 	width: 150,
@@ -18,12 +18,12 @@ var VirtualBlink1 = React.createClass({
 	},
 
 	render: function() {
+		console.log("virtualBlink1.render:", this.props.blink1Color);
 		mystyle.background = this.props.blink1Color;
 		//var colr = colorparse( this.props.blink1Color );
 		//var c = colr.rgba;
 		var img0style = { width: 240, height: 192, 
 			//background: this.props.blink1Color
-			
 			backgroundImage: [	
 								//'radial-gradient( rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.5} 0%, rgba(255,255,255,0.1) 65%)',
 								"url(images/device-light-mask.png)",

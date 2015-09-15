@@ -22,7 +22,7 @@
     "parse-color": "^1.0.0",
     "react": "^0.13.3",
     "react-bootstrap": "^0.24.5",
-    "react-color": "^1.0.5",
+    "react-color": "^1.0.6",
     "react-color-picker": "^2.1.9",
     "react-colorpickr": "^1.4.4",
     "react-fontawesome": "^0.2.5",
