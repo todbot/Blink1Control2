@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+
+var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
 var Dropdown = require('react-bootstrap').Dropdown;
@@ -32,6 +34,11 @@ var PatternList = React.createClass({
 		};
 	},
 
+	updateState: function() { 
+		console.log("done it");
+		this.setState( {patterns: PatternsApi.getAllPatterns()} );   
+	},
+
 	handleClickOutside: function(evt) { // part of react-onclickoutside
 		console.log("handleClickOutside: ", evt);
 		if( this.state.editing ) {
@@ -50,10 +57,12 @@ var PatternList = React.createClass({
 		PatternsApi.savePattern( p );
 		console.log("playStopPattern: ", pattid, p.playing);
 		if( p.playing ) {
-			PatternsApi.playPattern(pattid, function() { 
+			PatternsApi.playPattern(pattid, this.updateState);
+			/*function() { 
 				console.log("done playing");
-				this.setState( {patterns: PatternsApi.getAllPatterns()} );   
-			});
+				//this.setState( {patterns: PatternsApi.getAllPatterns()} );   
+				this.doneIt();
+			});*/
 		} 
 		else {
 			PatternsApi.stopPattern(pattid);
@@ -99,16 +108,16 @@ var PatternList = React.createClass({
 
 	render: function() {
 
-		var createPatternView = function(patt) {
+		var createPatternRow = function(patt) {
 			var pid = patt.id;
 			var noEdit = patt.system || patt.locked;
 			var patternStyle = {
 				borderStyle: "solid", borderWidth: 1, borderRadius: "4%", borderColor: "#eee", padding: 2, margin: 0,
 				background: "#fff"
 			};
-			var playButtStyle = {borderStyle: "none", background: "white", display: "inline", padding: 2 };
-			var editButtStyle = {borderStyle: "none", background: "white", borderLeftStyle: "solid", float: "right", padding: 4 };
-			var lockButtStyle = {borderStyle: "none", background: "white", display: "inline", padding: 2, width: 15 };
+			var playButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2 };
+			var editButtStyle = {borderStyle: "none", background: "inherit", borderLeftStyle: "solid", float: "right", padding: 4 };
+			var lockButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, width: 15 };
 			var patternStateIcon = (patt.playing) ? 'fa-stop' : 'fa-play';
 			var lockMenuIcon = (patt.locked) ? "fa fa-lock" : "fa fa-unlock-alt";
 			var lockMenuText = (patt.locked) ? "Unlock pattern" : "Lock pattern";
@@ -129,22 +138,22 @@ var PatternList = React.createClass({
 			}
 
 			return (
-				<div key={patt.id} style={patternStyle} >
+				<tr key={patt.id} ><td style={{margin: 0, padding: 0}}>
 					<Button onClick={this.playStopPattern.bind(null, pid)} bsSize="xsmall"><i className={(patt.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
 					<Pattern pattern={patt} editing={this.state.editing} onRepeatsClick={this.onRepeatsClick} />
 					<Button style={lockButtStyle}><i className={(patt.locked) ? "fa fa-lock" : ""}></i></Button>
 					{editOptions}
-				</div>
+				</td></tr>
 			);
 		};
 
 		return (
-			<div style={{WebkitUserSelect: "none"}}>
-				<button onClick={this.addPattern} style={{width: "100%"}}><i className="fa fa-plus"></i> add pattern</button>
-				<div>
-					{this.state.patterns.map( createPatternView, this )}
-				</div>
-			</div>
+			<Table hover >
+				<tbody>
+				<tr><td><button onClick={this.addPattern} className="btn-block" ><i className="fa fa-plus"></i> add pattern</button></td></tr>
+				{this.state.patterns.map( createPatternRow, this )}
+				</tbody>
+			</Table>
 
 		);
 	}

@@ -142,8 +142,9 @@ var PatternsApi = {
 			pattern.playpos = 0;
 			pattern.playcount++;
 			if( pattern.playcount === pattern.repeats ) {
-				callback();
+				pattern.playing = false;
 				playingPattern = '';
+				callback();
 				return;
 			}
 		}

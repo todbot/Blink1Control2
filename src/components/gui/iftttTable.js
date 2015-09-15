@@ -14,16 +14,33 @@ var IftttTable = React.createClass({
 
 	getInitialState: function() {
 		return {
-			events: [ 
-				{ date: 1234, text: "this happened"},
-				{ date: 1235, text: "this other thing happened"}
+			rules: [ 
+				{ name: "Bob", pattern: "this happened", lastEvent: "someevent", source: "a source" },
+				{ name: "Bob2", pattern: "that happened", lastEvent: "some2event", source: "a source" },
+				{ name: "Bob3", pattern: "other happened", lastEvent: "some3event", source: "a source" }
 			]
 		};
 	},
 
+	editRule: function() {
+		console.log("editRule:");
+	},
+
 	render: function() {
+		var createRow = function(rule, index) {
+			return (
+					<tr key={index} onDoubleClick={this.editRule.bind(this, rule.name)}>
+					<td>{rule.name}</td>
+					<td>{rule.pattern}</td>
+					<td>{rule.lastEvent}</td>
+					<td>{rule.source}</td>
+					</tr>
+			);
+
+		};
 		return (
-			<Table striped bordered condensed hover>
+			<div>
+			<Table bordered condensed hover>
 				<thead>
 					<tr>
 					<th>Name</th>
@@ -33,14 +50,11 @@ var IftttTable = React.createClass({
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-					<td> Bob </td>
-					<td> Pattern </td>
-					<td> last it </td>
-					<td> some source </td>
-					</tr>
+					{this.state.rules.map( createRow, this )}
 				</tbody>
 			</Table>
+			<button onClick={this.addRule} className="btn" ><i className="fa fa-plus"></i> add rule</button>
+			</div>
         );
 
 	}

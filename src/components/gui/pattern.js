@@ -28,7 +28,8 @@ var Pattern = React.createClass({
 		var pattStyle = { width: 230, height: 36, display: "inline-block" };
 		var pattNameStyle = {width: 75, display: "inline-block", padding: 4, margin: 4, textAlign: "right", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "80%" };
 		var swatchStyle = { width: 16, height: 16 };
-		var repeatsStyle = { width: 30, padding: 5, fontSize: "80%", borderStyle: "none", background: "white" };
+		var swatchSetStyle = { width: 115, overflow: "scroll" };
+		var repeatsStyle = { width: 30, padding: 5, fontSize: "80%", borderStyle: "none", background: "inherit" };
 
 		var repstr = (this.props.pattern.repeats) ? 'x' + this.props.pattern.repeats : '';
 		var repeats = <i className="fa fa-repeat">{repstr}</i>;
@@ -40,6 +41,8 @@ var Pattern = React.createClass({
 		return (
 			<span style={pattStyle}>
 				<span style={pattNameStyle}>{this.props.pattern.name}</span>
+				<span style={swatchSetStyle}>
+				<span style={{ width: 200 }}> 
 				{this.props.pattern.colors.map( function(color, i) { 
 					var ss = _clone(swatchStyle); // dont need this now
 					ss.background = color.rgb;
@@ -51,6 +54,8 @@ var Pattern = React.createClass({
 						<button onClick={boundClick} type="button" key={i} style={ss}></button> 
 					);
 				}, this)}
+				</span>
+				</span>
 				<button onClick={this.props.onRepeatsClick.bind(null, this.props.pattern.id)} style={repeatsStyle}>{repeats}</button>
 			</span>
 		);

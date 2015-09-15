@@ -151,7 +151,7 @@ var Blink1ControlView = React.createClass({
 							</TabPane>
 							<TabPane eventKey={5} tab={<i className="fa fa-life-ring"> Help</i>}>
 								<Panel style={{height: 200}}>
-									Mail goes here
+									Help goes here
 								</Panel>
 							</TabPane>
 						</TabbedArea>
