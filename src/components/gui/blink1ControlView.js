@@ -25,7 +25,7 @@ var Blink1ControlView = React.createClass({
 	render: function() {
 
 		return (
-			<div style={{ width: 1200, height: 700, background: "#f5f5f5", marginn: 0, padding: 10, 
+			<div style={{ width: 1100, height: 700, background: "#f5f5f5", marginn: 0, padding: 10, 
 						WebkitUserSelect: "none" }}>
 			<Grid fluid>
 				<Row>
@@ -39,7 +39,7 @@ var Blink1ControlView = React.createClass({
 							<Blink1TabViews />
 						</Row>
 						<Row>
-							<Panel style={{width: 450, height: 350, margin: 5, display: "inline-block", verticalAlign: "top"}}>
+							<Panel style={{width: 350, height: 350, margin: 5, display: "inline-block", verticalAlign: "top"}}>
 								<Blink1ColorPicker />
 							</Panel>
 							<Panel style={{width: 350, height: 370, margin: 5, display: "inline-block", overflow: "scroll" }}>

@@ -56,7 +56,6 @@ var Blink1TabViews = React.createClass({
 
 
 	render: function() {
-
 		console.log("blink1TabViews.render");
 
 		var createBigButton = function(button, index) {

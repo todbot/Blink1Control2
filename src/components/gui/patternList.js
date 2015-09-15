@@ -106,6 +106,7 @@ var PatternList = React.createClass({
 	},
 
 	render: function() {
+		console.log("patternList.render");
 
 		var createPatternRow = function(patt) {
 			var pid = patt.id;
