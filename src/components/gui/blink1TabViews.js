@@ -37,8 +37,13 @@ var Blink1TabViews = React.createClass({
 		this.state.buttonsUser.push( {name: "BigButton", type: "color", color: this.state.blink1Color});
 		this.setState( {buttonsUser: this.state.buttonsUser });
 	},
+	setBlink1Color: function(color) {
+		console.log("setBlink1Color:", color);
+		Blink1Api.fadeToColor( 100, color );
+	},
 
 	playBigButton: function(buttontype, buttonindex) {
+		console.log("playBigButton:", buttontype, buttonindex);
 		if( buttontype === 'sys' ) {
 			var butt = this.state.buttonsSys[buttonindex];
 			console.log("system button parsing goes here");
@@ -61,7 +66,7 @@ var Blink1TabViews = React.createClass({
 		var createBigButton = function(button, index) {
 			return (
 				<BigButton key={index} name={button.name} type={button.type} color={button.color} 
-				onClick={this.playBigButton.bind(this, button.type, index)} />
+				onClick={this.playBigButton.bind(null, button.type, index)} />
 			);
 		};
 

@@ -16,17 +16,17 @@ var Blink1ColorPicker = React.createClass({
 	},
 
 	setColor: function(color) {
+		color = '#' + color.hex;
 		this.setState( {color: color} );
-		Blink1Api.fadeToColor( 200, color);
+		Blink1Api.fadeToColor( 200, color );
 	},
-
 
 	render: function() {
 		//console.log("blink1ColorPicker.render");
 
 		return (
 				<div>
-					<ColorPicker type="sketch" color={this.state.color.hex} onChange={this.setColor} />
+					<ColorPicker type="sketch" color={this.state.color} onChange={this.setColor} />
 				</div>
 		);
 	}	

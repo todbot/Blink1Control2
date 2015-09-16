@@ -28,7 +28,7 @@ var config = {
     		'node_modules/font-awesome/fonts/*'
     	],
 		dist: './dist',
-		mainJs: './src/main.js'
+		mainJs: './src/maingui.js'
 	}
 }
 
@@ -98,11 +98,11 @@ gulp.task('watch', function() {
 gulp.task('electron-simple', function() {
 	electron.start();
 });
-gulp.task('electron-reload', ['lint'], function() {
+gulp.task('electron-reload', function() {
 	electron.reload();
 });
 
-gulp.task('serve', ['js'], function() {
+gulp.task('serve', function() {
  // Start browser process
   electron.start();
 
@@ -110,8 +110,8 @@ gulp.task('serve', ['js'], function() {
   //gulp.watch('app.js', electron.restart);
   // Reload renderer process
   //gulp.watch(['index.js', 'index.html'], electron.reload);
-  gulp.watch(config.paths.html, ['html','electron-reload']);
-	gulp.watch(config.paths.js, ['js', 'lint', 'electron-reload']);
+  //gulp.watch(config.paths.html, ['html','electron-reload']);
+  gulp.watch(config.paths.js, ['js', 'lint', electron.reload]); //'electron-reload']);
 });
 
 //gulp.task('default', ['html', 'js', 'images', 'css', 'fonts', 'lint', 'connect', 'watch']);

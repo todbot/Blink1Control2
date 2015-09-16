@@ -12,17 +12,14 @@ var BigButton = React.createClass({
 		onClick: React.PropTypes.func,
 		onContextMenu: React.PropTypes.func
 	},
-
+/*
     contextMenu: function(e) {
         e.preventDefault();
         // Do something here....
         console.log('bigButton: right click');
     },
     
-    handleClick: function(e) {
-
-    },
-
+*/
 	render: function() {
 		var buttstyle = { width: 64, height: 64, margin: 5 };
 		var tstyle = { color: 'grey', fontSize: "0.8em" };

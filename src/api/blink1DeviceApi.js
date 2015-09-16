@@ -3,12 +3,11 @@
 var _ = require('lodash');
 
 var remote = window.require('remote');
-
-//var HID = remote.require('node-hid');
 var usbDetect = remote.require('usb-detection');
-
 var Blink1 = remote.require('node-blink1');
+
 var colorparse = require('parse-color');
+
 
 var blink1serials = {}; // no, use hash? Blink1.devices();
 
@@ -20,7 +19,8 @@ var blink1Pid = 0x01ED;
 //	blink1 = new Blink1();
 //}
 
-var currentColor = colorparse('#ff00ff');
+//var currentColor = colorparse('#ff00ff');
+var currentColor = '#ff00ff';
 
 var _clone = function(item) {
 	return JSON.parse(JSON.stringify(item)); //return cloned copy so that the item is passed by value instead of by reference
@@ -29,7 +29,13 @@ var _clone = function(item) {
 var Blink1DeviceApi = {
 
 	startDeviceListener: function() {
-		console.log('startDeviceListener');
+		// initial population of any already-plugged in devices
+		var serials = Blink1.devices();
+		serials.map( function(s) {
+			Blink1DeviceApi._addDevice(s);
+		});
+
+		console.log('Blink1DeviceApi.startDeviceListener');
 		// -- USB detection api
 		// https://github.com/MadLittleMods/node-usb-detection
 		usbDetect.on('add', function(device) {
@@ -38,7 +44,7 @@ var Blink1DeviceApi = {
 			var pid = device.productId;
 			var serialnumber = device.serialNumber;
 			if( vid === blink1Vid && pid === blink1Pid ) {
-				console.log('added', vid, pid, serialnumber);
+				//console.log('Blink1DeviceApi.deviceListener, added', vid, pid, serialnumber);
 				Blink1DeviceApi._addDevice( serialnumber );
 			}
 		});
@@ -48,20 +54,13 @@ var Blink1DeviceApi = {
 			var pid = device.productId;
 			var serialnumber = device.serialNumber;
 			if( vid === blink1Vid && pid === blink1Pid ) {
-				console.log("BLINK1 REMOVED");
-				delete blink1serials[serialnumber];
-			}
-			console.log('removed', vid, pid, serialnumber);
-			if( blink1 ) {
-				console.log("closing blink1");
-				blink1.close();
-				blink1 = null;
+				Blink1DeviceApi._removeDevice( serialnumber );
 			}
 		});
 	},
 
 	_addDevice: function(serialnumber) {
-		console.log("BLINK1 ADDED");
+		console.log("Blink1DeviceApi._addDevice", JSON.stringify(blink1serials));
 		if( !blink1serials[serialnumber] ) { 
 			console.log("new serial, lighting it up");
 			setTimeout(function() {
@@ -69,6 +68,15 @@ var Blink1DeviceApi = {
 			}, 500);
 		}
 		blink1serials[serialnumber] = 1;
+	},
+	_removeDevice: function(serialnumber) {
+		console.log("Blink1DeviceApi._removeDevice", JSON.stringify(blink1serials));
+		delete blink1serials[serialnumber];
+		if( blink1 ) {
+			console.log("closing blink1");
+			blink1.close();
+			blink1 = null;
+		}
 	},
 	_testDevice: function() {
 		console.log("opening blink1 to test...");
@@ -103,32 +111,38 @@ var Blink1DeviceApi = {
 	},
 
 	_fadeToRGB: function( millis, r, g, b ) {
-		//if( blink1serials.length ) {
-		//	blink1 = new Blink1();
-		//	blink1.fadeToRGB( millis, r, g, b);
-		//	blink1.close();
-		//}
+		if( blink1 ) {
+			blink1.fadeToRGB( millis, r, g, b );
+		}
+		else {
+			//bconsole.log("Blink1DeviceAPI._fadeToRGB: no blink1");
+		}
 	},
 
 	fadeToColor: function( millis, color ) {
-		//console.log("fadeToColor: color:", JSON.stringify(color) ); //, " : ", color);
-		if( color instanceof String ) {
+		//console.log("Blink1DeviceApi.fadeToColor:", typeof color, (color instanceof String), JSON.stringify(color) ); //, " : ", color);
+		//if( color instanceof String ) {  // NOOOO, this is not always true, literals vs objects
+		if( typeof color === 'string' ) {
 			color = colorparse( color ); // FIXME: must be better way
 		}
-		//if( color.rgb instanceof Array ) { 
-		//	carr = color.rgb; 
-		//}
-		currentColor = color;
+		currentColor = color.hex;
+		console.log("Blink1DeviceApi.fadeToColor: currentColor:", currentColor, "ms:", millis ); 
+
 		Blink1DeviceApi._fadeToRGB( millis, color.rgb[0], color.rgb[1], color.rgb[2]);
 	},
 
 	getCurrentColor: function() {
-		return currentColor.hex;
+		return currentColor;
 	}
 };
-//console.log("blink1 devices!!!!!: ", JSON.stringify(blink1devices));
 
 
-
+Blink1DeviceApi.getInstance = function() {
+	if(this.instance === null){
+		this.instance = new Blink1DeviceApi();
+	}
+	return this.instance;
+};
 
 module.exports = Blink1DeviceApi;
+//module.exports = Blink1DeviceApi.getInstance();
