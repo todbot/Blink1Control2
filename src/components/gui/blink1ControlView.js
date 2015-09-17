@@ -25,7 +25,7 @@ var Blink1ControlView = React.createClass({
 	render: function() {
 
 		return (
-			<div style={{ width: 1100, height: 700, background: "#f5f5f5", marginn: 0, padding: 10, 
+			<div style={{ width: 1200, height: 700, background: "#f5f5f5", marginn: 0, padding: 10, 
 						WebkitUserSelect: "none" }}>
 			<Grid fluid>
 				<Row>

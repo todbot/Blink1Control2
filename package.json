@@ -1,17 +1,27 @@
 {
   "name": "blink1controljs",
   "version": "0.1.0",
-  "description": "",
+  "description": "Blink1Control implemented in ElectronJs, NodeJs, ReactJs",
   "main": "main.js",
+  "homepage": "http://github.com/todbot/blink1controljs",
+  "bugs": {
+    "url": "http://github.com/todbot/blink1controljs/issues"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "git@github.com:todbot/blink1controljs.git"
+  },    
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": {
+    "name" : "Tod E. Kurt"
+  },
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^3.3.5",
     "browserify": "^11.0.1",
-    "electron-prebuilt": "^0.30.6",
+    "electron-prebuilt": "0.30.6",
     "flux": "^2.0.3",
     "font-awesome": "^4.4.0",
     "jquery": "^2.1.4",
@@ -35,6 +45,7 @@
   },
   "devDependencies": {
     "electron-connect": "^0.3.3",
+    "electron-packager": "^5.1.0",
     "electron-rebuild": "^1.0.0",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.0.1",

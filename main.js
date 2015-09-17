@@ -1,17 +1,20 @@
 "use strict";
 
 var app = require('app');
-var BrowserWindow = require('browser-window');
+var Tray = require('tray');
 var Menu = require('menu');
-//var runtime = require('./core/runtime');
-//var appMenu = require('./core/app-menu');
-var client = require('electron-connect').client;
+var path = require('path');
+var BrowserWindow = require('browser-window');
+var runtime = require('./src/core/runtime');
+var appMenu = require('./src/core/app-menu');
 
+// electron-connect is for development
+var client = require('electron-connect').client;
 require('crash-reporter').start();
 
 // Load external modules
-//var mods = require('./core/modules');
-//mods.load(runtime);
+var mods = require('./core/modules');
+mods.load(runtime);
 
 //var rpcserver = new rpcServer();
 
@@ -36,6 +39,10 @@ if( enableApiServer ) {
 }
 */
 
+var trayIconPath = path.join(__dirname, 'dist/images/blink1-icon0-bw16.png');
+var appIcon = null;
+
+
 app.on('window-all-closed', function () {
 	//if (process.platform !== 'darwin') {
 		app.quit();
@@ -43,8 +50,6 @@ app.on('window-all-closed', function () {
 });
 
 app.on('ready', function () {
-
-	//runtime.emit(runtime.events.INIT_ROUTES, appMenu);
 
 	mainWindow = new BrowserWindow({
 		width: 1300,
@@ -54,10 +59,70 @@ app.on('ready', function () {
 		// resizable: false
 		// see https://github.com/atom/electron/blob/master/docs/api/browser-window.md
 	});
-	
+	// mainWindow.setMenu(null);  // remove default menu
+
+	appIcon = new Tray(trayIconPath);
+	var contextMenu = Menu.buildFromTemplate([
+	{
+		label: 'Item1',
+		type: 'radio',
+		icon: trayIconPath,
+		accelerator: 'Command+R'
+	},
+	{
+	label: 'Item2',
+		submenu: [
+		{ label: 'submenu1' },
+		{ label: 'submenu2' }]
+	},
+	{
+		label: 'Item3',
+		type: 'radio',
+		checked: true
+	},
+	{
+		label: 'Toggle DevTools',
+		accelerator: 'Alt+Command+I',
+		click: function() {
+			mainWindow.show();
+			mainWindow.toggleDevTools();
+		}
+	},
+	{ 
+		label: 'Quit',
+		accelerator: 'Command+Q',
+		selector: 'terminate:',
+	}
+	]);
+	appIcon.setToolTip('This is my application.');
+	appIcon.setContextMenu(contextMenu);
+	//mainWindow.setMenu( contextMenu );
+
+	// ---
+	var template = [{
+    	label: "Application",
+	    submenu: [
+    	    { label: "About Todbot", selector: "orderFrontStandardAboutPanel:" },
+        	{ type: "separator" },
+	        { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); }}
+    	]}, {
+	    label: "Edit",
+    		submenu: [
+	        { label: "ZZUndo", accelerator: "Command+R", selector: "undo:" },
+    	    { label: "Redo", accelerator: "Shift+Command+Z", selector: "redo:" },
+        	{ type: "separator" },
+       		{ label: "Cut", accelerator: "Command+X", selector: "cut:" },
+	        { label: "Copy", accelerator: "Command+C", selector: "copy:" },
+    	    { label: "Paste", accelerator: "Command+V", selector: "paste:" },
+        	{ label: "Select All", accelerator: "Command+A", selector: "selectAll:" }
+	    ]}
+	];
+	//Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+
+	runtime.emit(runtime.events.INIT_ROUTES, appMenu);
 
 	// initialize runtime reference to main window
-	//runtime.windowId = mainWindow.id;
+	runtime.windowId = mainWindow.id;
 
 	//mainWindow.loadUrl('file://' + __dirname + '/dist/index.html#/todtests');
 	mainWindow.loadUrl('file://' + __dirname + '/dist/index.html');
