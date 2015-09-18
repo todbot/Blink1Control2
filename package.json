@@ -8,21 +8,21 @@
     "url": "http://github.com/todbot/blink1controljs/issues"
   },
   "repository": {
-    "type" : "git",
-    "url" : "git@github.com:todbot/blink1controljs.git"
-  },    
+    "type": "git",
+    "url": "git@github.com:todbot/blink1controljs.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
-    "name" : "Tod E. Kurt"
+    "name": "Tod E. Kurt"
   },
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^3.3.5",
     "browserify": "^11.0.1",
-    "electron-prebuilt": "0.30.6",
     "flux": "^2.0.3",
+    "fluxxor": "^1.7.2",
     "font-awesome": "^4.4.0",
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",

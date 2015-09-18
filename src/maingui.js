@@ -1,13 +1,24 @@
-"use strict";
+/* global $:true, jQuery:true */
+/* eslint-disable strict */
 
 var React = require('react');
-var Router = require('react-router');
-var routes = require('./routes');
 
-var InitializeActions = require('./actions/InitializeActions');
+$ = jQuery = require('jquery');
 
-InitializeActions.initApp();
+var Blink1ControlView = require('./components/gui/blink1ControlView');
 
-Router.run(routes, function(Handler) {
-	React.render( <Handler />, document.getElementById('app'));
+var Blink1Api = require('./api/blink1DeviceApi');
+
+Blink1Api.startDeviceListener();
+
+var App = React.createClass({
+  render: function() {
+    return (
+			<div className="container-fluid">
+				<Blink1ControlView />
+      </div>
+    );
+  }
 });
+
+React.render( <App />, document.getElementById('app'));

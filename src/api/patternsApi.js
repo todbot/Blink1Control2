@@ -1,6 +1,6 @@
 /*
  * Pattern API mockup
- * 
+ *
  * a fully populated in-memory pattern looks like:
  *  var pattern = {
  *		id: "policecar",
@@ -28,7 +28,7 @@
 
 var _ = require('lodash');
 
-var Blink1Api = require('./Blink1DeviceApi');
+var Blink1Api = require('./blink1DeviceApi');
 
 //This file is mocking a web API by hitting hard coded data.
 var systemPatterns = require('./systemPatterns').patterns;
@@ -65,9 +65,6 @@ var _systemFixup = function(pattern) {
 	pattern.repeats = Math.floor((Math.random() * 8) + 0);  // FIXME: TESTING HACK
 	return pattern;
 };
-var _toString = function(pattern) {
-	return "_toStr not implemented yet";
-};
 
 var _clone = function(item) {
 	return JSON.parse(JSON.stringify(item)); //return cloned copy so that the item is passed by value instead of by reference
@@ -79,7 +76,7 @@ var playingPattern = '';
 
 var PatternsApi = {
 	getAllPatterns: function() {
-		return _clone(patterns); 
+		return _clone(patterns);
 	},
 
 	getPatternByName: function(name) {
@@ -91,13 +88,13 @@ var PatternsApi = {
 		var pattern = _.find(patterns, {id: id});
 		return _clone(pattern);
 	},
-	
+
 	savePattern: function(pattern) {
 		//pretend an ajax call to web api is made here
 		//console.log('Pretend this just saved the pattern to the DB via AJAX call...');
-		
+
 		if (pattern.id) {
-			var existingPatternIndex = _.indexOf(patterns, _.find(patterns, {id: pattern.id})); 
+			var existingPatternIndex = _.indexOf(patterns, _.find(patterns, {id: pattern.id}));
 			patterns.splice(existingPatternIndex, 1, pattern);
 		} else {
 			//Just simulating creation here.

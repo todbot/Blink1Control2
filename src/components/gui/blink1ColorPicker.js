@@ -2,7 +2,7 @@
 
 var React = require('react');
 
-var Blink1Api = require('../../api/Blink1DeviceApi');
+var Blink1Api = require('../../api/blink1DeviceApi');
 
 var ColorPicker = require('react-color');
 
@@ -29,9 +29,9 @@ var Blink1ColorPicker = React.createClass({
 					<ColorPicker type="sketch" color={this.state.color} onChange={this.setColor} />
 				</div>
 		);
-	}	
+	}
 
 
 });
 
-module.exports = Blink1ColorPicker; 
+module.exports = Blink1ColorPicker;

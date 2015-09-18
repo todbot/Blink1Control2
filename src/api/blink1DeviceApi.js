@@ -1,7 +1,5 @@
 "use strict";
 
-var _ = require('lodash');
-
 var remote = window.require('remote');
 var usbDetect = remote.require('usb-detection');
 var Blink1 = remote.require('node-blink1');
@@ -48,7 +46,7 @@ var Blink1DeviceApi = {
 				Blink1DeviceApi._addDevice( serialnumber );
 			}
 		});
-		usbDetect.on('remove', function(device) { 
+		usbDetect.on('remove', function(device) {
 			//console.log('remove', device);
 			var vid = device.vendorId;
 			var pid = device.productId;
@@ -59,12 +57,17 @@ var Blink1DeviceApi = {
 		});
 	},
 
+	closeAll: function() {
+		blink1serials.map( Blink1DeviceApi._removeDevice );
+		usbDetect.stopMonitoring();
+	},
+
 	_addDevice: function(serialnumber) {
 		console.log("Blink1DeviceApi._addDevice", JSON.stringify(blink1serials));
-		if( !blink1serials[serialnumber] ) { 
+		if( !blink1serials[serialnumber] ) {
 			console.log("new serial, lighting it up");
 			setTimeout(function() {
-				Blink1DeviceApi._testDevice();
+				Blink1DeviceApi._testDevice();  // FIXME: remove
 			}, 500);
 		}
 		blink1serials[serialnumber] = 1;
@@ -86,10 +89,10 @@ var Blink1DeviceApi = {
 
 	getAllSerials: function() {
 		//blink1serials = Blink1.devices();
-		return _clone(blink1serials); 
+		return _clone(blink1serials);
 	},
 
-	isConnected: function() { 
+	isConnected: function() {
 		return (blink1serials.length > 0);
 	},
 
@@ -126,7 +129,7 @@ var Blink1DeviceApi = {
 			color = colorparse( color ); // FIXME: must be better way
 		}
 		currentColor = color.hex;
-		console.log("Blink1DeviceApi.fadeToColor: currentColor:", currentColor, "ms:", millis ); 
+		console.log("Blink1DeviceApi.fadeToColor: currentColor:", currentColor, "ms:", millis );
 
 		Blink1DeviceApi._fadeToRGB( millis, color.rgb[0], color.rgb[1], color.rgb[2]);
 	},
@@ -137,12 +140,12 @@ var Blink1DeviceApi = {
 };
 
 
-Blink1DeviceApi.getInstance = function() {
-	if(this.instance === null){
-		this.instance = new Blink1DeviceApi();
-	}
-	return this.instance;
-};
+// Blink1DeviceApi.getInstance = function() {
+// 	if(this.instance === null){
+// 		this.instance = new Blink1DeviceApi();
+// 	}
+// 	return this.instance;
+// };
 
 module.exports = Blink1DeviceApi;
 //module.exports = Blink1DeviceApi.getInstance();

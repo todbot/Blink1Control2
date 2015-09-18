@@ -6,12 +6,11 @@ var TabPane = require('react-bootstrap').TabPane;
 var Panel = require('react-bootstrap').Panel;
 var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 
-
 var IftttTable = require('./iftttTable');
 var MailTable = require('./mailTable');
 var BigButton = require('./bigButton');
 
-var Blink1Api = require('../../api/Blink1DeviceApi');
+var Blink1Api = require('../../api/blink1DeviceApi');
 
 var Blink1TabViews = React.createClass({
 
@@ -65,7 +64,7 @@ var Blink1TabViews = React.createClass({
 
 		var createBigButton = function(button, index) {
 			return (
-				<BigButton key={index} name={button.name} type={button.type} color={button.color} 
+				<BigButton key={index} name={button.name} type={button.type} color={button.color}
 				onClick={this.playBigButton.bind(null, button.type, index)} />
 			);
 		};
@@ -77,13 +76,13 @@ var Blink1TabViews = React.createClass({
 							<Panel style={{height: 200}}>
 							<div style={{padding: 10}}>
 								<ButtonToolbar>
-									{this.state.buttonsSys.map(createBigButton, this)} 
+									{this.state.buttonsSys.map(createBigButton, this)}
 								</ButtonToolbar>
 							</div>
-							<div style={{padding: 10}}> 
+							<div style={{padding: 10}}>
 								<ButtonToolbar>
 									{this.state.buttonsUser.map(createBigButton, this)}
-								<BigButton key="add" name="add" type="add" onClick={this.addBigButton} /> 
+								<BigButton key="add" name="add" type="add" onClick={this.addBigButton} />
 								</ButtonToolbar>
 							</div>
 							</Panel>
@@ -111,9 +110,9 @@ var Blink1TabViews = React.createClass({
 					</TabbedArea>
 				</div>
 		);
-	}	
+	}
 
 
 });
 
-module.exports = Blink1TabViews; 
+module.exports = Blink1TabViews;

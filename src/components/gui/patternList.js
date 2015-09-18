@@ -4,8 +4,6 @@ var React = require('react');
 
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
-var ButtonGroup = require('react-bootstrap').ButtonGroup;
-var Dropdown = require('react-bootstrap').Dropdown;
 var MenuItem = require('react-bootstrap').MenuItem;
 var DropdownButton = require('react-bootstrap').DropdownButton;
 
@@ -27,21 +25,21 @@ var PatternList = React.createClass({
 		//patterns[0].system = false;
 		//patterns[0].locked = false; // testing
 		console.log("patternList: getInitialState!");
-		return { 
+		return {
 			editing: false,
 			editId: '',
 			patterns: patterns
 		};
 	},
-	updatePatternState: function() { 
+	updatePatternState: function() {
 		console.log("done it");
-		this.setState( {patterns: PatternsApi.getAllPatterns()} );   
+		this.setState( {patterns: PatternsApi.getAllPatterns()} );
 	},
 
 	handleClickOutside: function(evt) { // part of react-onclickoutside
 		console.log("handleClickOutside: ", evt);
 		if( this.state.editing ) {
-			this.setState( { editing: false, editId: ''} ); 
+			this.setState( { editing: false, editId: ''} );
 		}
 	},
 	addPattern: function() {
@@ -57,12 +55,12 @@ var PatternList = React.createClass({
 		console.log("playStopPattern: ", pattid, p.playing);
 		if( p.playing ) {
 			PatternsApi.playPattern(pattid, this.updatePatternState);
-			/*function() { 
+			/*function() {
 				console.log("done playing");
-				//this.setState( {patterns: PatternsApi.getAllPatterns()} );   
+				//this.setState( {patterns: PatternsApi.getAllPatterns()} );
 				this.doneIt();
 			});*/
-		} 
+		}
 		else {
 			PatternsApi.stopPattern(pattid);
 		}
@@ -101,7 +99,7 @@ var PatternList = React.createClass({
 			p.repeats++;
 			if( p.repeats > 9 ) { p.repeats = 0; }
 			PatternsApi.savePattern( p );
-			this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?		
+			this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
 		}
 	},
 
@@ -123,9 +121,9 @@ var PatternList = React.createClass({
 			var patternStateIcon = (patt.playing) ? 'fa-stop' : 'fa-play';
 			var lockMenuIcon = (patt.locked) ? "fa fa-lock" : "fa fa-unlock-alt";
 			var lockMenuText = (patt.locked) ? "Unlock pattern" : "Lock pattern";
-			//var lockIcon = 
+			//var lockIcon =
 
-			var editOptions = 
+			var editOptions =
 				<DropdownButton style={editButtStyle} pullRight >
 					<MenuItem eventKey="1" onSelect={this.editPattern.bind(null, pid)} disabled={patt.system || patt.locked}><i className="fa fa-pencil"></i> Edit pattern</MenuItem>
 					<MenuItem eventKey="2" onSelect={this.lockPattern.bind(null, pid)} disabled={patt.system}><i className={lockMenuIcon}></i> {lockMenuText}</MenuItem>
@@ -133,7 +131,7 @@ var PatternList = React.createClass({
 					<MenuItem eventKey="4" onSelect={this.deletePattern.bind(null, pid)} disabled={patt.locked}><i className="fa fa-remove"></i> Delete pattern</MenuItem>
 				</DropdownButton>;
 			if( editingThis ) {
-				editOptions = 
+				editOptions =
 					<span>
 						<Button onClick={this.deletePattern.bind(null, pid)} style={playButtStyle}><i className="fa fa-remove"></i></Button>
 						<Button onClick={this.handleClickOutside} style={playButtStyle}><i className="fa fa-check"></i></Button>
@@ -177,7 +175,7 @@ module.exports = PatternList;
 					{pattern.name}</span>: {pattern.colors.map( createSwatch )}
 				</ListGroupItem>
 			);
-		};		
+		};
 		return (
 			<div>
 			<button type="button">add pattern</button>

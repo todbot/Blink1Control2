@@ -2,7 +2,7 @@
 
 var React = require('react');
 
-var Blink1Api = require('../../api/Blink1DeviceApi');
+var Blink1Api = require('../../api/blink1DeviceApi');
 
 //var colorparse = require('parse-color');
 
@@ -22,7 +22,7 @@ var VirtualBlink1 = React.createClass({
 	},
 	// FIXME: this is kind of a big hack, use Flux!
 	fetchBlink1Color: function() {
-		this.setState( { 
+		this.setState( {
 			blink1Color: Blink1Api.getCurrentColor()
 		});
 		//console.log("fetchBlink1Color", Blink1Api.getCurrentColor() );
@@ -38,16 +38,16 @@ var VirtualBlink1 = React.createClass({
 		mystyle.background = this.state.blink1Color;
 		//var colr = colorparse( this.props.blink1Color );
 		//var c = colr.rgba;
-		var img0style = { width: 240, height: 192, 
+		var img0style = { width: 240, height: 192,
 			//background: this.props.blink1Color
-			backgroundImage: [	
+			backgroundImage: [
 								//'radial-gradient( rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.5} 0%, rgba(255,255,255,0.1) 65%)',
 								"url(images/device-light-mask.png)",
 								"radial-gradient(" + this.state.blink1Color + " 0%, rgba(255,255,255,0.1) 55%" + ")",
-								"url(images/device-light-bg-top.png)", 
+								"url(images/device-light-bg-top.png)",
 								"url(images/device-light-bg.png)"
 								]
-								
+
 		};
 		//	<img style={img2style} src="images/device-light-bg.png" />
 		//	<img style={img3style} src="images/device-light-mask.png" />
@@ -56,10 +56,10 @@ var VirtualBlink1 = React.createClass({
 		var img2style = { width: 240, height: 192, position: "relative", top: 0 };
 		var img3style = { width: 240, height: 192, position: "relative", top: 0 };
 		return (
-			<div style={img0style}> 
+			<div style={img0style}>
 			</div>
 			);
 	}
 });
 
-module.exports = VirtualBlink1; 
+module.exports = VirtualBlink1;

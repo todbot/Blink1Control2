@@ -4,9 +4,9 @@ var React = require('react');
 var Panel = require('react-bootstrap').Panel;
 var Well = require('react-bootstrap').Well;
 
-var VirtualBlink1 = require('./VirtualBlink1');
+var VirtualBlink1 = require('./virtualBlink1');
 
-var Blink1Api = require('../../api/Blink1DeviceApi');
+var Blink1Api = require('../../api/blink1DeviceApi');
 var PatternsApi = require('../../api/patternsApi');
 
 var Blink1Status = React.createClass({
@@ -39,9 +39,9 @@ var Blink1Status = React.createClass({
 				</Well>
 			</Panel>
 		);
-	}	
+	}
 
 
 });
 
-module.exports = Blink1Status; 
+module.exports = Blink1Status;

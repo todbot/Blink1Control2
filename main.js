@@ -5,43 +5,31 @@ var Tray = require('tray');
 var Menu = require('menu');
 var path = require('path');
 var BrowserWindow = require('browser-window');
-var runtime = require('./src/core/runtime');
-var appMenu = require('./src/core/app-menu');
+// var runtime = require('./src/core/runtime');
+// var appMenu = require('./src/core/app-menu');
 
 // electron-connect is for development
 var client = require('electron-connect').client;
 require('crash-reporter').start();
 
 // Load external modules
-var mods = require('./core/modules');
-mods.load(runtime);
+// var mods = require('./core/modules');
+// mods.load(runtime);
 
 //var rpcserver = new rpcServer();
 
 var mainWindow = null;
-var menu = null;
-
-/*
-var enableApiServer = false;
-var apiPort = 8935;
-
-var http = require('http');
-
-function handleHttpRequest(request, response){
-	response.end('It Works!! Path Hit: ' + request.url);
-}
-if( enableApiServer ) {
-	var server = http.createServer(handleHttpRequest);
-	server.listen(apiPort, function() {
-		//Callback triggered when server is successfully listening. Hurray!
-		console.log("Server listening on: http://localhost:%s", apiPort);
-	});
-}
-*/
+// var menu = null;
 
 var trayIconPath = path.join(__dirname, 'dist/images/blink1-icon0-bw16.png');
 var appIcon = null;
 
+var quit = function() {
+	console.log("quitting...");
+	// FIXME: put in blink1 & usb-detection closedown
+	app.quit();
+
+};
 
 app.on('window-all-closed', function () {
 	//if (process.platform !== 'darwin') {
@@ -88,7 +76,7 @@ app.on('ready', function () {
 			mainWindow.toggleDevTools();
 		}
 	},
-	{ 
+	{
 		label: 'Quit',
 		accelerator: 'Command+Q',
 		selector: 'terminate:',
@@ -102,9 +90,9 @@ app.on('ready', function () {
 	var template = [{
     	label: "Application",
 	    submenu: [
-    	    { label: "About Todbot", selector: "orderFrontStandardAboutPanel:" },
+    	    { label: "About Blink1Control", selector: "orderFrontStandardAboutPanel:" },
         	{ type: "separator" },
-	        { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); }}
+	        { label: "Quit", accelerator: "Command+Q", click: function() { quit(); }}
     	]}, {
 	    label: "Edit",
     		submenu: [
@@ -117,18 +105,20 @@ app.on('ready', function () {
         	{ label: "Select All", accelerator: "Command+A", selector: "selectAll:" }
 	    ]}
 	];
-	//Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+	Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 
-	runtime.emit(runtime.events.INIT_ROUTES, appMenu);
-
+	// runtime.emit(runtime.events.INIT_ROUTES, appMenu);
 	// initialize runtime reference to main window
-	runtime.windowId = mainWindow.id;
+	// runtime.windowId = mainWindow.id;
 
 	//mainWindow.loadUrl('file://' + __dirname + '/dist/index.html#/todtests');
 	mainWindow.loadUrl('file://' + __dirname + '/dist/index.html');
 	mainWindow.focus();
 
-	mainWindow.openDevTools();  
+	mainWindow.openDevTools();
+
+	// Connect to server process
+  client.create(mainWindow);
 
 	mainWindow.on('closed', function () {
 		mainWindow = null;

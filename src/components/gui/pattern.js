@@ -1,7 +1,6 @@
 "use strict";
 
 var React = require('react');
-var _ = require('lodash');
 
 var _clone = function(item) {
         return JSON.parse(JSON.stringify(item)); //return cloned copy so that the item is passed by value instead of by reference
@@ -14,7 +13,7 @@ var Pattern = React.createClass({
 		onRepeatsClick: React.PropTypes.func
 	},
 	getInitialState: function() {
-		return { 
+		return {
 			activeSwatch: -1
 		};
 	},
@@ -47,18 +46,18 @@ var Pattern = React.createClass({
 			ss.background = color.rgb;
 			var boundClick = this.swatchClick.bind(this, i);
 			return (
-				<button onClick={boundClick} type="button" key={i} style={ss}></button> 
+				<button onClick={boundClick} type="button" key={i} style={ss}></button>
 			);
 		};
 		var addSwatch = <button onClick={this.addSwatch} type="button" key={99} title="add it" style={swatchStyle}><i className="fa-li fa-plus"></i></button>;
 		if (!this.props.editing) { addSwatch = ''; }
 
-		
+
 		return (
 			<span style={pattStyle}>
 				<span style={pattNameStyle}>{this.props.pattern.name}</span>
 				<span style={swatchSetStyle}>
-				<span style={{ width: 200 }}> 
+				<span style={{ width: 200 }}>
 				{this.props.pattern.colors.map( createSwatch, this)}
 				{addSwatch}
 				</span>
