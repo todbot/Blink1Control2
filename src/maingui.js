@@ -7,7 +7,8 @@ $ = jQuery = require('jquery');
 
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 
-var Blink1Api = require('./api/blink1DeviceApi');
+var remote = window.require('remote');
+var Blink1Api = remote.require('./src/server/blink1ServerApi');
 
 Blink1Api.startDeviceListener();
 

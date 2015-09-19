@@ -2,7 +2,7 @@
 
 var React = require('react');
 var Button = require('react-bootstrap').Button;
-var Glyphicon = require('react-bootstrap').Glyphicon;
+//var Glyphicon = require('react-bootstrap').Glyphicon;
 
 var BigButton = React.createClass({
 	propTypes: {
@@ -18,13 +18,13 @@ var BigButton = React.createClass({
         // Do something here....
         console.log('bigButton: right click');
     },
-    
+
 */
 	render: function() {
 		var buttstyle = { width: 64, height: 64, margin: 5 };
 		var tstyle = { color: 'grey', fontSize: "0.8em" };
 		var iconContent;
-		if( this.props.type === "color" ) { 
+		if( this.props.type === "color" ) {
 			buttstyle.background = this.props.color;
 			buttstyle.color = 'white';
 			//iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
@@ -41,10 +41,10 @@ var BigButton = React.createClass({
 				iconContent = <i className="fa fa-spinner fa-2x"></i>;
 			}
 			else if( this.props.name === "Mood Light") {
-				iconContent = <i className="fa fa-asterisk fa-2x"></i>;				
+				iconContent = <i className="fa fa-asterisk fa-2x"></i>;
 			}
 			else if( this.props.name === "Off") {
-				iconContent = <i className="fa fa-power-off fa-2x"></i>;				
+				iconContent = <i className="fa fa-power-off fa-2x"></i>;
 			}
 			else {
 				iconContent = <i className="fa fa-eyedropper fa-2x"></i>;
@@ -54,7 +54,7 @@ var BigButton = React.createClass({
 			iconContent = <i className="fa fa-plus fa-2x"></i>;
 		}
 		return (
-			<Button style={buttstyle} 
+			<Button style={buttstyle}
 				onClick={this.props.onClick} onContextMenu={this.props.onContextMenu}>
 				{iconContent}<br /><i style={tstyle}>{this.props.name}</i>
 			</Button>
@@ -63,4 +63,4 @@ var BigButton = React.createClass({
 });
 
 
-module.exports = BigButton; 
+module.exports = BigButton;

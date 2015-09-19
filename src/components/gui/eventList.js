@@ -2,9 +2,6 @@
 
 var React = require('react');
 var Panel = require('react-bootstrap').Panel;
-var Grid = require('react-bootstrap').Grid;
-var Row = require('react-bootstrap').Row;
-var Col = require('react-bootstrap').Col;
 var Button = require('react-bootstrap').Button;
 var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
@@ -15,13 +12,13 @@ var mystyle = {
 };
 
 var EventList = React.createClass({
-	propTypes: { 
+	propTypes: {
 		//events: React.PropTypes.array.isRequired,
 		//onClear: React.PropTypes.func.isRequired
 	},
 	getInitialState: function() {
 		return {
-			events: [ 
+			events: [
 				{ date: 1234, text: "this happened"},
 				{ date: 1235, text: "this other thing happened"}
 			]
@@ -38,11 +35,11 @@ var EventList = React.createClass({
 			//return (<li key={event.date}> {event.date} - {event.text} </li>);
 			return (<ListGroupItem key={event.date}> {event.date} - {event.text} </ListGroupItem>);
 		};
-		var butStyle = { 
+		var butStyle = {
 
 			float: "left"
 		};
-		var listStyle = { 
+		var listStyle = {
 			height:	mystyle.height - 100  // FIXME: HACK!
 		};
 
@@ -57,4 +54,4 @@ var EventList = React.createClass({
 	}
 });
 
-module.exports = EventList; 
+module.exports = EventList;

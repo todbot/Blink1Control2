@@ -5,7 +5,7 @@ var Panel = require('react-bootstrap').Panel;
 var Grid = require('react-bootstrap').Grid;
 var Row = require('react-bootstrap').Row;
 var Col = require('react-bootstrap').Col;
-var Glyphicon = require('react-bootstrap').Glyphicon;
+//var Glyphicon = require('react-bootstrap').Glyphicon;
 
 var Blink1Status = require('./blink1Status');
 var EventList = require('./eventList');
@@ -25,7 +25,7 @@ var Blink1ControlView = React.createClass({
 	render: function() {
 
 		return (
-			<div style={{ width: 1200, height: 700, background: "#f5f5f5", marginn: 0, padding: 10, 
+			<div style={{ width: 1200, height: 700, background: "#f5f5f5", marginn: 0, padding: 10,
 						WebkitUserSelect: "none" }}>
 			<Grid fluid>
 				<Row>
@@ -55,4 +55,4 @@ var Blink1ControlView = React.createClass({
 	}
 });
 
-module.exports = Blink1ControlView; 
+module.exports = Blink1ControlView;

@@ -28,7 +28,8 @@
 
 var _ = require('lodash');
 
-var Blink1Api = require('./blink1DeviceApi');
+var remote = window.require('remote');
+//var Blink1Api = remote.require('./src/server/blink1ServerApi');
 
 //This file is mocking a web API by hitting hard coded data.
 var systemPatterns = require('./systemPatterns').patterns;
@@ -135,7 +136,7 @@ var PatternsApi = {
 		var millis = pattern.colors[pattern.playpos].time * 1000;
 		var rgb = pattern.colors[pattern.playpos].rgb;
 		console.log("playPatternInternal: " + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
-		Blink1Api.fadeToColor( millis, rgb ); // FIXME: add ledn
+		//Blink1Api.fadeToColor( millis, rgb ); // FIXME: add ledn
 
 		//var pattern = _.find(patterns, {id: id});
 		pattern.playpos++;

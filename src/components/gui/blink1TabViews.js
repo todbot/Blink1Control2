@@ -10,7 +10,13 @@ var IftttTable = require('./iftttTable');
 var MailTable = require('./mailTable');
 var BigButton = require('./bigButton');
 
-var Blink1Api = require('../../api/blink1DeviceApi');
+var remote = window.require('remote');
+var Blink1Api = remote.require('./src/server/blink1ServerApi');
+
+//var Blink1Api = require('../../api/blink1DeviceApi');
+//var Blink1Api = window.require('remote').require('./src/server/blink1ServerApi');
+//var remote = window.require('remote');
+//var Blink1Api = remote.require('../../server/blink1ServerApi');
 
 var Blink1TabViews = React.createClass({
 

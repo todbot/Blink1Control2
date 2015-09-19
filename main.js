@@ -7,6 +7,7 @@ var path = require('path');
 var BrowserWindow = require('browser-window');
 // var runtime = require('./src/core/runtime');
 // var appMenu = require('./src/core/app-menu');
+var Blink1Api = require('./src/server/blink1ServerApi');
 
 // electron-connect is for development
 var client = require('electron-connect').client;
@@ -27,6 +28,7 @@ var appIcon = null;
 var quit = function() {
 	console.log("quitting...");
 	// FIXME: put in blink1 & usb-detection closedown
+	Blink1Api.closeAll();
 	app.quit();
 
 };
@@ -38,6 +40,8 @@ app.on('window-all-closed', function () {
 });
 
 app.on('ready', function () {
+
+	Blink1Api.startDeviceListener();
 
 	mainWindow = new BrowserWindow({
 		width: 1300,
@@ -96,7 +100,7 @@ app.on('ready', function () {
     	]}, {
 	    label: "Edit",
     		submenu: [
-	        { label: "ZZUndo", accelerator: "Command+R", selector: "undo:" },
+	        { label: "ZZUndo", accelerator: "Command+Z", selector: "undo:" },
     	    { label: "Redo", accelerator: "Shift+Command+Z", selector: "redo:" },
         	{ type: "separator" },
        		{ label: "Cut", accelerator: "Command+X", selector: "cut:" },

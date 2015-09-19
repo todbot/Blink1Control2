@@ -6,17 +6,19 @@ var Well = require('react-bootstrap').Well;
 
 var VirtualBlink1 = require('./virtualBlink1');
 
-var Blink1Api = require('../../api/blink1DeviceApi');
+var remote = window.require('remote');
+//var Blink1Api = remote.require('../server/blink1ServerApi');
+//var Blink1Api = require('../../blink1DeviceApi');
 var PatternsApi = require('../../api/patternsApi');
 
 var Blink1Status = React.createClass({
 
 	getInitialState: function() {
 		return {
-			blink1Color: Blink1Api.getCurrentColor(),
-			statusStr: Blink1Api.isConnected() ? "connected" : "not connected",
-			serialNumber: Blink1Api.serialNumberForDisplay(),
-			iftttKey: Blink1Api.iftttKey()
+		// 	blink1Color: Blink1Api.getCurrentColor(),
+		// 	statusStr: Blink1Api.isConnected() ? "connected" : "not connected",
+		// 	serialNumber: Blink1Api.serialNumberForDisplay(),
+		// 	iftttKey: Blink1Api.iftttKey()
 		};
 	},
 

@@ -2,7 +2,7 @@
 
 var gulp = require('gulp');
 var connect = require('gulp-connect'); //Runs a local dev server
-var open = require('gulp-open'); //Open a URL in a web browser
+//var open = require('gulp-open'); //Open a URL in a web browser
 var browserify = require('browserify'); // Bundles JS
 var reactify = require('reactify');  // Transforms React JSX to JS
 var source = require('vinyl-source-stream'); // Use conventional text streams with Gulp
@@ -30,7 +30,7 @@ var config = {
 		dist: './dist',
 		mainJs: './src/maingui.js'
 	}
-}
+};
 
 //Start a local development server
 gulp.task('connect', function() {
@@ -117,4 +117,3 @@ gulp.task('serve', function() {
 //gulp.task('default', ['html', 'js', 'images', 'css', 'fonts', 'lint', 'connect', 'watch']);
 //gulp.task('default', ['html', 'js', 'images', 'css', 'fonts', 'lint', 'electron', 'watch']);
 gulp.task('default', ['html', 'js', 'images', 'css', 'fonts', 'lint', 'serve']);
-
