@@ -9,7 +9,8 @@ var DropdownButton = require('react-bootstrap').DropdownButton;
 
 var Pattern = require('./pattern');
 
-var PatternsApi = require('../../api/patternsApi');
+var remote = window.require('remote');
+var PatternsApi = remote.require('./src/api/patternsApi');
 
 
 var PatternList = React.createClass({
@@ -48,10 +49,10 @@ var PatternList = React.createClass({
 		this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
 		console.log(JSON.stringify(this.state.patterns)); // dump all patterns
 	},
-	playStopPattern: function(pattid) {
+	playStopPattern: function(pattid) { // FIXME: should have 'play' and 'stop'
 		var p = PatternsApi.getPatternById( pattid );
 		p.playing = !p.playing;
-		PatternsApi.savePattern( p );
+		//PatternsApi.savePattern( p );
 		console.log("playStopPattern: ", pattid, p.playing);
 		if( p.playing ) {
 			PatternsApi.playPattern(pattid, this.updatePatternState);

@@ -3,10 +3,15 @@
 
 Random notes
 
+#### `remote.require()`` vs `require()` in renderer process
+- `remote.require()` is based off of project root dir, but `require()` is based of cwd
 
 #### Building on Windows
 - Can't use my standard MinGW rxvt shell
 - Instead, open up Node's "Node Command Prompt" from Start menu
+
+### Slow GUI issues
+- console.log() in renderer really seems to slow down GUI
 
 #### Packaging
 ```
@@ -22,13 +27,5 @@ See:
 - https://github.com/teseve/teseve
 
 #### node-hid or usb-detection causing app hanging?
-
-
-#### USB detection error
-
-```
-...
-```
-
-
-
+- needed to do `usb-detection.stopMonitoring()`
+-

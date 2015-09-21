@@ -21,13 +21,11 @@
   "dependencies": {
     "bootstrap": "^3.3.5",
     "browserify": "^11.0.1",
-    "flux": "^2.0.3",
     "fluxxor": "^1.7.2",
     "font-awesome": "^4.4.0",
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",
     "node-blink1": "^0.2.1",
-    "node-hid": "^0.4.0",
     "object-assign": "^4.0.1",
     "parse-color": "^1.0.0",
     "react": "^0.13.3",

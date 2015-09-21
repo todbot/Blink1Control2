@@ -28,10 +28,10 @@
 
 var _ = require('lodash');
 
-var remote = window.require('remote');
-//var Blink1Api = remote.require('./src/server/blink1ServerApi');
+var Blink1Api = require('../server/blink1ServerApi');
 
 //This file is mocking a web API by hitting hard coded data.
+// returns an array of (partially-filled out) pattern objects
 var systemPatterns = require('./systemPatterns').patterns;
 
 //This would be performed on the server in a real app. Just stubbing in.
@@ -68,7 +68,9 @@ var _systemFixup = function(pattern) {
 };
 
 var _clone = function(item) {
-	return JSON.parse(JSON.stringify(item)); //return cloned copy so that the item is passed by value instead of by reference
+	//return cloned copy so item is passed by value instead of by reference
+	return JSON.parse(JSON.stringify(item));
+	//return item;
 };
 
 var patterns = systemPatterns.map( _systemFixup );
@@ -76,18 +78,21 @@ var patterns = systemPatterns.map( _systemFixup );
 var playingPattern = '';
 
 var PatternsApi = {
+	listenColorChange: function(color) {
+		console.log("PatternsApi.listenColorChange!", color);
+	},
 	getAllPatterns: function() {
-		return _clone(patterns);
+		return patterns; //_clone(patterns);
 	},
 
 	getPatternByName: function(name) {
 		var pattern = _.find(patterns, {name: name});
-		return _clone(pattern);
+		return pattern;
 	},
 
 	getPatternById: function(id) {
 		var pattern = _.find(patterns, {id: id});
-		return _clone(pattern);
+		return pattern;
 	},
 
 	savePattern: function(pattern) {
@@ -136,7 +141,8 @@ var PatternsApi = {
 		var millis = pattern.colors[pattern.playpos].time * 1000;
 		var rgb = pattern.colors[pattern.playpos].rgb;
 		console.log("playPatternInternal: " + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
-		//Blink1Api.fadeToColor( millis, rgb ); // FIXME: add ledn
+		//Blink1Api.fadeToColor( millis , rgb ); // FIXME: add ledn
+		Blink1Api.fadeToColor( 0, rgb ); // FIXME: add ledn
 
 		//var pattern = _.find(patterns, {id: id});
 		pattern.playpos++;
@@ -158,6 +164,7 @@ var PatternsApi = {
 
 	stopPattern: function(id) {
 		var pattern = _.find(patterns, {id: id});
+		pattern.playing = false;
 		clearTimeout( pattern.timer );
 	},
 

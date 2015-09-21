@@ -95,14 +95,15 @@ gulp.task('watch', function() {
 	gulp.watch(config.paths.js, ['js', 'lint']);
 });
 
-gulp.task('electron-simple', function() {
+gulp.task('electron-start', function() {
 	electron.start();
 });
 gulp.task('electron-reload', function() {
 	electron.reload();
+	//exec('./node_moules/.bin/electron .');
 });
 
-gulp.task('serve', function() {
+gulp.task('electron', function() {
  // Start browser process
   electron.start();
 
@@ -116,4 +117,4 @@ gulp.task('serve', function() {
 
 //gulp.task('default', ['html', 'js', 'images', 'css', 'fonts', 'lint', 'connect', 'watch']);
 //gulp.task('default', ['html', 'js', 'images', 'css', 'fonts', 'lint', 'electron', 'watch']);
-gulp.task('default', ['html', 'js', 'images', 'css', 'fonts', 'lint', 'serve']);
+gulp.task('default', ['html', 'js', 'images', 'css', 'fonts', 'lint', 'watch', 'electron-start']);

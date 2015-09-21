@@ -8,6 +8,9 @@ var BrowserWindow = require('browser-window');
 // var runtime = require('./src/core/runtime');
 // var appMenu = require('./src/core/app-menu');
 var Blink1Api = require('./src/server/blink1ServerApi');
+//var PatternsApi = require('./src/api/PatternsApi');
+
+//Blink1Api.addColorChangeListener( PatternsApi.listenColorChange );
 
 // electron-connect is for development
 var client = require('electron-connect').client;
@@ -17,12 +20,10 @@ require('crash-reporter').start();
 // var mods = require('./core/modules');
 // mods.load(runtime);
 
-//var rpcserver = new rpcServer();
-
 var mainWindow = null;
 // var menu = null;
 
-var trayIconPath = path.join(__dirname, 'dist/images/blink1-icon0-bw16.png');
+var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
 var appIcon = null;
 
 var quit = function() {
@@ -59,7 +60,7 @@ app.on('ready', function () {
 		label: 'Item1',
 		type: 'radio',
 		icon: trayIconPath,
-		accelerator: 'Command+R'
+		accelerator: 'Command+Z'
 	},
 	{
 	label: 'Item2',
@@ -83,7 +84,8 @@ app.on('ready', function () {
 	{
 		label: 'Quit',
 		accelerator: 'Command+Q',
-		selector: 'terminate:',
+		//selector: 'terminate:',
+		click: function() { quit(); }
 	}
 	]);
 	appIcon.setToolTip('This is my application.');
@@ -121,8 +123,8 @@ app.on('ready', function () {
 
 	mainWindow.openDevTools();
 
-	// Connect to server process
-  client.create(mainWindow);
+	// electron-connect to server process
+    client.create(mainWindow);
 
 	mainWindow.on('closed', function () {
 		mainWindow = null;
