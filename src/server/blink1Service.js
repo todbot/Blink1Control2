@@ -20,7 +20,7 @@ var _clone = function(item) {
 	return JSON.parse(JSON.stringify(item)); //return cloned copy so that the item is passed by value instead of by reference
 };
 
-var Blink1ServerApi = {
+var Blink1Service = {
 
 	startDeviceListener: function() {
 		listeners = []; // erase previous listeners
@@ -28,7 +28,7 @@ var Blink1ServerApi = {
 		// initial population of any already-plugged in devices
 		var serials = Blink1.devices();
 		serials.map( function(s) {
-			Blink1ServerApi._addDevice(s);
+			Blink1Service._addDevice(s);
 		});
 
 		console.log('Blink1ServerApi.startDeviceListener');
@@ -41,7 +41,7 @@ var Blink1ServerApi = {
 			var serialnumber = device.serialNumber;
 			if( vid === blink1Vid && pid === blink1Pid ) {
 				//console.log('Blink1ServerApi.deviceListener, added', vid, pid, serialnumber);
-				Blink1ServerApi._addDevice( serialnumber );
+				Blink1Service._addDevice( serialnumber );
 			}
 		});
 		usbDetect.on('remove', function(device) {
@@ -50,7 +50,7 @@ var Blink1ServerApi = {
 			var pid = device.productId;
 			var serialnumber = device.serialNumber;
 			if( vid === blink1Vid && pid === blink1Pid ) {
-				Blink1ServerApi._removeDevice( serialnumber );
+				Blink1Service._removeDevice( serialnumber );
 			}
 		});
 	},
@@ -58,7 +58,7 @@ var Blink1ServerApi = {
 	closeAll: function() {
 		console.log("Blink1ServerApi closeAll");
 		if( blink1 ) { blink1.off(); }
-		blink1serials.map( Blink1ServerApi._removeDevice );
+		blink1serials.map( Blink1Service._removeDevice );
 		usbDetect.stopMonitoring();
 	},
 
@@ -67,13 +67,13 @@ var Blink1ServerApi = {
 		if( blink1serials.indexOf(serialnumber) === -1 ) {
 			console.log("new serial, lighting it up");
 			setTimeout(function() {
-				Blink1ServerApi._testDevice();  // FIXME: remove
+				Blink1Service._testDevice();  // FIXME: remove
 			}, 500);
 			blink1serials.push(serialnumber);
 		}
 	},
 	_removeDevice: function(serialnumber) {
-		console.log("Blink1ServerApi._removeDevice", JSON.stringify(blink1serials));
+		console.log("Blink1Service._removeDevice", JSON.stringify(blink1serials));
 		var i = blink1serials.indexOf(serialnumber);
 		if( i > -1 ) {  // FIXME: this seems hacky
 			delete blink1serials[i];
@@ -160,4 +160,4 @@ var Blink1ServerApi = {
 };
 
 
-module.exports = Blink1ServerApi;
+module.exports = Blink1Service;

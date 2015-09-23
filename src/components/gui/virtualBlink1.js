@@ -3,7 +3,7 @@
 var React = require('react');
 
 var remote = window.require('remote');
-var Blink1Api = remote.require('./src/server/blink1DeviceApi');
+var Blink1Service = remote.require('./server/blink1Service');
 
 var mystyle = {
 	width: 150,
@@ -20,13 +20,13 @@ var VirtualBlink1 = React.createClass({
 		};
 	},
 	fetchBlink1Color: function(color) {
-		//console.log("fetchBlink1Color", color); //, Blink1Api.getCurrentColor() );
+		//console.log("fetchBlink1Color", color); //, Blink1Service.getCurrentColor() );
 		this.setState( {
-			color: color // Blink1Api.getCurrentColor()
+			color: color // Blink1Service.getCurrentColor()
 		});
 	},
 	componentDidMount: function() {
-		Blink1Api.addChangeListener( this.fetchBlink1Color );
+		Blink1Service.addChangeListener( this.fetchBlink1Color );
 	},
 	render: function() {
 		//console.log("virtualBlink1.render:", this.props.blink1Color);

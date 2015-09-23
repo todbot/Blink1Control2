@@ -2,7 +2,7 @@
   "name": "blink1controljs",
   "version": "0.1.0",
   "description": "Blink1Control implemented in ElectronJs, NodeJs, ReactJs",
-  "main": "main.js",
+  "main": "src/main.js",
   "homepage": "http://github.com/todbot/blink1controljs",
   "bugs": {
     "url": "http://github.com/todbot/blink1controljs/issues"

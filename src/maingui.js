@@ -7,12 +7,12 @@ $ = jQuery = require('jquery');
 
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 
-var remote = window.require('remote');
-var Blink1Api = remote.require('./src/server/blink1DeviceApi');
-var PatternsApi = remote.require('./src/server/PatternsApi');
-
-Blink1Api.startDeviceListener();
-PatternsApi.initialize();
+// var remote = window.require('remote');
+// var Blink1Service = remote.require('./src/server/blink1Service');
+// var PatternsService = remote.require('./src/server/PatternsService');
+//
+// Blink1Service.startDeviceListener();
+// PatternsService.initialize();
 
 var App = React.createClass({
   render: function() {

@@ -1,20 +1,21 @@
 "use strict";
 
 var React = require('react');
-
 var Table = require('react-bootstrap').Table;
 
+var remote = window.require('remote');
+var IftttService = remote.require('./server/iftttService');
 
 var IftttTable = React.createClass({
 
-	propTypes: { 
+	propTypes: {
 		//events: React.PropTypes.array.isRequired,
 		//onClear: React.PropTypes.func.isRequired
 	},
 
 	getInitialState: function() {
 		return {
-			rules: [ 
+			rules: [
 				{ name: "Bob", pattern: "this happened", lastEvent: "someevent", source: "a source" },
 				{ name: "Bob2", pattern: "that happened", lastEvent: "some2event", source: "a source" },
 				{ name: "Bob3", pattern: "other happened", lastEvent: "some3event", source: "a source" }
@@ -25,7 +26,10 @@ var IftttTable = React.createClass({
 	editRule: function() {
 		console.log("editRule:");
 	},
-
+	addRule: function() {
+		console.log("addRule:");
+		IftttService.start();
+	},
 	render: function() {
 		var createRow = function(rule, index) {
 			return (
@@ -62,4 +66,4 @@ var IftttTable = React.createClass({
 
 });
 
-module.exports = IftttTable; 
+module.exports = IftttTable;

@@ -10,7 +10,7 @@ var DropdownButton = require('react-bootstrap').DropdownButton;
 var Pattern = require('./pattern');
 
 var remote = window.require('remote');
-var PatternsApi = remote.require('./src/server/patternsApi');
+var PatternsService = remote.require('./server/patternsService');
 
 
 var PatternList = React.createClass({
@@ -22,7 +22,7 @@ var PatternList = React.createClass({
 	},
 
 	getInitialState: function() {
-		var patterns = PatternsApi.getAllPatterns();
+		var patterns = PatternsService.getAllPatterns();
 		//patterns[0].system = false;
 		//patterns[0].locked = false; // testing
 		console.log("patternList: getInitialState!");
@@ -33,11 +33,11 @@ var PatternList = React.createClass({
 		};
 	},
 	componentDidMount: function() {
-		PatternsApi.addChangeListener( this.updatePatternState );
+		PatternsService.addChangeListener( this.updatePatternState );
 	},
 	updatePatternState: function() {
 		console.log("done it");
-		this.setState( {patterns: PatternsApi.getAllPatterns()} );
+		this.setState( {patterns: PatternsService.getAllPatterns()} );
 	},
 
 	handleClickOutside: function(evt) { // part of react-onclickoutside
@@ -48,27 +48,27 @@ var PatternList = React.createClass({
 	},
 	addPattern: function() {
 		console.log("addPattern: ");
-		PatternsApi.newPattern('new pattern', '#ff00ff');
-		this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
+		PatternsService.newPattern('new pattern', '#ff00ff');
+		this.setState( {patterns: PatternsService.getAllPatterns()} );  // tell React to reload this component?
 		console.log(JSON.stringify(this.state.patterns)); // dump all patterns
 	},
 	playStopPattern: function(pattid) { // FIXME: should have 'play' and 'stop'
-		var p = PatternsApi.getPatternById( pattid );
+		var p = PatternsService.getPatternById( pattid );
 		p.playing = !p.playing;
-		//PatternsApi.savePattern( p );
+		//PatternsService.savePattern( p );
 		console.log("playStopPattern: ", pattid, p.playing);
 		if( p.playing ) {
-			PatternsApi.playPattern(pattid, this.updatePatternState);
+			PatternsService.playPattern(pattid, this.updatePatternState);
 			/*function() {
 				console.log("done playing");
-				//this.setState( {patterns: PatternsApi.getAllPatterns()} );
+				//this.setState( {patterns: PatternsService.getAllPatterns()} );
 				this.doneIt();
 			});*/
 		}
 		else {
-			PatternsApi.stopPattern(pattid);
+			PatternsService.stopPattern(pattid);
 		}
-		this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
+		this.setState( {patterns: PatternsService.getAllPatterns()} );  // tell React to reload this component?
 	},
 	editPattern: function(pattid) {
 		console.log("editPattern:", pattid);
@@ -76,34 +76,34 @@ var PatternList = React.createClass({
 	},
 	lockPattern: function(pattid) {
 		console.log("lockPattern:", pattid);
-		var p = PatternsApi.getPatternById( pattid );
+		var p = PatternsService.getPatternById( pattid );
 		p.locked = !p.locked;
-		PatternsApi.savePattern( p );
-		this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
+		PatternsService.savePattern( p );
+		this.setState( {patterns: PatternsService.getAllPatterns()} );  // tell React to reload this component?
 	},
 	copyPattern: function(pattid) {
 		console.log("copyPattern:", pattid);
-		var p = PatternsApi.getPatternById( pattid );
+		var p = PatternsService.getPatternById( pattid );
 		p.id = 0; // unset to regen for Api // FIXME:!!!
 		p.name = p.name + " (copy)";
 		p.system = false;
 		p.locked = false;
-		PatternsApi.savePattern( p );
-		this.setState( {editing: true, editId: p.id, patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
+		PatternsService.savePattern( p );
+		this.setState( {editing: true, editId: p.id, patterns: PatternsService.getAllPatterns()} );  // tell React to reload this component?
 	},
 	deletePattern: function(pattid) {
 		console.log("deletePattern:", pattid);
-		PatternsApi.deletePattern( pattid );
-		this.setState( {editing: false, patterns: PatternsApi.getAllPatterns()});
+		PatternsService.deletePattern( pattid );
+		this.setState( {editing: false, patterns: PatternsService.getAllPatterns()});
 	},
 	onRepeatsClick: function(pattid) {
 		console.log("onRepeatsClick:", pattid);
 		if( this.state.editing ) {
-			var p = PatternsApi.getPatternById( pattid );
+			var p = PatternsService.getPatternById( pattid );
 			p.repeats++;
 			if( p.repeats > 9 ) { p.repeats = 0; }
-			PatternsApi.savePattern( p );
-			this.setState( {patterns: PatternsApi.getAllPatterns()} );  // tell React to reload this component?
+			PatternsService.savePattern( p );
+			this.setState( {patterns: PatternsService.getAllPatterns()} );  // tell React to reload this component?
 		}
 	},
 

@@ -3,8 +3,8 @@
 var React = require('react');
 
 var remote = window.require('remote');
-var Blink1Api = remote.require('./src/server/blink1DeviceApi');
-var PatternsApi = remote.require('./src/server/patternsApi');
+var Blink1Service = remote.require('./server/blink1Service');
+var PatternsService = remote.require('./server/patternsService');
 
 var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 //var MenuItem = require('react-bootstrap').MenuItem;
@@ -31,7 +31,7 @@ var BigButtonSet = React.createClass({
         };
     },
     addBigButton: function() { // FIXME: this is hacky
-        var newbut = {name: "BigButton", type: "color", color: Blink1Api.getCurrentColor()};
+        var newbut = {name: "BigButton", type: "color", color: Blink1Service.getCurrentColor()};
         console.log("newbut", newbut);
         this.state.buttonsUser.push( newbut );
         this.setState( {buttonsUser: this.state.buttonsUser });
@@ -43,19 +43,19 @@ var BigButtonSet = React.createClass({
         }
         else if( cmd === 'setcolor') {
             this.state.buttonsUser[idx].type = 'color';
-            this.state.buttonsUser[idx].color = Blink1Api.getCurrentColor();
+            this.state.buttonsUser[idx].color = Blink1Service.getCurrentColor();
         }
         else if( cmd === 'setpattern') {
             this.state.buttonsUser[idx].type = 'pattern';
-            this.state.buttonsUser[idx].patternId = PatternsApi.getPlayingPattern();
+            this.state.buttonsUser[idx].patternId = PatternsService.getPlayingPatternId();
         }
         this.setState( {buttonsUser: this.state.buttonsUser });
     },
     setBlink1Color: function(color) {
-        Blink1Api.fadeToColor( 100, color );
+        Blink1Service.fadeToColor( 100, color );
     },
     playPattern: function(patternid) {
-        PatternsApi.playPattern( patternid );
+        PatternsService.playPattern( patternid );
     },
 
 	playBigButton: function(buttontype, buttonindex) {

@@ -7,24 +7,29 @@ var Well = require('react-bootstrap').Well;
 var VirtualBlink1 = require('./virtualBlink1');
 
 var remote = window.require('remote');
-var Blink1Api = remote.require('./src/server/blink1DeviceApi');
-//var PatternsApi = remote.require('./src/api/patternsApi');
+var Blink1Service = remote.require('./server/blink1Service');
+var PatternsService = remote.require('./server/patternsService');
 
 var Blink1Status = React.createClass({
 
 	getInitialState: function() {
 		return {
-			blink1Color: Blink1Api.getCurrentColor(),
-			statusStr: Blink1Api.isConnected() ? "connected" : "not connected",
-			serialNumber: Blink1Api.serialNumberForDisplay(),
-			iftttKey: Blink1Api.iftttKey()
+			blink1Color: Blink1Service.getCurrentColor(),
+			statusStr: Blink1Service.isConnected() ? "connected" : "not connected",
+			serialNumber: Blink1Service.serialNumberForDisplay(),
+			iftttKey: Blink1Service.iftttKey(),
+			currentPattern: '-'
 		};
 	},
-
+	componentDidMount: function() {
+		PatternsService.addChangeListener( this.updatePatternState );
+	},
+	updatePatternState: function() {
+		this.setState({currentPattern: PatternsService.getPlayingPatternName()});
+	},
 	render: function() {
 		console.log("blink1Status.render: ", this.state.blink1Color);
-
-		var currentPattern = 'bonk'; //PatternsApi.getPlayingPattern();
+		var currentPattern = this.state.currentPattern;
 		if( !currentPattern ) { currentPattern = '-'; }
 
 		return (
