@@ -3,7 +3,7 @@
 var React = require('react');
 
 var remote = window.require('remote');
-var Blink1Api = remote.require('./src/server/blink1ServerApi');
+var Blink1Api = remote.require('./src/server/blink1DeviceApi');
 
 var mystyle = {
 	width: 150,
@@ -28,26 +28,21 @@ var VirtualBlink1 = React.createClass({
 	componentDidMount: function() {
 		Blink1Api.addChangeListener( this.fetchBlink1Color );
 	},
-
 	render: function() {
 		//console.log("virtualBlink1.render:", this.props.blink1Color);
 		mystyle.background = this.state.color;
-		//var colr = colorparse( this.props.blink1Color );
-		//var c = colr.rgba;
 		var img0style = { width: 240, height: 192,
 			//background: this.props.blink1Color
 			backgroundImage: [
-								//'radial-gradient( rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.5} 0%, rgba(255,255,255,0.1) 65%)',
-								"url(images/device-light-mask.png)",
-								"radial-gradient(" + this.state.color + " 0%, rgba(255,255,255,0.1) 55%" + ")",
-								"url(images/device-light-bg-top.png)",
-								"url(images/device-light-bg.png)"
-								]
-
+				//'radial-gradient( rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.5} 0%, rgba(255,255,255,0.1) 65%)',
+				"url(images/device-light-mask.png)",
+				"radial-gradient(" + this.state.color + " 0%, rgba(255,255,255,0.1) 55%" + ")",
+				"url(images/device-light-bg-top.png)",
+				"url(images/device-light-bg.png)"
+			]
 		};
 		//	<img style={img2style} src="images/device-light-bg.png" />
 		//	<img style={img3style} src="images/device-light-mask.png" />
-
 		// var img1style = { width: 240, height: 192 };
 		// var img2style = { width: 240, height: 192, position: "relative", top: 0 };
 		// var img3style = { width: 240, height: 192, position: "relative", top: 0 };

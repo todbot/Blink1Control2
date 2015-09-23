@@ -25,6 +25,7 @@
     "font-awesome": "^4.4.0",
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",
+    "nconf": "^0.8.0",
     "node-blink1": "^0.2.1",
     "object-assign": "^4.0.1",
     "parse-color": "^1.0.0",
@@ -37,6 +38,7 @@
     "react-onclickoutside": "^0.3.1",
     "react-router": "^0.13.3",
     "reactify": "^1.1.1",
+    "request": "^2.63.0",
     "toastr": "^2.1.2",
     "usb-detection": "^1.2.0",
     "vinyl-source-stream": "^1.1.0"

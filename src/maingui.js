@@ -8,9 +8,11 @@ $ = jQuery = require('jquery');
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 
 var remote = window.require('remote');
-var Blink1Api = remote.require('./src/server/blink1ServerApi');
+var Blink1Api = remote.require('./src/server/blink1DeviceApi');
+var PatternsApi = remote.require('./src/server/PatternsApi');
 
 Blink1Api.startDeviceListener();
+PatternsApi.initialize();
 
 var App = React.createClass({
   render: function() {

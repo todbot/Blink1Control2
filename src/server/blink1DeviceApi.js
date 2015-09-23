@@ -23,6 +23,7 @@ var _clone = function(item) {
 var Blink1ServerApi = {
 
 	startDeviceListener: function() {
+		listeners = []; // erase previous listeners
 		console.log("blink1serials:", typeof blink1serials);
 		// initial population of any already-plugged in devices
 		var serials = Blink1.devices();

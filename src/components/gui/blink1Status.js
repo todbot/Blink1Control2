@@ -7,7 +7,7 @@ var Well = require('react-bootstrap').Well;
 var VirtualBlink1 = require('./virtualBlink1');
 
 var remote = window.require('remote');
-var Blink1Api = remote.require('./src/server/blink1ServerApi');
+var Blink1Api = remote.require('./src/server/blink1DeviceApi');
 //var PatternsApi = remote.require('./src/api/patternsApi');
 
 var Blink1Status = React.createClass({

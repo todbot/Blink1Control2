@@ -28,11 +28,15 @@
 
 var _ = require('lodash');
 
-var Blink1Api = require('../server/blink1ServerApi');
+var Blink1Api = require('./blink1DeviceApi');
 
-//This file is mocking a web API by hitting hard coded data.
 // returns an array of (partially-filled out) pattern objects
 var systemPatterns = require('./systemPatterns').patterns;
+
+var listeners = [];
+
+//console.log("patterns:", JSON.stringify(patterns, null, ' '));
+var playingPattern = '';
 
 //This would be performed on the server in a real app. Just stubbing in.
 var _generateId = function(pattern) {
@@ -74,10 +78,11 @@ var _clone = function(item) {
 };
 
 var patterns = systemPatterns.map( _systemFixup );
-//console.log("patterns:", JSON.stringify(patterns, null, ' '));
-var playingPattern = '';
 
 var PatternsApi = {
+	initialize: function() {
+		listeners = [];
+	},
 	listenColorChange: function(color) {
 		console.log("PatternsApi.listenColorChange!", color);
 	},
@@ -140,10 +145,12 @@ var PatternsApi = {
 		var pattern = _.find(patterns, {id: id});
 		var millis = pattern.colors[pattern.playpos].time * 1000;
 		var rgb = pattern.colors[pattern.playpos].rgb;
-		console.log("playPatternInternal: " + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
+		console.log("playPatternInternal: " + pattern.id, pattern.playpos, pattern.playcount,
+		pattern.colors[pattern.playpos].rgb );
 		//Blink1Api.fadeToColor( millis , rgb ); // FIXME: add ledn
 		Blink1Api.fadeToColor( 0, rgb ); // FIXME: add ledn
-
+		this.notifyChange();
+		
 		//var pattern = _.find(patterns, {id: id});
 		pattern.playpos++;
 		if( pattern.playpos === pattern.colors.length ) {
@@ -151,8 +158,8 @@ var PatternsApi = {
 			pattern.playcount++;
 			if( pattern.playcount === pattern.repeats ) {
 				pattern.playing = false;
-				playingPattern = '';
-				callback();
+				//playingPattern = '';
+				if( callback ) { callback(); }
 				return;
 			}
 		}
@@ -170,7 +177,23 @@ var PatternsApi = {
 
 	getPlayingPattern: function() {
 		return playingPattern;
+	},
+	addChangeListener: function(callback) {
+		listeners.push(callback);
+		console.log("PatternsApi: current listeners", listeners );
+		//return id;
+	},
+	removeChangeListener: function(callback) {
+		// haha
+		return callback;
+	},
+	notifyChange: function() {
+		//console.log('notify change');
+		listeners.map( function(cb) {
+			cb();
+		});
 	}
+
 };
 
 module.exports = PatternsApi;

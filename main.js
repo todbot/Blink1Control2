@@ -7,9 +7,11 @@ var path = require('path');
 var BrowserWindow = require('browser-window');
 // var runtime = require('./src/core/runtime');
 // var appMenu = require('./src/core/app-menu');
-var Blink1Api = require('./src/server/blink1ServerApi');
-//var PatternsApi = require('./src/api/PatternsApi');
 
+var configuration = require('./src/configuration');
+var apiServer = require('./src/server/apiServer');
+var Blink1Api = require('./src/server/blink1DeviceApi');
+//var PatternsApi = require('./src/api/PatternsApi');
 //Blink1Api.addColorChangeListener( PatternsApi.listenColorChange );
 
 // electron-connect is for development
@@ -25,6 +27,17 @@ var mainWindow = null;
 
 var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
 var appIcon = null;
+
+apiServer.init(); // .start() to bootrap
+
+// var configInit = function() {
+// 	// if (!configuration.readSettings('shortcutKeys')) {
+//     //     configuration.saveSettings('shortcutKeys', ['ctrl', 'shift']);
+//     // }
+// 	if (!configuration.readSettings('shortcutKeys')) {
+//         configuration.saveSettings('shortcutKeys', ['ctrl', 'shift']);
+//     }
+// };
 
 var quit = function() {
 	console.log("quitting...");
@@ -42,6 +55,9 @@ app.on('window-all-closed', function () {
 
 app.on('ready', function () {
 
+	//configInit();
+
+
 	Blink1Api.startDeviceListener();
 
 	mainWindow = new BrowserWindow({
@@ -53,14 +69,17 @@ app.on('ready', function () {
 		// see https://github.com/atom/electron/blob/master/docs/api/browser-window.md
 	});
 	// mainWindow.setMenu(null);  // remove default menu
-
+/*
 	appIcon = new Tray(trayIconPath);
 	var contextMenu = Menu.buildFromTemplate([
 	{
 		label: 'Item1',
 		type: 'radio',
 		icon: trayIconPath,
-		accelerator: 'Command+Z'
+		click: function() {
+			mainWindow.reload();
+		}
+		//accelerator: 'Command+Z'
 	},
 	{
 	label: 'Item2',
@@ -112,7 +131,8 @@ app.on('ready', function () {
 	    ]}
 	];
 	Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-
+	*/
+	
 	// runtime.emit(runtime.events.INIT_ROUTES, appMenu);
 	// initialize runtime reference to main window
 	// runtime.windowId = mainWindow.id;
@@ -127,8 +147,13 @@ app.on('ready', function () {
     client.create(mainWindow);
 
 	mainWindow.on('closed', function () {
+		console.log("mainWindow is now closed");
 		mainWindow = null;
 	});
+
+	mainWindow.onbeforeunload = function(e) {
+		console.log('I do not want to be closed',e);
+	};
 
 	/*
 	  // Dock Menu (Mac)

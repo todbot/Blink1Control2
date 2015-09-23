@@ -10,7 +10,7 @@ var DropdownButton = require('react-bootstrap').DropdownButton;
 var Pattern = require('./pattern');
 
 var remote = window.require('remote');
-var PatternsApi = remote.require('./src/api/patternsApi');
+var PatternsApi = remote.require('./src/server/patternsApi');
 
 
 var PatternList = React.createClass({
@@ -31,6 +31,9 @@ var PatternList = React.createClass({
 			editId: '',
 			patterns: patterns
 		};
+	},
+	componentDidMount: function() {
+		PatternsApi.addChangeListener( this.updatePatternState );
 	},
 	updatePatternState: function() {
 		console.log("done it");
