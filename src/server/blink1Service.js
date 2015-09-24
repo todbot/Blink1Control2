@@ -1,4 +1,10 @@
+/**
+ *
+ */
+
 "use strict";
+
+var _ = require('lodash');
 
 var usbDetect = require('usb-detection');
 var Blink1 = require('node-blink1');
@@ -6,7 +12,7 @@ var Blink1 = require('node-blink1');
 var colorparse = require('parse-color');
 
 // globals because we are a singleton
-var listeners = [];
+var listeners = {};
 var blink1serials = []; // no, use hash? Blink1.devices();
 
 var blink1 = null;
@@ -60,6 +66,7 @@ var Blink1Service = {
 		if( blink1 ) { blink1.off(); }
 		blink1serials.map( Blink1Service._removeDevice );
 		usbDetect.stopMonitoring();
+		listeners = [];
 	},
 
 	_addDevice: function(serialnumber) {
@@ -115,6 +122,10 @@ var Blink1Service = {
 		return "ABCD1234CAFE0000";
 	},
 
+	getCurrentColor: function() {
+		return currentColor;
+	},
+
 	_fadeToRGB: function( millis, r, g, b ) {
 		if( blink1 ) {
 			blink1.fadeToRGB( millis, r, g, b );
@@ -136,25 +147,36 @@ var Blink1Service = {
 		currentColor = color.hex;
 		this.notifyChange();
 	},
-	addChangeListener: function(callback) {
-		listeners.push(callback);
-		console.log("Blink1Api: current listeners", listeners );
-		//return id;
+
+	addChangeListener: function(callback, callername) {
+		listeners[callername] = callback;
+		console.log("Blink1Service: addChangelistener", listeners );
 	},
-	removeChangeListener: function(callback) {
-		// haha
-		return callback;
+	removeChangeListener: function(callername) {
+		delete listeners[callername];
+		console.log("Blink1Service: removeChangelistener", listeners );
 	},
 	notifyChange: function() {
-		//console.log('notify change');
-		listeners.map( function(cb) {
-			cb( currentColor );
+		_.forIn( listeners, function(callback, key) {
+			callback(currentColor);
 		});
-	},
-
-	getCurrentColor: function() {
-		return currentColor;
 	}
+	//
+	// addChangeListener: function(callback) {
+	// 	listeners.push(callback);
+	// 	console.log("Blink1Api: current listeners", listeners );
+	// 	//return id;
+	// },
+	// removeChangeListener: function(callback) {
+	// 	// haha
+	// 	return callback;
+	// },
+	// notifyChange: function() {
+	// 	//console.log('notify change');
+	// 	listeners.map( function(cb) {
+	// 		cb( currentColor );
+	// 	});
+	// },
 
 
 };

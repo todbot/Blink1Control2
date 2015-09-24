@@ -1,6 +1,7 @@
 "use strict";
 
 var React = require('react');
+var _ = require('lodash');
 
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
@@ -11,33 +12,33 @@ var Pattern = require('./pattern');
 
 var remote = window.require('remote');
 var PatternsService = remote.require('./server/patternsService');
-
+var Blink1Service = remote.require('./server/blink1Service');
 
 var PatternList = React.createClass({
 	//mixins: [
 	//	require('react-onclickoutside')
 	//],
-	propTypes: {
-		//onPatternChange: React.PropTypes.func
-	},
 
 	getInitialState: function() {
-		var patterns = PatternsService.getAllPatterns();
-		//patterns[0].system = false;
-		//patterns[0].locked = false; // testing
 		console.log("patternList: getInitialState!");
 		return {
 			editing: false,
 			editId: '',
-			patterns: patterns
+			patterns: this.getAllPatterns()
 		};
 	},
+	getAllPatterns: function() { // get attr-only copy of remote'd object
+		return _.clone(PatternsService.getAllPatterns(), true);
+	},
 	componentDidMount: function() {
-		PatternsService.addChangeListener( this.updatePatternState );
+		PatternsService.addChangeListener( this.updatePatternState, "patternList" );
+	}, // FIXME: Surely there's a better way to do this
+	componentWillUnmount: function() {
+		PatternsService.removeChangeListener( "patternList" );
 	},
 	updatePatternState: function() {
 		console.log("done it");
-		this.setState( {patterns: PatternsService.getAllPatterns()} );
+		this.setState( {patterns: this.getAllPatterns() } );
 	},
 
 	handleClickOutside: function(evt) { // part of react-onclickoutside
@@ -47,9 +48,9 @@ var PatternList = React.createClass({
 		}
 	},
 	addPattern: function() {
-		console.log("addPattern: ");
-		PatternsService.newPattern('new pattern', '#ff00ff');
-		this.setState( {patterns: PatternsService.getAllPatterns()} );  // tell React to reload this component?
+		console.log("addPattern");
+		PatternsService.newPattern(); //'new pattern', '#ff00ff');
+		this.setState( {patterns: this.getAllPatterns()} );  // tell React to reload this component?
 		console.log(JSON.stringify(this.state.patterns)); // dump all patterns
 	},
 	playStopPattern: function(pattid) { // FIXME: should have 'play' and 'stop'
@@ -68,7 +69,7 @@ var PatternList = React.createClass({
 		else {
 			PatternsService.stopPattern(pattid);
 		}
-		this.setState( {patterns: PatternsService.getAllPatterns()} );  // tell React to reload this component?
+		this.updatePatternState();
 	},
 	editPattern: function(pattid) {
 		console.log("editPattern:", pattid);
@@ -79,7 +80,7 @@ var PatternList = React.createClass({
 		var p = PatternsService.getPatternById( pattid );
 		p.locked = !p.locked;
 		PatternsService.savePattern( p );
-		this.setState( {patterns: PatternsService.getAllPatterns()} );  // tell React to reload this component?
+		this.updatePatternState();
 	},
 	copyPattern: function(pattid) {
 		console.log("copyPattern:", pattid);
@@ -89,22 +90,44 @@ var PatternList = React.createClass({
 		p.system = false;
 		p.locked = false;
 		PatternsService.savePattern( p );
-		this.setState( {editing: true, editId: p.id, patterns: PatternsService.getAllPatterns()} );  // tell React to reload this component?
+		this.setState( {editing: true, editId: p.id } );
+		this.updatePatternState();
 	},
 	deletePattern: function(pattid) {
 		console.log("deletePattern:", pattid);
 		PatternsService.deletePattern( pattid );
-		this.setState( {editing: false, patterns: PatternsService.getAllPatterns()});
+		this.setState( {editing: false} );
+		this.updatePatternState();
 	},
 	onRepeatsClick: function(pattid) {
 		console.log("onRepeatsClick:", pattid);
 		if( this.state.editing ) {
 			var p = PatternsService.getPatternById( pattid );
+			console.log("p:", JSON.stringify(p));
 			p.repeats++;
 			if( p.repeats > 9 ) { p.repeats = 0; }
 			PatternsService.savePattern( p );
-			this.setState( {patterns: PatternsService.getAllPatterns()} );  // tell React to reload this component?
+			this.updatePatternState();
 		}
+	},
+	onSwatchClick: function(pattid, idx) {
+		console.log("onSwatchClick", pattid, idx);
+		var p = PatternsService.getPatternById( pattid );
+		//var p = this.state.patterns[pattid];
+		console.log("patt", this.state.patterns, p);
+		//console.log("color", p.colors[idx].rgb);
+		Blink1Service.fadeToColor( 0, p.colors[idx].rgb );
+	},
+	onAddSwatch: function(pattid) {
+		// FIXME: change this to work on this.state.pattern
+		var p = PatternsService.getPatternById( pattid );
+		//p = JSON.parse(JSON.stringify(p));  // FIXME: how to deal with this
+		p = _.clone(p);
+		var newc = {rgb: Blink1Service.getCurrentColor(), time: 0.23, ledn: 0 };
+		p.colors.push( newc );
+		console.log("onAddSwatch: ", pattid, JSON.stringify(p));
+		PatternsService.savePattern( p );
+		this.updatePatternState();
 	},
 
 	render: function() {
@@ -112,17 +135,16 @@ var PatternList = React.createClass({
 
 		var createPatternRow = function(patt) {
 			var pid = patt.id;
-			var noEdit = patt.system || patt.locked;
+			//var noEdit = patt.system || patt.locked;
 			var editingThis = (this.state.editing && (this.state.editId === pid));
-			//console.log("editingThis: ", editingThis);
 			var patternStyle = {
 				borderStyle: "solid", borderWidth: 1, borderRadius: "4%", borderColor: "#eee", padding: 2, margin: 0,
 				background: "#fff"
 			};
-			var playButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2 };
+			var playButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, outline: 0 };
 			var editButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, borderLeftStyle: "solid", float: "right" };
 			var lockButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, width: 15 };
-			var patternStateIcon = (patt.playing) ? 'fa-stop' : 'fa-play';
+			//var patternStateIcon = (patt.playing) ? 'fa-stop' : 'fa-play';
 			var lockMenuIcon = (patt.locked) ? "fa fa-lock" : "fa fa-unlock-alt";
 			var lockMenuText = (patt.locked) ? "Unlock pattern" : "Lock pattern";
 			//var lockIcon =
@@ -146,7 +168,13 @@ var PatternList = React.createClass({
 			return (
 				<tr key={patt.id} ><td style={{margin: 0, padding: 0}}>
 					<Button onClick={this.playStopPattern.bind(null, pid)} style={playButtStyle}><i className={(patt.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
-					<Pattern pattern={patt} editing={editingThis} onRepeatsClick={this.onRepeatsClick} />
+
+					<Pattern pattern={patt}
+						editing={editingThis}
+						onSwatchClick={this.onSwatchClick}
+						onAddSwatch={this.onAddSwatch}
+						onRepeatsClick={this.onRepeatsClick} />
+
 					{(!editingThis) ? <Button style={lockButtStyle}><i className={patt.locked ? "fa fa-lock" : ""}></i></Button> : null }
 					{editOptions}
 				</td></tr>

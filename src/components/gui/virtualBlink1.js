@@ -26,7 +26,7 @@ var VirtualBlink1 = React.createClass({
 		});
 	},
 	componentDidMount: function() {
-		Blink1Service.addChangeListener( this.fetchBlink1Color );
+		Blink1Service.addChangeListener( this.fetchBlink1Color, "virtualBlink1" );
 	},
 	render: function() {
 		//console.log("virtualBlink1.render:", this.props.blink1Color);

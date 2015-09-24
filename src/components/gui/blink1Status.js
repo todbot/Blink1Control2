@@ -22,7 +22,7 @@ var Blink1Status = React.createClass({
 		};
 	},
 	componentDidMount: function() {
-		PatternsService.addChangeListener( this.updatePatternState );
+		PatternsService.addChangeListener( this.updatePatternState, "blink1Status" );
 	},
 	updatePatternState: function() {
 		this.setState({currentPattern: PatternsService.getPlayingPatternName()});

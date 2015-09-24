@@ -11,7 +11,7 @@ var BrowserWindow = require('browser-window');
 var configuration = require('./configuration');
 var apiServer = require('./server/apiServer');
 var Blink1Service = require('./server/blink1Service');
-var PatternsService = require('./server/PatternsService');
+var PatternsService = require('./server/patternsService');
 
 // electron-connect is for development
 var client = require('electron-connect').client;
@@ -54,8 +54,6 @@ app.on('window-all-closed', function () {
 
 app.on('ready', function () {
 
-	//configInit();
-	//
 	Blink1Service.startDeviceListener();
 	PatternsService.initialize();
 
@@ -67,7 +65,18 @@ app.on('ready', function () {
 		// resizable: false
 		// see https://github.com/atom/electron/blob/master/docs/api/browser-window.md
 	});
+
 	// mainWindow.setMenu(null);  // remove default menu
+	mainWindow.on('close', function () {
+			console.log("mainWindow will close");
+		});
+
+	mainWindow.on('closed', function () {
+		console.log("mainWindow is now closed");
+		quit();
+		mainWindow = null;
+	});
+
 /*
 	appIcon = new Tray(trayIconPath);
 	var contextMenu = Menu.buildFromTemplate([
@@ -144,16 +153,6 @@ app.on('ready', function () {
 
 	// electron-connect to server process
 	client.create(mainWindow);
-
-	mainWindow.on('closed', function () {
-		console.log("mainWindow is now closed");
-		quit();
-		mainWindow = null;
-	});
-
-	mainWindow.onbeforeunload = function(e) {
-		console.log('I do not want to be closed', e);
-	};
 
 	/*
 	// Dock Menu (Mac)
