@@ -8,6 +8,9 @@ $ = jQuery = require('jquery');
 
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 
+// var Blink1Service = window.require('remote').require('./server/blink1Service');
+// Blink1Service.fadeToColor(0,'#339933');
+
 var App = React.createClass({
   render: function() {
     return (

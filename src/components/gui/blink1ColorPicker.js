@@ -20,6 +20,7 @@ var Blink1ColorPicker = React.createClass({
 	},
 	componentDidMount: function() {
 		Blink1Service.addChangeListener( this.fetchBlink1Color, "blink1ColorPicker" );
+		Blink1Service.fadeToColor(200, this.state.color);
 	},
 	setColor: function(color) {
 		color = '#' + color.hex;

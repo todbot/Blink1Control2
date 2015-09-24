@@ -157,7 +157,7 @@ var Blink1Service = {
 		console.log("Blink1Service: removeChangelistener", listeners );
 	},
 	notifyChange: function() {
-		_.forIn( listeners, function(callback, key) {
+		_.forIn( listeners, function(callback) {
 			callback(currentColor);
 		});
 	}

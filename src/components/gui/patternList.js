@@ -49,8 +49,10 @@ var PatternList = React.createClass({
 	},
 	addPattern: function() {
 		console.log("addPattern");
-		PatternsService.newPattern(); //'new pattern', '#ff00ff');
-		this.setState( {patterns: this.getAllPatterns()} );  // tell React to reload this component?
+		var p = PatternsService.newPattern();
+		PatternsService.save( p );
+		this.setState( {editing: true, editId: p.id } );
+		this.updatePatternState();
 		console.log(JSON.stringify(this.state.patterns)); // dump all patterns
 	},
 	playStopPattern: function(pattid) { // FIXME: should have 'play' and 'stop'
@@ -133,7 +135,7 @@ var PatternList = React.createClass({
 	render: function() {
 		console.log("patternList.render");
 
-		var createPatternRow = function(patt) {
+		var createPatternRow = function(patt, idx) {
 			var pid = patt.id;
 			//var noEdit = patt.system || patt.locked;
 			var editingThis = (this.state.editing && (this.state.editId === pid));
@@ -166,7 +168,7 @@ var PatternList = React.createClass({
 			}
 
 			return (
-				<tr key={patt.id} ><td style={{margin: 0, padding: 0}}>
+				<tr key={idx} ><td style={{margin: 0, padding: 0}}>
 					<Button onClick={this.playStopPattern.bind(null, pid)} style={playButtStyle}><i className={(patt.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
 
 					<Pattern pattern={patt}
@@ -179,7 +181,6 @@ var PatternList = React.createClass({
 					{editOptions}
 				</td></tr>
 			);
-				//(patt.locked<Button style={lockButtStyle}><i className={(patt.locked) ? "fa fa-lock" : ""}></i></Button>					<Button style={lockButtStyle}><i className={(patt.locked) ? "fa fa-lock" : ""}></i></Button>
 		};
 
 		return (

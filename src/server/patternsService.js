@@ -43,9 +43,10 @@ var lastPatternId = ''; // last pattern that was recently played, or none
 
 var listeners = {};
 
-//This would be performed on the server in a real app. Just stubbing in.
 var _generateId = function(pattern) {
-	return pattern.name.toLowerCase().replace(/\s+/g, '-'); // + '-' + pattern.lastName.toLowerCase();
+	var simplename = pattern.name.toLowerCase().replace(/\W+/g, '');
+	//return simplename.replace(/\s+/g, '-'); // nope agove nukes whitespace too
+	return simplename;
 };
 
 var _fixId = function(pattern) {
@@ -63,6 +64,9 @@ var _parsePatternStr = function(patternstr) {
 		var color = { rgb: pattparts[i + 0],
 					time: Number(pattparts[i + 1]),
 					ledn: Number(pattparts[i + 2]) };
+		// FIXME: validate rgb
+		if( isNaN(color.time) ) { color.time = 0.1; }
+		if( isNaN(color.ledn) ) { color.ledn = 0; }
 		colorlist.push( color );
 	}
     return colorlist;
@@ -100,7 +104,7 @@ var PatternsService = {
 		if( !patternsUser ) {
 			patternsUser = [];
 		}
-		console.log('patternsUser', patternsUser);
+		// console.log('patternsUser', patternsUser);
 	},
 	listenColorChange: function(color) {
 		console.log("PatternsService.listenColorChange!", color);
@@ -113,17 +117,18 @@ var PatternsService = {
 
 	getPatternByName: function(name) {
 		var pattern = _.find(this.getAllPatterns(), {name: name});
-		return pattern;
+		return _.clone(pattern);
 	},
 	getPatternById: function(id) {
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		// console.log("getPatternById:", pattern);
-		return pattern;
+		return _.clone(pattern);
 	},
 	savePatterns: function() {
 		var patternsSave = _.map( patternsUser, function(p) { return _.pick(p, 'name', 'id', 'colors', 'repeats'); });
 		config.saveSettings("patterns", patternsSave);
 	},
+	/** Saves new pattern or updates existing pattern */
 	savePattern: function(pattern) {
 		console.log("savePattern:", JSON.stringify(pattern));
 		if (pattern.id) {
@@ -137,21 +142,21 @@ var PatternsService = {
 			patternsUser.unshift(pattern);
 		}
 		this.savePatterns();
-		return pattern; //_clone(pattern);
+		return _.clone(pattern);
 	},
-
+	/** Create a minimal pattern and return it. Does not insert into patterns array */
 	newPattern: function(name, color) {
 		if( !name ) {
 			name = 'new pattern ' + patternsUser.length;
-			color = '#ff00ff';
+			color = '#0055ff';
 		}
 		var pattern = { name: name, repeats: 3, colors: [{rgb: color, time: 0.2, ledn: 0}] };  // FIXME
 		pattern.id = _generateId(pattern);
-		patternsUser.unshift(pattern);
+		//patternsUser.unshift(pattern);
+		return pattern;
 	},
-
+	/** Deletes pattern.  Does not notify change yet */
 	deletePattern: function(id) {
-		//console.log('Pretend this just deleted the pattern from the DB via an AJAX call...');
 		_.remove(patternsUser, {id: id});
 	},
 
@@ -221,7 +226,7 @@ var PatternsService = {
 		console.log("PatternsService: removeChangelistener", listeners );
 	},
 	notifyChange: function() {
-		_.forIn( listeners, function(callback, key) {
+		_.forIn( listeners, function(callback) {
 			callback();
 		});
 	}

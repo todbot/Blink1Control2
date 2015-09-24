@@ -14,7 +14,11 @@ var Pattern = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			activeSwatch: -1
+			activeSwatch: -1,
+            pattern: this.props.pattern,
+            name: this.props.pattern.name,
+            colors: this.props.pattern.colors,
+            repeats: this.props.pattern.repeats
 		};
 	},
 
@@ -28,13 +32,23 @@ var Pattern = React.createClass({
 		console.log('addSwatch');
         this.props.onAddSwatch(this.props.pattern.id);
 	},
+    onNameChange: function(event) {
+        var field = event.target.name;
+        var value = event.target.value;
+        console.log('field,value', field, value);
+        this.setState( {name: value});
+    },
+    onDoneEditing: function() {
+
+    },
 
 	render: function() {
 		var pattStyle = { width: 250, height: 36, display: "inline-block" };
 		var pattNameStyle = {width: 75, display: "inline-block", padding: 4, margin: 4, textAlign: "right", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "80%" };
         var swatchSetStyle = { width: 115, overflow: "scroll" };
-		var swatchStyle = { width: 15, height: 15, border: 0, marginLeft: 1, display: "inline-block", background: "inherit" };
-		var addSwatchStyle = { width: 15, height: 15, border: 0, marginLeft: 1, display: "inline-block", background: "inherit" };
+		var swatchStyle = { width: 15, height: 15, margin: 0, borderWidth: 1, borderColor: "#999", borderStyle: "solid", marginLeft: 1, display: "inline-block", background: "inherit" };
+		var addSwatchStyle = _.clone(swatchStyle);
+        // _.assign( addSwatchStyle, { position: "relative"} );
 		var repeatsStyle = { width: 30, padding: 5, fontSize: "80%", borderStyle: "none", background: "inherit" };
 
 		var repstr = (this.props.pattern.repeats) ? 'x' + this.props.pattern.repeats : '';
@@ -44,20 +58,20 @@ var Pattern = React.createClass({
 		var createSwatch = function(color, i) {
 			var ss = _.clone(swatchStyle); // dont need this now
 			ss.background = color.rgb;
-            //ss.border = (i===this.state.activeIdx) ? 1 : 0;
+            //if( i === this.state.activeSwatch ) { ss.borderWidth = 2; ss.borderColor = "#f33"; }
 			var boundClick = this.swatchClick.bind(this, i);
 			return (
 				<button onClick={boundClick} type="button" key={i} style={ss}></button>
 			);
 		};
 		var addSwatchButton = (!this.props.editing) ? '' :
-            <button onClick={this.addSwatch} type="button" key={99} style={addSwatchStyle}>
-                <i style={{fontSize: "95%"}}>+</i>
-            </button>;
+            <button onClick={this.addSwatch} type="button" key={99} style={addSwatchStyle}><i style={{position: "absolute", marginLeft: -4, marginTop: -4, fontSize: "75%"}} className="fa fa-plus"></i></button>;
 
 		return (
 			<span style={pattStyle}>
-				<span style={pattNameStyle}>{this.props.pattern.name}</span>
+                {this.props.editing ?
+                    <input style={pattNameStyle} type="text" name="name" value={this.state.name} onChange={this.onNameChange} /> :
+                    <span style={pattNameStyle}>{this.state.name}</span> }
 				<span style={swatchSetStyle}>
                     <span style={{ width: 200 }}>
                         {this.props.pattern.colors.map( createSwatch, this)}
