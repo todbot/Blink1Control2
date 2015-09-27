@@ -8,11 +8,11 @@ var Button = require('react-bootstrap').Button;
 var MenuItem = require('react-bootstrap').MenuItem;
 var DropdownButton = require('react-bootstrap').DropdownButton;
 
-var Pattern = require('./pattern');
+var PatternView = require('./patternView');
 
 var remote = window.require('remote');
 var PatternsService = remote.require('./server/patternsService');
-var Blink1Service = remote.require('./server/blink1Service');
+// var Blink1Service = remote.require('./server/blink1Service');
 
 var PatternList = React.createClass({
 	//mixins: [
@@ -101,35 +101,9 @@ var PatternList = React.createClass({
 		this.setState( {editing: false} );
 		this.updatePatternState();
 	},
-	onRepeatsClick: function(pattid) {
-		console.log("onRepeatsClick:", pattid);
-		if( this.state.editing ) {
-			var p = PatternsService.getPatternById( pattid );
-			console.log("p:", JSON.stringify(p));
-			p.repeats++;
-			if( p.repeats > 9 ) { p.repeats = 0; }
-			PatternsService.savePattern( p );
-			this.updatePatternState();
-		}
-	},
-	onSwatchClick: function(pattid, idx) {
-		console.log("onSwatchClick", pattid, idx);
-		var p = PatternsService.getPatternById( pattid );
-		//var p = this.state.patterns[pattid];
-		console.log("patt", this.state.patterns, p);
-		//console.log("color", p.colors[idx].rgb);
-		Blink1Service.fadeToColor( 0, p.colors[idx].rgb );
-	},
-	onAddSwatch: function(pattid) {
-		// FIXME: change this to work on this.state.pattern
-		var p = PatternsService.getPatternById( pattid );
-		//p = JSON.parse(JSON.stringify(p));  // FIXME: how to deal with this
-		p = _.clone(p);
-		var newc = {rgb: Blink1Service.getCurrentColor(), time: 0.23, ledn: 0 };
-		p.colors.push( newc );
-		console.log("onAddSwatch: ", pattid, JSON.stringify(p));
-		PatternsService.savePattern( p );
-		this.updatePatternState();
+
+	onPatternUpdated: function(pattern) {
+		console.log("onPatternUpdated:", pattern);
 	},
 
 	render: function() {
@@ -167,17 +141,20 @@ var PatternList = React.createClass({
 				patternStyle.borderColor = "#f99";
 			}
 
+			var lockButton = (!editingThis) ?
+				<Button style={lockButtStyle}><i className={patt.locked ? "fa fa-lock" : ""}></i></Button> : null;
+
 			return (
 				<tr key={idx} ><td style={{margin: 0, padding: 0}}>
+
 					<Button onClick={this.playStopPattern.bind(null, pid)} style={playButtStyle}><i className={(patt.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
 
-					<Pattern pattern={patt}
+					<PatternView pattern={patt}
 						editing={editingThis}
-						onSwatchClick={this.onSwatchClick}
-						onAddSwatch={this.onAddSwatch}
-						onRepeatsClick={this.onRepeatsClick} />
+						onPatternUpdated={this.onPatternUpdated} />
 
-					{(!editingThis) ? <Button style={lockButtStyle}><i className={patt.locked ? "fa fa-lock" : ""}></i></Button> : null }
+					{lockButton}
+
 					{editOptions}
 				</td></tr>
 			);
