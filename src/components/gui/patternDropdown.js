@@ -32,8 +32,10 @@ var PatternDropdown = React.createClass({
         var pattern = _.find(this.props.patterns, {id: this.props.patternId});
         var patternName = (pattern) ? pattern.name : this.props.patterns[0].name;
 
+        // the position: fixed is to make the dropdown popover other elements
+        // (but it doesn't pop over other DropDownButtons)
         return (
-            <div>
+            <div style={{position: "fixed"}}>
                 <DropdownButton bsSize="xsmall" title={patternName}
                     onSelect={this.onSelect}>
                     {this.props.patterns.map( createMenuItem, this )}

@@ -114,7 +114,11 @@ var PatternsService = {
 		// console.log("***** getAllPatterns", patternsUser.concat(patternsSystem));
 		return patternsUser.concat(patternsSystem); //_clone(patterns);
 	},
-
+	getNameForId: function(id) {
+		var pattern = _.find(this.getAllPatterns(), {id: id});
+		if( !pattern ) { return ""; }
+		return pattern.name;
+	},
 	getPatternByName: function(name) {
 		var pattern = _.find(this.getAllPatterns(), {name: name});
 		return _.clone(pattern);
@@ -162,6 +166,10 @@ var PatternsService = {
 
 	playPattern: function(id, callback) {
 		var pattern = _.find(this.getAllPatterns(), {id: id});
+		if( !pattern ) {
+			console.log("no pattern:", id);
+			return;
+		}
 		if( pattern.playing ) {
 			clearTimeout(pattern.timer);
 		}

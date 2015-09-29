@@ -12,6 +12,7 @@ var configuration = require('./configuration');
 var apiServer = require('./server/apiServer');
 var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
+var IftttService = require('./server/iftttService');
 
 // electron-connect is for development
 var client = require('electron-connect').client;
@@ -56,6 +57,7 @@ app.on('ready', function () {
 
 	Blink1Service.startDeviceListener();
 	PatternsService.initialize();
+	IftttService.start();
 
 	mainWindow = new BrowserWindow({
 		width: 1300,

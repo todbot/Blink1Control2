@@ -33,12 +33,14 @@
 		"status":"events saved"
 	}
 
-
 */
 
 "use strict";
 
 var request = require('request');
+var config = require('../configuration');
+
+var PatternsService = require('./patternsService');
 
 var baseUrl = 'http://api.thingm.com/blink1/eventsall/';
 
@@ -64,6 +66,10 @@ var IftttService = {
 	},
 
     fetchIfttt: function() {
+		var rules = config.readSettings('iftttRules');
+		if( !rules ) {
+			rules = [];
+		}
 		var url = baseUrl + this.iftttKey;
 		console.log("fetchIfttt:", url);
 		var self = this;
@@ -75,15 +81,34 @@ var IftttService = {
 			}
 			// otherwise continue as normal
 			var respobj = JSON.parse(body);
+			var shouldSave = false;
 			if( respobj.events ) {
 				respobj.events.map( function(e) {
-					// console.log("e:", e);
+					//console.log("iftttFetcher e:", JSON.stringify(e));
 					var eventDate = new Date(parseInt(1000 * e.date));
 					if (eventDate > self.lastTime) {
-						console.log('trigger: ', e.name);
+						console.log('iftttFetcher new event name:', e.name);
+						rules.map( function(r) {
+							console.log("    ifttFetcher: rule:", JSON.stringify(r));
+							r.lastTime = new Date( r.lastTime );
+							if( e.name === r.name ) {
+								console.log("*** RULE MATCH: ", e.name, eventDate, r.lastTime);
+								if( eventDate > r.lastTime ) {
+									console.log("*** TRIGGERED!!! ***");
+									r.lastTime = eventDate;
+									r.source = e.source;
+									PatternsService.playPattern( r.patternId );
+									shouldSave = true;
+								}
+							}
+						});
 					}
 				});
 				self.lastTime = new Date(); // == now
+				if( shouldSave ) {
+					console.log("iftttFetcher: saving rules");
+					config.saveSettings("iftttRules", rules);
+				}
 			}
 			else {
 				console.log("IftttFetcher: bad response: ", body);

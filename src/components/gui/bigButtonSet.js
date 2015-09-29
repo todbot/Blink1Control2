@@ -11,8 +11,20 @@ var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 
 var BigButton = require('./bigButton');
 
+var config = remote.require('./configuration');
+
+var buttonsUserDefault = [
+    { name: "Available", type: "color", color: "#00FF00" },
+    { name: "Busy", type: "color", color: "#ffFF00" },
+    { name: "Away", type: "color", color: "#ff0000" }
+];
+
 var BigButtonSet = React.createClass({
     getInitialState: function() {
+        var buttonsUser = config.readSettings('bigButtons');
+        if( !buttonsUser ) {
+            buttonsUser = buttonsUserDefault;
+        }
         return {
             buttonsSys: [
                 { name: "Color Cycle", type: "sys" },
@@ -21,20 +33,18 @@ var BigButtonSet = React.createClass({
                 { name: "White", type: "sys" },
                 { name: "Off", type: "sys" }
             ],
-            buttonsUser: [
-                { name: "Available", type: "color", color: "#00FF00" },
-                { name: "Busy", type: "color", color: "#ffFF00" },
-                { name: "Away", type: "color", color: "#ff0000" },
-                { name: "boop", type: "pattern", patternId: "purple-flashes" },
-                { name: "Some Long Name", type: "color", color: "#336699" }
-            ]
+            buttonsUser: buttonsUser
         };
+    },
+    saveButtons: function(buttonsUser) {
+        this.setState( {buttonsUser: buttonsUser });
+        config.saveSettings("bigButtons", buttonsUser);
     },
     addBigButton: function() { // FIXME: this is hacky
         var newbut = {name: "BigButton", type: "color", color: Blink1Service.getCurrentColor()};
         console.log("newbut", newbut);
         this.state.buttonsUser.push( newbut );
-        this.setState( {buttonsUser: this.state.buttonsUser });
+        this.saveButtons( this.state.buttonsUser );
     },
     onEditButton: function(cmd, idx) {
         console.log('onEditButton:', cmd, idx);
@@ -49,7 +59,7 @@ var BigButtonSet = React.createClass({
             this.state.buttonsUser[idx].type = 'pattern';
             this.state.buttonsUser[idx].patternId = PatternsService.getPlayingPatternId();
         }
-        this.setState( {buttonsUser: this.state.buttonsUser });
+        this.saveButtons( this.state.buttonsUser );
     },
     setBlink1Color: function(color) {
         Blink1Service.fadeToColor( 100, color );
@@ -78,6 +88,7 @@ var BigButtonSet = React.createClass({
             this.playPattern( this.state.buttonsUser[buttonindex].patternId );
         }
 	},
+    
     render: function() {
         var createBigButtonSys = function(button, index) { // FIXME: understand bind()
             return (
