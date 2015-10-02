@@ -10,7 +10,7 @@ Random notes
 -- Objects that touch the net or disk run in main process and live in `./src/server`
 -- GUI lives in renderer process and makes remote calls to objects in main 
 
-#### `remote.require()`` vs `require()` in renderer process
+--  `remote.require()` vs `require()` in renderer process
 - `remote.require()` is based off of project root dir, but `require()` is based of cwd
 
 #### Building on Windows
