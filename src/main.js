@@ -14,6 +14,8 @@ var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
 var IftttService = require('./server/iftttService');
 
+//var flux = require('./server/fluxtest');
+
 // electron-connect is for development
 var client = require('electron-connect').client;
 require('crash-reporter').start();
@@ -42,15 +44,16 @@ apiServer.init(); // .start() to bootrap
 var quit = function() {
 	console.log("quitting...");
 	// FIXME: put in blink1 & usb-detection closedown
-	Blink1Service.closeAll();
+	Blink1Service.closeAll(); // FIXME: this causes coredump 
 	app.quit();
 
 };
 
 app.on('window-all-closed', function () {
-	//if (process.platform !== 'darwin') {
+	console.log("window-all-closed");
+	if (process.platform !== 'darwin') {
 		quit();
-	//}
+	}
 });
 
 app.on('ready', function () {
@@ -58,6 +61,8 @@ app.on('ready', function () {
 	Blink1Service.startDeviceListener();
 	PatternsService.initialize();
 	IftttService.start();
+
+	//flux.actions.clearTodos();
 
 	mainWindow = new BrowserWindow({
 		width: 1300,

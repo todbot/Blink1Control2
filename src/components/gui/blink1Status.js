@@ -22,7 +22,17 @@ var Blink1Status = React.createClass({
 		};
 	},
 	componentDidMount: function() {
+		Blink1Service.addChangeListener( this.updateState, "blink1Status" );
 		PatternsService.addChangeListener( this.updatePatternState, "blink1Status" );
+	},
+	updateState: function() {
+		console.log("updateState");
+		this.setState({
+						blink1Color: Blink1Service.getCurrentColor(),
+						statusStr: Blink1Service.isConnected() ? "connected" : "not connected",
+						serialNumber: Blink1Service.serialNumberForDisplay(),
+						iftttKey: Blink1Service.iftttKey()
+					});
 	},
 	updatePatternState: function() {
 		this.setState({currentPattern: PatternsService.getPlayingPatternName()});

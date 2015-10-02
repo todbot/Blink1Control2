@@ -21,12 +21,14 @@
   "dependencies": {
     "bootstrap": "^3.3.5",
     "browserify": "^11.0.1",
-    "fluxxor": "^1.7.2",
+    "electron-prebuilt": "^0.33.3",
+    "fluxxor": "^1.7.3",
     "font-awesome": "^4.4.0",
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",
     "nconf": "^0.8.0",
     "node-blink1": "^0.2.1",
+    "node-hid": "git+https://github.com/lorenc-tomasz/node-hid.git#package",
     "object-assign": "^4.0.1",
     "parse-color": "^1.0.0",
     "react": "^0.13.3",
@@ -40,7 +42,6 @@
     "reactify": "^1.1.1",
     "request": "^2.63.0",
     "toastr": "^2.1.2",
-    "usb-detection": "^1.2.0",
     "vinyl-source-stream": "^1.1.0"
   },
   "devDependencies": {
