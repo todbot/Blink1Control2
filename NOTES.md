@@ -3,6 +3,9 @@
 
 Random notes
 
+#### Wat
+--- Why does Electron require 3 reloads to see new content rebuilt with gulp?
+
 #### General architecture
 -- Objects that touch the net or disk run in main process and live in `./src/server`
 -- GUI lives in renderer process and makes remote calls to objects in main 
