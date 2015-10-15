@@ -30,17 +30,17 @@ var Blink1TabViews = React.createClass({
 							</div>
 						</TabPane>
 						<TabPane eventKey={3} tab={<i className="fa fa-wrench"> Tools</i>}>
-							<Panel style={{height: 200}}>
+							<Panel style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 							Tools go here
 							</Panel>
 						</TabPane>
 						<TabPane eventKey={4} tab={<i className="fa fa-envelope"> Mail</i>}>
-							<Panel style={{height: 200}}>
+							<Panel style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								<MailTable />
 							</Panel>
 						</TabPane>
 						<TabPane eventKey={5} tab={<i className="fa fa-life-ring"> Help</i>}>
-							<Panel style={{height: 200}}>
+							<Panel style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								Help goes here
 							</Panel>
 						</TabPane>

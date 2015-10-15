@@ -33,7 +33,7 @@ var BigButton = React.createClass({
 	},
 	render: function() {
 		var buttstyle = { width: 64, height: 64, margin: 5 };
-		var tstyle = { color: 'grey', fontSize: "0.8em" };
+		var tstyle = { color: 'grey', fontSize: "0.8em", paddingTop: 35 };
 		var iconContent;
 		if( this.props.type === "color" ) {
 			buttstyle.background = this.props.color;
@@ -73,10 +73,13 @@ var BigButton = React.createClass({
 
 		return (
 			<div id="booper">
+				<div style={{ display: "inline-block", float: "left"}}>
 				<Button style={buttstyle} ref={targetRef}
 					onClick={this.props.onClick} onContextMenu={this.showContextMenu}>
 					{iconContent}<br /><i style={tstyle}>{this.props.name}</i>
 				</Button>
+				</div>
+
 				<Overlay
 					rootClose={true}
 					show={this.state.showContextMenu}

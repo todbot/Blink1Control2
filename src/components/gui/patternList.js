@@ -50,7 +50,7 @@ var PatternList = React.createClass({
 	addPattern: function() {
 		console.log("addPattern");
 		var p = PatternsService.newPattern();
-		PatternsService.save( p );
+		PatternsService.savePattern( p );
 		this.setState( {editing: true, editId: p.id } );
 		this.updatePatternState();
 		console.log(JSON.stringify(this.state.patterns)); // dump all patterns

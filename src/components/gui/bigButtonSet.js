@@ -88,7 +88,7 @@ var BigButtonSet = React.createClass({
             this.playPattern( this.state.buttonsUser[buttonindex].patternId );
         }
 	},
-    
+
     render: function() {
         var createBigButtonSys = function(button, index) { // FIXME: understand bind()
             return (

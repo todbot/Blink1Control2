@@ -166,7 +166,7 @@ var Blink1Service = {
 
 	addChangeListener: function(callback, callername) {
 		listeners[callername] = callback;
-		console.log("Blink1Service: addChangelistener", listeners );
+		// console.log("Blink1Service: addChangelistener", listeners );
 	},
 	removeChangeListener: function(callername) {
 		console.log("removeChangelistener: removing", callername);

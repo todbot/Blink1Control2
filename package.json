@@ -28,7 +28,7 @@
     "lodash": "^3.10.1",
     "nconf": "^0.8.0",
     "node-blink1": "^0.2.1",
-    "node-hid": "git+https://github.com/lorenc-tomasz/node-hid.git#package",
+    "node-hid": "^0.5.0",
     "object-assign": "^4.0.1",
     "parse-color": "^1.0.0",
     "react": "^0.13.3",

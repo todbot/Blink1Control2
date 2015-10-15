@@ -25,8 +25,8 @@ var Blink1Status = React.createClass({
 		Blink1Service.addChangeListener( this.updateState, "blink1Status" );
 		PatternsService.addChangeListener( this.updatePatternState, "blink1Status" );
 	},
-	updateState: function() {
-		console.log("updateState");
+	updateState: function() { // FIXME: this called mostly for color, don't need other parts?
+		// console.log("updateState");
 		this.setState({
 						blink1Color: Blink1Service.getCurrentColor(),
 						statusStr: Blink1Service.isConnected() ? "connected" : "not connected",
@@ -37,21 +37,42 @@ var Blink1Status = React.createClass({
 	updatePatternState: function() {
 		this.setState({currentPattern: PatternsService.getPlayingPatternName()});
 	},
+
+	onIftttKeyClick: function() {
+		console.log("ifttKey click!");
+	},
 	render: function() {
-		console.log("blink1Status.render: ", this.state.blink1Color);
+		// console.log("blink1Status.render: ", this.state.blink1Color);
 		var currentPattern = this.state.currentPattern;
 		if( !currentPattern ) { currentPattern = '-'; }
+		var labelStyle = {width: 90, display: "inline-block"};
 
 		return (
 			<Panel header="Device" style={{ width: 280, height: 360}}>
 				<div style={{ width: 256, height: 192, margin: "auto" }}>
 					<VirtualBlink1 blink1Color={this.state.blink1Color} />
 				</div>
-				<Well bsSize="small">
-					<div> Status: <b>{this.state.statusStr}</b> </div>
-					<div> Serial number: <code>{this.state.serialNumber}</code> <br />
-							IFTTT Key: <code>{this.state.iftttKey} </code></div>
-					<div> Pattern: <b> {currentPattern}</b></div>
+				<Well bsSize="xsmall" style={{margin: 0}}>
+					<div>
+						<span>Status:</span>
+						<span><b>{this.state.statusStr}</b></span>
+					</div>
+					<div>
+						<span>Serial number:</span>
+						<code style={{WebkitUserSelect: "text"}}>
+							{this.state.serialNumber}
+						</code>
+					</div>
+					<div>
+						<span>IFTTT Key:</span>
+						<code style={{WebkitUserSelect: "text"}} onContextMenu={this.onIftttKeyClick}>
+							{this.state.iftttKey}
+						</code>
+					</div>
+					<div>
+						<span>Pattern:</span>
+						<span><b> {currentPattern}</b></span>
+					</div>
 				</Well>
 			</Panel>
 		);

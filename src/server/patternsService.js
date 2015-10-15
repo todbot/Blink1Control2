@@ -129,7 +129,9 @@ var PatternsService = {
 		return _.clone(pattern);
 	},
 	savePatterns: function() {
-		var patternsSave = _.map( patternsUser, function(p) { return _.pick(p, 'name', 'id', 'colors', 'repeats'); });
+		var patternsSave = _.map( patternsUser, function(p) {
+			return _.pick(p, 'name', 'id', 'colors', 'repeats');
+		});
 		config.saveSettings("patterns", patternsSave);
 	},
 	/** Saves new pattern or updates existing pattern */
@@ -146,7 +148,7 @@ var PatternsService = {
 			patternsUser.unshift(pattern);
 		}
 		this.savePatterns();
-		return _.clone(pattern);
+		//return _.clone(pattern);
 	},
 	/** Create a minimal pattern and return it. Does not insert into patterns array */
 	newPattern: function(name, color) {
@@ -154,7 +156,10 @@ var PatternsService = {
 			name = 'new pattern ' + patternsUser.length;
 			color = '#0055ff';
 		}
-		var pattern = { name: name, repeats: 3, colors: [{rgb: color, time: 0.2, ledn: 0}] };  // FIXME
+		var pattern = {
+			name: name,
+			repeats: 3,
+			colors: [{rgb: color, time: 0.2, ledn: 0}] };  // FIXME
 		pattern.id = _generateId(pattern);
 		//patternsUser.unshift(pattern);
 		return pattern;
@@ -227,7 +232,7 @@ var PatternsService = {
 
 	addChangeListener: function(callback, callername) {
 		listeners[callername] = callback;
-		console.log("PatternsService: addChangelistener", listeners );
+		// console.log("PatternsService: addChangelistener", listeners );
 	},
 	removeChangeListener: function(callername) {
 		delete listeners[callername];
