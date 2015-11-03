@@ -126,7 +126,7 @@ var PatternList = React.createClass({
 			//var lockIcon =
 
 			var editOptions =
-				<DropdownButton style={editButtStyle} pullRight >
+				<DropdownButton style={editButtStyle} title="" id={idx} pullRight >
 					<MenuItem eventKey="1" onSelect={this.editPattern.bind(null, pid)} disabled={patt.system || patt.locked}><i className="fa fa-pencil"></i> Edit pattern</MenuItem>
 					<MenuItem eventKey="2" onSelect={this.lockPattern.bind(null, pid)} disabled={patt.system}><i className={lockMenuIcon}></i> {lockMenuText}</MenuItem>
 					<MenuItem eventKey="3" onSelect={this.copyPattern.bind(null, pid)}><i className="fa fa-copy"></i> Copy pattern</MenuItem>

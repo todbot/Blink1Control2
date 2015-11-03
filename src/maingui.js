@@ -3,6 +3,7 @@
 /* jshint strict: false */
 
 var React = require('react');
+var ReactDOM = require('react-dom');
 
 $ = jQuery = require('jquery');
 
@@ -14,9 +15,9 @@ var Blink1ControlView = require('./components/gui/blink1ControlView');
 var App = React.createClass({
   render: function() {
     return (
-			<div className="container-fluid">
-				<Blink1ControlView />
-      </div>
+		<div className="container-fluid">
+			<Blink1ControlView />
+        </div>
     );
   }
 });
@@ -26,4 +27,4 @@ window.onbeforeunload = function(e) {
     return true;
 };
 
-React.render( <App />, document.getElementById('app'));
+ReactDOM.render( <App />, document.getElementById('app'));

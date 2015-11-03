@@ -11,7 +11,7 @@ var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
 
 var remote = window.require('remote');
-var IftttService = remote.require('./server/iftttService');
+// var IftttService = remote.require('./server/iftttService');
 var PatternsService = remote.require('./server/patternsService');
 var config = remote.require('./configuration');
 

@@ -5,16 +5,16 @@ var React = require('react');
 var Table = require('react-bootstrap').Table;
 
 
-var mailTable = React.createClass({
+var MailTable = React.createClass({
 
-	propTypes: { 
+	propTypes: {
 		//events: React.PropTypes.array.isRequired,
 		//onClear: React.PropTypes.func.isRequired
 	},
 
 	getInitialState: function() {
 		return {
-			events: [ 
+			events: [
 				{ date: 1234, text: "this happened"},
 				{ date: 1235, text: "this other thing happened"}
 			]
@@ -22,11 +22,10 @@ var mailTable = React.createClass({
 	},
 
 	render: function() {
-		var createRow = function() {
-			
-		};
+		// var createRow = function() {
+		//
+		// };
 		return (
-
 			<Table bordered condensed hover>
 				<tbody>
 					<tr><td> Bob </td></tr>
@@ -37,10 +36,8 @@ var mailTable = React.createClass({
 				</tbody>
 			</Table>
         );
-
 	}
-
 
 });
 
-module.exports = mailTable; 
+module.exports = MailTable;

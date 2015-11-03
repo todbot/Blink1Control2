@@ -1,10 +1,12 @@
 "use strict";
 
 var React = require('react');
-var TabbedArea = require('react-bootstrap').TabbedArea;
-var TabPane = require('react-bootstrap').TabPane;
+// var TabbedArea = require('react-bootstrap').TabbedArea;
+// var TabPane = require('react-bootstrap').TabPane;
+var Tabs = require('react-bootstrap').Tabs;
+var Tab = require('react-bootstrap').Tab;
 var Panel = require('react-bootstrap').Panel;
-var Well = require('react-bootstrap').Well;
+// var Well = require('react-bootstrap').Well;
 
 var BigButtonSet = require('./bigButtonSet');
 var IftttTable = require('./iftttTable');
@@ -18,33 +20,33 @@ var Blink1TabViews = React.createClass({
 
 		return (
 				<div>
-					<TabbedArea>
-						<TabPane eventKey={1} tab={<i className="fa fa-long-arrow-right"> Start</i>}>
+					<Tabs defaultActiveKey={1}>
+						<Tab eventKey={1} title={<i className="fa fa-long-arrow-right"> Start</i>}>
 							<div style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								<BigButtonSet />
 							</div>
-						</TabPane>
-						<TabPane eventKey={2} tab={<i className="fa fa-plug"> IFTTT </i>}>
+						</Tab>
+						<Tab eventKey={2} title={<i className="fa fa-plug"> IFTTT</i>}>
 							<div style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								<IftttTable />
 							</div>
-						</TabPane>
-						<TabPane eventKey={3} tab={<i className="fa fa-wrench"> Tools</i>}>
+						</Tab>
+						<Tab eventKey={3} title={<i className="fa fa-wrench"> Tools</i>}>
 							<Panel style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 							Tools go here
 							</Panel>
-						</TabPane>
-						<TabPane eventKey={4} tab={<i className="fa fa-envelope"> Mail</i>}>
+						</Tab>
+						<Tab eventKey={4} title={<i className="fa fa-envelope"> Mail</i>}>
 							<Panel style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								<MailTable />
 							</Panel>
-						</TabPane>
-						<TabPane eventKey={5} tab={<i className="fa fa-life-ring"> Help</i>}>
+						</Tab>
+						<Tab eventKey={5} title={<i className="fa fa-life-ring"> Help</i>}>
 							<Panel style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								Help goes here
 							</Panel>
-						</TabPane>
-					</TabbedArea>
+						</Tab>
+					</Tabs>
 				</div>
 		);
 	}
