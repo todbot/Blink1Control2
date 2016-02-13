@@ -33,7 +33,7 @@ var Blink1ColorPicker = React.createClass({
 		//console.log("blink1ColorPicker.render");
 		return (
 				<div>
-					<ColorPicker type="sketch" color={this.state.color} onChange={this.setColor} />
+					<ColorPicker.default type="sketch" color={this.state.color} onChange={this.setColor} />
 				</div>
 		);
 	}

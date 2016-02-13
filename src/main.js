@@ -17,7 +17,7 @@ var IftttService = require('./server/iftttService');
 //var flux = require('./server/fluxtest');
 
 // electron-connect is for development
-var client = require('electron-connect').client;
+//var client = require('electron-connect').client;
 require('crash-reporter').start();
 
 // Load external modules
@@ -44,7 +44,7 @@ apiServer.init(); // .start() to bootrap
 var quit = function() {
 	console.log("quitting...");
 	// FIXME: put in blink1 & usb-detection closedown
-	Blink1Service.closeAll(); // FIXME: this causes coredump 
+	Blink1Service.closeAll(); // FIXME: this causes coredump
 	app.quit();
 
 };
@@ -83,6 +83,18 @@ app.on('ready', function () {
 		quit();
 		mainWindow = null;
 	});
+
+	if( process.env.NODE_ENV === 'development' ) {
+        mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
+        mainWindow.openDevTools();
+    }
+    else {
+      mainWindow.loadURL('file://' + __dirname + '/index-prod.html');
+    }
+
+	//mainWindow.loadUrl('file://' + __dirname + '/dist/index.html#/todtests');
+	// mainWindow.loadUrl('file://' + __dirname + '/../dist/index.html'); /* eslint no-path-concat:0 */
+	mainWindow.focus();
 
 /*
 	appIcon = new Tray(trayIconPath);
@@ -152,14 +164,9 @@ app.on('ready', function () {
 	// initialize runtime reference to main window
 	// runtime.windowId = mainWindow.id;
 
-	//mainWindow.loadUrl('file://' + __dirname + '/dist/index.html#/todtests');
-	mainWindow.loadUrl('file://' + __dirname + '/../dist/index.html'); /* eslint no-path-concat:0 */
-	mainWindow.focus();
-
-	mainWindow.openDevTools();
 
 	// electron-connect to server process
-	client.create(mainWindow);
+	// client.create(mainWindow);
 
 	/*
 	// Dock Menu (Mac)

@@ -52,7 +52,7 @@ var Blink1Status = React.createClass({
 				<div style={{ width: 256, height: 192, margin: "auto" }}>
 					<VirtualBlink1 blink1Color={this.state.blink1Color} />
 				</div>
-				<Well bsSize="xsmall" style={{margin: 0}}>
+				<Well bsSize="small" style={{margin: 0}}>
 					<div>
 						<span>Status:</span>
 						<span><b>{this.state.statusStr}</b></span>

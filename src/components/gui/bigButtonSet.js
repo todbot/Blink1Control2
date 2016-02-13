@@ -110,7 +110,7 @@ var BigButtonSet = React.createClass({
                         {this.state.buttonsSys.map(createBigButtonSys, this)}
                     </ButtonToolbar>
                 </div>
-                <div style={{padding: 10}}>
+                <div style={{padding: 10, width: 700, overflowX: 'scroll'}}>
                     <ButtonToolbar>
                         {this.state.buttonsUser.map(createBigButtonUser, this)}
                         <BigButton key="add" name="add" type="add" onClick={this.addBigButton} />

@@ -1,11 +1,14 @@
-/* global $:true, jQuery:true */
 /* eslint-disable strict */
 /* jshint strict: false */
+
+// this is for webpack
+require('../node_modules/bootstrap/dist/css/bootstrap.min.css');
+require('../node_modules/font-awesome/css/font-awesome.min.css');
 
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-$ = jQuery = require('jquery');
+// $ = jQuery = require('jquery');
 
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 

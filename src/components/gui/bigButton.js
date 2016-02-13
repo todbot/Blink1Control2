@@ -1,6 +1,7 @@
 "use strict";
 
 var React = require('react');
+var ReactDOM = require('react-dom');
 var Button = require('react-bootstrap').Button;
 var Overlay = require('react-bootstrap').Overlay;
 var MenuItem = require('react-bootstrap').MenuItem;
@@ -19,25 +20,26 @@ var BigButton = React.createClass({
 			showContextMenu: false
 		};
 	},
-	showContextMenu: function() {
-        console.log("showContextMenu boop", this);
+	showContextMenu: function(e) {
+        console.log("showContextMenu", e.target); //, "this:",this);
 		this.setState({showContextMenu: true});
+		console.log(this.state);
     },
 	hideContextMenu: function() {
 		this.setState({showContextMenu: false});//  }.bind(this)
 	},
 	doContextMenu: function(evtkey) {
-        console.log("doContextMenu", evtkey, this.props.idx);
+        console.log("doContextMenu",this.props.idx, evtkey );
 		this.hideContextMenu();
 		this.props.onEdit(evtkey, this.props.idx);
 	},
 	render: function() {
-		var buttstyle = { width: 64, height: 64, margin: 5 };
-		var tstyle = { color: 'grey', fontSize: "0.8em", paddingTop: 35 };
+		var buttonStyle = { width: 64, height: 64, margin: 5, padding: 0  };
+		var tstyle = { border: '1px solid red', color: 'grey', fontSize: "0.7em", overflow:'hidden',  };
 		var iconContent;
 		if( this.props.type === "color" ) {
-			buttstyle.background = this.props.color;
-			buttstyle.color = 'white';
+			buttonStyle.background = this.props.color;
+			buttonStyle.color = 'white';
 			//iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
 			iconContent = <i className="fa fa-lightbulb-o fa-2x"></i>;
 		}
@@ -69,24 +71,25 @@ var BigButton = React.createClass({
 			marginTop: 5,
 			padding: 10
 		};
-		var targetRef = 'target-' + this.props.type + this.props.idx;
 
+		var buttonRef = 'target-' + this.props.type + this.props.idx;
+		var self = this;
 		return (
 			<div id="booper">
-				<div style={{ display: "inline-block", float: "left"}}>
-				<Button style={buttstyle} ref={targetRef}
-					onClick={this.props.onClick} onContextMenu={this.showContextMenu}>
-					{iconContent}<br /><i style={tstyle}>{this.props.name}</i>
-				</Button>
+				<div>
+					<Button style={buttonStyle} ref={buttonRef}
+						onClick={this.props.onClick} onContextMenu={this.showContextMenu}>
+						{iconContent}<div style={tstyle}>{this.props.name}</div>
+					</Button>
 				</div>
 
 				<Overlay
 					rootClose={true}
 					show={this.state.showContextMenu}
 					onHide={this.hideContextMenu}
-					placement="right"
 					container={this}
-					target={function() { React.findDOMNode(this.refs[targetRef]); }.bind(this) } >
+					placement="bottom"
+					target={function() { return ReactDOM.findDOMNode(self.refs[buttonRef]); } } >
 					<div style={cmstyle}>
 						<MenuItem eventKey="setcolor" onSelect={this.doContextMenu}>Set to current color</MenuItem>
 						<MenuItem eventKey="setpattern" onSelect={this.doContextMenu}>Set to last pattern</MenuItem>
@@ -98,5 +101,6 @@ var BigButton = React.createClass({
 	}
 });
 
+//target={function() { return ReactDOM.findDOMNode(this.refs[buttonRef]); }.bind(this) } >
 
 module.exports = BigButton;

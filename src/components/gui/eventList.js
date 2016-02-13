@@ -45,7 +45,7 @@ var EventList = React.createClass({
 
 		return (
 			<Panel header="Recent Events" style={mystyle}>
-				<ListGroup>
+				<ListGroup >
 				{this.state.events.map(createEventLine, this)}
 				</ListGroup>
 				<Button block bsSize="small" style={butStyle} onClick={this.clearEvents}>Dismiss all</Button>
