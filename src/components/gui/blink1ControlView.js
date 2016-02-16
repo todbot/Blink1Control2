@@ -25,19 +25,19 @@ var Blink1ControlView = React.createClass({
 	render: function() {
 
 		var panelstyle = {
-			width: 350, height: 370,
-			margin: 5, display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"};
+			width: 350, height: 370, margin: 5,
+			display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"};
 
 		return (
 			<div style={{ width: 1200, height: 700, background: "#f5f5f5", marginn: 0, padding: 10,
 						WebkitUserSelect: "none" }}>
-			<Grid fluid>
+			<Grid fluid style={{padding:0, margin:0}}>
 				<Row>
 					<Col md={3}>
 						<Blink1Status />
 						<EventList />
 					</Col>
-					<Col md={9}>
+					<Col md={9} style={{padding:0, margin:0}} >
 						<Grid fluid>
 						<Row>
 							<Blink1TabViews />

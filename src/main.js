@@ -65,8 +65,8 @@ app.on('ready', function () {
 	//flux.actions.clearTodos();
 
 	mainWindow = new BrowserWindow({
-		width: 1300,
-		height: 800
+		width: 1250,
+		height: 900
 		// use-content-size: true
 		// center: true
 		// resizable: false

@@ -5,7 +5,7 @@ var ReactDOM = require('react-dom');
 var Button = require('react-bootstrap').Button;
 var Overlay = require('react-bootstrap').Overlay;
 var MenuItem = require('react-bootstrap').MenuItem;
-//var Glyphicon = require('react-bootstrap').Glyphicon;
+
 
 var BigButton = React.createClass({
 	propTypes: {
@@ -28,10 +28,10 @@ var BigButton = React.createClass({
 	hideContextMenu: function() {
 		this.setState({showContextMenu: false});//  }.bind(this)
 	},
-	doContextMenu: function(evtkey) {
-        console.log("doContextMenu",this.props.idx, evtkey );
+	doContextMenu: function(event, eventKey) {
+        console.log("doContextMenu: eventKey:",eventKey, this.props.idx  );
 		this.hideContextMenu();
-		this.props.onEdit(evtkey, this.props.idx);
+		this.props.onEdit(eventKey, this.props.idx);
 	},
 	render: function() {
 		var buttonStyle = { width: 64, height: 64, margin: 5, padding: 0  };
@@ -74,15 +74,14 @@ var BigButton = React.createClass({
 
 		var buttonRef = 'target-' + this.props.type + this.props.idx;
 		var self = this;
-		return (
-			<div id="booper">
-				<div>
-					<Button style={buttonStyle} ref={buttonRef}
-						onClick={this.props.onClick} onContextMenu={this.showContextMenu}>
-						{iconContent}<div style={tstyle}>{this.props.name}</div>
-					</Button>
-				</div>
 
+
+		return (
+			<span id="booper">
+				<Button style={buttonStyle} ref="{buttonRef}"
+					onClick={this.props.onClick} onContextMenu={this.showContextMenu}>
+					{iconContent}<div style={tstyle}>{this.props.name}</div>
+				</Button>
 				<Overlay
 					rootClose={true}
 					show={this.state.showContextMenu}
@@ -96,7 +95,7 @@ var BigButton = React.createClass({
 						<MenuItem eventKey="delete" onSelect={this.doContextMenu}>Delete button</MenuItem>
 					</div>
 				</Overlay>
-			</div>
+			</span>
 			);
 	}
 });

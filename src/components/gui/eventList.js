@@ -8,7 +8,7 @@ var ListGroupItem = require('react-bootstrap').ListGroupItem;
 
 var mystyle = {
 	width: 280,
-	height: 260
+	height: 260,
 };
 
 var EventList = React.createClass({
@@ -19,8 +19,11 @@ var EventList = React.createClass({
 	getInitialState: function() {
 		return {
 			events: [
-				{ date: 1234, text: "this happened"},
-				{ date: 1235, text: "this other thing happened"}
+				{ date: Date.now(), text: "this happened"},
+				{ date: Date.now()-1, text: "this 2 happened"},
+				{ date: Date.now()-2, text: "this 3  happened"},
+				{ date: Date.now()-2, text: "this 3.1 happened"},
+				{ date: Date.now()-4, text: "this other thing happened"}
 			]
 		};
 	},
@@ -31,9 +34,9 @@ var EventList = React.createClass({
 
 
 	render: function() {
-		var createEventLine = function(event) {
+		var createEventLine = function(event,index) {
 			//return (<li key={event.date}> {event.date} - {event.text} </li>);
-			return (<ListGroupItem key={event.date}> {event.date} - {event.text} </ListGroupItem>);
+			return (<ListGroupItem key={index}> {event.date} - {event.text} </ListGroupItem>);
 		};
 		var butStyle = {
 
@@ -45,7 +48,7 @@ var EventList = React.createClass({
 
 		return (
 			<Panel header="Recent Events" style={mystyle}>
-				<ListGroup >
+				<ListGroup style={{	height: mystyle.height-100, overflow: 'scroll'}}>
 				{this.state.events.map(createEventLine, this)}
 				</ListGroup>
 				<Button block bsSize="small" style={butStyle} onClick={this.clearEvents}>Dismiss all</Button>

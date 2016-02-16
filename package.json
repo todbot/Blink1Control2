@@ -18,7 +18,7 @@
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "./node_modules/.bin/webpack",
     "env": "env",
-    "fix": "cp -a node_modules/node-hid/build/HID/v0.5.1/Release/electron-v0.36-darwin-x64 node_modules/node-hid/build/HID/v0.5.1/Release/node-v47-darwin-x64"
+    "fix-node-hid": "cp -a node_modules/node-hid/build/HID/v0.5.1/Release/electron-v0.36-darwin-x64 node_modules/node-hid/build/HID/v0.5.1/Release/node-v47-darwin-x64"
   },
   "author": "",
   "license": "ISC",
