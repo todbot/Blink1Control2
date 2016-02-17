@@ -6,11 +6,6 @@ var Button = require('react-bootstrap').Button;
 var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
 
-var mystyle = {
-	width: 280,
-	height: 260,
-};
-
 var EventList = React.createClass({
 	propTypes: {
 		//events: React.PropTypes.array.isRequired,
@@ -36,19 +31,23 @@ var EventList = React.createClass({
 	render: function() {
 		var createEventLine = function(event,index) {
 			//return (<li key={event.date}> {event.date} - {event.text} </li>);
-			return (<ListGroupItem key={index}> {event.date} - {event.text} </ListGroupItem>);
+			return (<ListGroupItem key={index} style={{lineHeight:"85%", fontSize: "0.7em",}}> {event.date} - {event.text} </ListGroupItem>);
+		};
+		var mystyle = {
+			width: 280,
+			height: 260,
 		};
 		var butStyle = {
-
-			float: "left"
+			float: "left",
+			// display:'flex',justifyContent:'center',alignItems:'flex-end'
 		};
 		var listStyle = {
 			height:	mystyle.height - 100  // FIXME: HACK!
 		};
 
 		return (
-			<Panel header="Recent Events" style={mystyle}>
-				<ListGroup style={{	height: mystyle.height-100, overflow: 'scroll'}}>
+			<Panel header={<h4>Recent Events</h4>} style={mystyle}>
+				<ListGroup style={{	height: mystyle.height-100, overflow: 'scroll', padding:0, margin:0}}>
 				{this.state.events.map(createEventLine, this)}
 				</ListGroup>
 				<Button block bsSize="small" style={butStyle} onClick={this.clearEvents}>Dismiss all</Button>

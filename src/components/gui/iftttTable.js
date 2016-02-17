@@ -15,8 +15,7 @@ var remote = window.require('remote');
 var PatternsService = remote.require('./server/patternsService');
 var config = remote.require('./configuration');
 
-var PatternDropdown = require('./patternDropdown');
-
+var IftttForm = require('./iftttForm');
 
 var IftttTable = React.createClass({
 
@@ -28,8 +27,10 @@ var IftttTable = React.createClass({
 		return {
 			rules: rules,
 			patterns: PatternsService.getAllPatterns(),
-			row: -1,
-			editing: false
+			// row: -1,
+			// workingrule: {},
+			workingIndex:-1,
+			showForm: false
 		};
 	},
 	saveRules: function(rules) {
@@ -38,17 +39,19 @@ var IftttTable = React.createClass({
 	},
 	editRule: function(n) {
 		console.log("editRule:", n);
-		this.setState({editing: true});
+		this.openForm(n);
 	},
-	setCurrentRow: function(idx) {
-		this.setState({row: idx});
-	},
-	addRule: function() {
-		// console.log("addRule: starting IftttService");
-		// IftttService.start();
-		var rules = this.state.rules;
-		rules.unshift( {name: 'new rule', patternId: 'redflashes'});
-		this.saveRules(rules);
+	// addRule: function() {
+	// 	// console.log("addRule: starting IftttService");
+	// 	// IftttService.start();
+	// 	var rules = this.state.rules;
+	// 	rules.unshift( {name: 'new rule', patternId: 'redflashes'});
+	// 	this.saveRules(rules);
+	// },
+	addRuleByForm: function() {
+		//this.setState({workingrule: {name: 'poopy butt', patternId: 'whiteflashes'}});
+		// this.setState({workingIndex: -1}); // -1 means new rule
+		this.openForm(-1);
 	},
 	deleteRule: function(idx) {
 		console.log("deleteRule:", idx);
@@ -56,53 +59,69 @@ var IftttTable = React.createClass({
 		delete rules[idx];
 		this.saveRules(rules);
 	},
-	onNameChange: function(idx, e) {
-		// console.log("onNameChange:", e.target.value, e.target.name, idx);
+	deleteRuleEdit: function() {
+		console.log("deleteRuleEdit:", this.state.workingIndex);
+		if( this.state.workingIndex !== -1 ) {
+			this.deleteRule( this.state.workingIndex );
+		}
+		this.cancelForm();
+	},
+	openForm: function(idx) {
+        console.log("open form",idx, this.state);
+		this.setState( { workingIndex: idx } );
+        this.setState({ showForm: true });
+    },
+    saveForm: function(data) {
+        console.log("save form:",data, "workingIndex:", this.state.workingIndex);
 		var rules = this.state.rules;
-		rules[idx].name = e.target.value;
+		var rulenew = {name: data.name, patternId: data.patternId};
+		if( this.state.workingIndex === -1 ) { // new rule
+			rules.unshift( rulenew );
+		}
+		else {
+			rules[this.state.workingIndex] = rulenew;
+		}
 		this.saveRules(rules);
-	},
-	onPatternChange: function(idx, pattid) {
-		console.log("onPatternChange:", idx, pattid);
-		var rules = this.state.rules;
-		rules[idx].patternId = pattid;
-		this.saveRules(rules);
-	},
-	onNameClick: function(e) {
-		console.log("onNameClick:", e);
-	},
+        this.setState({ showForm: false });
+    },
+    cancelForm: function() {
+        console.log("close mail form");
+        this.setState({ showForm: false });
+    },
+
 	render: function() {
+		console.log("iftttTable render",this.state);
+		// var self = this;
+		//	workingrule: { row: idx, name: this.state.rules[idx].name, patternId: this.state.rules[idx].pattternId }
+		var formrule = { name: 'some new thing', patternId: 'whiteflashes'}; // FIXME:
+		if (this.state.workingIndex !== -1) { // not new
+			formrule.name = this.state.rules[this.state.workingIndex].name;
+			formrule.patternId = this.state.rules[this.state.workingIndex].patternId;
+		}
+		console.log("iftttTable, formrule",formrule);
 		var createRow = function(rule, index) {
-			// var isEditing = (this.state.row === index) && this.state.editing;
-			// onMouseOver={this.editRule.bind(this, rule.name)}>
-			// disabled={!this.state.editing && this.state.row === index}
-			var deleteButton = <button onClick={this.deleteRule.bind(this, index)}><i className="fa fa-times"></i></button>;
-			var patternCell = <PatternDropdown
-								patterns={this.state.patterns}
-								patternId={rule.patternId}
-								onPatternUpdated={this.onPatternChange.bind(this, index)}/>;
-			if( this.state.row !== index ) { // not currently being hovered
-				patternCell = PatternsService.getNameForId( this.state.rules[index].patternId );  // just text
-				deleteButton = " ";
-			}
+			//var deleteButton = <button onClick={this.deleteRule.bind(this, index)}><i className="fa fa-times"></i></button>;
+			var	patternCell = PatternsService.getNameForId( this.state.rules[index].patternId );  // just text
+			var lastTime = rule.lastTime || '-not seen yet-';
+			var source = rule.source || 'n/a';
 			return (
-					<tr key={index}
-						onDoubleClick={this.editRule.bind(this, index, rule.name)}
-						onMouseOver={this.setCurrentRow.bind(this, index)} >
-					<td width={225}><input type='text' name='name' value={rule.name}
-						onDoubleClick={this.onNameClick}
-						onChange={this.onNameChange.bind(this, index)}/></td>
-					<td width={250}> {patternCell}</td>
-					<td>{rule.lastTime}</td>
-					<td>{rule.source}</td>
-					<td>{deleteButton}</td>
+					<tr key={index} onDoubleClick={this.editRule.bind(this, index, rule.name)} >
+						<td width={225}>{rule.name}</td>
+						<td width={250}>{patternCell}</td>
+						<td>{lastTime}</td>
+						<td width={100}>{source}</td>
+						<td><Button bsSize="xsmall" onClick={this.editRule.bind(this, index, rule.name)} >edit</Button></td>
 					</tr>
 			);
-
 		};
+		console.log("iftttTable, formrule",formrule);
 		return (
 			<div style={{position: "relative", height: 200}}>
-				<div style={{display: "block", overflowY: "scroll", height: 130}}>
+
+				<IftttForm show={this.state.showForm} rule={formrule}
+					onSave={this.saveForm} onCancel={this.cancelForm} onDelete={this.deleteRuleEdit} />
+
+				<div style={{display: "block", overflowY: "scroll", height: 150}}>
 					<Table bordered condensed hover >
 						<thead>
 							<tr>
@@ -119,7 +138,7 @@ var IftttTable = React.createClass({
 					</Table>
 				</div>
 				<div style={{position: "absolute", bottom: 20}}>
-					<Button bsSize="xsmall" onClick={this.addRule} ><i className="fa fa-plus"></i> add rule</Button>
+					<Button bsSize="xsmall" onClick={this.addRuleByForm} ><i className="fa fa-plus"></i> add rule</Button>
 				</div>
 			</div>
         );

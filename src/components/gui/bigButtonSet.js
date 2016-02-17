@@ -51,6 +51,13 @@ var BigButtonSet = React.createClass({
         if( cmd === 'delete' ) {
             delete this.state.buttonsUser[ idx ];
         }
+        else if( cmd === 'moveleft') {
+            if( idx > 0 ) {
+                var tmpbutton = this.state.buttonsUser[idx-1];
+                this.state.buttonsUser[idx-1] = this.state.buttonsUser[idx];
+                this.state.buttonsUser[idx] = tmpbutton;
+            }
+        }
         else if( cmd === 'setcolor') {
             this.state.buttonsUser[idx].type = 'color';
             this.state.buttonsUser[idx].color = Blink1Service.getCurrentColor();

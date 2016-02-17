@@ -48,7 +48,7 @@ var Blink1Status = React.createClass({
 		var labelStyle = {width: 80, display: "inline-block"};
 
 		return (
-			<Panel header="Device" style={{ width: 280, height: 360 }}>
+			<Panel header={<h4>Device</h4>} style={{ width: 280, height: 360 }}>
 				<div style={{ width: 256, height: 192 }}>
 					<VirtualBlink1 blink1Color={this.state.blink1Color} />
 				</div>

@@ -19,9 +19,9 @@ var Blink1TabViews = React.createClass({
 		console.log("blink1TabViews.render");
 
 		return (
-				<div>
+				<div style={{width:800}}>
 					<Tabs defaultActiveKey={1}>
-						<Tab eventKey={1} title={<i className="fa fa-long-arrow-right"> Start</i>}>
+						<Tab eventKey={1} title={<i className="fa fa-long-arrow-right"> <b>Start</b></i>}>
 							<div style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								<BigButtonSet />
 							</div>
