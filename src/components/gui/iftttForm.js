@@ -3,8 +3,8 @@
 var React = require('react');
 //var ReactDom = require('react-dom');
 
-var Col = require('react-bootstrap').Col;
-var Row = require('react-bootstrap').Row;
+// var Col = require('react-bootstrap').Col;
+// var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;

@@ -63,6 +63,7 @@ var IftttTable = React.createClass({
 		console.log("deleteRuleEdit:", this.state.workingIndex);
 		if( this.state.workingIndex !== -1 ) {
 			this.deleteRule( this.state.workingIndex );
+			this.setState( {workingIndex: -1} );
 		}
 		this.cancelForm();
 	},
@@ -90,7 +91,7 @@ var IftttTable = React.createClass({
     },
 
 	render: function() {
-		console.log("iftttTable render",this.state);
+		// console.log("iftttTable render",this.state);
 		// var self = this;
 		//	workingrule: { row: idx, name: this.state.rules[idx].name, patternId: this.state.rules[idx].pattternId }
 		var formrule = { name: 'some new thing', patternId: 'whiteflashes'}; // FIXME:
@@ -98,7 +99,6 @@ var IftttTable = React.createClass({
 			formrule.name = this.state.rules[this.state.workingIndex].name;
 			formrule.patternId = this.state.rules[this.state.workingIndex].patternId;
 		}
-		console.log("iftttTable, formrule",formrule);
 		var createRow = function(rule, index) {
 			//var deleteButton = <button onClick={this.deleteRule.bind(this, index)}><i className="fa fa-times"></i></button>;
 			var	patternCell = PatternsService.getNameForId( this.state.rules[index].patternId );  // just text
@@ -114,7 +114,6 @@ var IftttTable = React.createClass({
 					</tr>
 			);
 		};
-		console.log("iftttTable, formrule",formrule);
 		return (
 			<div style={{position: "relative", height: 200}}>
 

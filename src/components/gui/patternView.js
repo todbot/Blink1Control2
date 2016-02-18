@@ -41,7 +41,11 @@ var PatternView = React.createClass({
 		console.log('addSwatch');
         var colors = this.state.colors;
         //this.props.onAddSwatch(this.props.pattern.id);
-		var newcolor = {rgb: Blink1Service.getCurrentColor(), time: 0.23, ledn: 0 };
+		var newcolor = {
+			rgb: Blink1Service.getCurrentColor(),
+			time: 0.23,
+			ledn: Blink1Service.getCurrentLedN()
+		};
         colors.push( newcolor );
         this.setState( {colors: colors});
         console.log('addSwatch, colors:', this.state.colors);

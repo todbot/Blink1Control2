@@ -18,7 +18,9 @@
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "./node_modules/.bin/webpack",
     "env": "env",
-    "fix-node-hid": "cp -a node_modules/node-hid/build/HID/v0.5.1/Release/electron-v0.36-darwin-x64 node_modules/node-hid/build/HID/v0.5.1/Release/node-v47-darwin-x64"
+    "fix-node-hid": "cp -a node_modules/node-hid/build/HID/v0.5.1/Release/electron-v0.36-darwin-x64 node_modules/node-hid/build/HID/v0.5.1/Release/node-v47-darwin-x64",
+    "build-osx": "NODE_ENV=production webpack -p --config webpack.config.js; electron-packager . $npm_package_productName --overwrite --out=dist --ignore='^/dist$' --prune --asar --platform=darwin --arch=x64 --version=$npm_package_electronVersion --icon=assets/epp.icns",
+    "build-win": "NODE_ENV=production webpack -p --config webpack.config.js; electron-packager . $npm_package_productName --overwrite --out=dist --ignore='^/dist$' --prune --asar --platform=win32 --arch=all --version=$npm_package_electronVersion --icon=assets/epp.ico"
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +28,7 @@
     "font-awesome": "^4.5.0",
     "imap": "^0.8.16",
     "lodash": "^4.2.1",
+    "moment": "^2.11.2",
     "nconf": "^0.8.4",
     "node-blink1": "^0.2.2",
     "node-hid": "^0.5.1",

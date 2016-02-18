@@ -22,8 +22,11 @@ var blink1Vid = 0x27B8;
 var blink1Pid = 0x01ED;
 
 //var currentColor = colorparse('#ff00ff');
-var currentColor = '#ff00ff';
+// array of colors, one per LED of blink1.
+var currentColors = new Array( 16 );
+var currentLedN = 0;
 
+// FIXME: does lodash have a version of this?
 var _clone = function(item) {
 	return JSON.parse(JSON.stringify(item)); //return cloned copy so that the item is passed by value instead of by reference
 };
@@ -108,6 +111,16 @@ var Blink1Service = {
 		}
 	},
 
+	// internal function, accesses hardware
+	_fadeToRGB: function( millis, r, g, b, n ) {
+		if( blink1 ) {
+			blink1.fadeToRGB( millis, r, g, b, n );
+		}
+		// else {
+		// 	console.log("Blink1ServerApi._fadeToRGB: no blink1");
+		// }
+	},
+
 	getAllSerials: function() {
 		//blink1serials = Blink1.devices();
 		return _clone(blink1serials);
@@ -138,29 +151,35 @@ var Blink1Service = {
 		}
 	},
 
-	getCurrentColor: function() {
-		return currentColor;
+	getCurrentLedN: function() {
+		return currentLedN;
+	},
+	getCurrentColor: function() { // FIXME
+		console.log("Blink1Service.getCurrentColor: ", currentLedN);
+		var ledn = (currentLedN>0) ? currentLedN-1 : currentLedN;
+		return currentColors[ ledn ];
+	},
+	getCurrentColors: function() {
+		return currentColors;
 	},
 
-	_fadeToRGB: function( millis, r, g, b ) {
-		if( blink1 ) {
-			blink1.fadeToRGB( millis, r, g, b );
-		}
-		else {
-			//bconsole.log("Blink1ServerApi._fadeToRGB: no blink1");
-		}
-	},
-
-	fadeToColor: function( millis, color ) {
-		//console.log("Blink1ServerApi.fadeToColor:", typeof color, (color instanceof String), JSON.stringify(color) ); //, " : ", color);
+	// main entry point for this service
+	fadeToColor: function( millis, color, ledn) {
+		ledn = ledn || 0;
+		currentLedN = ledn;
+		console.log("Blink1Service.fadeToColor:", ledn, color, typeof color, (color instanceof String) );
 		//if( color instanceof String ) {  // NOOOO, this is not always true, literals vs objects
 		if( typeof color === 'string' ) {
 			color = colorparse( color ); // FIXME: must be better way
 		}
+		if( ledn === 0 ) {
+			currentColors.fill( color.hex );
+		} else {
+		 	currentColors[ledn-1] = color.hex;
+		}
 		//console.log("Blink1ServerApi.fadeToColor: currentColor:", currentColor, "ms:", millis );
 
-		this._fadeToRGB( millis, color.rgb[0], color.rgb[1], color.rgb[2]);
-		currentColor = color.hex;
+		this._fadeToRGB( millis, color.rgb[0], color.rgb[1], color.rgb[2], ledn);
 		this.notifyChange();
 	},
 
@@ -180,9 +199,11 @@ var Blink1Service = {
 	},
 	notifyChange: function() {
 		_.forIn( listeners, function(callback) {
-			callback(currentColor);
+			callback( Blink1Service.getCurrentColor(), currentColors, currentLedN);
 		});
-	}
+	},
+
+
 };
 
 

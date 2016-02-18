@@ -22,13 +22,15 @@ var Blink1Status = React.createClass({
 		};
 	},
 	componentDidMount: function() {
-		Blink1Service.addChangeListener( this.updateState, "blink1Status" );
+		Blink1Service.addChangeListener( this.updateColorState, "blink1Status" );
 		PatternsService.addChangeListener( this.updatePatternState, "blink1Status" );
 	},
-	updateState: function() { // FIXME: this called mostly for color, don't need other parts?
+	// updateState: function(colors) { // FIXME: this called mostly for color, don't need other parts?
+	updateColorState: function(currentColor, colors,ledn) {
+		// FIXME: this called mostly for color, don't need other parts?
 		// console.log("updateState");
 		this.setState({
-						blink1Color: Blink1Service.getCurrentColor(),
+						blink1ColorLast: currentColor,
 						statusStr: Blink1Service.isConnected() ? "connected" : "not connected",
 						serialNumber: Blink1Service.serialNumberForDisplay(),
 						iftttKey: Blink1Service.iftttKey()
@@ -47,10 +49,11 @@ var Blink1Status = React.createClass({
 		if( !currentPattern ) { currentPattern = '-'; }
 		var labelStyle = {width: 80, display: "inline-block"};
 
+		// <VirtualBlink1 blink1Color={this.state.blink1Color} /> // FIXME
 		return (
 			<Panel header={<h4>Device</h4>} style={{ width: 280, height: 360 }}>
-				<div style={{ width: 256, height: 192 }}>
-					<VirtualBlink1 blink1Color={this.state.blink1Color} />
+				<div>
+					<VirtualBlink1 />
 				</div>
 				<Well bsSize="small" style={{margin: 0}}>
 					<div>

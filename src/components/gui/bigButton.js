@@ -35,10 +35,12 @@ var BigButton = React.createClass({
 		this.props.onEdit(eventKey, this.props.idx);
 	},
 	render: function() {
-		var buttonStyle = { width: 64, height: 64, margin: 5, padding: 0, };
+		var buttonStyle = { width: 64, height: 64, margin: 5, padding: 3, margin: 3, };
 		// var tstyle = { height: 28, border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal'  };
 		// var tstyle = { height: 24, display:'flex',justifyContent:'center',alignItems:'center',border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal', verticalAlign:'middle' };
-		var tstyle = { height: 24, display:'flex',justifyContent:'center',alignItems:'center', color: '#666', fontSize: "0.9em", wordWrap:'break-word', whiteSpace:'normal', lineHeight:'85%' };
+		var tstyle = { height: 24, display:'flex',justifyContent:'center', alignItems:'flex-end',
+			color: '#666', fontWeight: '400', fontSize: "0.9em",
+			wordWrap:'break-word', whiteSpace:'normal', lineHeight:'85%' };
 
 		var iconContent;
 		if( this.props.type === "color" ) {

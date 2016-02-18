@@ -145,7 +145,7 @@ var PatternList = React.createClass({
 				<Button style={lockButtStyle}><i className={patt.locked ? "fa fa-lock" : ""}></i></Button> : null;
 
 			return (
-				<tr key={idx} ><td style={{margin: 0, padding: 0}}>
+				<tr key={idx} ><td style={{margin: 0, padding: 3}}>
 
 					<Button onClick={this.playStopPattern.bind(null, pid)} style={playButtStyle}><i className={(patt.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
 
@@ -163,7 +163,7 @@ var PatternList = React.createClass({
 		return (
 			<Table hover >
 				<tbody>
-				<tr><td><button onClick={this.addPattern} className="btn-block" ><i className="fa fa-plus"></i> add pattern</button></td></tr>
+				<tr><td><Button onClick={this.addPattern} bsSize="xsmall" block><i className="fa fa-plus"></i> add pattern</Button></td></tr>
 				{this.state.patterns.map( createPatternRow, this )}
 				</tbody>
 			</Table>

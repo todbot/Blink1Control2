@@ -5,38 +5,50 @@ var React = require('react');
 var remote = window.require('remote');
 var Blink1Service = remote.require('./server/blink1Service');
 
-var mystyle = {
-	width: 150,
-	height: 120,
-	display: "block",
-};
+// var _ = require('lodash');
+
+// var mystyle = {
+// 	width: 150,
+// 	height: 120,
+// 	display: "block",
+// };
 
 var VirtualBlink1 = React.createClass({
 	getInitialState: function() {
 		return {
-			color: '#ff00ff'
+			colors: ['#ff00ff', '#00ffff', 0,0,  0,0,0,0, 0,0,0,0 ]
 		};
 	},
-	fetchBlink1Color: function(color) {
-		//console.log("fetchBlink1Color", color); //, Blink1Service.getCurrentColor() );
+	// callback to blink1service
+	fetchBlink1Color: function(currentColor, colors, ledn) { // FIXME: use 'n'
+		// console.log("VirtualBlink1.fetchBlink1Color", currentColor, colors, ledn); //, Blink1Service.getCurrentColor() );
 		this.setState( {
-			color: color // Blink1Service.getCurrentColor()
+			colors: colors // Blink1Service.getCurrentColor()
 		});
 	},
 	componentDidMount: function() {
 		Blink1Service.addChangeListener( this.fetchBlink1Color, "virtualBlink1" );
 	},
 	render: function() {
-		//console.log("virtualBlink1.render:", this.props.blink1Color);
-		mystyle.background = this.state.color;
-		var img0style = { width: 240, height: 192, margin: 0, padding: 0,
+		// mystyle.background = this.state.color;
+		var topgradient = (this.state.colors[0] === '#000000') ? 'url()' :
+		"radial-gradient(160px 90px at 150px 50px," + this.state.colors[0] + " 0%, rgba(255,255,255,0.1) 55%" + ")";
+		var botgradient = (this.state.colors[1] === '#000000') ? 'url()' :
+		"radial-gradient(160px 90px at 150px 100px," + this.state.colors[1] + " 0%, rgba(255,255,255,0.1) 55%" + ")";
+
+		var img0style = { width: 240, height: 150, margin: 0, padding: 0,
 			//background: this.props.blink1Color
 			backgroundImage: [
 				//'radial-gradient( rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.5} 0%, rgba(255,255,255,0.1) 65%)',
+				topgradient,
 				"url(images/device-light-mask.png)",
-				"radial-gradient(" + this.state.color + " 0%, rgba(255,255,255,0.1) 55%" + ")",
+				"url(images/device-light-bg-bottom.png)",
+				// "url(images/device-preview.png)",
+				// "radial-gradient(120px at 160px 50px," + this.state.color + " 0%, rgba(255,255,255,0.1) 55%" + ")",
+				// "radial-gradient(this.state.color + " 0%, rgba(255,255,255,0.1) 55%" + ")",
 				"url(images/device-light-bg-top.png)",
-				"url(images/device-light-bg.png)"
+				//"url(images/device-light-bg.png)",
+				botgradient,
 			]
 		};
 		//	<img style={img2style} src="images/device-light-bg.png" />
@@ -45,8 +57,7 @@ var VirtualBlink1 = React.createClass({
 		// var img2style = { width: 240, height: 192, position: "relative", top: 0 };
 		// var img3style = { width: 240, height: 192, position: "relative", top: 0 };
 		return (
-			<div style={img0style}>
-			</div>
+			<div style={img0style}></div>
 			);
 	}
 });
