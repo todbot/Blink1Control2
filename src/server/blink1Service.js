@@ -167,11 +167,17 @@ var Blink1Service = {
 	fadeToColor: function( millis, color, ledn) {
 		ledn = ledn || 0;
 		currentLedN = ledn;
-		// console.log("Blink1Service.fadeToColor:", ledn, color, typeof color, (color instanceof String) );
+
+		console.log("Blink1Service.fadeToColor:", millis,ledn, color, typeof color, (color instanceof String) );
+
 		//if( color instanceof String ) {  // NOOOO, this is not always true, literals vs objects
 		if( typeof color === 'string' ) {
 			color = colorparse( color ); // FIXME: must be better way
 		}
+		else if( color.rgb && typeof color.rgb === 'string' ) {
+			color = colorparse( color.rgb );
+		}
+
 		if( ledn === 0 ) {
 			currentColors.fill( color.hex );
 		} else {

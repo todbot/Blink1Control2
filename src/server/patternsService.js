@@ -129,6 +129,7 @@ var PatternsService = {
 		return _.clone(pattern);
 	},
 	savePatterns: function() {
+		console.log("savePatterns");
 		var patternsSave = _.map( patternsUser, function(p) {
 			return _.pick(p, 'name', 'id', 'colors', 'repeats');
 		});

@@ -5,8 +5,6 @@ var _ = require('lodash');
 
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
-var MenuItem = require('react-bootstrap').MenuItem;
-var DropdownButton = require('react-bootstrap').DropdownButton;
 
 var PatternView = require('./patternView');
 
@@ -37,14 +35,17 @@ var PatternList = React.createClass({
 		PatternsService.removeChangeListener( "patternList" );
 	},
 	updatePatternState: function() {
-		console.log("done it");
+		console.log("PatternList.updatePatternState");
 		this.setState( {patterns: this.getAllPatterns() } );
 	},
 
 	handleClickOutside: function(evt) { // part of react-onclickoutside
-		console.log("handleClickOutside: ", evt);
+		console.log("handleClickOutside: ", evt.target.value, evt);
 		if( this.state.editing ) {
+			console.log("PatternList.handleClickOutside: done editing");
+			// PatternsService.savePattern();
 			this.setState( { editing: false, editId: ''} );
+			this.updatePatternState();
 		}
 	},
 	addPattern: function() {
@@ -54,28 +55,6 @@ var PatternList = React.createClass({
 		this.setState( {editing: true, editId: p.id } );
 		this.updatePatternState();
 		console.log(JSON.stringify(this.state.patterns)); // dump all patterns
-	},
-	playStopPattern: function(pattid) { // FIXME: should have 'play' and 'stop'
-		var p = PatternsService.getPatternById( pattid );
-		p.playing = !p.playing;
-		//PatternsService.savePattern( p );
-		console.log("playStopPattern: ", pattid, p.playing);
-		if( p.playing ) {
-			PatternsService.playPattern(pattid, this.updatePatternState);
-			/*function() {
-				console.log("done playing");
-				//this.setState( {patterns: PatternsService.getAllPatterns()} );
-				this.doneIt();
-			});*/
-		}
-		else {
-			PatternsService.stopPattern(pattid);
-		}
-		this.updatePatternState();
-	},
-	editPattern: function(pattid) {
-		console.log("editPattern:", pattid);
-		this.setState( {editing: true, editId: pattid} );
 	},
 	lockPattern: function(pattid) {
 		console.log("lockPattern:", pattid);
@@ -103,60 +82,30 @@ var PatternList = React.createClass({
 	},
 
 	onPatternUpdated: function(pattern) {
-		console.log("onPatternUpdated:", pattern);
+		console.log("PatternList.onPatternUpdated:", pattern);
+		PatternsService.savePattern(pattern);
 	},
 
 	render: function() {
-		console.log("patternList.render");
+		// console.log("patternList.render");
 
 		var createPatternRow = function(patt, idx) {
-			var pid = patt.id;
+			// var pid = patt.id;
 			//var noEdit = patt.system || patt.locked;
-			var editingThis = (this.state.editing && (this.state.editId === pid));
-			var patternStyle = {
-				borderStyle: "solid", borderWidth: 1, borderRadius: "4%", borderColor: "#eee", padding: 2, margin: 0,
-				background: "#fff"
-			};
-			var playButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, outline: 0 };
-			var editButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, borderLeftStyle: "solid", float: "right" };
-			var lockButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, width: 15 };
-			//var patternStateIcon = (patt.playing) ? 'fa-stop' : 'fa-play';
-			var lockMenuIcon = (patt.locked) ? "fa fa-lock" : "fa fa-unlock-alt";
-			var lockMenuText = (patt.locked) ? "Unlock pattern" : "Lock pattern";
+			// var editingThis = (this.state.editing && (this.state.editId === pid));
 			//var lockIcon =
-
-			var editOptions =
-				<DropdownButton style={editButtStyle} title="" id={idx} pullRight >
-					<MenuItem eventKey="1" onSelect={this.editPattern.bind(null, pid)} disabled={patt.system || patt.locked}><i className="fa fa-pencil"></i> Edit pattern</MenuItem>
-					<MenuItem eventKey="2" onSelect={this.lockPattern.bind(null, pid)} disabled={patt.system}><i className={lockMenuIcon}></i> {lockMenuText}</MenuItem>
-					<MenuItem eventKey="3" onSelect={this.copyPattern.bind(null, pid)}><i className="fa fa-copy"></i> Copy pattern</MenuItem>
-					<MenuItem eventKey="4" onSelect={this.deletePattern.bind(null, pid)} disabled={patt.locked}><i className="fa fa-remove"></i> Delete pattern</MenuItem>
-				</DropdownButton>;
-			if( editingThis ) {
-				editOptions =
-					<span>
-						<Button onClick={this.deletePattern.bind(null, pid)} style={playButtStyle}><i className="fa fa-remove"></i></Button>
-						<Button onClick={this.handleClickOutside} style={playButtStyle}><i className="fa fa-check"></i></Button>
-					</span>;
-				patternStyle.borderColor = "#f99";
-			}
-
-			var lockButton = (!editingThis) ?
-				<Button style={lockButtStyle}><i className={patt.locked ? "fa fa-lock" : ""}></i></Button> : null;
+			// var playButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, outline: 0 };
 
 			return (
-				<tr key={idx} ><td style={{margin: 0, padding: 3}}>
-
-					<Button onClick={this.playStopPattern.bind(null, pid)} style={playButtStyle}><i className={(patt.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
-
-					<PatternView pattern={patt}
-						editing={editingThis}
-						onPatternUpdated={this.onPatternUpdated} />
-
-					{lockButton}
-
-					{editOptions}
-				</td></tr>
+				<tr key={idx} >
+					<td style={{margin: 0, padding: 3}}>
+						<PatternView
+							pattern={patt}
+							onPatternUpdated={this.onPatternUpdated}
+							onCopyPattern={this.copyPattern}
+							onDeletePattern={this.deletePattern} />
+					</td>
+				</tr>
 			);
 		};
 
