@@ -155,7 +155,7 @@ var Blink1Service = {
 		return currentLedN;
 	},
 	getCurrentColor: function() { // FIXME
-		console.log("Blink1Service.getCurrentColor: ", currentLedN);
+		// console.log("Blink1Service.getCurrentColor: ", currentLedN);
 		var ledn = (currentLedN>0) ? currentLedN-1 : currentLedN;
 		return currentColors[ ledn ];
 	},
@@ -163,11 +163,11 @@ var Blink1Service = {
 		return currentColors;
 	},
 
-	// main entry point for this service
+	// main entry point for this service, sets currentColor & currentLedN
 	fadeToColor: function( millis, color, ledn) {
 		ledn = ledn || 0;
 		currentLedN = ledn;
-		console.log("Blink1Service.fadeToColor:", ledn, color, typeof color, (color instanceof String) );
+		// console.log("Blink1Service.fadeToColor:", ledn, color, typeof color, (color instanceof String) );
 		//if( color instanceof String ) {  // NOOOO, this is not always true, literals vs objects
 		if( typeof color === 'string' ) {
 			color = colorparse( color ); // FIXME: must be better way

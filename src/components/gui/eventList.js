@@ -41,7 +41,7 @@ var EventList = React.createClass({
 		};
 
 		return (
-			<Panel header={<h4>Recent Events</h4>} style={{ width: 280, height: 300 }}>
+			<Panel header={<h4>Recent Events</h4>} style={{ width: 280, height: 300, margin:5, padding:0}}>
 				<ListGroup style={{	height: 200, overflowY: 'scroll', overflowX:'hidden', padding:0, margin:0, marginBottom:10}}>
 				{this.state.events.map(createEventLine, this)}
 				</ListGroup>

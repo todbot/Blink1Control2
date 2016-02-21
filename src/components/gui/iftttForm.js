@@ -8,6 +8,7 @@ var React = require('react');
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
+var ButtonGroup = require('react-bootstrap').ButtonGroup;
 // var FormControls = require('react-bootstrap').FormControls;
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
 
@@ -77,7 +78,7 @@ var IftttForm = React.createClass({
 
                   </Modal.Body>
                   <Modal.Footer>
-                      <Button onClick={this.delete}>Delete</Button>
+                      <Button bsStyle="danger" bsSize="small" style={{float:'left'}} onClick={this.delete}>Delete</Button>
                       <Button onClick={this.cancel}>Cancel</Button>
                       <Button onClick={this.close}>OK</Button>
                  </Modal.Footer>

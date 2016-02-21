@@ -41,6 +41,7 @@
     "react-fontawesome": "^0.3.3",
     "request": "^2.69.0",
     "simplecrypt": "^0.1.0",
+    "tinycolor2": "^1.3.0",
     "usb-detection": "^1.3.0"
   },
   "devDependencies": {

@@ -6,21 +6,30 @@ var Grid = require('react-bootstrap').Grid;
 var Row = require('react-bootstrap').Row;
 var Col = require('react-bootstrap').Col;
 var Well = require('react-bootstrap').Well;
+var Form = require('react-bootstrap').Form;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
+var ButtonInput = require('react-bootstrap').ButtonInput;
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
 
 var remote = window.require('remote');
 var Blink1Service = remote.require('./server/blink1Service');
 //var Blink1Service = remote.require('../../server/blink1ServerApi');
 
-var ColorPicker = require('react-color');
+// var ColorPicker = require('react-color');
+
+var HtmlColorChart = require('./htmlColorChart');
+var tinycolor = require('tinycolor2');
 
 var Blink1ColorPicker = React.createClass({
 	getInitialState: function() {
 		return {
 			color: "#33dd33",
-			ledn: 0
+			secs: 0.1,
+			ledn: 0,
+			r: 0,
+			g: 1,
+			b: 2,
 		};
 	},
 	componentDidMount: function() {
@@ -30,13 +39,17 @@ var Blink1ColorPicker = React.createClass({
 	// callback for Blink1Service
 	fetchBlink1Color: function(currentColor, colors, ledn) {
 		console.log("colorpicker.fetchBlink1Color, currentColor",currentColor, "ledn:",ledn);
-		this.setState( { color: currentColor, ledn: ledn });
+		var rgb = tinycolor(currentColor).toRgb();
+		this.setState( { color: currentColor, ledn: ledn, r:rgb.r, g:rgb.g, b:rgb.b });
+	},
+	setColorHex: function(color) {
+		Blink1Service.fadeToColor( 200, color, this.state.ledn ); // FIXME: time
 	},
 	// called by colorpicker
 	setColor: function(color) {
-		console.log("colorpicker.setColor",color.hex, this.state.ledn);
+		// console.log("colorpicker.setColor",color.hex, this.state.ledn);
 		color = '#' + color.hex;
-		Blink1Service.fadeToColor( 200, color, this.state.ledn ); // FIXME
+		Blink1Service.fadeToColor( 200, color, this.state.ledn ); // FIXME: time
 		// and the above will call 'fetchBlink1Color' anyway
 		// there must be a better way to do this
 	},
@@ -44,19 +57,82 @@ var Blink1ColorPicker = React.createClass({
 	setLedN: function(n) {
 		this.setState({ledn: n});
 	},
+	handleChangeSecs: function(event) {
+		var number = event.target.value;
+		this.setState({secs: number});
+	},
+	handleChangeR: function(event) {
+		var number = event.target.value;
+		number = ( number < 0 ) ? 0 : (number>255) ? 255 : number;
+		// this.setState({r:number});
+		var tc = tinycolor({r:this.state.r, g:this.state.g, b:this.state.b} );
+		this.setColor( {hex:tc.toHex()} );
+	},
+	handleChangeG: function(event) {
+		var number = event.target.value;
+		if(isNaN(number)) { console.log("not a number"); return; }
+		number = ( number < 0 ) ? 0 : (number>255) ? 255 : number;
+		// this.setState({g:number});
+		var tc = tinycolor({r:this.state.r, g:this.state.g, b:this.state.b} );
+		this.setColor( {hex:tc.toHex()} );
+	},
+	handleChangeB: function(event) {
+		var number = event.target.value;
+		number = ( number < 0 ) ? 0 : (number>255) ? 255 : number;
+		// this.setState({b:number});
+		var tc = tinycolor({r:this.state.r, g:this.state.g, b:this.state.b} );
+		this.setColor( {hex:tc.toHex()} );
+	},
+
+	// <div style={{ display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"}}>
+	// 	<ColorPicker.default type="sketch" color={this.state.color} onChange={this.setColor} />
+	// </div>
+	// <div style={{ display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"}}>
+	// 	<ButtonGroup vertical>
+	// 	  <Button onClick={this.setLedN.bind(this, 0)} active={this.state.ledn===0}>LED AB</Button>
+	// 	  <Button onClick={this.setLedN.bind(this, 1)} active={this.state.ledn===1}>LED A</Button>
+	// 	  <Button onClick={this.setLedN.bind(this, 2)} active={this.state.ledn===2}>LED B</Button>
+	// 	</ButtonGroup>
+	// </div>
+
+	// <form horizontal className="col-sm-8">
+	// 	<Input type="number" label="msec" value={this.state.millis}  onChange={this.handleChangeMillis}
+	// 		labelClassName="col-sm-6" wrapperClassName="col-sm-6" bsSize="small" />
+	// </form>
+	// <form horizontal className="col-sm-8">
+	// 	<Input type="number" label='R'
+	// 		labelClassName="col-sm-4" wrapperClassName="col-sm-8" bsSize="small" />
+	// 	<Input type="number" label='G'
+	// 		labelClassName="col-sm-4" wrapperClassName="col-sm-8" bsSize="small" />
+	// 	<Input type="number" label='B'
+	// 		labelClassName="col-sm-4" wrapperClassName="col-sm-8" bsSize="small" />
+	// </form>
 	render: function() {
 		return (
-				<div style={{border: '0px solid red'}}>
-					<div style={{ display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"}}>
-						<ColorPicker.default type="sketch" color={this.state.color} onChange={this.setColor} />
-					</div>
-					<div style={{ display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"}}>
-						<ButtonGroup vertical>
-					      <Button onClick={this.setLedN.bind(this, 0)} active={this.state.ledn===0}>LED AB</Button>
-					      <Button onClick={this.setLedN.bind(this, 1)} active={this.state.ledn===1}>LED A</Button>
-					      <Button onClick={this.setLedN.bind(this, 2)} active={this.state.ledn===2}>LED B</Button>
-					    </ButtonGroup>
-					</div>
+				<div>
+					<HtmlColorChart handleClick={this.setColorHex}/>
+						<div className="row">
+							<ButtonGroup vertical className="col-sm-4">
+							  <Button onClick={this.setLedN.bind(this, 0)} active={this.state.ledn===0} bsSize="small">LED AB</Button>
+							  <Button onClick={this.setLedN.bind(this, 1)} active={this.state.ledn===1} bsSize="small">LED A</Button>
+							  <Button onClick={this.setLedN.bind(this, 2)} active={this.state.ledn===2} bsSize="small">LED B</Button>
+							</ButtonGroup>
+							<div className="col-sm-5">
+								R:
+								<input type="number" className="input" min={0} max={255} step={1}
+		  						    value={this.state.r} onChange={this.handleChangeR}/><br/>
+								G:
+								<input type="number" className="input" min={0} max={255} step={1}
+		  						    value={this.state.g} onChange={this.handleChangeG}/><br/>
+								B:
+								<input type="number" className="input" min={0} max={255} step={1}
+		  						    value={this.state.b} onChange={this.handleChangeB}/><br/>
+								secs:
+								<input type="number" className="input" min={0.1} max={10.0} step={0.1}
+									value={this.state.secs} onChange={this.handleChangeSecs} />
+
+						  </div>
+						</div>
 				</div>
 		);
 	}

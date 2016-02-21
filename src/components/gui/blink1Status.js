@@ -51,7 +51,7 @@ var Blink1Status = React.createClass({
 
 		// <VirtualBlink1 blink1Color={this.state.blink1Color} /> // FIXME
 		return (
-			<Panel header={<h4>Device</h4>} style={{ width: 280, height: 360 }}>
+			<Panel header={<h4>Device</h4>} style={{ width: 280, height: 320, margin:5, padding:0 }}>
 				<div>
 					<VirtualBlink1 />
 				</div>

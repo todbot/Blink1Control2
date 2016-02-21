@@ -121,7 +121,7 @@ var IftttTable = React.createClass({
 					onSave={this.saveForm} onCancel={this.cancelForm} onDelete={this.deleteRuleEdit} />
 
 				<div style={{display: "block", overflowY: "scroll", height: 150}}>
-					<Table bordered condensed hover >
+					<Table bordered condensed hover style={{fontSize:"0.9em"}}>
 						<thead>
 							<tr>
 							<th>Name</th>
