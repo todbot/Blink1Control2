@@ -28,11 +28,11 @@ var PatternView = React.createClass({
 	onNameChange: function(event) {
         var field = event.target.name;
         var value = event.target.value;
-        console.log('field,value', field, value);
+        console.log('PatternView.onNameChange field,value', field, value);
 		var pattern = this.state.pattern;
-		pattern.naem = value;
+		pattern.name = value;
 		this.setState( {pattern: pattern});
-		this.props.onPatternUpdated(pattern);
+		// this.props.onPatternUpdated(pattern);
     },
 	onSwatchClick: function(coloridx) {
 		console.log("PatternView.onSwatchClick", this.props.pattern.id, coloridx);
@@ -44,7 +44,7 @@ var PatternView = React.createClass({
 			console.log("PatternView.onSwatchClick: editing!");
 			var newcolor = {
 				rgb: Blink1Service.getCurrentColor(),
-				time: 0.23, // FIXME:
+				time: Blink1Service.getCurrentMillis() / 1000,
 				ledn: Blink1Service.getCurrentLedN()
 			};
 			// var colors = this.state.pattern.colors[idx] = newcolor;
@@ -66,7 +66,7 @@ var PatternView = React.createClass({
         //this.props.onAddSwatch(this.props.pattern.id);
 		var newcolor = {
 			rgb: Blink1Service.getCurrentColor(),
-			time: 0.23, // FIXME
+			time: Blink1Service.getCurrrentMillis() / 1000, // FIXME
 			ledn: Blink1Service.getCurrentLedN()
 		};
 		// var colors = pattern.colors
@@ -83,18 +83,15 @@ var PatternView = React.createClass({
 		this.setState({pattern: pattern});
 		this.props.onPatternUpdated(pattern);
 	},
-    // onDoneEditing: function() {
-	// 	console.log("PatternView.onDoneEditing");
-	// 	// FIXME: how to do this  UNUSED?
-    // },
-	playStopPattern: function() { // FIXME: should have 'play' and 'stop'
-		console.log("PatternView.playStopPattern");
+	onPlayStopPattern: function() { // FIXME: should have 'play' and 'stop'
+		// console.log("PatternView.onPlayStopPattern");
 		var pattern = this.state.pattern;
 		pattern.playing = !pattern.playing;
 		this.setState({pattern: pattern});
-		console.log("PatternView.playStopPattern", pattern.id, pattern.playing);
+		console.log("PatternView.onPlayStopPattern", pattern.id, pattern.playing);
 		var self = this;
 		if( pattern.playing ) {
+			console.log("PLAYING");
 			PatternsService.playPattern(pattern.id, function() {
 				console.log("done playing");
 				var pattern = self.state.pattern;
@@ -110,41 +107,27 @@ var PatternView = React.createClass({
 		console.log("PatternView.onEditPattern");
 		this.setState( {editing: true });
 	},
+	onLockPattern: function() {
+		console.log("PatternView.onLockPattern");
+		var pattern = this.state.pattern;
+		pattern.locked = !pattern.locked;
+		this.setState({pattern:pattern});
+	},
+	onCopyPattern: function() {
+		console.log("onCopyPattern", this.state.pattern.id);
+		var pattern = this.state.pattern;
+		this.props.onCopyPattern( pattern.id );
+	},
+	onDeletePattern: function() {
+		console.log("onDeletePattern", this.state.pattern.id);
+		var pattern = this.state.pattern;
+		this.props.onDeletePattern( pattern.id );
+	},
 	onEditDone: function() {
 		console.log("PatternView.onEditDone");
 		this.setState( {editing: false });
-	},
-		// if( this.state.editing ) {
-		// 	console.log("PatternList.handleClickOutside: done editing");
-		// 	// PatternsService.savePattern();
-		// 	this.setState( { editing: false, editId: ''} );
-		// 	this.updatePatternState();
-		// }
-	// },
-
-	onLockPattern: function() {
-		console.log("PatternView.onLockPattern");
-		// var pattern = this.state.pattern;
-		// pattern.locked = !pattern.locked;
-		//
-		// this.updatePatternState();
-	},
-	onCopyPattern: function() {
-		console.log("copyPattern");
-		// var p = PatternsService.getPatternById( pattid );
-		// p.id = 0; // unset to regen for Api // FIXME:!!!
-		// p.name = p.name + " (copy)";
-		// p.system = false;
-		// p.locked = false;
-		// PatternsService.savePattern( p );
-		// this.setState( {editing: true, editId: p.id } );
-		// this.updatePatternState();
-	},
-	onDeletePattern: function() {
-		console.log("onDeletePattern");
-		// PatternsService.deletePattern( pattid );
-		// this.setState( {editing: false} );
-		// this.updatePatternState();
+		var pattern = this.state.pattern;
+		this.props.onPatternUpdated(pattern);
 	},
 
 	render: function() {
@@ -152,7 +135,7 @@ var PatternView = React.createClass({
 		var pid = pattern.id;
 		var editingThis = (this.state.editing);// && (patterneditId === pid));
 
-		var pattStyle = { width: 250, display: "inline-block",   border:'1px solid blue'};
+		var pattStyle = { width: 250, display: "inline-block",   border:'0px solid blue'};
 		var pattNameStyle = {width: 75, display: "inline-block", padding: 4, margin: 0, verticalAlign: "middle",
 				textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "80%" };
         var swatchSetStyle = { width: 115, overflow: "scroll" };
@@ -214,9 +197,9 @@ var PatternView = React.createClass({
 		}
 
 		return (
-			<span style={{display:'inline-block', border:'1px solid red'}}>
+			<span style={{display:'inline-block', border:'0px solid red'}}>
 
-				<Button onClick={this.playStopPattern} style={playButtStyle}><i className={(pattern.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
+				<Button onClick={this.onPlayStopPattern} style={playButtStyle}><i className={(pattern.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
 
 	        	<span style={pattStyle}>
 					{nameField}

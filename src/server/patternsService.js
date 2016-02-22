@@ -128,49 +128,60 @@ var PatternsService = {
 		// console.log("getPatternById:", pattern);
 		return _.clone(pattern);
 	},
+	/** Save all patterns to config and notifyChange listeners */
 	savePatterns: function() {
-		console.log("savePatterns");
+		console.log("PatternsService.savePatterns");
 		var patternsSave = _.map( patternsUser, function(p) {
 			return _.pick(p, 'name', 'id', 'colors', 'repeats');
 		});
 		config.saveSettings("patterns", patternsSave);
+		this.notifyChange();  /// FIXME: hmmm, not sure about the philosophy of this
 	},
 	/** Saves new pattern or updates existing pattern */
 	savePattern: function(pattern) {
-		console.log("savePattern:", JSON.stringify(pattern));
+		console.log("PatternsService.savePattern:", JSON.stringify(pattern));
 		if (pattern.id) {
 			var existingPatternIndex = _.indexOf(patternsUser, _.find(patternsUser, {id: pattern.id}));
 			patternsUser.splice(existingPatternIndex, 1, pattern);
 		} else {
-			//Just simulating creation here.
-			//The server would generate ids for new authors in a real app.
-			//Cloning so copy returned is passed by value rather than by reference.
 			pattern.id = _generateId(pattern);
-			patternsUser.unshift(pattern);
+			patternsUser.unshift(pattern); // add new to top of list
 		}
 		this.savePatterns();
-		//return _.clone(pattern);
 	},
 	/** Create a minimal pattern and return it. Does not insert into patterns array */
 	newPattern: function(name, color) {
 		if( !name ) {
 			name = 'new pattern ' + patternsUser.length;
-			color = '#0055ff';
+			color = '#55ff00';
 		}
+		var color2 = '#000000';
 		var pattern = {
 			name: name,
 			repeats: 3,
-			colors: [{rgb: color, time: 0.2, ledn: 0}] };  // FIXME
+			colors: [{rgb: color, time: 0.2, ledn: 0}, {rgb: color2, time: 0.2, ledn: 0}] };  // FIXME
 		pattern.id = _generateId(pattern);
 		//patternsUser.unshift(pattern);
 		return pattern;
 	},
-	/** Deletes pattern.  Does not notify change yet */
+	/** Deletes pattern and notifyChange listeners */
 	deletePattern: function(id) {
 		_.remove(patternsUser, {id: id});
+		this.savePatterns();
 	},
 
-	playPattern: function(id, callback) {
+	/** Stop a playing pattern.  Notifies change listeners */
+	stopPattern: function(id) {
+		console.log('PatternsService.stopPattern',id);
+		var pattern = _.find(this.getAllPatterns(), {id: id});
+		pattern.playing = false;
+		if( playingPatternId === pattern.id ) { playingPatternId = ''; }
+		clearTimeout( pattern.timer );
+		this.notifyChange();
+	},
+
+	/** Play a pattern. Callback when done playing. Also notifys change listeners */
+	playPattern: function(id, donecallback) {
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		if( !pattern ) {
 			console.log("no pattern:", id);
@@ -184,19 +195,18 @@ var PatternsService = {
 		pattern.playing = true;
 		playingPatternId = id;
 		lastPatternId = id;
-		this.playPatternInternal(id, callback);
+		this._playPatternInternal(id, donecallback);
 	},
 
-	playPatternInternal: function(id, callback) {
+	_playPatternInternal: function(id, callback) {
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		var color = pattern.colors[pattern.playpos];
 		var rgb = color.rgb;
 		var millis = color.time * 1000;
 		var ledn = color.ledn;
-		console.log("playPatternInternal: " + pattern.id, pattern.playpos, pattern.playcount,
-		pattern.colors[pattern.playpos].rgb );
+		console.log("_playPatternInternal: " + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
 		//Blink1Service.fadeToColor( millis , rgb, ledn );
-		Blink1Service.fadeToColor( 0, rgb ); // FIXME: add ledn
+		Blink1Service.fadeToColor( millis, rgb, ledn );
 		this.notifyChange();
 
 		//var pattern = _.find(patterns, {id: id});
@@ -205,22 +215,17 @@ var PatternsService = {
 			pattern.playpos = 0;
 			pattern.playcount++;
 			if( pattern.playcount === pattern.repeats ) {
-				pattern.playing = false;
-				playingPatternId = '';
-				if( callback ) { callback(); }
+				this.stopPattern(playingPatternId);
+				// pattern.playing = false;
+				// playingPatternId = '';
+				// if( callback ) { callback(); }  // FIXME: why do this and not notify change?
 				return;
 			}
 		}
 		pattern.timer = setTimeout(function() {
-			PatternsService.playPatternInternal(id, callback);
-		}, pattern.colors[ pattern.playpos ].time * 1000 );
+			PatternsService._playPatternInternal(id, callback);
+		}, millis);
 
-	},
-
-	stopPattern: function(id) {
-		var pattern = _.find(this.getAllPatterns(), {id: id});
-		pattern.playing = false;
-		clearTimeout( pattern.timer );
 	},
 
 	getPlayingPatternId: function() {
@@ -241,7 +246,9 @@ var PatternsService = {
 	},
 	notifyChange: function() {
 		_.forIn( listeners, function(callback) {
-			callback();
+			// console.log
+			if( callback ) { callback(); }
+			else { console.log("no listener: ",listeners);}
 		});
 	}
 

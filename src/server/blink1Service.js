@@ -24,6 +24,7 @@ var blink1Pid = 0x01ED;
 //var currentColor = colorparse('#ff00ff');
 // array of colors, one per LED of blink1.
 var currentColors = new Array( 16 );
+var currentMillis = 100;
 var currentLedN = 0;
 
 // FIXME: does lodash have a version of this?
@@ -154,6 +155,9 @@ var Blink1Service = {
 	getCurrentLedN: function() {
 		return currentLedN;
 	},
+	getCurrentMillis: function() {
+		return currentMillis;
+	},
 	getCurrentColor: function() { // FIXME
 		// console.log("Blink1Service.getCurrentColor: ", currentLedN);
 		var ledn = (currentLedN>0) ? currentLedN-1 : currentLedN;
@@ -167,6 +171,7 @@ var Blink1Service = {
 	fadeToColor: function( millis, color, ledn) {
 		ledn = ledn || 0;
 		currentLedN = ledn;
+		currentMillis = millis;
 
 		console.log("Blink1Service.fadeToColor:", millis,ledn, color, typeof color, (color instanceof String) );
 
@@ -205,7 +210,7 @@ var Blink1Service = {
 	},
 	notifyChange: function() {
 		_.forIn( listeners, function(callback) {
-			callback( Blink1Service.getCurrentColor(), currentColors, currentLedN);
+			callback( Blink1Service.getCurrentColor(), currentColors, currentLedN, currentMillis);
 		});
 	},
 

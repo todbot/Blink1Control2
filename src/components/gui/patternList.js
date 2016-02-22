@@ -20,13 +20,13 @@ var PatternList = React.createClass({
 	getInitialState: function() {
 		console.log("patternList: getInitialState!");
 		return {
-			editing: false,
-			editId: '',
+			// editing: false,
+			// editId: '',
 			patterns: this.getAllPatterns()
 		};
 	},
 	getAllPatterns: function() { // get attr-only copy of remote'd object
-		return _.clone(PatternsService.getAllPatterns(), true);
+		return _.clone(PatternsService.getAllPatterns());
 	},
 	componentDidMount: function() {
 		PatternsService.addChangeListener( this.updatePatternState, "patternList" );
@@ -34,51 +34,37 @@ var PatternList = React.createClass({
 	componentWillUnmount: function() {
 		PatternsService.removeChangeListener( "patternList" );
 	},
+	/** Callback to PatternsService.addChangeListener */
 	updatePatternState: function() {
-		console.log("PatternList.updatePatternState");
+		// console.log("PatternList.updatePatternState old",this.state.patterns);
 		this.setState( {patterns: this.getAllPatterns() } );
 	},
 
-	handleClickOutside: function(evt) { // part of react-onclickoutside
-		console.log("handleClickOutside: ", evt.target.value, evt);
-		if( this.state.editing ) {
-			console.log("PatternList.handleClickOutside: done editing");
-			// PatternsService.savePattern();
-			this.setState( { editing: false, editId: ''} );
-			this.updatePatternState();
-		}
-	},
-	addPattern: function() {
-		console.log("addPattern");
+	onAddPattern: function() {
+		console.log("onAddPattern");
 		var p = PatternsService.newPattern();
+		p.id = 0; // force regen
 		PatternsService.savePattern( p );
-		this.setState( {editing: true, editId: p.id } );
-		this.updatePatternState();
-		console.log(JSON.stringify(this.state.patterns)); // dump all patterns
+		// this.setState( {editing: true, editId: p.id } );
+		// this.updatePatternState();
+		// console.log(JSON.stringify(this.state.patterns)); // dump all patterns
 	},
-	lockPattern: function(pattid) {
-		console.log("lockPattern:", pattid);
-		var p = PatternsService.getPatternById( pattid );
-		p.locked = !p.locked;
-		PatternsService.savePattern( p );
-		this.updatePatternState();
-	},
-	copyPattern: function(pattid) {
-		console.log("copyPattern:", pattid);
-		var p = PatternsService.getPatternById( pattid );
+	copyPattern: function(patternid) {
+		console.log("copyPattern:", patternid);
+		var p = PatternsService.getPatternById( patternid );
 		p.id = 0; // unset to regen for Api // FIXME:!!!
 		p.name = p.name + " (copy)";
 		p.system = false;
 		p.locked = false;
 		PatternsService.savePattern( p );
-		this.setState( {editing: true, editId: p.id } );
-		this.updatePatternState();
+		// this.setState( {editing: true, : p.id } );
+		// this.updatePatternState();
 	},
-	deletePattern: function(pattid) {
-		console.log("deletePattern:", pattid);
-		PatternsService.deletePattern( pattid );
-		this.setState( {editing: false} );
-		this.updatePatternState();
+	deletePattern: function(patternid) {
+		console.log("deletePattern:", patternid);
+		// this.setState( {editing: false} );
+		PatternsService.deletePattern( patternid );
+		// this.updatePatternState();
 	},
 
 	onPatternUpdated: function(pattern) {
@@ -87,17 +73,11 @@ var PatternList = React.createClass({
 	},
 
 	render: function() {
-		// console.log("patternList.render");
+		console.log("patternList.render",this.state.patterns);
 
 		var createPatternRow = function(patt, idx) {
-			// var pid = patt.id;
-			//var noEdit = patt.system || patt.locked;
-			// var editingThis = (this.state.editing && (this.state.editId === pid));
-			//var lockIcon =
-			// var playButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, outline: 0 };
-
 			return (
-				<tr key={idx} >
+				<tr key={patt.id + idx} >
 					<td style={{margin: 0, padding: 3}}>
 						<PatternView
 							pattern={patt}
@@ -112,7 +92,7 @@ var PatternList = React.createClass({
 		return (
 			<Table hover >
 				<tbody>
-				<tr><td><Button onClick={this.addPattern} bsSize="xsmall" block><i className="fa fa-plus"></i> add pattern</Button></td></tr>
+				<tr><td><Button onClick={this.onAddPattern} bsSize="xsmall" block><i className="fa fa-plus"></i>add pattern</Button></td></tr>
 				{this.state.patterns.map( createPatternRow, this )}
 				</tbody>
 			</Table>
@@ -124,22 +104,3 @@ var PatternList = React.createClass({
 });
 
 module.exports = PatternList;
-
-		/*
-		var createPattern = function(pattern) {
-			return (
-				<ListGroupItem key={pattern.id} >
-				<button onClick={playPattern} style={{borderStyle: "none", background: "white"}}><i className="fa fa-play"></i></button>
-				<span style={{display: "inline-block", width: 100, textAlign: "right", textOverflow: "ellipsis", whiteSpace: "no-wrap"}}>
-					{pattern.name}</span>: {pattern.colors.map( createSwatch )}
-				</ListGroupItem>
-			);
-		};
-		return (
-			<div>
-			<button type="button">add pattern</button>
-			<ListGroup>
-			{this.props.patterns.map( createPattern )}
-			</ListGroup>
-			</div>
-		);*/
