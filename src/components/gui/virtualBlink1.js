@@ -22,6 +22,7 @@ var VirtualBlink1 = React.createClass({
 	// callback to blink1service
 	fetchBlink1Color: function(currentColor, colors, ledn) { // FIXME: use 'n'
 		// console.log("VirtualBlink1.fetchBlink1Color", currentColor, colors, ledn); //, Blink1Service.getCurrentColor() );
+		colors = colors.map(function(c) { return c.hex; }); // FIXME: consolidate color parsers
 		this.setState( {
 			colors: colors, // Blink1Service.getCurrentColor()
 			ledn: ledn // unused currently

@@ -37,8 +37,8 @@ var Blink1ColorPicker = React.createClass({
 	},
 	/**  Callback for Blink1Service notifyChange */
 	updateCurrentColor: function(currentColor, colors, ledn) {
-		console.log("colorpicker.updateCurrentColor, currentColor",currentColor, "ledn:",ledn);
-		var rgb = tinycolor(currentColor).toRgb();
+		// console.log("colorpicker.updateCurrentColor, currentColor",currentColor, "ledn:",ledn);
+		var rgb = tinycolor(currentColor.hex).toRgb();
 		this.setState( { color: currentColor, ledn: ledn, r: rgb.r, g: rgb.g, b: rgb.b });
 	},
 	setColorHex: function(color) {
@@ -108,8 +108,8 @@ var Blink1ColorPicker = React.createClass({
 									className="input" style={{textAlign:'right'}}
 		  						    value={this.state.b} onChange={this.handleChangeB}/></td></tr>
 								<tr><td style={{textAlign:'right'}}>hex:</td><td>
-							  <input type="text" size={7} className="input" style={{textAlign:'right'}}
-								  value={this.state.color} onChange={this.handleChangeB}/></td></tr>
+							  <input type="text" size={7} className="input" style={{textAlign:'right',fontFamily:'monospace'}}
+								  value={this.state.color.hex} onChange={this.handleChangeB}/></td></tr>
 						  </tbody>
 						  </table>
 						  <div className="col-sm-4">

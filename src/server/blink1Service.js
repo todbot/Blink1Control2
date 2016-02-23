@@ -10,8 +10,8 @@ var doUsbDetect = false;
 var Blink1 = require('node-blink1');
 var usbDetect = (doUsbDetect) ? require('usb-detection') : null;
 
-
 var colorparse = require('parse-color');
+var tinycolor = require('tinycolor2');
 
 // globals because we are a singleton
 var listeners = {};
@@ -26,14 +26,15 @@ var blink1Pid = 0x01ED;
 var currentColors = new Array( 16 ); // FIXME: 16 LEDs in current blink1 firmware
 var currentMillis = 100;
 var currentLedN = 0;
-
-var timer;
 var lastColors = new Array(16);
 
-// FIXME: does lodash have a version of this?
-var _clone = function(item) {
-	return JSON.parse(JSON.stringify(item)); //return cloned copy so that the item is passed by value instead of by reference
-};
+// var timer;
+// var stepMillis = 20;
+// var faderMillis = 0;
+// var faderColor;
+
+lastColors.fill( colorparse('#000000') ); // FIXME: hack
+currentColors.fill( colorparse('#000000') );
 
 var Blink1Service = {
 
@@ -120,14 +121,12 @@ var Blink1Service = {
 		if( blink1 ) {
 			blink1.fadeToRGB( millis, r, g, b, n );
 		}
-		// else {
-		// 	console.log("Blink1ServerApi._fadeToRGB: no blink1");
-		// }
+		// else { console.log("Blink1Service._fadeToRGB: no blink1"); }
 	},
 
 	getAllSerials: function() {
 		//blink1serials = Blink1.devices();
-		return _clone(blink1serials);
+		return _.clone(blink1serials);
 	},
 
 	isConnected: function() {
@@ -170,12 +169,43 @@ var Blink1Service = {
 		return currentColors;
 	},
 
+	// _colorFaderStart: function() {
+	// 	clearTimeout(timer);
+	// 	faderMillis = 0;  // goes from 0 to currentMillis
+	// 	this._colorFader();
+	// 	console.log("---start:",new Date().getTime() );
+	// },
+	// _colorFader: function() {
+	// 	var self = this;
+	// 	var p = (faderMillis/currentMillis);  // ranges from 0.0 to 1.0 -ish
+	// 	var r = (1-p) * (lastColors[currentLedN].rgb[0]) + (p * currentColors[currentLedN].rgb[0]);
+	// 	var g = (1-p) * (lastColors[currentLedN].rgb[1]) + (p * currentColors[currentLedN].rgb[1]);
+	// 	var b = (1-p) * (lastColors[currentLedN].rgb[2]) + (p * currentColors[currentLedN].rgb[2]);
+	// 	var tc =  tinycolor( {r:r,g:g,b:b} ).toHexString();
+	//
+	// 	faderColor = colorparse( tc ); // FIXME PLEASE
+	// 	// console.log("_colorFader: tc:",tc,"step/fader/currentMillis:",stepMillis, faderMillis, currentMillis,"p:",p,"r:",r);
+	// 	// lastColors[0].hex,currentColors[0].hex );
+	// 	// console.log("_colorFader: tc:",tc);
+	// 	faderMillis += stepMillis;
+	// 	self.notifyChange();
+	// 	if( p < 1 ) {
+	// 		timer = setTimeout(function() {
+	// 			// console.log("    _colorFader: r:",r);
+	// 			self._colorFader();
+	// 		}, stepMillis);
+	// 	}
+	// 	else {
+	// 		console.log("---  end:",new Date().getTime() );
+	// 	}
+	// },
+
 	// main entry point for this service, sets currentColor & currentLedN
 	fadeToColor: function( millis, color, ledn) {
 		ledn = ledn || 0;
 		currentLedN = ledn;
 		currentMillis = millis;
-		lastColors = currentColors;
+		lastColors = _.clone(currentColors);
 
 		console.log("Blink1Service.fadeToColor:", millis,ledn, color, typeof color, (color instanceof String) );
 
@@ -188,18 +218,13 @@ var Blink1Service = {
 		}
 
 		if( ledn === 0 ) {
-			currentColors.fill( color.hex );
+			currentColors.fill( color );
 		} else {
-		 	currentColors[ledn-1] = color.hex;
+		 	currentColors[ledn-1] = color;
 		}
 
-		//console.log("Blink1ServerApi.fadeToColor: currentColor:", currentColor, "ms:", millis );
-		// timer = setTimeout(function() {
-		// 	this._fadeToRGB( millis, color.rgb[0], color.rgb[1], color.rgb[2], ledn);
-		// 	this._fadeToRGBl(id, callback);
-		// }, millis);
-
 		this._fadeToRGB( millis, color.rgb[0], color.rgb[1], color.rgb[2], ledn);
+		// this._colorFaderStart();
 		this.notifyChange();
 	},
 
@@ -220,6 +245,8 @@ var Blink1Service = {
 	notifyChange: function() {
 		_.forIn( listeners, function(callback) {
 			callback( Blink1Service.getCurrentColor(), currentColors, currentLedN, currentMillis);
+			// callback( faderColor, currentColors, currentLedN, currentMillis);
+
 		});
 	},
 

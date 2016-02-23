@@ -47,7 +47,7 @@ var PatternList = React.createClass({
 	onAddPattern: function() {
 		console.log("onAddPattern");
 		var p = PatternsService.newPattern();
-		p.id = 0; // force regen
+		p.id = 0; // force id regen
 		PatternsService.savePattern( p );
 	},
 	onStopAllPatterns: function() {
@@ -63,13 +63,11 @@ var PatternList = React.createClass({
 		p.locked = false;
 		PatternsService.savePattern( p );
 		// this.setState( {editing: true, : p.id } );
-		// this.updatePatternState();
 	},
 	deletePattern: function(patternid) {
 		console.log("deletePattern:", patternid);
 		// this.setState( {editing: false} );
 		PatternsService.deletePattern( patternid );
-		// this.updatePatternState();
 	},
 
 	onPatternUpdated: function(pattern) {
@@ -78,7 +76,7 @@ var PatternList = React.createClass({
 	},
 
 	render: function() {
-		console.log("patternList.render",this.state.patterns);
+		// console.log("patternList.render",this.state.patterns);
 
 		var createPatternRow = function(patt, idx) {
 			return (
