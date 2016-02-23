@@ -93,6 +93,7 @@ var BigButtonSet = React.createClass({
 			}
 			else if( butt.name === "Off" ) {
 				this.setBlink1Color( "#000000" );
+                PatternsService.stopAllPatterns();
 			}
 		}
 		else if( buttontype === 'color' ) {

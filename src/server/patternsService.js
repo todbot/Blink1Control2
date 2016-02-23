@@ -39,7 +39,7 @@ var patternsSystem;  // The system patterns this service knows about
 var patternsUser; // The user generated patterns
 
 var playingPatternId = '';
-var lastPatternId = ''; // last pattern that was recently played, or none
+// var lastPatternId = ''; // last pattern that was recently played, or none
 
 var listeners = {};
 
@@ -170,18 +170,32 @@ var PatternsService = {
 		this.savePatterns();
 	},
 
+	stopAllPatterns: function() {
+		console.log('PatternsService.stopAllPatterns');
+		// var self = this;
+		_.forEach( this.getAllPatterns(), function(pattern) {
+			if( pattern.playing ) {
+				console.log("    stopping ",pattern.name);
+				//self.stopPattern(patt.id);
+				pattern.playing = false;
+				clearTimeout( pattern.timer );
+				if( playingPatternId === pattern.id ) { playingPatternId = ''; }  // FIXME
+			}
+		});
+		this.notifyChange();
+	},
 	/** Stop a playing pattern.  Notifies change listeners */
 	stopPattern: function(id) {
-		console.log('PatternsService.stopPattern',id);
+		console.log('PatternsService.stopPattern',id, playingPatternId);
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		pattern.playing = false;
-		if( playingPatternId === pattern.id ) { playingPatternId = ''; }
 		clearTimeout( pattern.timer );
+		if( playingPatternId === pattern.id ) { playingPatternId = ''; }  // FIXME
 		this.notifyChange();
 	},
 
-	/** Play a pattern. Callback when done playing. Also notifys change listeners */
-	playPattern: function(id, donecallback) {
+	/** Play a pattern. Notifys change listeners */
+	playPattern: function(id) {
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		if( !pattern ) {
 			console.log("no pattern:", id);
@@ -194,8 +208,9 @@ var PatternsService = {
 		pattern.playcount = 0;
 		pattern.playing = true;
 		playingPatternId = id;
-		lastPatternId = id;
-		this._playPatternInternal(id, donecallback);
+		// lastPatternId = id;
+		// this._playPatternInternal(id, donecallback);
+		this._playPatternInternal(id, null);
 	},
 
 	_playPatternInternal: function(id, callback) {
@@ -205,20 +220,17 @@ var PatternsService = {
 		var millis = color.time * 1000;
 		var ledn = color.ledn;
 		console.log("_playPatternInternal: " + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
-		//Blink1Service.fadeToColor( millis , rgb, ledn );
+
 		Blink1Service.fadeToColor( millis, rgb, ledn );
 		this.notifyChange();
 
-		//var pattern = _.find(patterns, {id: id});
 		pattern.playpos++;
 		if( pattern.playpos === pattern.colors.length ) {
 			pattern.playpos = 0;
 			pattern.playcount++;
 			if( pattern.playcount === pattern.repeats ) {
-				this.stopPattern(playingPatternId);
-				// pattern.playing = false;
-				// playingPatternId = '';
-				// if( callback ) { callback(); }  // FIXME: why do this and not notify change?
+				this.stopPattern(playingPatternId); // notifies change listeners
+				if( callback ) { callback(); }  // FIXME: why do this and not notify change?
 				return;
 			}
 		}
@@ -245,10 +257,9 @@ var PatternsService = {
 		console.log("PatternsService: removeChangelistener", listeners );
 	},
 	notifyChange: function() {
+		var self = this;
 		_.forIn( listeners, function(callback) {
-			// console.log
-			if( callback ) { callback(); }
-			else { console.log("no listener: ",listeners);}
+			if( callback ) { callback( self.getAllPatterns() ); }
 		});
 	}
 

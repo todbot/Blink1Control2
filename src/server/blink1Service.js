@@ -23,9 +23,12 @@ var blink1Pid = 0x01ED;
 
 //var currentColor = colorparse('#ff00ff');
 // array of colors, one per LED of blink1.
-var currentColors = new Array( 16 );
+var currentColors = new Array( 16 ); // FIXME: 16 LEDs in current blink1 firmware
 var currentMillis = 100;
 var currentLedN = 0;
+
+var timer;
+var lastColors = new Array(16);
 
 // FIXME: does lodash have a version of this?
 var _clone = function(item) {
@@ -172,6 +175,7 @@ var Blink1Service = {
 		ledn = ledn || 0;
 		currentLedN = ledn;
 		currentMillis = millis;
+		lastColors = currentColors;
 
 		console.log("Blink1Service.fadeToColor:", millis,ledn, color, typeof color, (color instanceof String) );
 
@@ -188,7 +192,12 @@ var Blink1Service = {
 		} else {
 		 	currentColors[ledn-1] = color.hex;
 		}
+
 		//console.log("Blink1ServerApi.fadeToColor: currentColor:", currentColor, "ms:", millis );
+		// timer = setTimeout(function() {
+		// 	this._fadeToRGB( millis, color.rgb[0], color.rgb[1], color.rgb[2], ledn);
+		// 	this._fadeToRGBl(id, callback);
+		// }, millis);
 
 		this._fadeToRGB( millis, color.rgb[0], color.rgb[1], color.rgb[2], ledn);
 		this.notifyChange();

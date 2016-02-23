@@ -14,7 +14,6 @@ var DropdownButton = require('react-bootstrap').DropdownButton;
 var PatternView = React.createClass({
 	propTypes: {
 		pattern: React.PropTypes.object.isRequired,
-		// editing: React.PropTypes.bool,
 		onPatternUpdated: React.PropTypes.func,
 		onCopyPattern: React.PropTypes.func,
 		onDeletePattern: React.PropTypes.func,
@@ -23,6 +22,7 @@ var PatternView = React.createClass({
 		return {
 			activeSwatch: -1,
             pattern: _.clone(this.props.pattern),
+			editing: false
 		};
 	},
 	onNameChange: function(event) {
@@ -66,7 +66,7 @@ var PatternView = React.createClass({
         //this.props.onAddSwatch(this.props.pattern.id);
 		var newcolor = {
 			rgb: Blink1Service.getCurrentColor(),
-			time: Blink1Service.getCurrrentMillis() / 1000, // FIXME
+			time: Blink1Service.getCurrentMillis() / 1000, // FIXME
 			ledn: Blink1Service.getCurrentLedN()
 		};
 		// var colors = pattern.colors
@@ -84,20 +84,13 @@ var PatternView = React.createClass({
 		this.props.onPatternUpdated(pattern);
 	},
 	onPlayStopPattern: function() { // FIXME: should have 'play' and 'stop'
-		// console.log("PatternView.onPlayStopPattern");
 		var pattern = this.state.pattern;
 		pattern.playing = !pattern.playing;
-		this.setState({pattern: pattern});
+		this.setState({pattern: pattern, editing: false});
 		console.log("PatternView.onPlayStopPattern", pattern.id, pattern.playing);
-		var self = this;
 		if( pattern.playing ) {
 			console.log("PLAYING");
-			PatternsService.playPattern(pattern.id, function() {
-				console.log("done playing");
-				var pattern = self.state.pattern;
-				pattern.playing = false;
-				self.setState({pattern: pattern });
-			});
+			PatternsService.playPattern(pattern.id);
 		}
 		else {
 			PatternsService.stopPattern(pattern.id);
@@ -105,6 +98,8 @@ var PatternView = React.createClass({
 	},
 	onEditPattern: function() {
 		console.log("PatternView.onEditPattern");
+		var pattern = this.state.pattern;
+		if( pattern.playing ) { PatternsService.stopPattern(pattern.id); }
 		this.setState( {editing: true });
 	},
 	onLockPattern: function() {
@@ -152,7 +147,7 @@ var PatternView = React.createClass({
 		var nameField = (this.state.editing) ?
 			<input style={pattNameStyle} type="text" name="name" value={pattern.name}
 				onChange={this.onNameChange} />
-			: <span style={{width: 75}}><span style={pattNameStyle}>{pattern.name}</span></span>;
+			: <span style={{width: 120}}><span style={pattNameStyle}>{pattern.name}</span></span>;
 
 		// also see: https://facebook.github.io/react/tips/expose-component-functions.html
 		var createSwatch = function(color, i) {

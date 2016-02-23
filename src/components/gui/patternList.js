@@ -1,10 +1,13 @@
 "use strict";
 
 var React = require('react');
+//var update = require('react-addons-update');
+
 var _ = require('lodash');
 
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
+var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 
 var PatternView = require('./patternView');
 
@@ -20,14 +23,13 @@ var PatternList = React.createClass({
 	getInitialState: function() {
 		console.log("patternList: getInitialState!");
 		return {
-			// editing: false,
-			// editId: '',
-			patterns: this.getAllPatterns()
+			patterns: PatternsService.getAllPatterns()
 		};
 	},
-	getAllPatterns: function() { // get attr-only copy of remote'd object
-		return _.clone(PatternsService.getAllPatterns());
-	},
+	// getAllPatterns: function() { // get attr-only copy of remote'd object
+	// 	return _.cloneDeep( PatternsService.getAllPatterns() );
+	// 	// return _clone(PatternsService.getAllPatterns());
+	// },
 	componentDidMount: function() {
 		PatternsService.addChangeListener( this.updatePatternState, "patternList" );
 	}, // FIXME: Surely there's a better way to do this
@@ -35,9 +37,11 @@ var PatternList = React.createClass({
 		PatternsService.removeChangeListener( "patternList" );
 	},
 	/** Callback to PatternsService.addChangeListener */
-	updatePatternState: function() {
-		// console.log("PatternList.updatePatternState old",this.state.patterns);
-		this.setState( {patterns: this.getAllPatterns() } );
+	updatePatternState: function(allpatterns) {
+		// var patts = _.cloneDeep(allpatterns);
+		var patts = allpatterns;
+		console.log("PatternList.updatePatternState:", patts);
+		this.setState( {patterns: patts } );
 	},
 
 	onAddPattern: function() {
@@ -45,9 +49,10 @@ var PatternList = React.createClass({
 		var p = PatternsService.newPattern();
 		p.id = 0; // force regen
 		PatternsService.savePattern( p );
-		// this.setState( {editing: true, editId: p.id } );
-		// this.updatePatternState();
-		// console.log(JSON.stringify(this.state.patterns)); // dump all patterns
+	},
+	onStopAllPatterns: function() {
+		console.log("onStopAllPatterns");
+		PatternsService.stopAllPatterns();
 	},
 	copyPattern: function(patternid) {
 		console.log("copyPattern:", patternid);
@@ -77,8 +82,8 @@ var PatternList = React.createClass({
 
 		var createPatternRow = function(patt, idx) {
 			return (
-				<tr key={patt.id + idx} >
-					<td style={{margin: 0, padding: 3}}>
+				<tr key={patt.id + idx + patt.playing} style={{height:25}}>
+					<td style={{ margin: 0, padding: 3}}>
 						<PatternView
 							pattern={patt}
 							onPatternUpdated={this.onPatternUpdated}
@@ -90,13 +95,17 @@ var PatternList = React.createClass({
 		};
 
 		return (
-			<Table hover >
-				<tbody>
-				<tr><td><Button onClick={this.onAddPattern} bsSize="xsmall" block><i className="fa fa-plus"></i>add pattern</Button></td></tr>
-				{this.state.patterns.map( createPatternRow, this )}
-				</tbody>
-			</Table>
-
+			<div>
+				<ButtonToolbar>
+					<Button onClick={this.onStopAllPatterns} bsSize="xsmall" ><i className="fa fa-stop"></i> stop all</Button>
+					<Button onClick={this.onAddPattern} bsSize="xsmall"  style={{float:'right'}}><i className="fa fa-plus"></i> add pattern</Button>
+				</ButtonToolbar>
+				<Table hover style={{display:'block', height:280, overflow:'auto'}} >
+					<tbody >
+						{this.state.patterns.map( createPatternRow, this )}
+					</tbody>
+				</Table>
+			</div>
 		);
 	}
 
