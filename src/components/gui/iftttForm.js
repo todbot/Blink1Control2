@@ -1,7 +1,6 @@
 "use strict";
 
 var React = require('react');
-//var ReactDom = require('react-dom');
 
 // var Col = require('react-bootstrap').Col;
 // var Row = require('react-bootstrap').Row;
@@ -11,8 +10,6 @@ var Button = require('react-bootstrap').Button;
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
 // var FormControls = require('react-bootstrap').FormControls;
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
-
-//var PatternDropdown = require('./patternDropdown');
 
 var remote = window.require('remote');
 var PatternsService = remote.require('./server/patternsService');
@@ -33,6 +30,7 @@ var IftttForm = React.createClass({
             patternId: rule.patternId
         };
     },
+    // FIXME: why am I doing this?
     componentWillReceiveProps: function(nextProps) {
 		this.setState({ name: nextProps.rule.name, patternId: nextProps.rule.patternId }); // FIXME: why
 	},
@@ -73,7 +71,7 @@ var IftttForm = React.createClass({
                               type="select" label="Pattern"
                               valueLink={this.linkState('patternId')} >
                               {patterns.map( createPatternOption, this )}
-                        </Input>
+                          </Input>
                       </form>
 
                   </Modal.Body>

@@ -23,22 +23,24 @@ var tinycolor = require('tinycolor2');
 var Blink1ColorPicker = React.createClass({
 	getInitialState: function() {
 		return {
-			color: "#33dd33",
+			color: "#33dd33", // color is a hex string, not a tinycolor (had issues with using tinycolor here)
 			secs: 0.1,
 			ledn: 0,
-			r: 0,
+			r: 0, // FIXME: should use color but easier & cleaner this way
 			g: 1,
 			b: 2,
 		};
 	},
 	componentDidMount: function() {
+		console.log("Blink1ColorPicker.componentDidMount",this.state.color);
 		Blink1Service.addChangeListener( this.updateCurrentColor, "blink1ColorPicker" );
 		Blink1Service.fadeToColor(200, this.state.color);
 	},
 	/**  Callback for Blink1Service notifyChange */
 	updateCurrentColor: function(currentColor, colors, ledn) {
-		// console.log("colorpicker.updateCurrentColor, currentColor",currentColor, "ledn:",ledn);
-		var rgb = tinycolor(currentColor.hex).toRgb();
+		// currentColor and colors are tinycolor objects
+		var rgb = currentColor.toRgb();
+		console.log("colorpicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
 		this.setState( { color: currentColor, ledn: ledn, r: rgb.r, g: rgb.g, b: rgb.b });
 	},
 	setColorHex: function(color) {
@@ -47,7 +49,6 @@ var Blink1ColorPicker = React.createClass({
 	// called by colorpicker
 	setColor: function(color) {
 		// console.log("colorpicker.setColor",color.hex, this.state.ledn);
-		color = '#' + color.hex;
 		Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn ); // FIXME: time
 		// and the above will call 'fetchBlink1Color' anyway
 		// there must be a better way to do this
@@ -64,23 +65,26 @@ var Blink1ColorPicker = React.createClass({
 		var number = event.target.value;
 		number = ( number < 0 ) ? 0 : (number>255) ? 255 : number;
 		// this.setState({r:number});
-		var tc = tinycolor({r:number, g:this.state.g, b:this.state.b} );
-		this.setColor( {hex:tc.toHex()} );
+		var tc = tinycolor( {r:number, g:this.state.g, b:this.state.b} );
+		this.setColor( tc );
 	},
 	handleChangeG: function(event) {
 		var number = event.target.value;
 		if(isNaN(number)) { console.log("not a number"); return; }
 		number = ( number < 0 ) ? 0 : (number>255) ? 255 : number;
 		// this.setState({g:number});
-		var tc = tinycolor({r:this.state.r, g:number, b:this.state.b} );
-		this.setColor( {hex:tc.toHex()} );
+		var tc = tinycolor( {r:this.state.r, g:number, b:this.state.b} );
+		this.setColor( tc );
 	},
 	handleChangeB: function(event) {
 		var number = event.target.value;
 		number = ( number < 0 ) ? 0 : (number>255) ? 255 : number;
 		// this.setState({b:number});
-		var tc = tinycolor({r:this.state.r, g:this.state.g, b:number} );
-		this.setColor( {hex:tc.toHex()} );
+		var tc = tinycolor( {r:this.state.r, g:this.state.g, b:number} );
+		this.setColor( tc );
+	},
+	handleHexChange: function(event) {
+		console.log("handleHexChange!");
 	},
 
 	render: function() {
@@ -109,7 +113,7 @@ var Blink1ColorPicker = React.createClass({
 		  						    value={this.state.b} onChange={this.handleChangeB}/></td></tr>
 								<tr><td style={{textAlign:'right'}}>hex:</td><td>
 							  <input type="text" size={7} className="input" style={{textAlign:'right',fontFamily:'monospace'}}
-								  value={this.state.color.hex} onChange={this.handleChangeB}/></td></tr>
+								  value={this.state.color} onChange={this.handleHexChange}/></td></tr>
 						  </tbody>
 						  </table>
 						  <div className="col-sm-4">

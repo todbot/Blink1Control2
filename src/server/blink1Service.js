@@ -10,7 +10,6 @@ var doUsbDetect = false;
 var Blink1 = require('node-blink1');
 var usbDetect = (doUsbDetect) ? require('usb-detection') : null;
 
-var colorparse = require('parse-color');
 var tinycolor = require('tinycolor2');
 
 // globals because we are a singleton
@@ -33,8 +32,8 @@ var lastColors = new Array(16);
 // var faderMillis = 0;
 // var faderColor;
 
-lastColors.fill( colorparse('#000000') ); // FIXME: hack
-currentColors.fill( colorparse('#000000') );
+lastColors.fill( tinycolor('#000000') ); // FIXME: hack
+currentColors.fill( tinycolor('#000000') );
 
 var Blink1Service = {
 
@@ -116,13 +115,15 @@ var Blink1Service = {
 		}
 	},
 
-	// internal function, accesses hardware
+	// private function, accesses hardware
 	_fadeToRGB: function( millis, r, g, b, n ) {
 		if( blink1 ) {
 			blink1.fadeToRGB( millis, r, g, b, n );
 		}
 		// else { console.log("Blink1Service._fadeToRGB: no blink1"); }
 	},
+
+	// begin public functions
 
 	getAllSerials: function() {
 		//blink1serials = Blink1.devices();
@@ -145,6 +146,7 @@ var Blink1Service = {
 		}
 		return '-';
 	},
+	// FIXME: fix and call this blink1Id or something
 	iftttKey: function() {  // FIXME:
 		var s = this.serialNumber();
 		if( s ) {
@@ -169,62 +171,30 @@ var Blink1Service = {
 		return currentColors;
 	},
 
-	// _colorFaderStart: function() {
-	// 	clearTimeout(timer);
-	// 	faderMillis = 0;  // goes from 0 to currentMillis
-	// 	this._colorFader();
-	// 	console.log("---start:",new Date().getTime() );
-	// },
-	// _colorFader: function() {
-	// 	var self = this;
-	// 	var p = (faderMillis/currentMillis);  // ranges from 0.0 to 1.0 -ish
-	// 	var r = (1-p) * (lastColors[currentLedN].rgb[0]) + (p * currentColors[currentLedN].rgb[0]);
-	// 	var g = (1-p) * (lastColors[currentLedN].rgb[1]) + (p * currentColors[currentLedN].rgb[1]);
-	// 	var b = (1-p) * (lastColors[currentLedN].rgb[2]) + (p * currentColors[currentLedN].rgb[2]);
-	// 	var tc =  tinycolor( {r:r,g:g,b:b} ).toHexString();
-	//
-	// 	faderColor = colorparse( tc ); // FIXME PLEASE
-	// 	// console.log("_colorFader: tc:",tc,"step/fader/currentMillis:",stepMillis, faderMillis, currentMillis,"p:",p,"r:",r);
-	// 	// lastColors[0].hex,currentColors[0].hex );
-	// 	// console.log("_colorFader: tc:",tc);
-	// 	faderMillis += stepMillis;
-	// 	self.notifyChange();
-	// 	if( p < 1 ) {
-	// 		timer = setTimeout(function() {
-	// 			// console.log("    _colorFader: r:",r);
-	// 			self._colorFader();
-	// 		}, stepMillis);
-	// 	}
-	// 	else {
-	// 		console.log("---  end:",new Date().getTime() );
-	// 	}
-	// },
-
 	// main entry point for this service, sets currentColor & currentLedN
+	// 'color' arg is a tinycolor() color or hextring ('#ff00ff')
+	// if color is a hexstring, it will get converted to tinycolor
 	fadeToColor: function( millis, color, ledn) {
 		ledn = ledn || 0;
 		currentLedN = ledn;
 		currentMillis = millis;
 		lastColors = _.clone(currentColors);
 
-		console.log("Blink1Service.fadeToColor:", millis,ledn, color, typeof color, (color instanceof String) );
-
-		//if( color instanceof String ) {  // NOOOO, this is not always true, literals vs objects
 		if( typeof color === 'string' ) {
-			color = colorparse( color ); // FIXME: must be better way
-		}
-		else if( color.rgb && typeof color.rgb === 'string' ) {
-			color = colorparse( color.rgb );
+			color = tinycolor( color ); // FIXME: must be better way
 		}
 
+		console.log("Blink1Service.fadeToColor:", millis,ledn, color.toHexString());//, typeof color, (color instanceof String) );
+
+		// handle special meaning: ledn=0 -> all LEDs
 		if( ledn === 0 ) {
 			currentColors.fill( color );
 		} else {
 		 	currentColors[ledn-1] = color;
 		}
+		var crgb = color.toRgb();
+		this._fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn);
 
-		this._fadeToRGB( millis, color.rgb[0], color.rgb[1], color.rgb[2], ledn);
-		// this._colorFaderStart();
 		this.notifyChange();
 	},
 
@@ -244,9 +214,8 @@ var Blink1Service = {
 	},
 	notifyChange: function() {
 		_.forIn( listeners, function(callback) {
+			// currentColor and currentColors are tinycolor objects
 			callback( Blink1Service.getCurrentColor(), currentColors, currentLedN, currentMillis);
-			// callback( faderColor, currentColors, currentLedN, currentMillis);
-
 		});
 	},
 

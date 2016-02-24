@@ -33,7 +33,6 @@
     "node-blink1": "^0.2.2",
     "node-hid": "^0.5.1",
     "object-assign": "^4.0.1",
-    "parse-color": "^1.0.0",
     "react": "^0.14.7",
     "react-addons-linked-state-mixin": "^0.14.7",
     "react-bootstrap": "^0.28.2",

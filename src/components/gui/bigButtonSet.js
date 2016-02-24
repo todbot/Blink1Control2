@@ -76,6 +76,7 @@ var BigButtonSet = React.createClass({
     },
     // internal function used by differnt kinds of buttons
     setBlink1Color: function(color, ledn) {
+        console.log("BigButtonSet.setBlink1Color:",color);
         ledn = ledn || 0; // 0 means all
         Blink1Service.fadeToColor( 100, color, ledn );  // FIXME: millis
     },

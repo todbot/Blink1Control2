@@ -11,7 +11,6 @@ var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
 
 var remote = window.require('remote');
-// var IftttService = remote.require('./server/iftttService');
 var PatternsService = remote.require('./server/patternsService');
 var config = remote.require('./configuration');
 
@@ -26,9 +25,6 @@ var IftttTable = React.createClass({
 		}
 		return {
 			rules: rules,
-			patterns: PatternsService.getAllPatterns(),
-			// row: -1,
-			// workingrule: {},
 			workingIndex:-1,
 			showForm: false
 		};
@@ -73,7 +69,7 @@ var IftttTable = React.createClass({
         this.setState({ showForm: true });
     },
     saveForm: function(data) {
-        console.log("save form:",data, "workingIndex:", this.state.workingIndex);
+        console.log("IftttTable.saveForm:",data, "workingIndex:", this.state.workingIndex);
 		var rules = this.state.rules;
 		var rulenew = {name: data.name, patternId: data.patternId};
 		if( this.state.workingIndex === -1 ) { // new rule
@@ -86,7 +82,7 @@ var IftttTable = React.createClass({
         this.setState({ showForm: false });
     },
     cancelForm: function() {
-        console.log("close mail form");
+        console.log("iftttTable.cancelForm");
         this.setState({ showForm: false });
     },
 
@@ -106,10 +102,10 @@ var IftttTable = React.createClass({
 			var source = rule.source || 'n/a';
 			return (
 					<tr key={index} onDoubleClick={this.editRule.bind(this, index, rule.name)} >
-						<td width={225}>{rule.name}</td>
-						<td width={250}>{patternCell}</td>
+						<td>{rule.name}</td>
+						<td>{patternCell}</td>
 						<td>{lastTime}</td>
-						<td width={100}>{source}</td>
+						<td>{source}</td>
 						<td><Button bsSize="xsmall" onClick={this.editRule.bind(this, index, rule.name)} >edit</Button></td>
 					</tr>
 			);
@@ -124,26 +120,25 @@ var IftttTable = React.createClass({
 					<Table bordered condensed hover style={{fontSize:"0.9em"}}>
 						<thead>
 							<tr>
-							<th>Name</th>
-							<th>Pattern</th>
-							<th>Last Event</th>
-							<th>Source</th>
-							<th></th>
+								<th>Name</th>
+								<th>Pattern</th>
+								<th>Last Event</th>
+								<th>Source</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
 							{this.state.rules.map( createRow, this )}
 						</tbody>
 					</Table>
-				</div>
-				<div style={{position: "absolute", bottom: 20}}>
-					<Button bsSize="xsmall" onClick={this.addRuleByForm} ><i className="fa fa-plus"></i> add rule</Button>
+					<div style={{position: "absolute", bottom: 20}}>
+						<Button bsSize="xsmall" onClick={this.addRuleByForm} ><i className="fa fa-plus"></i> add rule</Button>
+					</div>
 				</div>
 			</div>
         );
 
 	}
-
 
 });
 

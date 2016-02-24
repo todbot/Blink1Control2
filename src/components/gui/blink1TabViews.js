@@ -31,20 +31,20 @@ var Blink1TabViews = React.createClass({
 								<IftttTable />
 							</div>
 						</Tab>
-						<Tab eventKey={3} title={<i className="fa fa-wrench"> Tools</i>}>
-							<Panel style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
-							Tools go here
-							</Panel>
-						</Tab>
-						<Tab eventKey={4} title={<i className="fa fa-envelope"> Mail</i>}>
-							<Panel style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
+						<Tab eventKey={3} title={<i className="fa fa-envelope"> Mail</i>}>
+							<div style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								<MailTable />
-							</Panel>
+							</div>
+						</Tab>
+						<Tab eventKey={4} title={<i className="fa fa-wrench"> Tools</i>}>
+							<div style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
+							Tools go here
+							</div>
 						</Tab>
 						<Tab eventKey={5} title={<i className="fa fa-life-ring"> Help</i>}>
-							<Panel style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
+							<div style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								Help goes here
-							</Panel>
+							</div>
 						</Tab>
 					</Tabs>
 				</div>
