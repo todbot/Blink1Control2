@@ -76,11 +76,6 @@ var MailTable = React.createClass({
     },
 
 	render: function() {
-		var formrule = { name: 'some new thing', patternId: 'whiteflashes'}; // FIXME:
-		if (this.state.workingIndex !== -1) { // not new
-			formrule.name = this.state.rules[this.state.workingIndex].name;
-			formrule.patternId = this.state.rules[this.state.workingIndex].patternId;
-		}
 
 		var createRow = function(rule, index) {
 			//var deleteButton = <button onClick={this.deleteRule.bind(this, index)}><i className="fa fa-times"></i></button>;
@@ -102,7 +97,7 @@ var MailTable = React.createClass({
 		return (
 			<div style={{position: "relative", height: 200}}>
 
-				<MailForm show={this.state.showForm} rule={formrule}
+				<MailForm show={this.state.showForm} workingIndex={this.state.workingIndex} rules={this.state.rules}
 					onSave={this.saveForm} onCancel={this.cancelForm} onDelete={this.deleteRuleEdit} />
 
 				<div style={{display: "block", overflowY: "scroll", height: 150}}>

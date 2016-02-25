@@ -5,7 +5,7 @@ var React = require('react');
 // var TabPane = require('react-bootstrap').TabPane;
 var Tabs = require('react-bootstrap').Tabs;
 var Tab = require('react-bootstrap').Tab;
-var Panel = require('react-bootstrap').Panel;
+// var Panel = require('react-bootstrap').Panel;
 // var Well = require('react-bootstrap').Well;
 
 var BigButtonSet = require('./bigButtonSet');

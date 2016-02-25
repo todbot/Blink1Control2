@@ -17,22 +17,35 @@ var PatternsService = remote.require('./server/patternsService');
 var MailForm = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
-        rule: React.PropTypes.object.isRequired
+        show: React.PropTypes.bool.isRequired,
+        workingIndex: React.PropTypes.number.isRequired,
+        rules: React.PropTypes.array.isRequired,
+        onSave: React.PropTypes.func.isRequired,
+        onDelete: React.PropTypes.func.isRequired,
+        onCancel: React.PropTypes.func.isRequired
     },
     getInitialState: function() {
-        var rule = this.props.rule;
-        return rule; // anti-pattern? but setting initial values
+        var rule = {}; // empty state, will be set in componentWillReceiveProps()
+        return rule;
     },
     componentWillReceiveProps: function(nextProps) {
+        var rule = {}; // empty rule for new rule case
+        if( nextProps.workingIndex >= 0 ) { // i.e. existing rule
+            rule = nextProps.rules[ nextProps.workingIndex ];
+        }
+        console.log("componentWillReceiveProps", nextProps, "rule",rule);
+
         this.setState( {
-            name: nextProps.rule.name,
-            patternId: nextProps.rule.patternId,
-            mailtype: nextProps.rule.mailtype || 'IMAP',  // default it
-            server: nextProps.rule.server,
-            port: nextProps.rule.port || 993,
-            username: nextProps.rule.username,
-            password: nextProps.rule.password,
-            useSSL: nextProps.rule.useSSL || true,
+            name: rule.name || '',
+            patternId: rule.patternId,
+            mailtype: rule.mailtype || 'IMAP',  // default it
+            server: rule.server || '',
+            port: rule.port || 993,
+            username: rule.username ,
+            password: rule.password,
+            useSSL: rule.useSSL || true,
+            triggerType: rule.triggerType || 'unread',
+            triggerVal: rule.triggerVal || '1' ,
         });
     },
 
@@ -53,12 +66,21 @@ var MailForm = React.createClass({
     delete: function() {
         this.props.onDelete();
     },
+    onTriggerTypeClick: function(evt) {
+        // console.log("mailForm.onTriggerClick ",evt.target.value,evt);
+        this.setState({triggerType: evt.target.value});
+    },
+    onTriggerValClick: function(evt) {
+        // console.log("mailForm.onTriggerClick ",evt.target.value,evt);
+        this.setState({triggerVal: evt.target.value});
+    },
     render: function() {
         var patterns = PatternsService.getAllPatterns();
         var createPatternOption = function(item, idx) {
             return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
 
+        console.log("trigger:",this.state.triggerType, this.state.triggerVal);
       return (
           <div>
               <Modal show={this.props.show} onHide={this.close} >
@@ -102,14 +124,25 @@ var MailForm = React.createClass({
                           <span><b> Trigger when: </b></span>
 
                               <Input labelClassName="col-xs-4" wrapperClassName="col-xs-3" bsSize="small"
-                                  type="number" label="Unread email count"
-                                  addonBefore={<input type="radio" valueLink={this.linkState('trig1')} />} />
+                                  type="number" label="Unread email count >="
+                                  value={this.state.triggerType==='unread' ? this.state.triggerVal : ''}
+                                  onChange={this.onTriggerValClick}
+                                  addonBefore={<input type="radio" value='unread'
+                                      checked={this.state.triggerType==='unread'} onChange={this.onTriggerTypeClick} />} />
+
                               <Input labelClassName="col-xs-4" wrapperClassName="col-xs-5" bsSize="small"
                                   type="text" label="Subject contains"
-                                  addonBefore={<input type="radio" valueLink={this.linkState('trig2')} />} />
+                                  value={this.state.triggerType==='subject' ? this.state.triggerVal : ''}
+                                  onChange={this.onTriggerValClick}
+                                  addonBefore={<input type="radio" value='subject'
+                                       checked={this.state.triggerType==='subject'} onChange={this.onTriggerTypeClick}/>} />
+
                               <Input labelClassName="col-xs-4" wrapperClassName="col-xs-5" bsSize="small"
                                   type="text" label="Sender contains"
-                                   addonBefore={<input type="radio"/>} />
+                                  value={this.state.triggerType==='sender' ? this.state.triggerVal : ''}
+                                  onChange={this.onTriggerValClick}
+                                  addonBefore={<input type="radio" value='sender'
+                                      checked={this.state.triggerType==='sender'} onChange={this.onTriggerTypeClick}/>} />
 
                             <span><b>Pattern: </b></span>
 
