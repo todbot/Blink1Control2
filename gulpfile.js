@@ -11,7 +11,7 @@ var lint = require('gulp-eslint'); //Lint JS files, including JSX
 var electron = require('electron-connect').server.create();
 
 var config = {
-	port: 9005,
+	// port: 9005,
 	devBaseUrl: 'http://localhost',
 	paths: {
 		html: './src/*.html',

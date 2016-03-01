@@ -2,11 +2,13 @@
 
 'use strict';
 
+var nconf = require('nconf');
+
+nconf.file({file: getUserHome() + '/blink1control2-config.json'});
+
 function getUserHome() {
     return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
 }
-// FIXME: tortured function def before require() because "no-use-before-define" eslint
-var nconf = require('nconf').file({file: getUserHome() + '/blink1controljs-config.json'});
 
 function saveSettings(settingKey, settingValue) {
     nconf.set(settingKey, settingValue);
@@ -21,5 +23,6 @@ function readSettings(settingKey) {
 
 module.exports = {
     saveSettings: saveSettings,
-    readSettings: readSettings
+    readSettings: readSettings,
+    userHome: getUserHome
 };

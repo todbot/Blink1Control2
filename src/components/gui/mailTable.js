@@ -1,6 +1,7 @@
 "use strict";
 
 var React = require('react');
+var _ = require('lodash');
 
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
@@ -8,22 +9,37 @@ var Button = require('react-bootstrap').Button;
 var remote = window.require('remote');
 var PatternsService = remote.require('./server/patternsService');
 var config = remote.require('./configuration');
+var MailService = remote.require('./server/mailService');
+
+var Utils = require('./../../utils');
 
 var MailForm = require('./mailForm');
 
 var MailTable = React.createClass({
-	propTypes: {
-		//events: React.PropTypes.array.isRequired,
-		//onClear: React.PropTypes.func.isRequired
-	},
+	// propTypes: {
+	// 	//events: React.PropTypes.array.isRequired,
+	// 	//onClear: React.PropTypes.func.isRequired
+	// },
 	getInitialState: function() {
 		var rules = config.readSettings('mailRules');
+		MailService.addChangeListener(this.updateSearchStatus, "MailTable");
 		if( !rules ) { rules = []; }
 		return {
 			rules: rules,
 			workingIndex:-1,
 			showForm: false
 		};
+	},
+	// callback for mailservice events
+	updateSearchStatus: function(messages) {
+		console.log("MailTable.updateSearchStatus:",messages[0].id,messages[0].message);
+		var rules = this.state.rules;
+		messages.map( function(msg) {
+			var rule = _.find(rules, {id:msg.id});
+			console.log('msg',msg,"rule",rule);
+			rule.lastTime = msg.message;
+		});
+		this.setState({rules:rules});
 	},
 	saveRules: function(rules) {
 		this.setState({rules: rules});
@@ -44,6 +60,17 @@ var MailTable = React.createClass({
 		delete rules[idx];
 		this.saveRules(rules);
 	},
+	copyCurrentRule: function() {
+		console.log("MailTable.copyCurrentRule");
+		if( this.state.workingIndex >= 0) {
+			var rules = this.state.rules;
+			var rule = _.clone(rules[ this.state.workingIndex ]);
+			rule.id = rule.id + Utils.cheapUid(4);
+			rule.name = rule.name + '(copy)';
+			rules.splice( this.state.workingIndex, 0, rule);
+			this.setState({rules: rules});
+		}
+	},
 	deleteRuleEdit: function() {
 		console.log("MailTable.deleteRuleEdit:", this.state.workingIndex);
 		if( this.state.workingIndex !== -1 ) {
@@ -61,6 +88,7 @@ var MailTable = React.createClass({
         console.log("MailTable.saveForm:",data, "workingIndex:", this.state.workingIndex);
 		var rules = this.state.rules;
 		var rulenew = data;
+		if( !rulenew.id ) { rulenew.id = Utils.generateId(rulenew.name, 4); }
 		if( this.state.workingIndex === -1 ) { // new rule
 			rules.unshift( rulenew );
 		}
@@ -69,6 +97,9 @@ var MailTable = React.createClass({
 		}
 		this.saveRules(rules);
         this.setState({ showForm: false });
+		// FIXME:
+		// MailService.checkMail();
+		// MailService.updateRules(this);
     },
 	cancelForm: function() {
         console.log("MailTable.cancelForm");
@@ -97,8 +128,12 @@ var MailTable = React.createClass({
 		return (
 			<div style={{position: "relative", height: 200}}>
 
-				<MailForm show={this.state.showForm} workingIndex={this.state.workingIndex} rules={this.state.rules}
-					onSave={this.saveForm} onCancel={this.cancelForm} onDelete={this.deleteRuleEdit} />
+				<MailForm show={this.state.showForm}
+					workingIndex={this.state.workingIndex} rules={this.state.rules}
+					onSave={this.saveForm}
+					onCancel={this.cancelForm}
+					onDelete={this.deleteRuleEdit}
+					onCopy={this.copyCurrentRule} />
 
 				<div style={{display: "block", overflowY: "scroll", height: 150}}>
 					<Table bordered condensed hover style={{fontSize:"0.9em"}}>

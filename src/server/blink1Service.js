@@ -156,8 +156,14 @@ var Blink1Service = {
 		}
 	},
 
+	setCurrentLedN: function(n) {
+		currentLedN = n;
+	},
 	getCurrentLedN: function() {
 		return currentLedN;
+	},
+	setCurrentMillis: function(m) {
+		currentMillis = m;
 	},
 	getCurrentMillis: function() {
 		return currentMillis;
@@ -179,7 +185,7 @@ var Blink1Service = {
 		currentLedN = ledn;
 		currentMillis = millis;
 		lastColors = _.clone(currentColors);
-
+		// console.log("Blink1Service: color:",typeof color, color);
 		if( typeof color === 'string' ) {
 			color = tinycolor( color ); // FIXME: must be better way
 		}

@@ -197,8 +197,14 @@ var PatternsService = {
 	/** Play a pattern. Notifys change listeners */
 	playPattern: function(id) {
 		var pattern = _.find(this.getAllPatterns(), {id: id});
-		if( !pattern ) {
-			console.log("no pattern:", id);
+		if( !pattern ) {  // check for special built-in patterns
+			console.log("PatternsService: no normal pattern:", id);
+			if( id === '~off') {
+				console.log("PatternsService: playing special '~off' pattern");
+				PatternsService.stopAllPatterns();
+				Blink1Service.fadeToColor( 300, '#000000', 0 );
+			// } else if( id === '!stop' ) {
+			}
 			return;
 		}
 		if( pattern.playing ) {
@@ -208,7 +214,6 @@ var PatternsService = {
 		pattern.playcount = 0;
 		pattern.playing = true;
 		playingPatternId = id;
-		// lastPatternId = id;
 		// this._playPatternInternal(id, donecallback);
 		this._playPatternInternal(id, null);
 	},
@@ -219,7 +224,8 @@ var PatternsService = {
 		var rgb = color.rgb;
 		var millis = color.time * 1000;
 		var ledn = color.ledn;
-		console.log("_playPatternInternal: " + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
+
+		// console.log("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
 
 		Blink1Service.fadeToColor( millis, rgb, ledn );
 		this.notifyChange();

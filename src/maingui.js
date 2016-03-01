@@ -1,5 +1,5 @@
-/* eslint-disable strict */
-/* jshint strict: false */
+
+"use strict";
 
 // this is for webpack
 require('../node_modules/bootstrap/dist/css/bootstrap.min.css');
@@ -14,9 +14,6 @@ var ReactDOM = require('react-dom');
 
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 
-// var Blink1Service = window.require('remote').require('./server/blink1Service');
-// Blink1Service.fadeToColor(0,'#339933');
-
 var App = React.createClass({
   render: function() {
     return (
@@ -27,9 +24,9 @@ var App = React.createClass({
   }
 });
 
-window.onbeforeunload = function(e) {
-    // console.log('I do not want to be closed');
-    return true;
-};
+// window.onbeforeunload = function(e) {
+//     // console.log('I do not want to be closed');
+//     return true;
+// };
 
 ReactDOM.render( <App />, document.getElementById('app'));

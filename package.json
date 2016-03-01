@@ -18,13 +18,16 @@
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "./node_modules/.bin/webpack",
     "env": "env",
-    "fix-node-hid": "cp -a node_modules/node-hid/build/HID/v0.5.1/Release/electron-v0.36-darwin-x64 node_modules/node-hid/build/HID/v0.5.1/Release/node-v47-darwin-x64",
+    "fix-node-hid-osx": "cp -a node_modules/node-hid/build/HID/v0.5.1/Release/electron-v0.36-darwin-x64 node_modules/node-hid/build/HID/v0.5.1/Release/node-v47-darwin-x64",
     "build-osx": "NODE_ENV=production webpack -p --config webpack.config.js; electron-packager . $npm_package_productName --overwrite --out=dist --ignore='^/dist$' --prune --asar --platform=darwin --arch=x64 --version=$npm_package_electronVersion --icon=assets/epp.icns",
-    "build-win": "NODE_ENV=production webpack -p --config webpack.config.js; electron-packager . $npm_package_productName --overwrite --out=dist --ignore='^/dist$' --prune --asar --platform=win32 --arch=all --version=$npm_package_electronVersion --icon=assets/epp.ico"
+    "build-win": "NODE_ENV=production webpack -p --config webpack.config.js; electron-packager . $npm_package_productName --overwrite --out=dist --ignore='^/dist$' --prune --asar --platform=win32 --arch=all --version=$npm_package_electronVersion --icon=assets/epp.ico",
+    "clean": "rm -rf node_modules",
+    "preinstall": "electron-rebuild -v 0.36.5 -p -f -m . -w node-hid -e node_modules/electron-prebuilt"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "electron-rebuild": "^1.1.3",
     "font-awesome": "^4.5.0",
     "imap": "^0.8.16",
     "lodash": "^4.2.1",
@@ -41,7 +44,8 @@
     "request": "^2.69.0",
     "simplecrypt": "^0.1.0",
     "tinycolor2": "^1.3.0",
-    "usb-detection": "^1.3.0"
+    "usb-detection": "^1.3.0",
+    "winston": "^2.2.0"
   },
   "devDependencies": {
     "babel": "^6.3.26",
@@ -52,7 +56,7 @@
     "css-loader": "^0.23.1",
     "electron-packager": "^5.2.1",
     "electron-prebuilt": "^0.36.5",
-    "electron-rebuild": "^1.1.2",
+    "electron-rebuild": "^1.1.3",
     "file-loader": "^0.8.5",
     "less": "^2.5.3",
     "less-loader": "^2.2.2",

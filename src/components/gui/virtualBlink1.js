@@ -74,6 +74,10 @@ var VirtualBlink1 = React.createClass({
 	// },
 	//
 
+	boop: function(evt) {
+		console.log("boop:",evt.target.value, evt);
+	},
+
 	render: function() {
 		var topgradient = (this.state.colors[0] === '#000000') ? 'url()' :
 		"radial-gradient(160px 90px at 150px 50px," + this.state.colors[0].toHexString() + " 0%, rgba(255,255,255,0.6) 45% )";
@@ -107,6 +111,12 @@ var VirtualBlink1 = React.createClass({
 		return (
 			<div style={img0style}></div>
 			);
+
+			// <div>
+			// <svg>
+         //  		<circle cx={50} cy={50} r={10} fill="red" ref='todbot' onClick={this.boop} onMouseOver={this.boop} />
+        	// </svg>
+			// </div>
 	}
 });
 

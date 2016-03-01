@@ -43,7 +43,7 @@ var PatternView = React.createClass({
 		if( this.state.editing ) {
 			console.log("PatternView.onSwatchClick: editing!");
 			var newcolor = {
-				rgb: Blink1Service.getCurrentColor(),
+				rgb: Blink1Service.getCurrentColor(),  // FIXME: get from colorpicker instead?
 				time: Blink1Service.getCurrentMillis() / 1000,
 				ledn: Blink1Service.getCurrentLedN()
 			};
@@ -54,8 +54,8 @@ var PatternView = React.createClass({
 			this.props.onPatternUpdated(pattern);
 		}
 		else {
-			console.log("color: ", pattern.colors[coloridx]);
-			Blink1Service.fadeToColor( 100, pattern.colors[coloridx], 0 );
+			// console.log("color: ", pattern.colors[coloridx]);
+			Blink1Service.fadeToColor( 100, pattern.colors[coloridx].rgb, pattern.colors[coloridx].ledn );
 		}
         //this.props.onSwatchClick(this.props.pattern.id, coloridx);
 	},

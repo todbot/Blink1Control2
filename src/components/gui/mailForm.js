@@ -22,7 +22,8 @@ var MailForm = React.createClass({
         rules: React.PropTypes.array.isRequired,
         onSave: React.PropTypes.func.isRequired,
         onDelete: React.PropTypes.func.isRequired,
-        onCancel: React.PropTypes.func.isRequired
+        onCancel: React.PropTypes.func.isRequired,
+        onCopy: React.PropTypes.func.isRequired,
     },
     getInitialState: function() {
         var rule = {}; // empty state, will be set in componentWillReceiveProps()
@@ -36,10 +37,11 @@ var MailForm = React.createClass({
         console.log("componentWillReceiveProps", nextProps, "rule",rule);
 
         this.setState( {
-            name: rule.name || '',
+            id: rule.id || '',
+            name: rule.name || 'new rule',
             patternId: rule.patternId,
             mailtype: rule.mailtype || 'IMAP',  // default it
-            server: rule.server || '',
+            host: rule.host || '',
             port: rule.port || 993,
             username: rule.username ,
             password: rule.password,
@@ -66,6 +68,9 @@ var MailForm = React.createClass({
     delete: function() {
         this.props.onDelete();
     },
+    handleCopy: function() {
+        this.props.onCopy();
+    },
     onTriggerTypeClick: function(evt) {
         // console.log("mailForm.onTriggerClick ",evt.target.value,evt);
         this.setState({triggerType: evt.target.value});
@@ -90,6 +95,7 @@ var MailForm = React.createClass({
                   <Modal.Body>
                       <p style={{color: "#f00"}}>{this.state.errormsg}</p>
                       <form className="form-horizontal" >
+                          <input type="hidden" value={this.state.id} />
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                               type="text" label="Description" placeholder="Enter text"
                               valueLink={this.linkState('name')} />
@@ -102,7 +108,7 @@ var MailForm = React.createClass({
                           </Input>
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                               type="text" label="Mail server" placeholder="mail.example.com"
-                              valueLink={this.linkState('server')} />
+                              valueLink={this.linkState('host')} />
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                               type="text" label="Username" placeholder="Enter username (usually full email addr)"
                               valueLink={this.linkState('username')} />
@@ -157,6 +163,7 @@ var MailForm = React.createClass({
                   </Modal.Body>
                   <Modal.Footer>
                       <Button bsStyle="danger" bsSize="small" style={{float:'left'}} onClick={this.delete}>Delete</Button>
+                      <Button bsSize="small" style={{float:'left'}} onClick={this.handleCopy}>Copy</Button>
                       <Button onClick={this.cancel}>Cancel</Button>
                       <Button onClick={this.close}>OK</Button>
                  </Modal.Footer>

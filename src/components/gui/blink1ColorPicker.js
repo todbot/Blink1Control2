@@ -55,11 +55,13 @@ var Blink1ColorPicker = React.createClass({
 	},
 	// called by ledn buttons
 	setLedN: function(n) {
+		Blink1Service.setCurrentLedN(n); // doesn't trigger an updateCurrentColor?
 		this.setState({ledn: n});
 	},
 	handleChangeSecs: function(event) {
-		var number = event.target.value;
-		this.setState({secs: number});
+		var secs = event.target.value;  // FIXME
+		Blink1Service.setCurrentMillis(secs*1000); // doesn't trigger an updateCurrentColor?
+		this.setState({secs: secs});
 	},
 	handleChangeR: function(event) {
 		var number = event.target.value;

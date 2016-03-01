@@ -13,6 +13,7 @@ var apiServer = require('./server/apiServer');
 var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
 var IftttService = require('./server/iftttService');
+var MailService = require('./server/mailService');
 
 //var flux = require('./server/fluxtest');
 
@@ -61,6 +62,7 @@ app.on('ready', function () {
 	Blink1Service.startDeviceListener();
 	PatternsService.initialize();
 	IftttService.start();
+	MailService.start();
 
 	//flux.actions.clearTodos();
 
@@ -95,6 +97,7 @@ app.on('ready', function () {
 	//mainWindow.loadUrl('file://' + __dirname + '/dist/index.html#/todtests');
 	// mainWindow.loadUrl('file://' + __dirname + '/../dist/index.html'); /* eslint no-path-concat:0 */
 	mainWindow.focus();
+});
 
 /*
 	appIcon = new Tray(trayIconPath);
@@ -192,4 +195,3 @@ app.on('ready', function () {
 	} else {
 		mainWindow.setMenu(menu);
 	}*/
-});
