@@ -41,6 +41,7 @@
 
 var request = require('request');
 var config = require('../configuration');
+var log = require('../logger');
 
 var PatternsService = require('./patternsService');
 
@@ -74,11 +75,11 @@ var IftttService = {
 		}
 		var self = this;
 		var url = baseUrl + self.iftttKey;
-		console.log("fetchIfttt:", url, self.lastTime);
+		log.msg("fetchIfttt:", url, self.lastTime);
         request(baseUrl + this.iftttKey, function(error, response, body) {
 			// FIXME: do error handling like: net error, bad response, etc.
 			if( error || response.statusCode !== 200 ) { // badness
-				console.log("error fetching IFTTT");
+				log.msg("error fetching IFTTT");
 				return;
 			}
 			// otherwise continue as normal
@@ -86,17 +87,17 @@ var IftttService = {
 			var shouldSave = false;
 			if( respobj.events ) {
 				respobj.events.map( function(e) {
-					//console.log("iftttFetcher e:", JSON.stringify(e));
+					//log.msg("iftttFetcher e:", JSON.stringify(e));
 					var eventDate = new Date(parseInt(1000 * e.date));
 					if (eventDate > self.lastTime ) {
-						console.log('iftttFetcher new event name:', e.name);
+						log.msg('iftttFetcher new event name:', e.name);
 						rules.map( function(r) {
-							console.log("    ifttFetcher: rule:", JSON.stringify(r));
+							log.msg("    ifttFetcher: rule:", JSON.stringify(r));
 							r.lastTime = new Date( r.lastTime );
 							if( e.name === r.name ) {
-								console.log("*** RULE MATCH: ", e.name, eventDate, r.lastTime);
+								log.msg("*** RULE MATCH: ", e.name, eventDate, r.lastTime);
 								if( eventDate > r.lastTime ) {
-									console.log("*** TRIGGERED!!! ***");
+									log.msg("*** TRIGGERED!!! ***");
 									r.lastTime = eventDate;
 									r.source = e.source;
 									PatternsService.playPattern( r.patternId );
@@ -108,12 +109,12 @@ var IftttService = {
 				});
 				self.lastTime = new Date(); // == now
 				if( shouldSave ) {
-					console.log("iftttFetcher: saving rules");
+					log.msg("iftttFetcher: saving rules");
 					config.saveSettings("iftttRules", rules);
 				}
 			}
 			else {
-				console.log("IftttFetcher: bad response: ", body);
+				log.msg("IftttFetcher: bad response: ", body);
 			}
         });
 

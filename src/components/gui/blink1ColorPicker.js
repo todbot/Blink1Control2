@@ -15,6 +15,8 @@ var ButtonGroup = require('react-bootstrap').ButtonGroup;
 var remote = window.require('remote');
 var Blink1Service = remote.require('./server/blink1Service');
 
+var log = require('../../logger');
+
 // var ColorPicker = require('react-color');
 
 var HtmlColorChart = require('./htmlColorChart');
@@ -32,7 +34,7 @@ var Blink1ColorPicker = React.createClass({
 		};
 	},
 	componentDidMount: function() {
-		console.log("Blink1ColorPicker.componentDidMount",this.state.color);
+		log.msg("Blink1ColorPicker.componentDidMount",this.state.color);
 		Blink1Service.addChangeListener( this.updateCurrentColor, "blink1ColorPicker" );
 		Blink1Service.fadeToColor(200, this.state.color);
 	},
@@ -40,7 +42,7 @@ var Blink1ColorPicker = React.createClass({
 	updateCurrentColor: function(currentColor, colors, ledn) {
 		// currentColor and colors are tinycolor objects
 		var rgb = currentColor.toRgb();
-		console.log("colorpicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
+		log.msg("colorpicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
 		this.setState( { color: currentColor, ledn: ledn, r: rgb.r, g: rgb.g, b: rgb.b });
 	},
 	setColorHex: function(color) {

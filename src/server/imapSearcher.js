@@ -3,6 +3,7 @@
 // var _ = require('lodash');
 
 var Imap = require('imap');
+var log = require('../logger');
 
 var PatternsService = require('./patternsService');
 
@@ -41,22 +42,22 @@ function ImapSearcher(config,callback) {
         keepalive: { interval: 5000 },
         debug: function(msg) {
             self.callback( makeMessage(self.id, 'info', Math.floor(Date.now()/1000)+'') );
-            console.log("ImapSearcher debug:",Math.floor(Date.now()/1000),":",msg);
+            log.msg("ImapSearcher debug:",Math.floor(Date.now()/1000),":",msg);
         }
     });
 
     self.imap.on('error', function(err) {
         self.callback( makeMessage(self.id, 'info', err.message) );
-        console.log("ImapSearcher error", err.message, err);
+        log.msg("ImapSearcher error", err.message, err);
         self.stop();
         self.timer = setTimeout(function() {
-            console.log("ImapSearcher: timer restart");
+            log.msg("ImapSearcher: timer restart");
             self.start(); // restart
         }, 5 * 1000); // FIXME: adjustable?
     });
 
     self.imap.on('end', function() {
-        console.log('ImapSearcher: connection ended');
+        log.msg('ImapSearcher: connection ended');
         clearTimeout( self.timer );
         self.imap.end();
     });
@@ -65,21 +66,21 @@ function ImapSearcher(config,callback) {
     // self.imap.once('ready', function() {
         self.imap.openBox('INBOX', true, function(err,box) {
             if (err) {
-                console.log("ImapSearcher: openBox error",err);
+                log.msg("ImapSearcher: openBox error",err);
                 self.callback({id:self.id, type:'info', message:err.message}); // FIXME
                 throw err;
             }
-            console.log('ImapSearcher: box', box);
+            log.msg('ImapSearcher: box', box);
             self.imap.on('update', function( seqno, info) {
-                console.log("ImapSearcher. update:", seqno, info);
+                log.msg("ImapSearcher. update:", seqno, info);
 
             });
             self.imap.on('expunge', function( seqno ) {
-                console.log("ImapSearcher. expunge:", seqno);
+                log.msg("ImapSearcher. expunge:", seqno);
                 self.searchMail();
             });
             self.imap.on('mail', function( ) { // on new mail
-                console.log("ImapSearcher: onmail:", self.triggerType);
+                log.msg("ImapSearcher: onmail:", self.triggerType);
                 self.searchMail();
             }); // on mail
         }); // openbox
@@ -93,10 +94,10 @@ ImapSearcher.prototype.searchMail = function() {
     if( self.triggerType === 'subject' ) {
         self.imap.search( ['UNSEEN',  ['SUBJECT',[self.triggerVal]]], function(err, results) {
             if (err) {
-                console.log("ImapSearcher: search error",err);
+                log.msg("ImapSearcher: search error",err);
                 throw err;
             }
-            console.log("ImapSearcher: search results:", results, "last:",self.lastResults);
+            log.msg("ImapSearcher: search results:", results, "last:",self.lastResults);
             // we have search results and bigger than last time
             if( results.length > 0 ) {
                 if( results.length > self.lastResults.length ) {
@@ -121,7 +122,7 @@ ImapSearcher.prototype.searchMail = function() {
 };
 
 ImapSearcher.prototype.start = function() {
-    console.log("ImapSearcher starting");
+    log.msg("ImapSearcher starting");
     this.imap.connect();
 };
 
@@ -139,7 +140,7 @@ module.exports = ImapSearcher;
 //     //     this.imap.openBox('INBOX', true, cb);
 //     // }
 //     var sincedate = self.startdate;
-//     console.log("imapsearcher.search: ", type, searchstr, sincedate.dateString);
+//     log.msg("imapsearcher.search: ", type, searchstr, sincedate.dateString);
 //
 //     // FIXME: don't keep adding this event listener
 //
@@ -157,7 +158,7 @@ module.exports = ImapSearcher;
 //                 function(msgcount,id) {
 //                     if( id > self.lastSeenId ) { msgcount++; } return msgcount;
 //                 }, 0);
-//             console.log("old lastId:",self.lastSeenId, "newmsgs:",newmsgcount," results:",results);
+//             log.msg("old lastId:",self.lastSeenId, "newmsgs:",newmsgcount," results:",results);
 //
 //             self.lastSeenId = _.last(results);
 //             return callback(results);

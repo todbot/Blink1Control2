@@ -7,7 +7,7 @@ var React = require('react');
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
-var ButtonGroup = require('react-bootstrap').ButtonGroup;
+// var ButtonGroup = require('react-bootstrap').ButtonGroup;
 // var FormControls = require('react-bootstrap').FormControls;
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
 

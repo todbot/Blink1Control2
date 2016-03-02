@@ -11,6 +11,8 @@ var Button = require('react-bootstrap').Button;
 var MenuItem = require('react-bootstrap').MenuItem;
 var DropdownButton = require('react-bootstrap').DropdownButton;
 
+var log = require('../../logger');
+
 var PatternView = React.createClass({
 	propTypes: {
 		pattern: React.PropTypes.object.isRequired,
@@ -28,20 +30,20 @@ var PatternView = React.createClass({
 	onNameChange: function(event) {
         var field = event.target.name;
         var value = event.target.value;
-        console.log('PatternView.onNameChange field,value', field, value);
+        log.msg('PatternView.onNameChange field,value', field, value);
 		var pattern = this.state.pattern;
 		pattern.name = value;
 		this.setState( {pattern: pattern});
 		// this.props.onPatternUpdated(pattern);
     },
 	onSwatchClick: function(coloridx) {
-		console.log("PatternView.onSwatchClick", this.props.pattern.id, coloridx);
+		log.msg("PatternView.onSwatchClick", this.props.pattern.id, coloridx);
 		this.setState({activeSwatch: coloridx});
 		var pattern = this.state.pattern;
 
 		// FIXME: this doesn't work
 		if( this.state.editing ) {
-			console.log("PatternView.onSwatchClick: editing!");
+			log.msg("PatternView.onSwatchClick: editing!");
 			var newcolor = {
 				rgb: Blink1Service.getCurrentColor(),  // FIXME: get from colorpicker instead?
 				time: Blink1Service.getCurrentMillis() / 1000,
@@ -54,7 +56,7 @@ var PatternView = React.createClass({
 			this.props.onPatternUpdated(pattern);
 		}
 		else {
-			// console.log("color: ", pattern.colors[coloridx]);
+			// log.msg("color: ", pattern.colors[coloridx]);
 			Blink1Service.fadeToColor( 100, pattern.colors[coloridx].rgb, pattern.colors[coloridx].ledn );
 		}
         //this.props.onSwatchClick(this.props.pattern.id, coloridx);
@@ -62,7 +64,7 @@ var PatternView = React.createClass({
 	onAddSwatch: function() {
         // var colors = this.state.pattern.colors;
 		var pattern = this.state.pattern;
-		console.log('PatternView.addSwatch prev colors',pattern.colors);
+		log.msg('PatternView.addSwatch prev colors',pattern.colors);
         //this.props.onAddSwatch(this.props.pattern.id);
 		var newcolor = {
 			rgb: Blink1Service.getCurrentColor(),
@@ -71,12 +73,12 @@ var PatternView = React.createClass({
 		};
 		// var colors = pattern.colors
         pattern.colors.push( newcolor );
-        console.log('addSwatch, colors:', pattern.colors);
+        log.msg('addSwatch, colors:', pattern.colors);
         this.setState( {pattern: pattern});
 		this.props.onPatternUpdated(pattern);
 	},
 	onRepeatsClick: function() {
-		console.log("PatternView.onRepeatsClick");
+		log.msg("PatternView.onRepeatsClick");
 		var pattern = this.state.pattern; //repeats = this.state.pattern.repeats;
 		pattern.repeats++;
 		if( pattern.repeats > 9 ) { pattern.repeats = 0; }
@@ -87,9 +89,9 @@ var PatternView = React.createClass({
 		var pattern = this.state.pattern;
 		pattern.playing = !pattern.playing;
 		this.setState({pattern: pattern, editing: false});
-		console.log("PatternView.onPlayStopPattern", pattern.id, pattern.playing);
+		log.msg("PatternView.onPlayStopPattern", pattern.id, pattern.playing);
 		if( pattern.playing ) {
-			console.log("PLAYING");
+			log.msg("PLAYING");
 			PatternsService.playPattern(pattern.id);
 		}
 		else {
@@ -97,29 +99,29 @@ var PatternView = React.createClass({
 		}
 	},
 	onEditPattern: function() {
-		console.log("PatternView.onEditPattern");
+		log.msg("PatternView.onEditPattern");
 		var pattern = this.state.pattern;
 		if( pattern.playing ) { PatternsService.stopPattern(pattern.id); }
 		this.setState( {editing: true });
 	},
 	onLockPattern: function() {
-		console.log("PatternView.onLockPattern");
+		log.msg("PatternView.onLockPattern");
 		var pattern = this.state.pattern;
 		pattern.locked = !pattern.locked;
 		this.setState({pattern:pattern});
 	},
 	onCopyPattern: function() {
-		console.log("onCopyPattern", this.state.pattern.id);
+		log.msg("onCopyPattern", this.state.pattern.id);
 		var pattern = this.state.pattern;
 		this.props.onCopyPattern( pattern.id );
 	},
 	onDeletePattern: function() {
-		console.log("onDeletePattern", this.state.pattern.id);
+		log.msg("onDeletePattern", this.state.pattern.id);
 		var pattern = this.state.pattern;
 		this.props.onDeletePattern( pattern.id );
 	},
 	onEditDone: function() {
-		console.log("PatternView.onEditDone");
+		log.msg("PatternView.onEditDone");
 		this.setState( {editing: false });
 		var pattern = this.state.pattern;
 		this.props.onPatternUpdated(pattern);
@@ -128,7 +130,7 @@ var PatternView = React.createClass({
 	render: function() {
 		var pattern = this.state.pattern;
 		var pid = pattern.id;
-		console.log("PatternView.render: pid:",pid,"playing:",pattern.playing);
+		log.msg("PatternView.render: pid:",pid,"playing:",pattern.playing);
 		var editingThis = (this.state.editing);// && (patterneditId === pid));
 
 		var pattStyle = { width: 250, display: "inline-block",   border:'0px solid blue'};

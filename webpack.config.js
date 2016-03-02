@@ -2,7 +2,7 @@
 var webpack = require('webpack');
 var path = require('path');
 
-module.exports = {
+var config = {
   // context: path.join(__dirname, '/src'),
   entry: './src/maingui.js',
   // entry: __dirname + '/src' + './maingui.js',
@@ -10,7 +10,7 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.join(__dirname, '/build'),
-    publicPath: 'http://localhost:8080/build/'
+    // publicPath: 'http://localhost:8080/build/'
   },
 
   module: {
@@ -27,3 +27,11 @@ module.exports = {
     ]
   }
 };
+
+if( process.env.NODE_ENV === 'development' ) {
+    config.output.publicPath = 'http://localhost:8080/build/';
+} else {
+    config.output.publicPath= '../build/';
+}
+
+module.exports = config;

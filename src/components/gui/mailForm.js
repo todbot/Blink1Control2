@@ -85,7 +85,8 @@ var MailForm = React.createClass({
             return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
 
-        console.log("trigger:",this.state.triggerType, this.state.triggerVal);
+        // console.log("trigger:",this.state.triggerType, this.state.triggerVal);
+
       return (
           <div>
               <Modal show={this.props.show} onHide={this.close} >

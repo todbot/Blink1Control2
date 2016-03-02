@@ -15,13 +15,15 @@ var remote = window.require('remote');
 var PatternsService = remote.require('./server/patternsService');
 // var Blink1Service = remote.require('./server/blink1Service');
 
+var log = require('../../logger');
+
 var PatternList = React.createClass({
 	//mixins: [
 	//	require('react-onclickoutside')
 	//],
 
 	getInitialState: function() {
-		console.log("patternList: getInitialState!");
+		log.msg("patternList: getInitialState!");
 		return {
 			patterns: PatternsService.getAllPatterns()
 		};
@@ -40,22 +42,22 @@ var PatternList = React.createClass({
 	updatePatternState: function(allpatterns) {
 		// var patts = _.cloneDeep(allpatterns);
 		var patts = allpatterns;
-		console.log("PatternList.updatePatternState:", patts);
+		log.msg("PatternList.updatePatternState:", patts);
 		this.setState( {patterns: patts } );
 	},
 
 	onAddPattern: function() {
-		console.log("onAddPattern");
+		log.msg("onAddPattern");
 		var p = PatternsService.newPattern();
 		p.id = 0; // force id regen
 		PatternsService.savePattern( p );
 	},
 	onStopAllPatterns: function() {
-		console.log("onStopAllPatterns");
+		log.msg("onStopAllPatterns");
 		PatternsService.stopAllPatterns();
 	},
 	copyPattern: function(patternid) {
-		console.log("copyPattern:", patternid);
+		log.msg("copyPattern:", patternid);
 		var p = PatternsService.getPatternById( patternid );
 		p.id = 0; // unset to regen for Api // FIXME:!!!
 		p.name = p.name + " (copy)";
@@ -65,18 +67,18 @@ var PatternList = React.createClass({
 		// this.setState( {editing: true, : p.id } );
 	},
 	deletePattern: function(patternid) {
-		console.log("deletePattern:", patternid);
+		log.msg("deletePattern:", patternid);
 		// this.setState( {editing: false} );
 		PatternsService.deletePattern( patternid );
 	},
 
 	onPatternUpdated: function(pattern) {
-		console.log("PatternList.onPatternUpdated:", pattern);
+		log.msg("PatternList.onPatternUpdated:", pattern);
 		PatternsService.savePattern(pattern);
 	},
 
 	render: function() {
-		// console.log("patternList.render",this.state.patterns);
+		// log.msg("patternList.render",this.state.patterns);
 
 		var createPatternRow = function(patt, idx) {
 			return (

@@ -36,7 +36,7 @@ var MailTable = React.createClass({
 		var rules = this.state.rules;
 		messages.map( function(msg) {
 			var rule = _.find(rules, {id:msg.id});
-			console.log('msg',msg,"rule",rule);
+			// console.log('MailTable msg',msg,"rule",rule);
 			rule.lastTime = msg.message;
 		});
 		this.setState({rules:rules});
