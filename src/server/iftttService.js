@@ -72,9 +72,9 @@ var IftttService = {
 		if( !rules ) {
 			rules = [];
 		}
-		var url = baseUrl + this.iftttKey;
-		console.log("fetchIfttt:", url);
 		var self = this;
+		var url = baseUrl + self.iftttKey;
+		console.log("fetchIfttt:", url, self.lastTime);
         request(baseUrl + this.iftttKey, function(error, response, body) {
 			// FIXME: do error handling like: net error, bad response, etc.
 			if( error || response.statusCode !== 200 ) { // badness
@@ -88,7 +88,7 @@ var IftttService = {
 				respobj.events.map( function(e) {
 					//console.log("iftttFetcher e:", JSON.stringify(e));
 					var eventDate = new Date(parseInt(1000 * e.date));
-					if (eventDate > self.lastTime) {
+					if (eventDate > self.lastTime ) {
 						console.log('iftttFetcher new event name:', e.name);
 						rules.map( function(r) {
 							console.log("    ifttFetcher: rule:", JSON.stringify(r));

@@ -44,7 +44,7 @@ var BigButtonSet = React.createClass({
         var newbut = {
             name: "Big Button",
             type: "color",
-            color: Blink1Service.getCurrentColor(),
+            color: Blink1Service.getCurrentColor().toHexString(),
             ledn: Blink1Service.getCurrentLedN()
         };
         console.log("newbut", newbut);
@@ -65,7 +65,7 @@ var BigButtonSet = React.createClass({
         }
         else if( cmd === 'setcolor') {
             this.state.buttonsUser[idx].type = 'color';
-            this.state.buttonsUser[idx].color = Blink1Service.getCurrentColor();
+            this.state.buttonsUser[idx].color = Blink1Service.getCurrentColor().toHexString();
             this.state.buttonsUser[idx].ledn = Blink1Service.getCurrentLedN();
         }
         else if( cmd === 'setpattern') {

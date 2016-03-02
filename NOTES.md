@@ -3,11 +3,12 @@
 
 Random notes
 
-### App capability changes
+### App capability changes / To-do's
 - Special patterns like '~off' and '~stop:patternname'
 - IFTTT rule_name can be matching rule or specific patternname or special patternname
 -  (maybe restructure app to not need IFTTT "rules"?)
 - Patterns should allow multiple LEDs to change per step (take array of {color,ledn,time})
+- Add 'enable' flag to each rule in Mail & Tools
 
 #### General architecture
 -- Objects that touch the net or disk run in main process and live in `./src/server`

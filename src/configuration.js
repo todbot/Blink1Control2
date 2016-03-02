@@ -4,7 +4,10 @@
 
 var nconf = require('nconf');
 
-nconf.file({file: getUserHome() + '/blink1control2-config.json'});
+var conf_file = getUserHome() + '/blink1control2-config.json';
+
+nconf.file({file: conf_file});
+console.log( "config file", conf_file);
 
 function getUserHome() {
     return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
