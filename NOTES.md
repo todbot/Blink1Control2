@@ -27,6 +27,8 @@ Random notes
 #### Building on Windows
 - Can't use my standard MinGW rxvt shell
 - Instead, open up Node's "Node Command Prompt" from Start menu
+- May need to install webpack & webpack-dev-server globally: `npm install -g webpack` ??
+- 'webpack --display-error-details' to help debug
 
 ### Slow GUI issues
 - console.log() in renderer really seems to slow down GUI
