@@ -128,6 +128,7 @@ var PatternView = React.createClass({
 	render: function() {
 		var pattern = this.state.pattern;
 		var pid = pattern.id;
+		console.log("PatternView.render: pid:",pid,"playing:",pattern.playing);
 		var editingThis = (this.state.editing);// && (patterneditId === pid));
 
 		var pattStyle = { width: 250, display: "inline-block",   border:'0px solid blue'};
