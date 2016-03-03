@@ -3,9 +3,10 @@ var webpack = require('webpack');
 var path = require('path');
 
 var config = {
-  // context: path.join(__dirname, '/src'),
-  entry: './src/maingui.js',
+   context: path.join(__dirname, '/src'),
+  // entry: path.join(__dirname, './src/maingui.js'),
   // entry: __dirname + '/src' + './maingui.js',
+  entry: './maingui.js',
 
   output: {
     filename: 'bundle.js',
@@ -32,6 +33,7 @@ if( process.env.NODE_ENV === 'development' ) {
     config.output.publicPath = 'http://localhost:8080/build/';
 } else {
     config.output.publicPath= '../build/';
+    // config.output.publicPath= '../build/';
 }
 
 module.exports = config;
