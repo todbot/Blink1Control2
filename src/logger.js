@@ -1,8 +1,8 @@
 'use strict';
 
-var _  = require('lodash');
+// var _  = require('lodash');
 
-var isDevel = 'production';
+var isDevel = false;
 
 if( process.browser === true ) { // is in renderer process
 	var remote = window.require('remote');
@@ -17,19 +17,33 @@ else {
 // TO DO: add log to file
 // TO DO: add log levels
 
-console.log("logger: isDevel",isDevel);
+// console.log("logger: isDevel",isDevel);
 
 var Logger = {
 
 	msg: function(/* msg,msg,msg */) {
         if( isDevel ) {
-            console.log(":" + _.join(arguments, ' ') );
+			var args = Array.prototype.slice.call(arguments);
+			args.unshift( Math.floor(new Date().getTime()/1000) + ':');
+            console.log.apply(console, args );
         }
         else {
             // do nothing, but later, log to file?
         }
+		// FIXME: log to file?
 	},
-
+	warn: function() {
+		var args = Array.prototype.slice.call(arguments);
+		args.unshift( Math.floor(new Date().getTime()/1000) + ':');
+		console.warn.apply(console, args);
+		// FIXME: log to file?
+	},
+	error: function() {
+		var args = Array.prototype.slice.call(arguments);
+		args.unshift( Math.floor(new Date().getTime()/1000) + ':');
+		console.error.apply(console, args);
+		// FIXME: log to file?
+	}
 };
 
 module.exports = Logger;
