@@ -34,6 +34,7 @@ var currentMillis = 100;
 var currentLedN = 0;
 var lastColors = new Array(16);
 
+// FIXME: NO NO NOPUT THIS IN GUI, in VirtualBlink1?
 // var timer;
 // var stepMillis = 20;
 // var faderMillis = 0;
@@ -41,6 +42,8 @@ var lastColors = new Array(16);
 
 lastColors.fill( tinycolor('#000000') ); // FIXME: hack
 currentColors.fill( tinycolor('#000000') );
+
+var doDeviceRescan = config.readSettings("blink1Service:deviceRescan");
 
 var Blink1Service = {
 
@@ -60,7 +63,9 @@ var Blink1Service = {
 		// log.msg("Blink1Service","scanForDevices done");
 		if( !usbDetect ) {
 			if( blink1serials.length === 0 ) { // look for insertion events
-				setTimeout( this.scanForDevices.bind(this), 5000);
+				if( doDeviceRescan ) {
+					setTimeout( this.scanForDevices.bind(this), 5000);
+				}
 			}
 			return;
 		}
@@ -223,7 +228,10 @@ var Blink1Service = {
 		if( typeof color === 'string' ) {
 			color = tinycolor( color ); // FIXME: must be better way
 		}
-
+		// else if( !color.isValid() ) {
+		//
+		// }
+		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
 		log.msg("Blink1Service","fadeToColor:", millis,ledn, color.toHexString());//, typeof color, (color instanceof String) );
 
 		// handle special meaning: ledn=0 -> all LEDs

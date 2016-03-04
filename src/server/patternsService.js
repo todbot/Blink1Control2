@@ -24,11 +24,12 @@
  * 	The "toString()" implementation can be considered to be: id:name:patternstr ?
  */
 
-"use strict";
+'use strict';
 
 var _ = require('lodash');
 
 var config = require('../configuration');
+var log = require('../logger');
 
 var Blink1Service = require('./blink1Service');
 
@@ -56,26 +57,29 @@ var _fixId = function(pattern) {
 	return pattern;
 };
 
+// turn patternstring into fledgling color,repeats partial pattern
 var _parsePatternStr = function(patternstr) {
 	var pattparts = patternstr.split(/\s*,\s*/g);
 	//var len = pattparts[0];
+	var repeats = parseInt(pattparts[0]);
 	var colorlist = [];
 	for( var i = 1; i < pattparts.length; i += 3 ) { //[0] is len
-		var color = { rgb: pattparts[i + 0],
-					time: Number(pattparts[i + 1]),
-					ledn: Number(pattparts[i + 2]) };
+		var color = {
+			rgb: pattparts[i + 0],
+			time: Number(pattparts[i + 1]),
+			ledn: Number(pattparts[i + 2]) };
 		// FIXME: validate rgb
 		if( isNaN(color.time) ) { color.time = 0.1; }
 		if( isNaN(color.ledn) ) { color.ledn = 0; }
 		colorlist.push( color );
 	}
-    return colorlist;
+    return {colors: colorlist, repeats: repeats};
 };
 
 var _generatePatternStr = function(pattern) {
 	var pattstr = pattern.repeats;
 	pattern.colors.map( function(c) {
-		pattstr += ',' + c.color + ',' + c.time + ',' + c.ledn;
+		pattstr += ',' + c.rgb + ',' + c.time + ',' + c.ledn;
 	});
 	return pattstr;
 };
@@ -84,10 +88,12 @@ var _systemFixup = function(pattern) {
 	pattern = _fixId(pattern);
 	pattern.system = true;
 	pattern.locked = true;
+	pattern.playing = false;
 	if( pattern.patternstr ) {
-		pattern.colors = _parsePatternStr(pattern.patternstr);
+		var ppatt = _parsePatternStr(pattern.patternstr);
+		pattern.colors = ppatt.colors;
+		pattern.repeats = ppatt.repeats;
 	}
-	pattern.repeats = Math.floor((Math.random() * 8) + 0);  // FIXME: TESTING HACK
 	return pattern;
 };
 
@@ -101,13 +107,23 @@ var PatternsService = {
 		patternsSystem = systemPatterns.map( _systemFixup );
 		patternsUser = [];
 		patternsUser = config.readSettings('patterns');
+		log.msg('PatternsService.initialize, config patterns', patternsUser);
+		patternsUser = patternsUser.map( function(patt) {
+			if( patt.pattern ) {
+				var ppatt = _parsePatternStr(patt.pattern);
+				patt.colors = ppatt.colors;
+				patt.repeats = ppatt.repeats;
+			}
+			patt.playing = false;
+			return patt;
+		});
 		if( !patternsUser ) {
 			patternsUser = [];
 		}
-		// console.log('patternsUser', patternsUser);
+		log.msg('PatternsService.initialize, fixup patterns', patternsUser);
 	},
 	listenColorChange: function(color) {
-		console.log("PatternsService.listenColorChange!", color);
+		log.msg("PatternsService.listenColorChange!", color);
 	},
 
 	getAllPatterns: function() {
@@ -128,18 +144,26 @@ var PatternsService = {
 		// console.log("getPatternById:", pattern);
 		return _.clone(pattern);
 	},
+	formatPatternsForOutput: function(patts) {
+		var patternsOut = patts.map( function(patt) {
+			patt.pattern = _generatePatternStr( patt );
+			return _.pick(patt, 'name', 'id', 'pattern');
+		});
+		return patternsOut;
+	},
+	getAllPatternsForOutput: function() {
+		return this.formatPatternsForOutput(this.getAllPatterns());
+	},
 	/** Save all patterns to config and notifyChange listeners */
 	savePatterns: function() {
-		console.log("PatternsService.savePatterns");
-		var patternsSave = _.map( patternsUser, function(p) {
-			return _.pick(p, 'name', 'id', 'colors', 'repeats');
-		});
+		log.msg("PatternsService.savePatterns");
+		var patternsSave = this.formatPatternsForOutput(patternsUser);
 		config.saveSettings("patterns", patternsSave);
 		this.notifyChange();  /// FIXME: hmmm, not sure about the philosophy of this
 	},
 	/** Saves new pattern or updates existing pattern */
 	savePattern: function(pattern) {
-		console.log("PatternsService.savePattern:", JSON.stringify(pattern));
+		log.msg("PatternsService.savePattern:", JSON.stringify(pattern));
 		if (pattern.id) {
 			var existingPatternIndex = _.indexOf(patternsUser, _.find(patternsUser, {id: pattern.id}));
 			patternsUser.splice(existingPatternIndex, 1, pattern);
@@ -149,7 +173,7 @@ var PatternsService = {
 		}
 		this.savePatterns();
 	},
-	/** Create a minimal pattern and return it. Does not insert into patterns array */
+	/** Create a minimal pattern and return it. Does NOT insert into patterns array */
 	newPattern: function(name, color) {
 		if( !name ) {
 			name = 'new pattern ' + patternsUser.length;
@@ -159,9 +183,18 @@ var PatternsService = {
 		var pattern = {
 			name: name,
 			repeats: 3,
-			colors: [{rgb: color, time: 0.2, ledn: 0}, {rgb: color2, time: 0.2, ledn: 0}] };  // FIXME
+			colors: [{rgb: color, time: 0.2, ledn: 0}, {rgb: color2, time: 0.2, ledn: 0}],  // FIXME
+			playing: false
+		};
 		pattern.id = _generateId(pattern);
-		//patternsUser.unshift(pattern);
+		return pattern;
+	},
+	/** Create a pattern object from a pattern str.  Does not insert into pattern list */
+	newPatternFromString: function(name, patternstr) {
+		var pattern = _parsePatternStr(patternstr);
+		pattern.name = name;
+		pattern.id = _generateId(pattern);
+		pattern.playing = false;
 		return pattern;
 	},
 	/** Deletes pattern and notifyChange listeners */
@@ -171,7 +204,7 @@ var PatternsService = {
 	},
 
 	stopAllPatterns: function() {
-		console.log('PatternsService.stopAllPatterns');
+		log.msg('PatternsService.stopAllPatterns');
 		// var self = this;
 		_.forEach( this.getAllPatterns(), function(pattern) {
 			if( pattern.playing ) {
@@ -186,26 +219,31 @@ var PatternsService = {
 	},
 	/** Stop a playing pattern.  Notifies change listeners */
 	stopPattern: function(id) {
-		console.log('PatternsService.stopPattern',id, playingPatternId);
+		log.msg('PatternsService.stopPattern',id, playingPatternId);
 		var pattern = _.find(this.getAllPatterns(), {id: id});
-		pattern.playing = false;
-		clearTimeout( pattern.timer );
-		if( playingPatternId === pattern.id ) { playingPatternId = ''; }  // FIXME
-		this.notifyChange();
+		if( pattern ) {
+			pattern.playing = false;
+			clearTimeout( pattern.timer );
+			if( playingPatternId === pattern.id ) { playingPatternId = ''; }  // FIXME
+			this.notifyChange();
+			return true;
+		}
+		return false;
 	},
 
-	/** Play a pattern. Notifys change listeners */
+	/** Play a pattern. Returns false if pattern doesn't exist. Notifys change listeners */
 	playPattern: function(id) {
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		if( !pattern ) {  // check for special built-in patterns
-			console.log("PatternsService: no normal pattern:", id);
+			log.msg("PatternsService: no normal pattern:", id);
 			if( id === '~off') {
 				console.log("PatternsService: playing special '~off' pattern");
 				PatternsService.stopAllPatterns();
 				Blink1Service.fadeToColor( 300, '#000000', 0 );
+				return true;
 			// } else if( id === '!stop' ) {
 			}
-			return;
+			return false;  // FIXME: return error?
 		}
 		if( pattern.playing ) {
 			clearTimeout(pattern.timer);
@@ -216,6 +254,7 @@ var PatternsService = {
 		playingPatternId = id;
 		// this._playPatternInternal(id, donecallback);
 		this._playPatternInternal(id, null);
+		return true;
 	},
 
 	_playPatternInternal: function(id, callback) {
@@ -250,8 +289,8 @@ var PatternsService = {
 		return playingPatternId;
 	},
 	getPlayingPatternName: function() {
-		var pat = this.getPatternById( playingPatternId );
-		return (pat) ? pat.name : '';
+		var patt = this.getPatternById( playingPatternId );
+		return (patt) ? patt.name : '';
 	},
 
 	addChangeListener: function(callback, callername) {
@@ -264,6 +303,7 @@ var PatternsService = {
 	},
 	notifyChange: function() {
 		var self = this;
+		log.msg("PatternsService.notifyChange",listeners);
 		_.forIn( listeners, function(callback) {
 			if( callback ) { callback( self.getAllPatterns() ); }
 		});

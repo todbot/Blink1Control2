@@ -28,10 +28,39 @@ var Blink1ControlView = React.createClass({
 			width: 350, height: 370, margin: 0, marginTop:5, marginRight:5, padding: 0,
 			display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"};
 
+		var foo =  (
+				<div style={{ width: 1200, height: 700, background: "#f0f0f0", margin: 0, padding: 10,
+							WebkitUserSelect: "none" }}>
+				<Grid fluid style={{padding:0, margin:0}}>
+					<Row>
+						<Col md={3}>
+							<Blink1Status />
+							<EventList />
+						</Col>
+						<Col md={9}>
+							<Grid fluid>
+							<Row>
+								<Blink1TabViews />
+							</Row>
+							<Row>
+								<Panel header="Color Picker" style={panelstyle}>
+									<Blink1ColorPicker />
+								</Panel>
+								<Panel header="Color Patterns" style={panelstyle}>
+									<PatternList />
+								</Panel>
+							</Row>
+							</Grid>
+						</Col>
+					</Row>
+				</Grid>
+				</div>
+				);
+
 		return (
 			<div style={{ width: 1200, height: 700, background: "#f0f0f0", margin: 0, padding: 10,
 						WebkitUserSelect: "none" }}>
-			<Grid fluid style={{padding:0, margin:0}}>
+			<div fluid style={{padding:0, margin:0}}>
 				<Row>
 					<Col md={3}>
 						<Blink1Status />
@@ -53,7 +82,7 @@ var Blink1ControlView = React.createClass({
 						</Grid>
 					</Col>
 				</Row>
-			</Grid>
+			</div>
 			</div>
 			);
 	}
