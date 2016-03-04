@@ -1,8 +1,9 @@
 "use strict";
 
-var http = require('http');
+var express      = require('express');
 
 var config = require('../configuration');
+var log = require('../logger');
 
 /*
 var enableApiServer = false;
@@ -20,29 +21,44 @@ if( enableApiServer ) {
 	});
 }
 */
+var app = express();
+
+app.get('/', function (req, res) {
+	res.send('Hello World!');
+});
+app.get('/blink1', function(req,res) {
+	res.send('blink1 in the house');
+});
 
 var apiServer = {
 	server: null,
 
 	init: function() { // FIXME: bad name
-		if( config.readSettings("apiServer:enabled") ) {
-			this.start();
-		}
+		// config.saveSettings("apiServer:port",8934);
+		// config.saveSettings("apiServer:enabled", false);
+		// config.saveSettings("apiServer:host", 'localhost');
 	},
 	start: function() {
+		if( !config.readSettings("apiServer:enabled") ) {
+			return;
+		}
 		var port = config.readSettings("apiServer:port") || 8934;
-		this.server = http.createServer(this.handleHttpRequest);
-		this.server.listen(port, function() {
-			//Callback triggered when server is successfully listening. Hurray!
-			console.log("Server listening on: http://localhost:%s", port);
-			config.saveSettings("apiServer", {port: port, enabled: true});
-		});
+		this.server = app.listen(port);
+
+		// this.server = http.createServer(this.handleHttpRequest);
+		// this.server.listen(port, function() {
+		// 	//Callback triggered when server is successfully listening. Hurray!
+		// 	log.msg("ApiServer: listening on: http://localhost:%s", port);
+		// 	// config.saveSettings("apiServer", {port: port, enabled: true});
+		// });
 
 	},
 
 	stop: function() {
-		this.server.close();
-		config.saveSettings("apiServer:enabled", false);
+		if( this.server ) {
+			this.server.close();
+		}
+		// config.saveSettings("apiServer:enabled", false);
 	},
 
 	handleHttpRequest: function(request, response) {

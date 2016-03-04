@@ -8,7 +8,7 @@ var BrowserWindow = require('browser-window');
 // var runtime = require('./src/core/runtime');
 // var appMenu = require('./src/core/app-menu');
 
-var configuration = require('./configuration');
+// var config = require('./configuration');
 var apiServer = require('./server/apiServer');
 var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
@@ -19,7 +19,12 @@ var MailService = require('./server/mailService');
 
 // electron-connect is for development
 //var client = require('electron-connect').client;
-require('crash-reporter').start();
+require('crash-reporter').start({
+	productName: 'Blink1Control2',
+	companyName: 'ThingM',
+	submitURL: 'http://thingm.com/blink1/blink1control2-crash-reporter', // FIXME:
+	autoSubmit: true
+});
 
 // Load external modules
 // var mods = require('./core/modules');
@@ -31,7 +36,7 @@ var mainWindow = null;
 //var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
 //var appIcon = null;
 
-apiServer.init(); // .start() to bootrap
+apiServer.start(); 
 
 // var configInit = function() {
 // 	// if (!configuration.readSettings('shortcutKeys')) {
@@ -59,26 +64,37 @@ app.on('window-all-closed', function () {
 
 app.on('ready', function () {
 
-	Blink1Service.startDeviceListener();
+	Blink1Service.start();
 	PatternsService.initialize();
 	IftttService.start();
 	MailService.start();
 
-	//flux.actions.clearTodos();
 
-	mainWindow = new BrowserWindow({
-		width: 1050,
-		height: 900
-		// use-content-size: true
-		// center: true
-		// resizable: false
-		// see https://github.com/atom/electron/blob/master/docs/api/browser-window.md
-	});
+	if( process.env.NODE_ENV === 'development' ) {
+		mainWindow = new BrowserWindow({
+			width: 1050,
+			height: 900
+		});
+		mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
+        mainWindow.webContents.openDevTools();
+    }
+    else {
+	  mainWindow = new BrowserWindow({
+		  width: 1050,
+		  height: 700,
+		  // useContentSize: true,
+		  // center: true
+		  resizable: false
+		  // see https://github.com/atom/electron/blob/master/docs/api/browser-window.md
+	  });
+	  mainWindow.loadURL('file://' + __dirname + '/index-prod.html');
+    }
 
 	// mainWindow.setMenu(null);  // remove default menu
 	mainWindow.on('close', function () {
-			console.log("mainWindow will close");
-		});
+		console.log("mainWindow will close");
+		apiServer.stop();
+	});
 
 	mainWindow.on('closed', function () {
 		console.log("mainWindow is now closed");
@@ -86,16 +102,6 @@ app.on('ready', function () {
 		mainWindow = null;
 	});
 
-	if( process.env.NODE_ENV === 'development' ) {
-        mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
-        mainWindow.openDevTools();
-    }
-    else {
-      mainWindow.loadURL('file://' + __dirname + '/index-prod.html');
-    }
-
-	//mainWindow.loadUrl('file://' + __dirname + '/dist/index.html#/todtests');
-	// mainWindow.loadUrl('file://' + __dirname + '/../dist/index.html'); /* eslint no-path-concat:0 */
 	mainWindow.focus();
 });
 
