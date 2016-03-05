@@ -3,6 +3,7 @@ var webpack = require('webpack');
 var path = require('path');
 
 var config = {
+    target: 'electron',
    context: path.join(__dirname, '/src'),
   // entry: path.join(__dirname, './src/maingui.js'),
   // entry: __dirname + '/src' + './maingui.js',
@@ -12,6 +13,12 @@ var config = {
     filename: 'bundle.js',
     path: path.join(__dirname, '/build'),
     // publicPath: 'http://localhost:8080/build/'
+  },
+  // see: https://github.com/chentsulin/webpack-target-electron-renderer/pull/7
+  externals: {
+     "express": 'commonjs express',
+    "node-hid": 'commonjs node-hid',
+    "serialport": 'commonjs serialport'
   },
 
   module: {
