@@ -21,7 +21,7 @@ var MailTable = React.createClass({
 	// 	//onClear: React.PropTypes.func.isRequired
 	// },
 	getInitialState: function() {
-		var rules = config.readSettings('mailRules');
+		var rules = config.readSettings('mailService:rules');
 		MailService.addChangeListener(this.updateSearchStatus, "MailTable");
 		if( !rules ) { rules = []; }
 		return {
@@ -43,7 +43,7 @@ var MailTable = React.createClass({
 	},
 	saveRules: function(rules) {
 		this.setState({rules: rules});
-		config.saveSettings("mailRules", rules);
+		config.saveSettings("mailService:rules", rules);
 	},
 	editRule: function(n) {
 		console.log("MailTable.editRule:", n);

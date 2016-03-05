@@ -97,9 +97,12 @@ var Blink1ColorPicker = React.createClass({
 					<HtmlColorChart handleClick={this.setColorHex}/>
 						<div className="row" style={{paddingTop:5, fontSize:'0.9em'}}>
 							<ButtonGroup vertical className="col-sm-3">
-							  <Button onClick={this.setLedN.bind(this, 0)} active={this.state.ledn===0} bsSize="small">LED AB</Button>
-							  <Button onClick={this.setLedN.bind(this, 1)} active={this.state.ledn===1} bsSize="small">LED A</Button>
-							  <Button onClick={this.setLedN.bind(this, 2)} active={this.state.ledn===2} bsSize="small">LED B</Button>
+							  <Button onClick={this.setLedN.bind(this, 0)} active={this.state.ledn===0}
+								  bsSize="small" style={{padding:0}} >LED AB </Button>
+							  <Button onClick={this.setLedN.bind(this, 1)} active={this.state.ledn===1}
+								  bsSize="small" style={{padding:0}} >LED A </Button>
+							  <Button onClick={this.setLedN.bind(this, 2)} active={this.state.ledn===2}
+								  bsSize="small" style={{padding:0}} >LED B </Button>
 							</ButtonGroup>
 							<table className="col-sm-4" style={{ border:'0px solid #ddd'}}>
 								<tbody>

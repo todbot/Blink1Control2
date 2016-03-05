@@ -38,6 +38,7 @@ var PatternView = React.createClass({
     },
 	onSwatchClick: function(coloridx) {
 		log.msg("PatternView.onSwatchClick", this.props.pattern.id, coloridx);
+
 		this.setState({activeSwatch: coloridx});
 		var pattern = this.state.pattern;
 

@@ -16,7 +16,7 @@ var config = {
   },
   // see: https://github.com/chentsulin/webpack-target-electron-renderer/pull/7
   externals: {
-     "express": 'commonjs express',
+    "express": 'commonjs express',
     "node-hid": 'commonjs node-hid',
     "serialport": 'commonjs serialport'
   },

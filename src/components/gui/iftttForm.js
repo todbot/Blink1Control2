@@ -24,7 +24,7 @@ var IftttForm = React.createClass({
 	},
     getInitialState: function() {
         var rule = this.props.rule;
-        console.log("iftttForm rule:",rule);
+        // console.log("iftttForm rule:",rule);
         return {
             name: rule.name,
             patternId: rule.patternId
@@ -47,7 +47,7 @@ var IftttForm = React.createClass({
     },
 
     render: function() {
-        console.log("iftttForm render:",this.state, this.props);
+        // console.log("iftttForm render:",this.state, this.props);
 
         var patterns = PatternsService.getAllPatterns();
 

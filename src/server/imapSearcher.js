@@ -15,6 +15,7 @@ var makeMessage = function(id, type, message ) {
 function ImapSearcher(config,callback) {
     var self = this;
     self.callback = callback;
+    self.enabled = config.enabled || true;
     self.id = config.id;
     self.host = config.host;
     self.port = config.port;

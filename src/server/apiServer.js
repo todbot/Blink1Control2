@@ -21,8 +21,12 @@ app.use(myLogger);
 app.get('/', function (req, res) {
 	res.send('Blink1Control2 API server');
 });
-app.get('/blink1', function(req,res) {
-	res.send('blink1 in the house'); // FIXME
+app.get('/blink1(/id)?', function(req,res) {
+	res.json({
+        blink1_serialnums: Blink1Service.getAllSerials(),
+		blink1_id: Blink1Service.iftttKey(),
+		status: "blink1 id"
+    });
 });
 app.get('/blink1/fadeToRGB', function(req, res) {
     var color = tinycolor(req.query.rgb);
@@ -36,7 +40,7 @@ app.get('/blink1/fadeToRGB', function(req, res) {
     else {
         status = "bad hex color specified " + req.query.rgb;
     }
-    var response = {
+    res.json( {
         // blink1Connected: blink1 !== null,
         blink1Serials: Blink1Service.getAllSerials(),
         lastColor: color.toHexString(),
@@ -44,16 +48,14 @@ app.get('/blink1/fadeToRGB', function(req, res) {
         lastLedn: ledn,
         cmd: "fadeToRGB",
         status: status
-    };
-    res.json( response );
+    });
 });
 
 app.get('/blink1/pattern(s)?', function(req,res) {
-	var response = {
+	res.json({
 		status: "pattern results",
 		patterns: PatternsService.getAllPatternsForOutput()
-	};
-	res.json( response );
+	});
 });
 
 app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
@@ -69,10 +71,22 @@ app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
 			status = 'stopping pattern ' +patt_id;
 		}
 	}
-	var response = {
+	res.json({
 		status: status
-	};
-	res.json( response );
+	});
+});
+app.get('/blink1/pattern/add', function(req,res) {
+	var status = 'pattern add';
+	if( ! req.query.name || ! req.query.pattern ) {
+		status = "must specify 'name' and 'pattern' string";
+	}
+	var patt = PatternsService.newPatternFromString( req.query.pname, req.query.pattern);
+	if( patt ) { PatternsService.savePattern(patt); }
+	var pattout = PatternsService.formatPatternForOutput(patt);
+	res.json({
+		pattern: pattout,
+		status: status
+	});
 });
 
 //

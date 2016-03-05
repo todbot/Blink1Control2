@@ -11,6 +11,7 @@ Random notes
 - Add 'enable' flag to each rule in Mail & Tools
 - TODO: partion code into client & server so webpack doesn't bundle server code
 - TODO: what about 'parametric patterns', e.g. "blink 5 times, fill in color & on/off time"
+- TODO: Number() vs parseInt() in `PatternsService._parsePatternStr()`?
 
 #### General architecture
 -- Objects that touch the net or disk run in main process and live in `./src/server`
@@ -24,8 +25,7 @@ Random notes
 --- (e.g. eventsvc.log("Did a thing", {type:'debug', from:'VirtualBlink1'}) (use introspection?)
 
 #### Prepping node-hid
--- See 'preinstall' target in package.json
--- also see: https://github.com/voodootikigod/node-serialport/issues/538#issuecomment-184251385
+--  do `npm run postinstall` (done automatically on `npm install`)
 
 #### Building on Windows
 - Can't use my standard MinGW rxvt shell
@@ -44,6 +44,10 @@ Random notes
 
 
 ## old notes
+
+#### Prepping node-hid
+-- See 'preinstall' target in package.json
+-- also see: https://github.com/voodootikigod/node-serialport/issues/538#issuecomment-184251385
 
 #### Packaging
 ```

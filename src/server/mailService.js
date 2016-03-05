@@ -58,7 +58,7 @@ var MailService = {
 			rules = [];
 		}
 		rules.map( function(rule) {
-			if( rule.mailtype === 'IMAP' ) {
+			if( rule.enabled && rule.mailtype === 'IMAP' ) {
 				var searcher = new ImapSearcher( rule, MailService.notifyChange );
 				console.log("MailService.checkMail: starting searcher for ",rule.name);
 				searcher.start();
@@ -73,7 +73,7 @@ var MailService = {
 	//
 	// },
 	handleResults: function(results) {
-		
+
 	},
 
 	addChangeListener: function(callback, callername) {

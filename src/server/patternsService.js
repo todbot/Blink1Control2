@@ -57,13 +57,15 @@ var _fixId = function(pattern) {
 	return pattern;
 };
 
-// turn patternstring into fledgling color,repeats partial pattern
+// turn patternstring into fledgling {colors,repeats} partial pattern
+// only parses pattern string in format: repeats,color1,time,ledn1,time2,ledn2,...
+// FIXME: need to support non-ledn variant
 var _parsePatternStr = function(patternstr) {
 	var pattparts = patternstr.split(/\s*,\s*/g);
 	//var len = pattparts[0];
 	var repeats = parseInt(pattparts[0]);
 	var colorlist = [];
-	for( var i = 1; i < pattparts.length; i += 3 ) { //[0] is len
+	for( var i = 1; i < pattparts.length; i += 3 ) {
 		var color = {
 			rgb: pattparts[i + 0],
 			time: Number(pattparts[i + 1]),
@@ -77,6 +79,7 @@ var _parsePatternStr = function(patternstr) {
 };
 
 var _generatePatternStr = function(pattern) {
+	if( !pattern || !pattern.repeats || !pattern.colors ) { return ''; }
 	var pattstr = pattern.repeats;
 	pattern.colors.map( function(c) {
 		pattstr += ',' + c.rgb + ',' + c.time + ',' + c.ledn;
@@ -144,10 +147,15 @@ var PatternsService = {
 		// console.log("getPatternById:", pattern);
 		return _.clone(pattern);
 	},
+	formatPatternForOutput: function(patt) {
+		if( !patt ) { return null; }
+		patt.pattern = _generatePatternStr( patt );
+		return _.pick(patt, 'name', 'id', 'pattern');
+	},
 	formatPatternsForOutput: function(patts) {
+		var self = this;
 		var patternsOut = patts.map( function(patt) {
-			patt.pattern = _generatePatternStr( patt );
-			return _.pick(patt, 'name', 'id', 'pattern');
+			return self.formatPatternForOutput(patt);
 		});
 		return patternsOut;
 	},
@@ -166,7 +174,12 @@ var PatternsService = {
 		log.msg("PatternsService.savePattern:", JSON.stringify(pattern));
 		if (pattern.id) {
 			var existingPatternIndex = _.indexOf(patternsUser, _.find(patternsUser, {id: pattern.id}));
-			patternsUser.splice(existingPatternIndex, 1, pattern);
+			if( existingPatternIndex === -1 ) { // new
+				patternsUser.unshift(pattern);
+			}
+			else {	// edit
+				patternsUser.splice(existingPatternIndex, 1, pattern);
+			}
 		} else {
 			pattern.id = _generateId(pattern);
 			patternsUser.unshift(pattern); // add new to top of list
@@ -191,6 +204,7 @@ var PatternsService = {
 	},
 	/** Create a pattern object from a pattern str.  Does not insert into pattern list */
 	newPatternFromString: function(name, patternstr) {
+		if( !patternstr ) { return null; }
 		var pattern = _parsePatternStr(patternstr);
 		pattern.name = name;
 		pattern.id = _generateId(pattern);

@@ -36,7 +36,7 @@ var mainWindow = null;
 //var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
 //var appIcon = null;
 
-apiServer.start(); 
+apiServer.start();
 
 // var configInit = function() {
 // 	// if (!configuration.readSettings('shortcutKeys')) {
