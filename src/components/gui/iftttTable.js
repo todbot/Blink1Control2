@@ -9,32 +9,47 @@
 var React = require('react');
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
+var moment = require('moment');
 
 var remote = window.require('remote');
 var PatternsService = remote.require('./server/patternsService');
+
+var IftttService = remote.require('./server/iftttService');
+// var IftttService = require('../../server/iftttService');
+
 var config = remote.require('./configuration');
+var log = require('../../logger');
+var util = require('../../utils');
 
 var IftttForm = require('./iftttForm');
 
 var IftttTable = React.createClass({
 
 	getInitialState: function() {
-		var rules = config.readSettings('iftttRules');
-		if( !rules ) {
-			rules = [];
-		}
+		// var rules2 = config.readSettings('iftttService:rules');
+		// why do I have to do the cheesyClone? Why does React complain
+		// with a "Uncaught Invariant Violation: Objects are not valid as a React child"?
+		var rules = util.cheesyClone(IftttService.getRules());
 		return {
-			rules: rules,
-			workingIndex:-1,
-			showForm: false
+			workingIndex: -1,
+			showForm: false,
+			rules: rules
 		};
 	},
+	componentDidMount: function() {
+		this.getUpdates(); // set up polling, ugh FIXME:
+	},
+	getUpdates: function() {
+		var rules = util.cheesyClone(IftttService.getRules());
+		this.setState({rules:rules});
+		setTimeout( this.getUpdates, 3000 ); // sigh.
+	},
 	saveRules: function(rules) {
-		this.setState({rules: rules});
-		config.saveSettings("iftttRules", rules);
+		this.setState({rules: rules});  // FIXME:
+		config.saveSettings("iftttService:rules", rules);
 	},
 	editRule: function(n) {
-		console.log("editRule:", n);
+		log.msg("editRule:", n);
 		this.openForm(n);
 	},
 	// addRule: function() {
@@ -45,9 +60,7 @@ var IftttTable = React.createClass({
 	// 	this.saveRules(rules);
 	// },
 	addRuleByForm: function() {
-		//this.setState({workingrule: {name: 'poopy butt', patternId: 'whiteflashes'}});
-		// this.setState({workingIndex: -1}); // -1 means new rule
-		this.openForm(-1);
+			this.openForm(-1);
 	},
 	deleteRule: function(idx) {
 		console.log("deleteRule:", idx);
@@ -87,29 +100,33 @@ var IftttTable = React.createClass({
     },
 
 	render: function() {
-		// console.log("iftttTable render",this.state);
-		// var self = this;
-		//	workingrule: { row: idx, name: this.state.rules[idx].name, patternId: this.state.rules[idx].pattternId }
+		var rules = this.state.rules;
+		// var rules = JSON.parse(JSON.stringify(this.state.rules));
+		// console.log("iftttTable render, state:",JSON.stringify(this.state));
+		console.log("iftttTable render, rules:", rules);
+
 		var formrule = { name: 'some new thing', patternId: 'whiteflashes'}; // FIXME:
-		if (this.state.workingIndex !== -1) { // not new
-			formrule.name = this.state.rules[this.state.workingIndex].name;
-			formrule.patternId = this.state.rules[this.state.workingIndex].patternId;
+		if (this.state.workingIndex !== -1) { // i.e. not a new rule
+			formrule.name = rules[this.state.workingIndex].name;
+			formrule.patternId = rules[this.state.workingIndex].patternId;
 		}
 		var createRow = function(rule, index) {
 			//var deleteButton = <button onClick={this.deleteRule.bind(this, index)}><i className="fa fa-times"></i></button>;
-			var	patternCell = PatternsService.getNameForId( this.state.rules[index].patternId );  // just text
-			var lastTime = rule.lastTime || '-not seen yet-';
+			var	patternCell = PatternsService.getNameForId( rule.patternId );  // just text
+			var humanTime = moment(rule.lastTime).format('LTS');
+			// var lastTime = rule.lastTime || '-not seen yet-';
 			var source = rule.source || 'n/a';
 			return (
 					<tr key={index} onDoubleClick={this.editRule.bind(this, index, rule.name)} >
 						<td>{rule.name}</td>
 						<td>{patternCell}</td>
-						<td>{lastTime}</td>
+						<td>{humanTime}</td>
 						<td>{source}</td>
 						<td><Button bsSize="xsmall" onClick={this.editRule.bind(this, index, rule.name)} >edit</Button></td>
 					</tr>
 			);
 		};
+		// console.log("rules compare:",this.state.rules,"vs",this.state.rules2);
 		return (
 			<div style={{position: "relative", height: 200}}>
 
@@ -128,7 +145,7 @@ var IftttTable = React.createClass({
 							</tr>
 						</thead>
 						<tbody>
-							{this.state.rules.map( createRow, this )}
+							{rules.map( createRow, this )}
 						</tbody>
 					</Table>
 					<div style={{position: "absolute", bottom: 20}}>

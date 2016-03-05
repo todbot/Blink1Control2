@@ -37,7 +37,7 @@
 * Config
 */
 
-"use strict";
+'use strict';
 
 var request = require('request');
 var config = require('../configuration');
@@ -47,21 +47,33 @@ var PatternsService = require('./patternsService');
 
 var baseUrl = 'http://api.thingm.com/blink1/eventsall/';
 
+// var svcConfig = config.readSettings('iftttService')
+
 var IftttService = {
-	// all these fetched from configuration later
+	config: {},
+	// FIXME: all these fetched from configuration later
 	iftttKey: 'ABCD1234ABCD1234',
-	intervalsecs: 15,
 	intervalTimer: null,
     lastTime: 0,
 	lastState: "",
 
 	setIftttKey: function(k) { this.iftttKey = k; },
 	getIftttKey: function() { return this.iftttKey; },
-
+	// getConfig: function() {
+	// 	return this.config;
+	// },
+	getRules: function() {
+		log.msg("IftttService.getRules, config:",this.config.rules);
+		return (this.config.rules) ? this.config.rules : [];
+		// return this.config.rules;
+	},
 	start: function() {
+		this.config = config.readSettings('iftttService');
+		log.msg("IftttService.start: rules",this.config.rules);
+		if( ! this.config.intervalSecs ) { this.config.intervalSecs = 15; }
 		this.lastTime = new Date(0); // FIXME:
 		this.fetchIfttt();
-		this.intervalTimer = setInterval(this.fetchIfttt.bind(this), this.intervalsecs * 1000);
+		this.intervalTimer = setInterval(this.fetchIfttt.bind(this), this.config.intervalSecs * 1000);
 		// so much this
 	},
 	stop: function() {
@@ -69,11 +81,8 @@ var IftttService = {
 	},
 
     fetchIfttt: function() {
-		var rules = config.readSettings('iftttRules');
-		if( !rules ) {
-			rules = [];
-		}
 		var self = this;
+		var rules = self.getRules();
 		var url = baseUrl + self.iftttKey;
 		log.msg("fetchIfttt:", url, self.lastTime);
         request(baseUrl + this.iftttKey, function(error, response, body) {
@@ -91,26 +100,29 @@ var IftttService = {
 					var eventDate = new Date(parseInt(1000 * e.date));
 					if (eventDate > self.lastTime ) {
 						log.msg('iftttFetcher new event name:', e.name);
-						rules.map( function(r) {
+						rules = rules.map( function(r) {
 							log.msg("    ifttFetcher: rule:", JSON.stringify(r));
-							r.lastTime = new Date( r.lastTime );
-							if( e.name === r.name ) {
+							r.lastTime = ( r.lastTime ) ? new Date( r.lastTime ) : 0;
+							if( e.name.trim() === r.name.trim()) {
 								log.msg("*** RULE MATCH: ", e.name, eventDate, r.lastTime);
 								if( eventDate > r.lastTime ) {
 									log.msg("*** TRIGGERED!!! ***");
+									log.addEvent( 'IFTTT:'+r.name+'-'+r.source);
 									r.lastTime = eventDate;
 									r.source = e.source;
 									PatternsService.playPattern( r.patternId );
 									shouldSave = true;
 								}
 							}
+							return r;
 						});
 					}
 				});
 				self.lastTime = new Date(); // == now
 				if( shouldSave ) {
 					log.msg("iftttFetcher: saving rules");
-					config.saveSettings("iftttRules", rules);
+					self.config.rules = rules;
+					config.saveSettings("iftttService", self.config);
 				}
 			}
 			else {

@@ -6,6 +6,10 @@ var Button = require('react-bootstrap').Button;
 var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
 
+var remote = window.require('remote');
+var log = remote.require('./logger');
+// var log = require('../../logger');
+
 var moment = require('moment');
 
 var EventList = React.createClass({
@@ -15,16 +19,18 @@ var EventList = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			events: [
-				{ date: Date.now(), text: "this happened"},
-				{ date: Date.now()-1, text: "this 2 happened"},
-				{ date: Date.now()-200000, text: "this 3  happened"},
-				{ date: Date.now()-400000, text: "this 3.1 happened"},
-				{ date: Date.now()-4000000, text: "this other thing happened"},
-				{ date: Date.now()-40000000, text: "this other thing happened"},
-				{ date: Date.now()-400000000, text: "this other thing happened"}
-			]
+			events: log.getLastEvents()
 		};
+	},
+	componentDidMount: function() {
+		this.getUpdates(); // set up polling, ugh FIXME:
+	},
+	getUpdates: function() {
+		// var rules = util.cheesyClone(IftttService.getRules());
+		var events = log.getLastEvents();
+		// log.msg('EventList.getUpdates',events);
+		this.setState({events:events});
+		setTimeout( this.getUpdates, 3000 ); // sigh.
 	},
 
 	clearEvents: function() {
@@ -35,9 +41,9 @@ var EventList = React.createClass({
 	render: function() {
 		var createEventLine = function(event,index) {
 			//return (<li key={event.date}> {event.date} - {event.text} </li>);
-			var humantime = moment(event.date).format('LT');
+			var humantime = moment(event.date).format('dd LT');
 			return (
-				<ListGroupItem key={index} style={{lineHeight:"85%", fontSize: "0.75em",}}> {humantime} - {event.text} </ListGroupItem>);
+				<ListGroupItem key={index} style={{lineHeight:"100%", fontSize: "0.75em", textIndent:-10}}>{humantime} - {event.text} </ListGroupItem>);
 		};
 
 		return (
