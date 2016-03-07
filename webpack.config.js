@@ -3,7 +3,8 @@ var webpack = require('webpack');
 var path = require('path');
 
 var config = {
-    target: 'electron',
+    // target: 'atom',
+   target: 'electron',
    context: path.join(__dirname, '/src'),
   // entry: path.join(__dirname, './src/maingui.js'),
   // entry: __dirname + '/src' + './maingui.js',
@@ -18,10 +19,16 @@ var config = {
   externals: {
     "express": 'commonjs express',
     "node-hid": 'commonjs node-hid',
-    "serialport": 'commonjs serialport'
+    // "serialport": 'commonjs serialport',
+    'nconf': 'commonjs nconf',
+    'xml2js': 'commonjs xml2js'
   },
 
   module: {
+      noParse: [
+        //   /electron-rebuild/,
+        //   /\.json/
+      ],
     loaders: [
       {
           test: /\.js|\.jsx$/,
@@ -31,7 +38,8 @@ var config = {
       },
       { test: /\.css$/, loader: 'style-loader!css-loader' },
       { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&mimetype=application/font-woff" },
-      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" }
+      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
+      { test: /\.json$/, loader: "json"}
     ]
   }
 };

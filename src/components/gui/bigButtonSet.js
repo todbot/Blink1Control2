@@ -2,16 +2,15 @@
 
 var React = require('react');
 
-var remote = window.require('remote');
-var Blink1Service = remote.require('./server/blink1Service');
-var PatternsService = remote.require('./server/patternsService');
+var config = require('../../configuration');
+var Blink1Service = require('../../server/blink1Service');
+var PatternsService = require('../../server/patternsService');
 
 var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 //var MenuItem = require('react-bootstrap').MenuItem;
 
 var BigButton = require('./bigButton');
 
-var config = remote.require('./configuration');
 
 var buttonsUserDefault = [
     { name: "Available", type: "color", color: "#00FF00", ledn: 0 },

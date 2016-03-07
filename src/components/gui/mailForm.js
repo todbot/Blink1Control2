@@ -10,8 +10,7 @@ var Button = require('react-bootstrap').Button;
 // var FormControls = require('react-bootstrap').FormControls;
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
 
-var remote = window.require('remote');
-var PatternsService = remote.require('./server/patternsService');
+var PatternsService = require('../../server/patternsService');
 
 
 var MailForm = React.createClass({

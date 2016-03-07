@@ -3,7 +3,7 @@
 var React = require('react');
 //var update = require('react-addons-update');
 
-var _ = require('lodash');
+// var _ = require('lodash');
 
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
@@ -11,9 +11,8 @@ var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 
 var PatternView = require('./patternView');
 
-var remote = window.require('remote');
-var PatternsService = remote.require('./server/patternsService');
-// var Blink1Service = remote.require('./server/blink1Service');
+var PatternsService = require('../../server/patternsService');
+// var Blink1Service = require('../../server/blink1Service');
 
 var log = require('../../logger');
 

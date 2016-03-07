@@ -9,7 +9,8 @@ var _ = require('lodash');
 var doUsbDetect = false;
 
 var Blink1 = require('node-blink1');
-var usbDetect = (doUsbDetect) ? require('usb-detection') : null;
+var usbDetect = null;
+// if( doUsbDetect ) { usbDetect = require('usb-detection'); }
 
 var tinycolor = require('tinycolor2');
 

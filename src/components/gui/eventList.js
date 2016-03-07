@@ -6,9 +6,7 @@ var Button = require('react-bootstrap').Button;
 var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
 
-var remote = window.require('remote');
-var log = remote.require('./logger');
-// var log = require('../../logger');
+var log = require('../../logger');
 
 var moment = require('moment');
 

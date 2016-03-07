@@ -39,7 +39,9 @@
 
 'use strict';
 
-var request = require('request');
+// var request = require('request');
+var needle = require('needle');
+
 var config = require('../configuration');
 var log = require('../logger');
 
@@ -85,14 +87,18 @@ var IftttService = {
 		var rules = self.getRules();
 		var url = baseUrl + self.iftttKey;
 		log.msg("fetchIfttt:", url, self.lastTime);
-        request(baseUrl + this.iftttKey, function(error, response, body) {
+        // request(baseUrl + this.iftttKey, function(error, response, body) {
+		needle.get(baseUrl + this.iftttKey, function(error, response) {
 			// FIXME: do error handling like: net error, bad response, etc.
 			if( error || response.statusCode !== 200 ) { // badness
 				log.msg("error fetching IFTTT");
 				return;
 			}
+			// console.log("BODY:", response.body);
 			// otherwise continue as normal
-			var respobj = JSON.parse(body);
+			// var respobj = JSON.parse(body);
+			var respobj = response.body; //JSON.parse(response.body);
+			console.log("OBJ:", respobj);
 			var shouldSave = false;
 			if( respobj.events ) {
 				respobj.events.map( function(e) {
@@ -126,12 +132,11 @@ var IftttService = {
 				}
 			}
 			else {
-				log.msg("IftttFetcher: bad response: ", body);
+				log.msg("IftttFetcher: bad response: ", response);
 			}
         });
 
     }
-
 };
 
 module.exports = IftttService;

@@ -3,9 +3,9 @@
 var React = require('react');
 
 var _ = require('lodash');
-var remote = window.require('remote');
-var Blink1Service = remote.require('./server/blink1Service');
-var PatternsService = remote.require('./server/patternsService');
+
+var Blink1Service = require('../../server/blink1Service');
+var PatternsService = require('../../server/patternsService');
 
 var Button = require('react-bootstrap').Button;
 var MenuItem = require('react-bootstrap').MenuItem;

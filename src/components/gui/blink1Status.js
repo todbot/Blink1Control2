@@ -4,11 +4,10 @@ var React = require('react');
 var Panel = require('react-bootstrap').Panel;
 var Well = require('react-bootstrap').Well;
 
+var Blink1Service = require('../../server/blink1Service');
+var PatternsService = require('../../server/patternsService');
 var VirtualBlink1 = require('./virtualBlink1');
 
-var remote = window.require('remote');
-var Blink1Service = remote.require('./server/blink1Service');
-var PatternsService = remote.require('./server/patternsService');
 
 var Blink1Status = React.createClass({
 

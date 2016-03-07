@@ -11,8 +11,7 @@
 
 var React = require('react');
 
-var remote = window.require('remote');
-var Blink1Service = remote.require('./server/blink1Service');
+var Blink1Service = require('../../server/blink1Service');
 
 var tinycolor = require('tinycolor2');
 

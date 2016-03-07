@@ -12,10 +12,8 @@ var Button = require('react-bootstrap').Button;
 // var ButtonInput = require('react-bootstrap').ButtonInput;
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
 
-var remote = window.require('remote');
-var Blink1Service = remote.require('./server/blink1Service');
-
 var log = require('../../logger');
+var Blink1Service = require('../../server/blink1Service');
 
 // var ColorPicker = require('react-color');
 

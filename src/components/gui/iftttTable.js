@@ -11,13 +11,10 @@ var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
 var moment = require('moment');
 
-var remote = window.require('remote');
-var PatternsService = remote.require('./server/patternsService');
+var PatternsService = require('../../server/patternsService');
+var IftttService = require('../../server/iftttService');
 
-var IftttService = remote.require('./server/iftttService');
-// var IftttService = require('../../server/iftttService');
-
-var config = remote.require('./configuration');
+var config = require('../../configuration');
 var log = require('../../logger');
 var util = require('../../utils');
 

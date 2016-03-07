@@ -39,6 +39,20 @@ var ReactDOM = require('react-dom');
 
 // TESTING END
 
+var apiServer = require('./server/apiServer');
+var Blink1Service = require('./server/blink1Service');
+var PatternsService = require('./server/patternsService');
+var IftttService = require('./server/iftttService');
+var MailService = require('./server/mailService');
+
+apiServer.start();
+
+Blink1Service.start();
+PatternsService.initialize();
+IftttService.start();
+MailService.start();
+
+
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 
 var App = React.createClass({
@@ -53,6 +67,8 @@ var App = React.createClass({
 
 // window.onbeforeunload = function(e) {
 //     // console.log('I do not want to be closed');
+// apiServer.stop();
+//   Blink1Service.closeAll(); // FIXME: this causes coredump
 //     return true;
 // };
 

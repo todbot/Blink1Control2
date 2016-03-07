@@ -9,11 +9,6 @@ var BrowserWindow = require('browser-window');
 // var appMenu = require('./src/core/app-menu');
 
 // var config = require('./configuration');
-var apiServer = require('./server/apiServer');
-var Blink1Service = require('./server/blink1Service');
-var PatternsService = require('./server/patternsService');
-var IftttService = require('./server/iftttService');
-var MailService = require('./server/mailService');
 
 //var flux = require('./server/fluxtest');
 
@@ -36,8 +31,6 @@ var mainWindow = null;
 //var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
 //var appIcon = null;
 
-apiServer.start();
-
 // var configInit = function() {
 // 	// if (!configuration.readSettings('shortcutKeys')) {
 //	 //	 configuration.saveSettings('shortcutKeys', ['ctrl', 'shift']);
@@ -50,7 +43,6 @@ apiServer.start();
 var quit = function() {
 	console.log("quitting...");
 	// FIXME: put in blink1 & usb-detection closedown
-	Blink1Service.closeAll(); // FIXME: this causes coredump
 	app.quit();
 
 };
@@ -63,11 +55,6 @@ app.on('window-all-closed', function () {
 });
 
 app.on('ready', function () {
-
-	Blink1Service.start();
-	PatternsService.initialize();
-	IftttService.start();
-	MailService.start();
 
 
 	if( process.env.NODE_ENV === 'development' ) {
@@ -93,7 +80,6 @@ app.on('ready', function () {
 	// mainWindow.setMenu(null);  // remove default menu
 	mainWindow.on('close', function () {
 		console.log("mainWindow will close");
-		apiServer.stop();
 	});
 
 	mainWindow.on('closed', function () {

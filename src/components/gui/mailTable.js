@@ -6,12 +6,11 @@ var _ = require('lodash');
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
 
-var remote = window.require('remote');
-var PatternsService = remote.require('./server/patternsService');
-var config = remote.require('./configuration');
-var MailService = remote.require('./server/mailService');
+var config = require('../../configuration');
+var PatternsService = require('../../server/patternsService');
+var MailService = require('../../server/mailService');
 
-var Utils = require('./../../utils');
+var util = require('./../../utils');
 
 var MailForm = require('./mailForm');
 
@@ -65,7 +64,7 @@ var MailTable = React.createClass({
 		if( this.state.workingIndex >= 0) {
 			var rules = this.state.rules;
 			var rule = _.clone(rules[ this.state.workingIndex ]);
-			rule.id = rule.id + Utils.cheapUid(4);
+			rule.id = rule.id + util.cheapUid(4);
 			rule.name = rule.name + '(copy)';
 			rules.splice( this.state.workingIndex, 0, rule);
 			this.setState({rules: rules});
@@ -88,7 +87,7 @@ var MailTable = React.createClass({
         console.log("MailTable.saveForm:",data, "workingIndex:", this.state.workingIndex);
 		var rules = this.state.rules;
 		var rulenew = data;
-		if( !rulenew.id ) { rulenew.id = Utils.generateId(rulenew.name, 4); }
+		if( !rulenew.id ) { rulenew.id = util.generateId(rulenew.name, 4); }
 		if( this.state.workingIndex === -1 ) { // new rule
 			rules.unshift( rulenew );
 		}

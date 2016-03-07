@@ -2,8 +2,19 @@
 
 'use strict';
 
-var nconf = require('nconf');
 var log = require('./logger');
+var nconf = null; // later
+
+// make sure we only use 'nconf' from non-renderer process
+// because nconf uses yargs which makes webpack choke
+var p = process;
+if( process.browser === true ) {
+    p = window.require('remote').require('process');
+    nconf = window.require('remote').require('nconf');
+}
+else {
+    nconf = require('nconf');
+}
 
 var conf_file = getUserHome() + '/blink1control2-config.json';
 
@@ -12,7 +23,9 @@ nconf.file({file: conf_file});
 log.msg("config file:"+conf_file);
 
 function getUserHome() {
-    return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
+    var home = p.env[(p.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
+    console.log("configuration: home=",home);
+    return home;
 }
 
 function saveSettings(settingKey, settingValue) {
