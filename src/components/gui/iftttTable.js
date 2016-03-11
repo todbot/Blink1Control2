@@ -100,7 +100,7 @@ var IftttTable = React.createClass({
 		var rules = this.state.rules;
 		// var rules = JSON.parse(JSON.stringify(this.state.rules));
 		// console.log("iftttTable render, state:",JSON.stringify(this.state));
-		console.log("iftttTable render, rules:", rules);
+		// console.log("iftttTable render, rules:", rules);
 
 		var formrule = { name: 'some new thing', patternId: 'whiteflashes'}; // FIXME:
 		if (this.state.workingIndex !== -1) { // i.e. not a new rule

@@ -12,6 +12,7 @@ Random notes
 - TODO: partion code into client & server so webpack doesn't bundle server code
 - TODO: what about 'parametric patterns', e.g. "blink 5 times, fill in color & on/off time"
 - TODO: Number() vs parseInt() in `PatternsService._parsePatternStr()`?
+- TODO: global shortcut, see:https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md
 
 #### General architecture
 -- Objects that touch the net or disk run in main process and live in `./src/server`

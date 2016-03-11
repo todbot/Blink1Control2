@@ -9,72 +9,85 @@
 
 "use strict";
 
+var _ = require('lodash');
+
 var React = require('react');
 
 var Blink1Service = require('../../server/blink1Service');
 
 var tinycolor = require('tinycolor2');
 
+// var blackc = tinycolor('#000000');
+
 var VirtualBlink1 = React.createClass({
 	getInitialState: function() {
 		return {
 			// colors: ['#ff00ff', '#00ffff', 0,0,  0,0,0,0, 0,0,0,0 ], // FIXME: should be blink1service.getCurrentColors()
-			colors: [ tinycolor('#ff00ff'), tinycolor('#00ffff') ],
-			lastColors:[],
-			millis: []
+			// colors: [ tinycolor('#ff00ff'), tinycolor('#00ffff') ],
+			// nextColors: [ tinycolor('#ff00ff'), tinycolor('#00ffff') ],
+			// lastColors:[ tinycolor('#ff00ff'), tinycolor('#00ffff')],
+			colors: new Array(18).fill(tinycolor('#ff00ff')),
+			// millis: []
 		};
 	},
 	componentDidMount: function() {
 		Blink1Service.addChangeListener( this.fetchBlink1Color, "virtualBlink1" );
 	},
 	// callback to Blink1Service
-	fetchBlink1Color: function(lastColor, colors, ledn) { // FIXME: where's millis?
-		// console.log("VirtualBlink1.fetchBlink1Color", currentColor, colors, ledn); //, Blink1Service.getCurrentColor() );
-		// colors = colors.map(function(c) { return c.hex; }); // FIXME: consolidate color parsers
-		this.setState( {
-			colors: colors, // Blink1Service.getCurrentColor()
-			ledn: ledn // unused currently
-		});
+	fetchBlink1Color: function(lastColor, newcolors, ledn) { // FIXME: where's millis?
+		this.lastColors = this.state.colors;
+		this.nextColors = newcolors;
+		// this.setState( {
+		// 	// colors: colors,
+		// 	ledn: ledn // unused currently
+		// });
+		this._colorFaderStart();
 	},
 
-	// timer: null,
-	// faderMillis: 0,
-	// currentMillis: 0,
-	// stepMillis: 20,
-	// _colorFaderStart: function() {
-	// 	clearTimeout(this.timer);
-	// 	this.faderMillis = 0;  // goes from 0 to currentMillis
-	// 	this._colorFader();
-	// 	console.log("---start:",new Date().getTime() );
-	// },
-	// _colorFader: function() {
-	// 	var self = this;
-	// 	var p = (this.faderMillis/this.currentMillis);  // ranges from 0.0 to 1.0 -ish
-	// 	var r = (1-p) * (this.state.lastColors[currentLedN].rgb[0]) + (p * this.state.colors[currentLedN].rgb[0]);
-	// 	var g = (1-p) * (lastColors[currentLedN].rgb[1]) + (p * currentColors[currentLedN].rgb[1]);
-	// 	var b = (1-p) * (lastColors[currentLedN].rgb[2]) + (p * currentColors[currentLedN].rgb[2]);
-	// 	var tc =  tinycolor( {r:r,g:g,b:b} ).tString();
-	//
-	// 	faderColor = colorparse( tc ); // FIXME PLEASE
-	// 	// console.log("_colorFader: tc:",tc,"step/fader/currentMillis:",stepMillis, faderMillis, currentMillis,"p:",p,"r:",r);
-	// 	// lastColors[0].hex,currentColors[0].hex );
-	// 	// console.log("_colorFader: tc:",tc);
-	// 	this.faderMillis += this.stepMillis;
-	// 	this.notifyChange();
-	// 	if( p < 1 ) {
-	// 		this.timer = setTimeout(function() {
-	// 			// console.log("    _colorFader: r:",r);
-	// 			self._colorFader();
-	// 		}, this.stepMillis);
-	// 	}
-	// 	else {
-	// 		console.log("---  end:",new Date().getTime() );
-	// 	}
-	// },
-	//
+	ledn: 0,
+	nextColors: new Array(18).fill(tinycolor('#ff00ff')),
+	lastColors: new Array(18).fill(tinycolor('#ff00ff')),
+	timer: null,
+	faderMillis: 0,
+	currentMillis: 0,
+	stepMillis: 20,
+	_colorFaderStart: function() {
+		clearTimeout(this.timer);
+		this.faderMillis = 0;  // goes from 0 to currentMillis
+		this.currentMillis = Blink1Service.getCurrentMillis(); // FIXME: HACK
+		this._colorFader();
+		// console.log("---start:",new Date().getTime() );
+	},
+	_colorFader: function() {
+		var self = this;
+		var p = (this.faderMillis/this.currentMillis);  // ranges from 0.0 to 1.0 -ish
+		var ledn = this.state.ledn;
+		var ledst = ledn-1;
+		var ledend = ledn;
+		var colors = this.state.colors;
+		if( ledn===0 ) { ledst = 0; ledend = colors.length-1; }
+		colors.slice(ledst, ledend).map( function(c,i) {
+			var oldc = self.lastColors[i].toRgb();
+			var newc = self.nextColors[i].toRgb();
+			var r = (1-p) * (oldc.r) + (p * newc.r);
+			var g = (1-p) * (oldc.g) + (p * newc.g);
+			var b = (1-p) * (oldc.b) + (p * newc.b);
+			var tmpc =  tinycolor( {r:r,g:g,b:b} );
+			colors[i] = tmpc;
+		});
+		this.setState({colors: colors});
 
-	boop: function(evt) {
-		console.log("boop:",evt.target.value, evt);
+		self.faderMillis += self.stepMillis;
+		// this.notifyChange();
+		if( p < 1 ) {
+			this.timer = setTimeout(function() {
+				// console.log("    _colorFader: r:",r);
+				self._colorFader();
+			}, this.stepMillis);
+		}
+		else {
+			// console.log("---  end:",new Date().getTime() );
+		}
 	},
 
 	render: function() {

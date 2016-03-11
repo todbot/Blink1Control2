@@ -40,8 +40,9 @@ var Blink1ColorPicker = React.createClass({
 	updateCurrentColor: function(currentColor, colors, ledn) {
 		// currentColor and colors are tinycolor objects
 		var rgb = currentColor.toRgb();
+		var secs = Blink1Service.getCurrentMillis()/1000; // FIXME: hack
 		log.msg("colorpicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
-		this.setState( { color: currentColor, ledn: ledn, r: rgb.r, g: rgb.g, b: rgb.b });
+		this.setState( { color: currentColor, ledn: ledn, r: rgb.r, g: rgb.g, b: rgb.b, secs:secs });
 	},
 	setColorHex: function(color) {
 		Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn ); // FIXME: time

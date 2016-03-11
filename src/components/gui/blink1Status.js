@@ -3,11 +3,13 @@
 var React = require('react');
 var Panel = require('react-bootstrap').Panel;
 var Well = require('react-bootstrap').Well;
+var Button = require('react-bootstrap').Button;
 
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
 var VirtualBlink1 = require('./virtualBlink1');
 
+var PreferencesModal = require('./PreferencesModal');
 
 var Blink1Status = React.createClass({
 
@@ -17,7 +19,8 @@ var Blink1Status = React.createClass({
 			statusStr: Blink1Service.isConnected() ? "connected" : "not connected",
 			serialNumber: Blink1Service.serialNumberForDisplay(),
 			iftttKey: Blink1Service.iftttKey(),
-			currentPattern: '-'
+			currentPattern: '-',
+			showForm: false
 		};
 	},
 	componentDidMount: function() {
@@ -42,6 +45,19 @@ var Blink1Status = React.createClass({
 	onIftttKeyClick: function() {
 		console.log("ifttKey click!");
 	},
+	onPrefsClick: function() {
+		console.log("prefsCLICK");
+		this.setState({showForm: true});
+	},
+	saveForm: function(data) {
+		console.log(".saveForm:",data);
+		this.setState({ showForm: false });
+	},
+	cancelForm: function() {
+		console.log(".cancelForm");
+		this.setState({ showForm: false });
+	},
+
 	render: function() {
 		// console.log("blink1Status.render: ", this.state.blink1Color);
 		var currentPattern = this.state.currentPattern;
@@ -49,8 +65,13 @@ var Blink1Status = React.createClass({
 		var labelStyle = {width: 80, display: "inline-block"};
 
 		// <VirtualBlink1 blink1Color={this.state.blink1Color} /> // FIXME
+		var header = <h4>Device <button style={{float:'right' }} bsStyle='link' onClick={this.onPrefsClick}><i className="fa fa-gear"></i></button></h4>;
+
 		return (
-			<Panel header={<h4>Device</h4>} style={{ width: 280, height: 320, margin:5, padding:0 }}>
+			<Panel header={header} style={{ width: 280, height: 320, margin:5, padding:0 }}>
+				<PreferencesModal show={this.state.showForm}
+					onSave={this.saveForm} onCancel={this.cancelForm} />
+
 				<div>
 					<VirtualBlink1 />
 				</div>

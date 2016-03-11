@@ -65,15 +65,21 @@ var IftttService = {
 	// 	return this.config;
 	// },
 	getRules: function() {
-		log.msg("IftttService.getRules, config:",this.config.rules);
+		// log.msg("IftttService.getRules, config:",this.config.rules);
 		return (this.config.rules) ? this.config.rules : [];
 		// return this.config.rules;
 	},
 	start: function() {
 		this.config = config.readSettings('iftttService');
+		if( !this.config ) {
+			this.config = { intervalSecs: 10, enabled: true };
+		}
+		if( !this.config.rules ) { this.config.rules = []; }
+		config.saveSettings('iftttService', this.config);
 		log.msg("IftttService.start: rules",this.config.rules);
 		if( ! this.config.intervalSecs ) { this.config.intervalSecs = 15; }
 		this.lastTime = new Date(0); // FIXME:
+		if( !this.config.enabled ) { return; }
 		this.fetchIfttt();
 		this.intervalTimer = setInterval(this.fetchIfttt.bind(this), this.config.intervalSecs * 1000);
 		// so much this
@@ -98,7 +104,6 @@ var IftttService = {
 			// otherwise continue as normal
 			// var respobj = JSON.parse(body);
 			var respobj = response.body; //JSON.parse(response.body);
-			console.log("OBJ:", respobj);
 			var shouldSave = false;
 			if( respobj.events ) {
 				respobj.events.map( function(e) {

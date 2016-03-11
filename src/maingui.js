@@ -44,14 +44,14 @@ var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
 var IftttService = require('./server/iftttService');
 var MailService = require('./server/mailService');
+var SkypeService = require('./server/skypeService');
 
 apiServer.start();
-
 Blink1Service.start();
 PatternsService.initialize();
 IftttService.start();
 MailService.start();
-
+SkypeService.start();
 
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 

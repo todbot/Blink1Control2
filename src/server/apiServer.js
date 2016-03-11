@@ -28,6 +28,13 @@ app.get('/blink1(/id)?', function(req,res) {
 		status: "blink1 id"
     });
 });
+app.get('/blink1/off', function(req,res) {
+    PatternsService.stopAllPatterns();
+    Blink1Service.fadeToColor(0.1, '#000000', 0); // turn off everyone
+    res.json({
+        status: "blink1 off"
+    });
+});
 app.get('/blink1/fadeToRGB', function(req, res) {
     var color = tinycolor(req.query.rgb);
     var secs = Number(req.query.time) || 0.1;
@@ -62,13 +69,18 @@ app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
 	var patt_id = req.query.pname ;
 	var status = 'no pattern with that id';
 	if( req.params.type === 'play' ) {
-		if( PatternsService.playPattern( patt_id ) ) {
+		if( PatternsService.playPattern( patt_id ) ) { // returns true on found pattern // FIXME: go back to using 'findPattern'
 			status = 'playing pattern ' +patt_id;
 		}
 	}
 	else {
-		if( PatternsService.stopPattern( patt_id ) ) {
-			status = 'stopping pattern ' +patt_id;
+        if( !patt_id ) {
+            PatternsService.stopAllPatterns();
+            status = 'stopping all patterns';
+        } else {
+            if( PatternsService.stopPattern( patt_id ) ) {
+			    status = 'stopping pattern ' +patt_id;
+            }
 		}
 	}
 	res.json({
@@ -93,18 +105,27 @@ app.get('/blink1/pattern/add', function(req,res) {
 
 var apiServer = {
 	server: null,
+    config: {},
+	// init: function() { // FIXME: bad name
+	// 	// config.saveSettings("apiServer:port",8934);
+	// 	// config.saveSettings("apiServer:enabled", false);
+	// 	// config.saveSettings("apiServer:host", 'localhost');
+	// },
 
-	init: function() { // FIXME: bad name
-		// config.saveSettings("apiServer:port",8934);
-		// config.saveSettings("apiServer:enabled", false);
-		// config.saveSettings("apiServer:host", 'localhost');
-	},
 	start: function() {
-		if( !config.readSettings("apiServer:enabled") ) {
+        this.config = config.readSettings('apiServer');
+        if( !this.config ) { // if no config, make sensible defaults & save them
+            this.config = {};
+            this.config.port = 8934;
+            this.config.host = 'localhost';
+            this.config.enabled = false;
+            config.saveSettings('apiServer', this.config);
+        }
+		if( !this.config.enabled ) {
 			return;
 		}
-		var port = config.readSettings("apiServer:port") || 8934;
-		this.server = app.listen(port);
+        var port = this.config.port || 8934;
+		this.server = app.listen( port );
 	},
 
 	stop: function() {

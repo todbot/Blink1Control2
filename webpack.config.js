@@ -21,9 +21,13 @@ var config = {
     "node-hid": 'commonjs node-hid',
     // "serialport": 'commonjs serialport',
     'nconf': 'commonjs nconf',
-    'xml2js': 'commonjs xml2js'
+    'xml2js': 'commonjs xml2js' // this is to keep webpack from complaing about optional dep of 'needle'
   },
-
+  plugins: [
+    //  new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /de|fr|hu/)  // moment
+    // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+    new webpack.IgnorePlugin(/vertx/)  // for skyweb
+  ],
   module: {
       noParse: [
         //   /electron-rebuild/,

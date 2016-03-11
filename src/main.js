@@ -1,6 +1,8 @@
 "use strict";
 
-var app = require('app');
+var electron = require('electron');
+var app = electron.app;
+// var app = require('app');
 var BrowserWindow = require('browser-window');
 // var Tray = require('tray');
 // var Menu = require('menu');
@@ -54,8 +56,21 @@ app.on('window-all-closed', function () {
 	}
 });
 
+var globalShortcut = electron.globalShortcut;
+
 app.on('ready', function () {
 
+	// Register a 'ctrl+x' shortcut listener.
+    // var ret = globalShortcut.register('ctrl+x', function() {
+    //   console.log('ctrl+x is pressed');
+    // });
+	//
+    // if (!ret) {
+    //   console.log('registration failed');
+    // }
+	//
+    // // Check whether a shortcut is registered.
+    // console.log(globalShortcut.isRegistered('ctrl+x'));
 
 	if( process.env.NODE_ENV === 'development' ) {
 		mainWindow = new BrowserWindow({
@@ -88,6 +103,10 @@ app.on('ready', function () {
 		mainWindow = null;
 	});
 
+	app.on('will-quit', function() {
+		console.log("app will-quit");
+
+	});
 	mainWindow.focus();
 });
 

@@ -12,7 +12,7 @@ var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 var PatternView = require('./patternView');
 
 var PatternsService = require('../../server/patternsService');
-// var Blink1Service = require('../../server/blink1Service');
+//var Blink1Service = require('../../server/blink1Service');
 
 var log = require('../../logger');
 

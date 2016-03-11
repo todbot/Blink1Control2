@@ -30,16 +30,10 @@ var blink1Pid = 0x01ED;
 
 //var currentColor = colorparse('#ff00ff');
 // array of colors, one per LED of blink1.
-var currentColors = new Array( 16 ); // FIXME: 16 LEDs in current blink1 firmware
+var currentColors = new Array( 18 ); // FIXME: 18 LEDs in current blink1 firmware
 var currentMillis = 100;
 var currentLedN = 0;
-var lastColors = new Array(16);
-
-// FIXME: NO NO NOPUT THIS IN GUI, in VirtualBlink1?
-// var timer;
-// var stepMillis = 20;
-// var faderMillis = 0;
-// var faderColor;
+var lastColors = new Array(18);
 
 lastColors.fill( tinycolor('#000000') ); // FIXME: hack
 currentColors.fill( tinycolor('#000000') );

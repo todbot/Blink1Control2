@@ -52,7 +52,7 @@ var MailService = {
 	//
 	// },
     checkMail: function() {
-		var rules = config.readSettings('mailRules');
+		var rules = config.readSettings('mailService:rules');
 		var self = this;
 		if( !rules ) {
 			rules = [];

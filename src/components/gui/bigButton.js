@@ -5,6 +5,9 @@ var ReactDOM = require('react-dom');
 var Button = require('react-bootstrap').Button;
 var Overlay = require('react-bootstrap').Overlay;
 var MenuItem = require('react-bootstrap').MenuItem;
+var Popover = require('react-bootstrap').Popover;
+var Modal = require('react-bootstrap').Modal;
+var Tooltip = require('react-bootstrap').Tooltip;
 
 
 var BigButton = React.createClass({
@@ -21,10 +24,10 @@ var BigButton = React.createClass({
 		};
 	},
 	showContextMenu: function(e) {
-        console.log("showContextMenu", e.target); //, "this:",this);
+        console.log("showContextMenu", e); //, "this:",this);
 		if( this.props.type === 'sys') { return; } // no context for sys buttons
 		this.setState({showContextMenu: true});
-		console.log(this.state);
+		console.log("showContextMenu state:", this.state);
     },
 	hideContextMenu: function() {
 		this.setState({showContextMenu: false});//  }.bind(this)
@@ -80,30 +83,50 @@ var BigButton = React.createClass({
 
 		var buttonRef = 'target-' + this.props.type + this.props.idx;
 		var self = this;
-
-
+		// console.log("refs:",self.refs);
+//ref={function(ref) { console.log("WHAT, ref=",ref); return self.mybuttonRef = ref; }
 		return (
-			<span id="booper">
-				<Button style={buttonStyle} ref="{buttonRef}"
+			<span id="booper" ref={buttonRef}>
+				<Button style={buttonStyle}
 					onClick={this.props.onClick} onContextMenu={this.showContextMenu}>
 					{iconContent}<div style={tstyle}>{this.props.name}</div>
 				</Button>
 				<Overlay
-					rootClose={true}
 					show={this.state.showContextMenu}
 					onHide={this.hideContextMenu}
-					container={this}
-					placement="bottom"
-					target={function() { return ReactDOM.findDOMNode(self.refs[buttonRef]); } } >
-					<div style={cmstyle}>
+					rootClose={true}
+					container={self.refs[buttonRef]}
+					>
+					<Popover title="Edit Button" id="editbutton">
 						<MenuItem eventKey="setcolor" onSelect={this.doContextMenu}>Set to current color</MenuItem>
 						<MenuItem eventKey="setpattern" onSelect={this.doContextMenu}>Set to last pattern</MenuItem>
 						<MenuItem eventKey="moveleft" onSelect={this.doContextMenu}>Move button left</MenuItem>
 						<MenuItem eventKey="delete" onSelect={this.doContextMenu}>Delete button</MenuItem>
-					</div>
+					</Popover>
 				</Overlay>
 			</span>
 			);
+
+		var modalish= (
+			<span id="booper">
+				<Button style={buttonStyle} ref={function(ref) { console.log("WHAT, ref=",ref); return self.mybuttonRef = ref; }}
+					onClick={this.props.onClick} onContextMenu={this.showContextMenu}>
+					{iconContent}<div style={tstyle}>{this.props.name}</div>
+				</Button>
+				<Modal show={this.state.showContextMenu} onHide={this.hideContextMenu} bsSize="small" >
+				  <Modal.Header>
+					<Modal.Title>Edit Button</Modal.Title>
+				  </Modal.Header>
+				  <Modal.Body>
+					  FUCKKKK.
+					  <MenuItem eventKey="setcolor" onSelect={this.doContextMenu}>Set to current color</MenuItem>
+					  <MenuItem eventKey="setpattern" onSelect={this.doContextMenu}>Set to last pattern</MenuItem>
+					  <MenuItem eventKey="moveleft" onSelect={this.doContextMenu}>Move button left</MenuItem>
+					  <MenuItem eventKey="delete" onSelect={this.doContextMenu}>Delete button</MenuItem>
+				  </Modal.Body>
+			  </Modal>
+			</span>
+		);
 	}
 });
 
