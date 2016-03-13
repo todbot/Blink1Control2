@@ -39,12 +39,14 @@ var ReactDOM = require('react-dom');
 
 // TESTING END
 
+// maybe this goes in another file?
 var apiServer = require('./server/apiServer');
 var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
 var IftttService = require('./server/iftttService');
 var MailService = require('./server/mailService');
 var SkypeService = require('./server/skypeService');
+var ScriptService = require('./server/scriptService');
 
 apiServer.start();
 Blink1Service.start();
@@ -52,6 +54,19 @@ PatternsService.initialize();
 IftttService.start();
 MailService.start();
 SkypeService.start();
+ScriptService.start();
+
+//
+var laterfunc = function() {
+    var conf = require('./configuration');
+    var startupConf = conf.readSettings('startup');
+    if( startupConf.startupPattern ) {
+        console.log("starting up with:", startupConf.startupPattern);
+        PatternsService.playPattern( startupConf.startupPattern );
+    }
+};
+setTimeout( laterfunc, 1000 );
+
 
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 
