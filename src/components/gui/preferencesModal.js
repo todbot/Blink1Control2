@@ -6,6 +6,7 @@ var Grid = require('react-bootstrap').Grid;
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
 var Well = require('react-bootstrap').Well;
+var Panel = require('react-bootstrap').Panel;
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
@@ -53,39 +54,76 @@ var PreferencesModal = React.createClass({
         <div>
             <Modal show={this.props.show} onHide={this.close} >
                 <Modal.Header>
-                    <Modal.Title>Preferences</Modal.Title>
+                    <Modal.Title style={{fontSize:"95%"}}>Preferences</Modal.Title>
                 </Modal.Header>
-                <Modal.Body style={{fontSize:"85%"}}>
+                <Modal.Body style={{fontSize:"100%", paddingTop:0}}>
                     <p style={{color: "#f00"}}>{this.state.errormsg}</p>
                     <p></p>
                         <Row>
-                        <Col md={6}><Well>
-                            <form className="form-horizontal" >
-                                <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
-                                  type="text" label="Rule Name" placeholder="Name of rule on PREFERENCES"
-                                  valueLink={this.linkState('name')} />
-                                <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
-                                  type="select" label="Pattern"
-                                  valueLink={this.linkState('patternId')} >
-                                </Input>
-                            </form>
-                        </Well>
+                        <Col md={6}>
+                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
+                                <h5><u> General </u></h5>
+                                <form className="form-horizontal">
+                                <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
+                                    type="checkbox" label="Start minimized" checked />
+                                <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
+                                    type="checkbox" label="Start at login" checked />
+                                <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
+                                    type="checkbox" label="Enable gamma correction" checked />
+                                </form>
+                            </div>
+                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
+                                <h5><u> API server configuration </u></h5>
+                                <form className="form-horizontal">
+                                    <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
+                                        type="checkbox" label="Start API server" checked />
+                                    <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
+                                      type="number" label="port" placeholder="8934"
+                                      valueLink={this.linkState('apiPort')} />
+                                </form>
+                            </div>
+                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
+                                <h5><u> Proxy configuration </u></h5>
+                                <form className="form-horizontal">
+                                    <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
+                                        type="text" label="host" placeholder="localhost"
+                                        valueLink={this.linkState('proxyHost')} />
+                                    <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
+                                        type="number" label="port" placeholder="8080"
+                                        valueLink={this.linkState('proxyPort')} />
+                                    <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
+                                        type="text" label="username" placeholder=""
+                                        valueLink={this.linkState('proxyUser')} />
+                                    <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
+                                        type="text" label="password" placeholder=""
+                                        valueLink={this.linkState('proxyPass')} />
+                                </form>
+                            </div>
                         </Col>
                         <Col md={6}>
-                            <form className="form-horizontal" >
-                                <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
-                                  type="text" label="somethng Name" placeholder="Name of rule on PREFERENCES"
-                                  valueLink={this.linkState('somoename')} />
-                                <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
-                                  type="select" label="soePattern"
-                                  valueLink={this.linkState('soepatternId')} >
-                                </Input>
-                            </form>
+                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
+                                <h5><u> blink(1) device to use </u></h5>
+                                <form className="form-horizontal">
+                                    <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12"
+                                        type="radio" label="First available" checked />
+                                    <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12"
+                                        type="radio" label="Use device id:" checked />
+                                </form>
+                            </div>
+                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
+                                <h5><u> blink(1) device non-computer settings </u></h5>
+                                <form className="form-horizontal">
+                                    <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12"
+                                        type="radio" label="First available" checked />
+                                    <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12"
+                                        type="radio" label="Use device id:" checked />
+                                </form>
+                            </div>
+
                         </Col>
                         </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                  <Button bsStyle="danger" bsSize="small" style={{float:'left'}} onClick={this.delete}>Delete</Button>
                   <Button onClick={this.cancel}>Cancel</Button>
                   <Button onClick={this.close}>OK</Button>
                 </Modal.Footer>

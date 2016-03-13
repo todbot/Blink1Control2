@@ -10,35 +10,35 @@ var Button = require('react-bootstrap').Button;
 // var FormControls = require('react-bootstrap').FormControls;
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
 
-var PatternsService = require('../../server/patternsService');
+var log = require('../../logger');
 
 
 var MailForm = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
-        show: React.PropTypes.bool.isRequired,
-        workingIndex: React.PropTypes.number.isRequired,
-        rules: React.PropTypes.array.isRequired,
-        onSave: React.PropTypes.func.isRequired,
-        onDelete: React.PropTypes.func.isRequired,
-        onCancel: React.PropTypes.func.isRequired,
-        onCopy: React.PropTypes.func.isRequired,
+        rule: React.PropTypes.object.isRequired,
+        patterns: React.PropTypes.array,
+        onSave: React.PropTypes.func,
+        onCancel: React.PropTypes.func,
+        onDelete: React.PropTypes.func,
+        onCopy: React.PropTypes.func
+        // show: React.PropTypes.bool.isRequired,
+        // workingIndex: React.PropTypes.number.isRequired,
+        // rules: React.PropTypes.array.isRequired,
+        // onSave: React.PropTypes.func.isRequired,
+        // onDelete: React.PropTypes.func.isRequired,
+        // onCancel: React.PropTypes.func.isRequired,
+        // onCopy: React.PropTypes.func.isRequired,
     },
     getInitialState: function() {
-        var rule = {}; // empty state, will be set in componentWillReceiveProps()
-        return rule;
+        return {};// empty state, will be set in componentWillReceiveProps()
     },
     componentWillReceiveProps: function(nextProps) {
-        var rule = {}; // empty rule for new rule case
-        if( nextProps.workingIndex >= 0 ) { // i.e. existing rule
-            rule = nextProps.rules[ nextProps.workingIndex ];
-        }
-        console.log("componentWillReceiveProps", nextProps, "rule",rule);
-
-        this.setState( {
-            id: rule.id || '',
-            name: rule.name || 'new rule',
-            patternId: rule.patternId,
+        var rule = nextProps.rule;
+        this.setState({
+            type:'mail',
+            name: nextProps.rule.name,
+            patternId: nextProps.rule.patternId,
             mailtype: rule.mailtype || 'IMAP',  // default it
             host: rule.host || '',
             port: rule.port || 993,
@@ -48,56 +48,62 @@ var MailForm = React.createClass({
             triggerType: rule.triggerType || 'unread',
             triggerVal: rule.triggerVal || '1' ,
         });
+        // var rule = {}; // empty rule for new rule case
+        // if( nextProps.workingIndex >= 0 ) { // i.e. existing rule
+        //     rule = nextProps.rules[ nextProps.workingIndex ];
+        // }
+        // console.log("componentWillReceiveProps", nextProps, "rule",rule);
+        //
+        // this.setState( {
+        //     id: rule.id || '',
+        //     name: rule.name || 'new rule',
+        //     patternId: rule.patternId,
+        //     mailtype: rule.mailtype || 'IMAP',  // default it
+        //     host: rule.host || '',
+        //     port: rule.port || 993,
+        //     username: rule.username ,
+        //     password: rule.password,
+        //     useSSL: rule.useSSL || true,
+        //     triggerType: rule.triggerType || 'unread',
+        //     triggerVal: rule.triggerVal || '1' ,
+        // });
     },
 
-    close: function() {
+    handleClose: function() {
         console.log("CLOSING: state=",this.state);
         if( !this.state.mailtype ) {
             console.log("mailtype not set!");
             this.setState({errormsg: "mailtype not set!"});
             return;
         }
-        // this.setState({ showModal: false });
         this.props.onSave(this.state);
     },
-    cancel: function() {
-        console.log("CANCEL");
-        this.props.onCancel();
-    },
-    delete: function() {
-        this.props.onDelete();
-    },
-    handleCopy: function() {
-        this.props.onCopy();
-    },
     onTriggerTypeClick: function(evt) {
-        // console.log("mailForm.onTriggerClick ",evt.target.value,evt);
+        log.msg("mailForm.onTriggerClick ",evt.target.value,evt);
         this.setState({triggerType: evt.target.value});
     },
     onTriggerValClick: function(evt) {
-        // console.log("mailForm.onTriggerClick ",evt.target.value,evt);
+        log.msg("mailForm.onTriggerClick ",evt.target.value,evt);
         this.setState({triggerVal: evt.target.value});
     },
     render: function() {
-        var patterns = PatternsService.getAllPatterns();
+        var patterns = this.props.patterns;
         var createPatternOption = function(item, idx) {
             return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
 
-        // console.log("trigger:",this.state.triggerType, this.state.triggerVal);
-
-      return (
-          <div>
-              <Modal show={this.props.show} onHide={this.close} >
-                  <Modal.Header>
-                      <Modal.Title>Mail Settings</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                      <p style={{color: "#f00"}}>{this.state.errormsg}</p>
+        return (
+            <div>
+                <Modal show={this.props.show} onHide={this.close} >
+                    <Modal.Header>
+                        <Modal.Title>Mail Settings</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p style={{color: "#f00"}}>{this.state.errormsg}</p>
                       <form className="form-horizontal" >
                           <input type="hidden" value={this.state.id} />
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
-                              type="text" label="Description" placeholder="Enter text"
+                              type="text" label="Name" placeholder="Enter text"
                               valueLink={this.linkState('name')} />
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
                               type="select" label="Account type" placeholder="IMAP"
@@ -159,17 +165,16 @@ var MailForm = React.createClass({
                             </Input>
 
                       </form>
-
-                  </Modal.Body>
-                  <Modal.Footer>
-                      <Button bsStyle="danger" bsSize="small" style={{float:'left'}} onClick={this.delete}>Delete</Button>
-                      <Button bsSize="small" style={{float:'left'}} onClick={this.handleCopy}>Copy</Button>
-                      <Button onClick={this.cancel}>Cancel</Button>
-                      <Button onClick={this.close}>OK</Button>
-                 </Modal.Footer>
-              </Modal>
-          </div>
-      );
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button bsStyle="danger" bsSize="small" style={{float:'left'}} onClick={this.props.onDelete}>Delete</Button>
+                        <Button bsSize="small" style={{float:'left'}} onClick={this.props.onCopy}>Copy</Button>
+                        <Button onClick={this.props.onCancel}>Cancel</Button>
+                        <Button onClick={this.handleClose}>OK</Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
+        );
     }
 });
 

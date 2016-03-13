@@ -27,23 +27,27 @@ var IftttTable = React.createClass({
 		// why do I have to do the cheesyClone? Why does React complain
 		// with a "Uncaught Invariant Violation: Objects are not valid as a React child"?
 		var rules = util.cheesyClone(IftttService.getRules());
+		var events = log.getEvents({type: 'ifttt'});
 		return {
 			workingIndex: -1,
 			showForm: false,
-			rules: rules
+			rules: rules,
+			events: events
 		};
 	},
 	componentDidMount: function() {
 		this.getUpdates(); // set up polling, ugh FIXME:
 	},
 	getUpdates: function() {
-		var rules = util.cheesyClone(IftttService.getRules());
-		this.setState({rules:rules});
-		setTimeout( this.getUpdates, 3000 ); // sigh.
+		// var rules = util.cheesyClone(IftttService.getRules());
+		var events = log.getEvents({type: 'ifttt'});
+		this.setState({events: events});
+		setTimeout( this.getUpdates, 3000 ); // FIXME: sigh.
 	},
 	saveRules: function(rules) {
 		this.setState({rules: rules});  // FIXME:
 		config.saveSettings("iftttService:rules", rules);
+		IftttService.reloadConfig();
 	},
 	editRule: function(n) {
 		log.msg("editRule:", n);
@@ -61,8 +65,7 @@ var IftttTable = React.createClass({
 	},
 	deleteRule: function(idx) {
 		console.log("deleteRule:", idx);
-		var rules = this.state.rules;
-		delete rules[idx];
+		var rules = this.state.rules.splice(idx,1);
 		this.saveRules(rules);
 	},
 	deleteRuleEdit: function() {
@@ -81,7 +84,7 @@ var IftttTable = React.createClass({
     saveForm: function(data) {
         console.log("IftttTable.saveForm:",data, "workingIndex:", this.state.workingIndex);
 		var rules = this.state.rules;
-		var rulenew = {name: data.name, patternId: data.patternId};
+		var rulenew = {name: data.name, patternId: data.patternId, lastTime:0, source:'n/a' };
 		if( this.state.workingIndex === -1 ) { // new rule
 			rules.unshift( rulenew );
 		}
@@ -98,10 +101,8 @@ var IftttTable = React.createClass({
 
 	render: function() {
 		var rules = this.state.rules;
-		// var rules = JSON.parse(JSON.stringify(this.state.rules));
-		// console.log("iftttTable render, state:",JSON.stringify(this.state));
-		// console.log("iftttTable render, rules:", rules);
 
+		// FIXME: see tooltable
 		var formrule = { name: 'some new thing', patternId: 'whiteflashes'}; // FIXME:
 		if (this.state.workingIndex !== -1) { // i.e. not a new rule
 			formrule.name = rules[this.state.workingIndex].name;
@@ -110,24 +111,33 @@ var IftttTable = React.createClass({
 		var createRow = function(rule, index) {
 			//var deleteButton = <button onClick={this.deleteRule.bind(this, index)}><i className="fa fa-times"></i></button>;
 			var	patternCell = PatternsService.getNameForId( rule.patternId );  // just text
-			var humanTime = moment(rule.lastTime).format('LTS');
+			// var humanTime = (rule.lastTime && rule.lastTime!==0) ? moment(rule.lastTime).format('LTS') : 'never';
 			// var lastTime = rule.lastTime || '-not seen yet-';
-			var source = rule.source || 'n/a';
+			// var source = rule.source || 'n/a';
+			var eventsForMe = this.state.events.filter( function(e) {
+				return (e.id === rule.name);
+			});
+			var lastEvent = '-not-seen-yet-';
+			if( eventsForMe.length ) {
+				var myEvent = eventsForMe[eventsForMe.length-1];
+				lastEvent = moment(myEvent.date).format('dd LT') + '-' + myEvent.text;
+			}
+			// <td dangerouslySetInnerHTML={{__html:source}}></td>
 			return (
 					<tr key={index} onDoubleClick={this.editRule.bind(this, index, rule.name)} >
 						<td>{rule.name}</td>
 						<td>{patternCell}</td>
-						<td>{humanTime}</td>
-						<td>{source}</td>
+						<td>{lastEvent}</td>
+						<td>.</td>
 						<td><Button bsSize="xsmall" onClick={this.editRule.bind(this, index, rule.name)} >edit</Button></td>
 					</tr>
 			);
 		};
 		// console.log("rules compare:",this.state.rules,"vs",this.state.rules2);
 		return (
-			<div style={{position: "relative", height: 200}}>
+			<div style={{position: "relative", height: 200, cursor:'default'}}>
 
-				<IftttForm show={this.state.showForm} rule={formrule}
+				<IftttForm show={this.state.showForm} rule={formrule} patterns={PatternsService.getAllPatterns()}
 					onSave={this.saveForm} onCancel={this.cancelForm} onDelete={this.deleteRuleEdit} />
 
 				<div style={{display: "block", overflowY: "scroll", height: 150}}>

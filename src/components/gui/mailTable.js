@@ -106,6 +106,10 @@ var MailTable = React.createClass({
     },
 
 	render: function() {
+		var workingRule = {}; // default blank rule
+		if( this.state.workingIndex !== -1 ) {
+			workingRule = this.state.rules[this.state.workingIndex];
+		}
 
 		var createRow = function(rule, index) {
 			//var deleteButton = <button onClick={this.deleteRule.bind(this, index)}><i className="fa fa-times"></i></button>;
@@ -124,15 +128,16 @@ var MailTable = React.createClass({
 			);
 		};
 
-		return (
-			<div style={{position: "relative", height: 200}}>
+		// <MailForm show={this.state.showForm}
+		// 	workingIndex={this.state.workingIndex} rule={workingRule}
+		// 	onSave={this.saveForm}
+		// 	onCancel={this.cancelForm}
+		// 	onDelete={this.deleteRuleEdit}
+		// 	onCopy={this.copyCurrentRule} />
+		//
 
-				<MailForm show={this.state.showForm}
-					workingIndex={this.state.workingIndex} rules={this.state.rules}
-					onSave={this.saveForm}
-					onCancel={this.cancelForm}
-					onDelete={this.deleteRuleEdit}
-					onCopy={this.copyCurrentRule} />
+		return (
+			<div style={{position: "relative", height: 200, cursor:'default'}}>
 
 				<div style={{display: "block", overflowY: "scroll", height: 150}}>
 					<Table bordered condensed hover style={{fontSize:"0.9em"}}>

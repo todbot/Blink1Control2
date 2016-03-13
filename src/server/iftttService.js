@@ -40,101 +40,104 @@
 'use strict';
 
 // var request = require('request');
-var needle = require('needle');
+var needle = require('needle'); // a better 'request' (or at least, works w/ webpack)
 
-var config = require('../configuration');
+var conf = require('../configuration');
 var log = require('../logger');
 
 var PatternsService = require('./patternsService');
+// var Blink1Service = require('./Blink1Service');
 
 var baseUrl = 'http://api.thingm.com/blink1/eventsall/';
 
-// var svcConfig = config.readSettings('iftttService')
 
 var IftttService = {
 	config: {},
+	rules: {},
 	// FIXME: all these fetched from configuration later
 	iftttKey: 'ABCD1234ABCD1234',
 	intervalTimer: null,
     lastTime: 0,
-	lastState: "",
+	// lastState: "",
+	lastEvents: {},
 
 	setIftttKey: function(k) { this.iftttKey = k; },
 	getIftttKey: function() { return this.iftttKey; },
-	// getConfig: function() {
-	// 	return this.config;
-	// },
-	getRules: function() {
-		// log.msg("IftttService.getRules, config:",this.config.rules);
-		return (this.config.rules) ? this.config.rules : [];
-		// return this.config.rules;
-	},
-	start: function() {
-		this.config = config.readSettings('iftttService');
+
+	reloadConfig: function() {
+		this.config = conf.readSettings('iftttService');
 		if( !this.config ) {
 			this.config = { intervalSecs: 10, enabled: true };
+			conf.saveSettings('iftttService', this.config);
 		}
-		if( !this.config.rules ) { this.config.rules = []; }
-		config.saveSettings('iftttService', this.config);
-		log.msg("IftttService.start: rules",this.config.rules);
+		var allrules = conf.readSettings('eventRules') || [];
+		this.rules = allrules.filter( function(r){return r.type==='ifttt';} );
+		log.msg("IftttService.reloadConfig. rules=", this.rules);
+	},
+	getRules: function() {
+		log.msg("IftttService.getRules, rules:",this.rules);
+		return (this.rules) ? this.rules : [];
+	},
+	start: function() {
+		this.reloadConfig();
+		log.msg("IftttService.start: rules", this.rules);
 		if( ! this.config.intervalSecs ) { this.config.intervalSecs = 15; }
-		this.lastTime = new Date(0); // FIXME:
+		this.lastTime = Date.now();
 		if( !this.config.enabled ) { return; }
-		this.fetchIfttt();
-		this.intervalTimer = setInterval(this.fetchIfttt.bind(this), this.config.intervalSecs * 1000);
-		// so much this
+		this.fetch();
+		this.intervalTimer = setInterval(this.fetch.bind(this), this.config.intervalSecs * 1000);
 	},
 	stop: function() {
 		clearInterval( this.intervalTimer );
 	},
 
-    fetchIfttt: function() {
+    fetch: function() {
 		var self = this;
 		var rules = self.getRules();
+
+		//if( rules.length === 0 ) { return; } // no rules, don't waste effort
 		var url = baseUrl + self.iftttKey;
-		log.msg("fetchIfttt:", url, self.lastTime);
+		log.msg("fetch:", url, self.lastTime);
         // request(baseUrl + this.iftttKey, function(error, response, body) {
 		needle.get(baseUrl + this.iftttKey, function(error, response) {
 			// FIXME: do error handling like: net error, bad response, etc.
 			if( error || response.statusCode !== 200 ) { // badness
-				log.msg("error fetching IFTTT");
+				log.msg("IftttService.fetch: error fetching");
 				return;
 			}
 			// console.log("BODY:", response.body);
 			// otherwise continue as normal
 			// var respobj = JSON.parse(body);
 			var respobj = response.body; //JSON.parse(response.body);
-			var shouldSave = false;
+			// var shouldSave = false;
 			if( respobj.events ) {
-				respobj.events.map( function(e) {
+				respobj.events.map( function(evt) {
 					//log.msg("iftttFetcher e:", JSON.stringify(e));
-					var eventDate = new Date(parseInt(1000 * e.date));
-					if (eventDate > self.lastTime ) {
-						log.msg('iftttFetcher new event name:', e.name);
-						rules = rules.map( function(r) {
+					var eventDate = new Date(parseInt(1000 * evt.date));
+					if (eventDate > self.lastTime ) { // only notice newer than our startup
+						log.msg('iftttFetcher new event name:"'+ evt.name+'"');
+						log.addEvent( {date:eventDate, text:evt.source, type:'ifttt', id:evt.name} );
+						rules.map( function(r) {
 							log.msg("    ifttFetcher: rule:", JSON.stringify(r));
-							r.lastTime = ( r.lastTime ) ? new Date( r.lastTime ) : 0;
-							if( e.name.trim() === r.name.trim()) {
-								log.msg("*** RULE MATCH: ", e.name, eventDate, r.lastTime);
-								if( eventDate > r.lastTime ) {
-									log.msg("*** TRIGGERED!!! ***");
-									log.addEvent( 'IFTTT:'+r.name+'-'+r.source);
-									r.lastTime = eventDate;
-									r.source = e.source;
+							if( evt.name.trim() === r.name.trim()) {
+								if( !self.lastEvents[r.name] ) { self.lastEvents[r.name] = new Date(0); }
+								log.msg("*** RULE MATCH: ", evt.name, '--', eventDate, '--', self.lastEvents[r.name]);
+								// this.lastEvents[r.name] = this.lastEvents[r.name] || 0;
+								if( eventDate > self.lastEvents[r.name] ) {
+									self.lastEvents[r.name] = eventDate;
+									log.msg("*** TRIGGERED!!! ***", evt);
 									PatternsService.playPattern( r.patternId );
-									shouldSave = true;
 								}
 							}
-							return r;
 						});
 					}
 				});
 				self.lastTime = new Date(); // == now
-				if( shouldSave ) {
-					log.msg("iftttFetcher: saving rules");
-					self.config.rules = rules;
-					config.saveSettings("iftttService", self.config);
-				}
+				// if( shouldSave ) {
+				// 	log.msg("iftttFetcher: saving rules");
+				// 	self.config.rules = rules;
+				// 	conf.saveSettings("iftttService", self.config);
+				// }
 			}
 			else {
 				log.msg("IftttFetcher: bad response: ", response);

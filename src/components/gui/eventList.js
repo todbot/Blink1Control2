@@ -6,7 +6,7 @@ var Button = require('react-bootstrap').Button;
 var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
 
-var _ = require('lodash');
+// var _ = require('lodash');
 
 var log = require('../../logger');
 
@@ -23,19 +23,17 @@ var EventList = React.createClass({
 		};
 	},
 	componentDidMount: function() {
-		this.getUpdates(); // set up polling, ugh FIXME:
+		log.addChangeListener( this.getUpdates, "EventList" );
 	},
 	getUpdates: function() {
 		var events = log.getLastEvents();
-		// log.msg('EventList.getUpdates',events);
 		this.setState({events:events});
-		setTimeout( this.getUpdates, 3000 ); // sigh.
 	},
 
 	clearEvents: function() {
+		log.clearEvents();
 		this.setState({events: []});
 	},
-
 
 	render: function() {
 		var revevents = this.state.events.concat().reverse();

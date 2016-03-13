@@ -11,6 +11,7 @@ var Tab = require('react-bootstrap').Tab;
 var BigButtonSet = require('./bigButtonSet');
 var IftttTable = require('./iftttTable');
 var MailTable = require('./mailTable');
+var ToolTable = require('./toolTable');
 
 
 var Blink1TabViews = React.createClass({
@@ -26,19 +27,9 @@ var Blink1TabViews = React.createClass({
 								<BigButtonSet />
 							</div>
 						</Tab>
-						<Tab eventKey={2} title={<i className="fa fa-plug"> IFTTT</i>}>
+						<Tab eventKey={2} title={<i className="fa fa-plug"> Event Sources</i>}>
 							<div style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
-								<IftttTable />
-							</div>
-						</Tab>
-						<Tab eventKey={3} title={<i className="fa fa-envelope"> Mail</i>}>
-							<div style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
-								<MailTable />
-							</div>
-						</Tab>
-						<Tab eventKey={4} title={<i className="fa fa-wrench"> Tools</i>}>
-							<div style={{height: 200, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
-							Tools go here
+								<ToolTable />
 							</div>
 						</Tab>
 						<Tab eventKey={5} title={<i className="fa fa-life-ring"> Help</i>}>

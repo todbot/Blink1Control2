@@ -102,6 +102,11 @@ app.on('ready', function () {
 		quit();
 		mainWindow = null;
 	});
+	mainWindow.webContents.on('new-window', function(e, url) {
+		console.log("HEY THERE EVERYONE");
+	  e.preventDefault();
+	  require('shell').openExternal(url);
+	});
 
 	app.on('will-quit', function() {
 		console.log("app will-quit");

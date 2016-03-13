@@ -27,10 +27,6 @@ var PatternList = React.createClass({
 			patterns: PatternsService.getAllPatterns()
 		};
 	},
-	// getAllPatterns: function() { // get attr-only copy of remote'd object
-	// 	return _.cloneDeep( PatternsService.getAllPatterns() );
-	// 	// return _clone(PatternsService.getAllPatterns());
-	// },
 	componentDidMount: function() {
 		PatternsService.addChangeListener( this.updatePatternState, "patternList" );
 	}, // FIXME: Surely there's a better way to do this
@@ -39,24 +35,23 @@ var PatternList = React.createClass({
 	},
 	/** Callback to PatternsService.addChangeListener */
 	updatePatternState: function(allpatterns) {
-		// var patts = _.cloneDeep(allpatterns);
 		var patts = allpatterns;
 		log.msg("PatternList.updatePatternState:", patts);
 		this.setState( {patterns: patts } );
 	},
 
 	onAddPattern: function() {
-		log.msg("onAddPattern");
+		log.msg("PatternList.onAddPattern");
 		var p = PatternsService.newPattern();
 		p.id = 0; // force id regen
 		PatternsService.savePattern( p );
 	},
 	onStopAllPatterns: function() {
-		log.msg("onStopAllPatterns");
+		log.msg("PatternList.onStopAllPatterns");
 		PatternsService.stopAllPatterns();
 	},
 	copyPattern: function(patternid) {
-		log.msg("copyPattern:", patternid);
+		log.msg("PatternList.copyPattern:", patternid);
 		var p = PatternsService.getPatternById( patternid );
 		p.id = 0; // unset to regen for Api // FIXME:!!!
 		p.name = p.name + " (copy)";
@@ -66,7 +61,7 @@ var PatternList = React.createClass({
 		// this.setState( {editing: true, : p.id } );
 	},
 	deletePattern: function(patternid) {
-		log.msg("deletePattern:", patternid);
+		log.msg("PatternList.deletePattern:", patternid);
 		// this.setState( {editing: false} );
 		PatternsService.deletePattern( patternid );
 	},

@@ -27,9 +27,11 @@
 'use strict';
 
 var _ = require('lodash');
+// var tinycolor = require('tinycolor2');
 
 var config = require('../configuration');
 var log = require('../logger');
+var utils = require('../utils');
 
 var Blink1Service = require('./blink1Service');
 
@@ -38,6 +40,7 @@ var systemPatterns = require('./systemPatterns-mini').patterns;
 // FIXME: two var for same thing
 var patternsSystem;  // The system patterns this service knows about
 var patternsUser; // The user generated patterns
+var patternsTemp = [];
 
 var playingPatternId = '';
 // var lastPatternId = ''; // last pattern that was recently played, or none
@@ -60,6 +63,7 @@ var _fixId = function(pattern) {
 // turn patternstring into fledgling {colors,repeats} partial pattern
 // only parses pattern string in format: repeats,color1,time,ledn1,time2,ledn2,...
 // FIXME: need to support non-ledn variant
+// FIXME: need to declare when parsing fails?
 var _parsePatternStr = function(patternstr) {
 	var pattparts = patternstr.split(/\s*,\s*/g);
 	//var len = pattparts[0];
@@ -130,7 +134,6 @@ var PatternsService = {
 	},
 
 	getAllPatterns: function() {
-		// console.log("***** getAllPatterns", patternsUser.concat(patternsSystem));
 		return patternsUser.concat(patternsSystem); //_clone(patterns);
 	},
 	getNameForId: function(id) {
@@ -247,16 +250,36 @@ var PatternsService = {
 
 	/** Play a pattern. Returns false if pattern doesn't exist. Notifys change listeners */
 	playPattern: function(id) {
-		var pattern = _.find(this.getAllPatterns(), {id: id});
-		if( !pattern ) {  // check for special built-in patterns
-			log.msg("PatternsService: no normal pattern:", id);
+		if( id.startsWith('#') ) { // color
+			Blink1Service.fadeToColor(100, id, 0 );
+			return true;
+		}
+		if( id.startsWith('~') ) { // special meta-pattern
 			if( id === '~off') {
-				console.log("PatternsService: playing special '~off' pattern");
+				log.msg("PatternsService: playing special '~off' pattern");
 				PatternsService.stopAllPatterns();
 				Blink1Service.fadeToColor( 300, '#000000', 0 );
 				return true;
-			// } else if( id === '!stop' ) {
 			}
+			else if( id.startsWith('~pattern:') ) {
+				var patternstr = id.substring(id.lastIndexOf(':')+1);
+				var pattname = id.substring(id.indexOf(':')+1,id.lastIndexOf(':'));
+				if( pattname===':' ) { pattname = 'temp-'+utils.cheapUid(4);} // if parsing failed, use temp name
+				var patt = _parsePatternStr(patternstr);
+				patt.name = pattname;
+				log.msg("PatternsService: would play temp pattern:",patt);
+			}
+			// } else if( id === '!stop' ) {
+			// }
+			// var tc = tinycolor(id);
+			// if( tinycolor(id) ) { // if 'id' is a hex color
+			// }
+			return false;
+		}
+
+		var pattern = _.find(this.getAllPatterns(), {id: id});
+		if( !pattern ) {  // check for special built-in patterns
+			log.msg("PatternsService: no normal pattern:", id);
 			return false;  // FIXME: return error?
 		}
 		if( pattern.playing ) {
@@ -277,7 +300,6 @@ var PatternsService = {
 		var rgb = color.rgb;
 		var millis = color.time * 1000;
 		var ledn = color.ledn;
-
 		// console.log("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
 
 		Blink1Service.fadeToColor( millis, rgb, ledn );
@@ -317,7 +339,7 @@ var PatternsService = {
 	},
 	notifyChange: function() {
 		var self = this;
-		log.msg("PatternsService.notifyChange",listeners);
+		// log.msg("PatternsService.notifyChange",listeners);
 		_.forIn( listeners, function(callback) {
 			if( callback ) { callback( self.getAllPatterns() ); }
 		});

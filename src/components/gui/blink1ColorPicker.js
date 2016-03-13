@@ -34,14 +34,14 @@ var Blink1ColorPicker = React.createClass({
 	componentDidMount: function() {
 		log.msg("Blink1ColorPicker.componentDidMount",this.state.color);
 		Blink1Service.addChangeListener( this.updateCurrentColor, "blink1ColorPicker" );
-		Blink1Service.fadeToColor(200, this.state.color);
+		// Blink1Service.fadeToColor(200, this.state.color);
 	},
 	/**  Callback for Blink1Service notifyChange */
 	updateCurrentColor: function(currentColor, colors, ledn) {
 		// currentColor and colors are tinycolor objects
 		var rgb = currentColor.toRgb();
 		var secs = Blink1Service.getCurrentMillis()/1000; // FIXME: hack
-		log.msg("colorpicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
+		log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
 		this.setState( { color: currentColor, ledn: ledn, r: rgb.r, g: rgb.g, b: rgb.b, secs:secs });
 	},
 	setColorHex: function(color) {

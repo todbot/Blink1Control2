@@ -26,7 +26,7 @@ var VirtualBlink1 = React.createClass({
 			// colors: [ tinycolor('#ff00ff'), tinycolor('#00ffff') ],
 			// nextColors: [ tinycolor('#ff00ff'), tinycolor('#00ffff') ],
 			// lastColors:[ tinycolor('#ff00ff'), tinycolor('#00ffff')],
-			colors: new Array(18).fill(tinycolor('#ff00ff')),
+			colors: new Array(18).fill(tinycolor('#000033')),
 			// millis: []
 		};
 	},

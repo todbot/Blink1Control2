@@ -11,44 +11,32 @@ var Button = require('react-bootstrap').Button;
 // var FormControls = require('react-bootstrap').FormControls;
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
 
-var PatternsService = require('../../server/patternsService');
-
 
 var IftttForm = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
-		rule: React.PropTypes.object.isRequired
-        // patternId: React.PropTypes.string.isRequired,
-        // onPatternUpdated: React.PropTypes.func.isRequired
+		rule: React.PropTypes.object.isRequired,
+        patterns: React.PropTypes.array,
+        onSave: React.PropTypes.func,
+        onCancel: React.PropTypes.func,
+        onDelete: React.PropTypes.func,
+        onCopy: React.PropTypes.func
 	},
     getInitialState: function() {
-        var rule = this.props.rule;
-        // console.log("iftttForm rule:",rule);
         return {
-            name: rule.name,
-            patternId: rule.patternId
+            // name: rule.name,
+            // patternId: rule.patternId
         };
     },
     // FIXME: why am I doing this?
     componentWillReceiveProps: function(nextProps) {
-		this.setState({ name: nextProps.rule.name, patternId: nextProps.rule.patternId }); // FIXME: why
+		this.setState({ type:'ifttt', name: nextProps.rule.name, patternId: nextProps.rule.patternId }); // FIXME: why
 	},
-    close: function() {
-        console.log("CLOSING: state=",this.state);
+    handleClose: function() {
         this.props.onSave(this.state);
-    },
-    cancel: function() {
-        console.log("CANCEL");
-        this.props.onCancel();
-    },
-    delete: function() {
-        this.props.onDelete();
     },
 
     render: function() {
-        // console.log("iftttForm render:",this.state, this.props);
-
-        var patterns = PatternsService.getAllPatterns();
 
       var createPatternOption = function(item, idx) {
           return ( <option key={idx} value={item.id}>{item.name}</option> );
@@ -69,15 +57,15 @@ var IftttForm = React.createClass({
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
                               type="select" label="Pattern"
                               valueLink={this.linkState('patternId')} >
-                              {patterns.map( createPatternOption, this )}
+                              {this.props.patterns.map( createPatternOption, this )}
                           </Input>
                       </form>
 
                   </Modal.Body>
                   <Modal.Footer>
-                      <Button bsStyle="danger" bsSize="small" style={{float:'left'}} onClick={this.delete}>Delete</Button>
-                      <Button onClick={this.cancel}>Cancel</Button>
-                      <Button onClick={this.close}>OK</Button>
+                      <Button bsStyle="danger" bsSize="small" style={{float:'left'}} onClick={this.props.onDelete}>Delete</Button>
+                      <Button onClick={this.props.onCancel}>Cancel</Button>
+                      <Button onClick={this.handleClose}>OK</Button>
                  </Modal.Footer>
               </Modal>
           </div>

@@ -1,6 +1,9 @@
 'use strict';
 
-// var _  = require('lodash');
+var _ = require('lodash');
+
+// TO DO: add log to file
+// TO DO: add log levels
 
 var isDevel = false;
 
@@ -16,11 +19,9 @@ else {
 
 var eventsMax = 100;  // FIXME: put in configuration?
 
-// TO DO: add log to file
-// TO DO: add log levels
-
 var events = [
 ];
+
 // [
 // 	{ date: Date.now()-800000000, text: "this other thing happened"},
 // 	{ date: Date.now()-800000000, text: "this other thing happened"},
@@ -30,6 +31,8 @@ var events = [
 // 	{ date: Date.now()-300000000, text: "this 2 happened"},
 // 	{ date: Date.now()-200000000, text: "this happened"}
 // ];
+
+var listeners = [];
 
 var Logger = {
 
@@ -74,6 +77,7 @@ var Logger = {
 			this.msg("Log: dropped at eventMax");
 			events.unshift();
 		}
+		this.notifyChange();
 	},
 	getEvents: function(spec) {
 		var typedEvents = events.filter( function(e) {
@@ -87,13 +91,32 @@ var Logger = {
 		n = n > events.length ? events.length : n;
 		var lastEvents = events.slice( 0, n);
 		return lastEvents;
-	}
-	// this.msg("Log.getLastEvents",lastEvents);
-	// lastEvents = lastEvents.map( function(e) {
-	// 	var newe = {text: e.text, date:e.date, type: e.type, id:e.id};
-	// 	// newe.text = (e.type) ? e.type + ' - ' + e.text : e.text;
-	// 	return newe;
-	// });
+	},
+	
+	clearEvents: function() {
+		events = [];
+	},
+
+	addChangeListener: function(callback, callername) {
+		listeners[callername] = callback;
+		this.msg("logger.addChangelistener", callername );
+	},
+	removeChangeListener: function(callername) {
+		this.msg("logger.removeChangelistener", callername);
+		delete listeners[callername];
+		// this.msg("logger.removeChangelistener", listeners );
+	},
+	removeAllListeners: function() {
+		_.keys( listeners, function(callername) {
+			this.removeChangelistener(callername);
+		});
+	},
+	notifyChange: function() {
+		_.forIn( listeners, function(callback) {
+			callback();
+		});
+	},
+
 };
 
 module.exports = Logger;

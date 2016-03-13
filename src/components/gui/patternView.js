@@ -163,7 +163,7 @@ var PatternView = React.createClass({
 		var nameField = (this.state.editing) ?
 			<input style={pattNameStyle} type="text" name="name" value={pattern.name}
 				onChange={this.onNameChange} />
-			: <span style={{width: 120}}><span style={pattNameStyle}>{pattern.name}</span></span>;
+			: <span style={{width: 120, cursor:'default'}}><span style={pattNameStyle}>{pattern.name}</span></span>;
 
 		// also see: https://facebook.github.io/react/tips/expose-component-functions.html
 		var createSwatch = function(color, i) {
