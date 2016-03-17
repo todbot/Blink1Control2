@@ -46,11 +46,11 @@ var EventList = React.createClass({
 			var id = event.id;
 			var msg = <span><b>{type}</b> {text} - {id}</span>;
 			return (
-				<ListGroupItem key={index} style={{lineHeight:"100%", fontSize: "0.85em", textIndent:-10}}>{humantime}: {msg} </ListGroupItem>);
+				<ListGroupItem key={index} style={{lineHeight:"100%", fontSize: "0.85em", textIndent:-10}}><i style={{fontSize:'90%'}}>{humantime}:</i> {msg} </ListGroupItem>);
 		};
 
 		return (
-			<Panel header={<h4>Recent Events</h4>} style={{ width: 280, height: 300, margin:5, padding:0}}>
+			<Panel header={<h4>Recent Events</h4>} style={{ width: 280, height: 305, margin:5, padding:0}}>
 				<ListGroup style={{	height: 200, overflowY: 'scroll', overflowX:'hidden', padding:0, margin:0, marginBottom:10}}>
 				{revevents.map(createEventLine, this)}
 				</ListGroup>

@@ -17,7 +17,7 @@ else {
 	isDevel = (process.env.NODE_ENV === 'development');
 }
 
-var eventsMax = 100;  // FIXME: put in configuration?
+var eventsMax = 10;  // FIXME: put in configuration?
 
 var events = [
 ];
@@ -34,10 +34,21 @@ var events = [
 
 var listeners = [];
 
+var ignoredSources = [
+    /iftttService/i,
+    // /ScriptService/
+];
+
 var Logger = {
 
 	msg: function(/* msg,msg,msg */) {
+		var iargs = arguments;
         if( isDevel ) {
+			var ignore = ignoredSources.some( function(is) {
+				return iargs[0].toString().match(is) ;
+			});
+			if( ignore ) { return; }
+
 			var args = Array.prototype.slice.call(arguments);
 			args.unshift( Math.floor(new Date().getTime()/1000) + ':');
             console.log.apply(console, args );
@@ -75,7 +86,7 @@ var Logger = {
 
 		if( events.length > eventsMax ) {
 			this.msg("Log: dropped at eventMax");
-			events.unshift();
+			events.shift();
 		}
 		this.notifyChange();
 	},
@@ -92,7 +103,7 @@ var Logger = {
 		var lastEvents = events.slice( 0, n);
 		return lastEvents;
 	},
-	
+
 	clearEvents: function() {
 		events = [];
 	},

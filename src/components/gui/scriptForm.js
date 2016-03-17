@@ -34,9 +34,11 @@ var ScriptForm = React.createClass({
     componentWillReceiveProps: function(nextProps) {
 		this.setState({
             type:'script',
+            enabled: nextProps.rule.enabled,
             name: nextProps.rule.name,
             filepath: nextProps.rule.filepath,
-            patternId: nextProps.rule.patternId
+            patternId: nextProps.rule.patternId,
+            intervalSecs: nextProps.rule.intervalSecs
          });
 	},
     handleClose: function() {
@@ -66,16 +68,31 @@ var ScriptForm = React.createClass({
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
                         <p></p>
                         <form className="form-horizontal" >
+                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8 col-xs-offset-3"
+                              type="checkbox" label="Enabled" checkedLink={this.linkState('enabled')}/>
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                               type="text" label="Rule Name" placeholder="Descriptive name"
                               valueLink={this.linkState('name')} />
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
-                              type="text" label="File Path" placeholder="filepath of script"
+                              type="text" label="File Path" placeholder="Click to choose script / program / batch file"
                               valueLink={this.linkState('filepath')}
                               onClick={this.openFileDialog}/>
+                              <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
+                                  type="select" label="Check interval" placeholder="15 seconds"
+                                  valueLink={this.linkState('intervalSecs')} >
+                                  <option value="2">2 seconds</option>
+                                  <option value="5">5 seconds</option>
+                                  <option value="10">10 seconds</option>
+                                  <option value="15">15 seconds</option>
+                                  <option value="30">30 seconds</option>
+                                  <option value="60">1 minute</option>
+                                  <option value="360">5 minutes</option>
+                              </Input>
+
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
                               type="select" label="Pattern"
                               valueLink={this.linkState('patternId')} >
+                              <option key={99} value="content">Use script content</option>
                               {this.props.patterns.map( createPatternOption, this )}
                           </Input>
                         </form>

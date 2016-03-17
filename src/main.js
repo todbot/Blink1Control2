@@ -74,7 +74,7 @@ app.on('ready', function () {
 
 	if( process.env.NODE_ENV === 'development' ) {
 		mainWindow = new BrowserWindow({
-			width: 1050,
+			width: 1040,
 			height: 900
 		});
 		mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
@@ -82,7 +82,7 @@ app.on('ready', function () {
     }
     else {
 	  mainWindow = new BrowserWindow({
-		  width: 1050,
+		  width: 1040,
 		  height: 700,
 		  // useContentSize: true,
 		  // center: true

@@ -22,13 +22,6 @@ var MailForm = React.createClass({
         onCancel: React.PropTypes.func,
         onDelete: React.PropTypes.func,
         onCopy: React.PropTypes.func
-        // show: React.PropTypes.bool.isRequired,
-        // workingIndex: React.PropTypes.number.isRequired,
-        // rules: React.PropTypes.array.isRequired,
-        // onSave: React.PropTypes.func.isRequired,
-        // onDelete: React.PropTypes.func.isRequired,
-        // onCancel: React.PropTypes.func.isRequired,
-        // onCopy: React.PropTypes.func.isRequired,
     },
     getInitialState: function() {
         return {};// empty state, will be set in componentWillReceiveProps()
@@ -48,25 +41,6 @@ var MailForm = React.createClass({
             triggerType: rule.triggerType || 'unread',
             triggerVal: rule.triggerVal || '1' ,
         });
-        // var rule = {}; // empty rule for new rule case
-        // if( nextProps.workingIndex >= 0 ) { // i.e. existing rule
-        //     rule = nextProps.rules[ nextProps.workingIndex ];
-        // }
-        // console.log("componentWillReceiveProps", nextProps, "rule",rule);
-        //
-        // this.setState( {
-        //     id: rule.id || '',
-        //     name: rule.name || 'new rule',
-        //     patternId: rule.patternId,
-        //     mailtype: rule.mailtype || 'IMAP',  // default it
-        //     host: rule.host || '',
-        //     port: rule.port || 993,
-        //     username: rule.username ,
-        //     password: rule.password,
-        //     useSSL: rule.useSSL || true,
-        //     triggerType: rule.triggerType || 'unread',
-        //     triggerVal: rule.triggerVal || '1' ,
-        // });
     },
 
     handleClose: function() {

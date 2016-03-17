@@ -11,6 +11,7 @@ var moment = require('moment');
 
 var conf = require('../../configuration');
 var log = require('../../logger');
+var util = require('../../utils');
 
 var PatternsService = require('../../server/patternsService');
 var IftttService = require('../../server/iftttService');
@@ -22,6 +23,19 @@ var IftttForm = require('./iftttForm');
 var MailForm = require('./mailForm');
 var ScriptForm = require('./scriptForm');
 
+var example_rules = [
+	{
+		"type": "ifttt",
+		"name": "red wine",
+		"patternId": "redflashes"
+	},
+	{
+		"type": "ifttt",
+		"name": "green grass",
+		"patternId": "greenflashes"
+	}
+];
+
 var ToolTable = React.createClass({
 	// propTypes: {
 	// 	//events: React.PropTypes.array.isRequired,
@@ -29,7 +43,12 @@ var ToolTable = React.createClass({
 	// },
 	getInitialState: function() {
 		var rules = conf.readSettings('eventRules');
-        if( !rules ) { rules = []; console.log("ToolTable: NO RULE");}
+        if( !rules || rules.length===0 ) {
+			log.msg("ToolTable.getInitialState: no rules, using examples");
+			rules = example_rules;
+			conf.saveSettings("eventRules", rules);
+			this.updateService(rules[0]);
+		}
         var events = log.getEvents();
 		// MailService.addChangeListener(this.updateSearchStatus, "MailTable");
 		return {
@@ -46,7 +65,9 @@ var ToolTable = React.createClass({
     getUpdates: function() {
         var events = log.getEvents();
         log.msg("ToolTable.getUpdates, events:",events);
-        this.setState({events: events});
+		if( !this.state.showForm ) {  //i.e. we're in edit mode
+        	this.setState({events: events});
+		}
     },
     saveRules: function(rules) {
         log.msg("ToolTable.saveRules");
@@ -110,7 +131,9 @@ var ToolTable = React.createClass({
         var events = this.state.events;
         var workingRule = ( this.state.workingIndex !== -1 ) ? // -1 means new rule
                 this.state.rules[this.state.workingIndex] :
-                { name: 'new rule', type: this.state.showForm, patternId: patterns[0].id }; // FIXME: make createBlankRule(type)
+                { name: 'new rule '+ util.cheapUid(4),
+					type: this.state.showForm,
+				}; // FIXME: make createBlankRule(type)
 
         var makeDesc = function(rule) {
             if( rule.description ) { return rule.description; }
@@ -121,11 +144,14 @@ var ToolTable = React.createClass({
             else if( rule.type === 'mail' ) {
                 desc = rule.mailtype+':'+rule.user +':'+rule.triggerType+':'+rule.triggerVal;
             }
-            else if( rule.type === 'script' ) {
-                desc = rule.filepath;
+			else if( rule.type === 'script' ) {
+                desc = rule.filepath + ' @' +rule.intervalSecs +'s';
+            }
+            else if( rule.type === 'file' ) {
+                desc = rule.filepath + ' @' +rule.intervalSecs +'s';
             }
             else if( rule.type === 'url' ) {
-                desc = rule.url;
+                desc = rule.url + ' @' +rule.intervalSecs +'s';
             }
             return desc;
         };
@@ -141,7 +167,9 @@ var ToolTable = React.createClass({
             return lastEvent;
         };
 		var createRow = function(rule, index) {
-			var	patternCell = PatternsService.getNameForId( this.state.rules[index].patternId );  // just text
+			var pattid = this.state.rules[index].patternId;
+			var patternCell = PatternsService.getNameForId( pattid );  // just text
+			if( !patternCell ) { patternCell = pattid; } // for cases like scripts where patternid is special
 			var lastTime = makeLastTime(rule);
             var description = makeDesc(rule);
             var type = rule.type;
@@ -160,7 +188,7 @@ var ToolTable = React.createClass({
 		return (
 			<div style={{position: "relative", height: 200, cursor:'default'}}>
 
-				<ScriptForm show={this.state.showForm==='script'}
+				<ScriptForm show={this.state.showForm==='script' || this.state.showForm==='file' }
 					workingIndex={this.state.workingIndex}
                     rule={workingRule} patterns={patterns}
 					onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
@@ -179,7 +207,7 @@ var ToolTable = React.createClass({
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
 
-				<div style={{display: "block", overflowY: "scroll", height: 150}}>
+				<div style={{display: "block", overflowY: "scroll", height: 165, border:'1px solid #eee'}}>
                     <div style={{padding:10}} hidden={this.state.rules.length}>
                         <h3> Click 'add rule' to begin! //FIXME </h3>
                     </div>
@@ -198,8 +226,8 @@ var ToolTable = React.createClass({
 							{this.state.rules.map( createRow, this )}
 						</tbody>
 					</Table>
-					<div style={{position: "absolute", bottom: 20}}>
-						<DropdownButton bsSize="small" onSelect={this.handleAddRule} id="addRule" title={<span><i className="fa fa-plus"></i> add rule</span>}>
+					<div style={{position: "absolute", bottom: 0}}>
+						<DropdownButton bsSize="small" onSelect={this.handleAddRule} id="addRule" title={<span><i className="fa fa-plus"></i> add event source</span>}>
                             <MenuItem eventKey="ifttt">Add IFTTT</MenuItem>
                             <MenuItem eventKey="mail">Add Mail</MenuItem>
                             <MenuItem eventKey="script">Add Script</MenuItem>

@@ -30,7 +30,12 @@ var IftttForm = React.createClass({
     },
     // FIXME: why am I doing this?
     componentWillReceiveProps: function(nextProps) {
-		this.setState({ type:'ifttt', name: nextProps.rule.name, patternId: nextProps.rule.patternId }); // FIXME: why
+		this.setState({
+            type:'ifttt',
+            enabled: nextProps.rule.enabled,
+            name: nextProps.rule.name,
+            patternId: nextProps.rule.patternId
+         }); // FIXME: why
 	},
     handleClose: function() {
         this.props.onSave(this.state);
@@ -51,6 +56,8 @@ var IftttForm = React.createClass({
                       <p style={{color: "#f00"}}>{this.state.errormsg}</p>
                       <p></p>
                       <form className="form-horizontal" >
+                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8 col-xs-offset-3"
+                              type="checkbox" label="Enabled" checkedLink={this.linkState('enabled')}/>
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                               type="text" label="Rule Name" placeholder="Name of rule on IFTTT"
                               valueLink={this.linkState('name')} />
