@@ -65,7 +65,7 @@ var ToolTable = React.createClass({
     getUpdates: function() {
         var events = log.getEvents();
         log.msg("ToolTable.getUpdates, events:",events);
-		if( !this.state.showForm ) {  //i.e. we're in edit mode
+		if( !this.state.showForm ) {  //i.e. don't change when we're in edit mode
         	this.setState({events: events});
 		}
     },
@@ -133,6 +133,7 @@ var ToolTable = React.createClass({
                 this.state.rules[this.state.workingIndex] :
                 { name: 'new rule '+ util.cheapUid(4),
 					type: this.state.showForm,
+					enabled: true,
 				}; // FIXME: make createBlankRule(type)
 
         var makeDesc = function(rule) {
@@ -145,10 +146,10 @@ var ToolTable = React.createClass({
                 desc = rule.mailtype+':'+rule.user +':'+rule.triggerType+':'+rule.triggerVal;
             }
 			else if( rule.type === 'script' ) {
-                desc = rule.filepath + ' @' +rule.intervalSecs +'s';
+                desc = rule.intervalSecs +'s:' + rule.filepath;
             }
             else if( rule.type === 'file' ) {
-                desc = rule.filepath + ' @' +rule.intervalSecs +'s';
+				desc = rule.intervalSecs +'s:' + rule.filepath;
             }
             else if( rule.type === 'url' ) {
                 desc = rule.url + ' @' +rule.intervalSecs +'s';
@@ -172,15 +173,17 @@ var ToolTable = React.createClass({
 			if( !patternCell ) { patternCell = pattid; } // for cases like scripts where patternid is special
 			var lastTime = makeLastTime(rule);
             var description = makeDesc(rule);
-            var type = rule.type;
+            var type = rule.type;  type = (type==='ifttt')? 'IFTTT' : type;
+			var rowstyle = (rule.enabled) ? {} : { color:"#999"};
 			return (
-				<tr key={index} onDoubleClick={this.handleEditRule.bind(this, index, type)} >
+				<tr key={index} style={rowstyle} onDoubleClick={this.handleEditRule.bind(this, index, type)} >
 					<td>{rule.name}</td>
                     <td>{type}</td>
                     <td>{description}</td>
-					<td>{patternCell}</td>
+					<td style={{textOverflow:'ellipsis',overflow:'hidden',whiteSpace:'nowrap'}}>{patternCell}</td>
 					<td>{lastTime}</td>
-					<td><Button bsSize="xsmall" onClick={this.handleEditRule.bind(this, index, type)} >edit</Button></td>
+					<td><Button bsSize="xsmall" onClick={this.handleEditRule.bind(this, index, type)} ><i className="fa fa-pencil"></i>
+</Button></td>
 				</tr>
 			);
 		};
@@ -217,9 +220,9 @@ var ToolTable = React.createClass({
                                 <th>Name</th>
                                 <th style={{width:30}}>Type</th>
 								<th>Description</th>
-								<th>Pattern</th>
-								<th>Last value</th>
-								<th></th>
+								<th style={{width:140}}>Pattern</th>
+								<th style={{width:140}}>Last value</th>
+								<th style={{width:30}}> </th>
 							</tr>
 						</thead>
 						<tbody>

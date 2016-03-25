@@ -56,8 +56,6 @@ var IftttForm = React.createClass({
                       <p style={{color: "#f00"}}>{this.state.errormsg}</p>
                       <p></p>
                       <form className="form-horizontal" >
-                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8 col-xs-offset-3"
-                              type="checkbox" label="Enabled" checkedLink={this.linkState('enabled')}/>
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                               type="text" label="Rule Name" placeholder="Name of rule on IFTTT"
                               valueLink={this.linkState('name')} />
@@ -66,6 +64,8 @@ var IftttForm = React.createClass({
                               valueLink={this.linkState('patternId')} >
                               {this.props.patterns.map( createPatternOption, this )}
                           </Input>
+                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8 col-xs-offset-3"
+                              type="checkbox" label="Enabled" checkedLink={this.linkState('enabled')}/>
                       </form>
 
                   </Modal.Body>

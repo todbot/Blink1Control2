@@ -97,7 +97,7 @@ var IftttService = {
 
 		//if( rules.length === 0 ) { return; } // no rules, don't waste effort
 		var url = baseUrl + self.iftttKey;
-		log.msg("fetch:", url, self.lastTime);
+		log.msg("IftttService.fetch:", url, self.lastTime);
         // request(baseUrl + this.iftttKey, function(error, response, body) {
 		needle.get(baseUrl + this.iftttKey, function(error, response) {
 			// FIXME: do error handling like: net error, bad response, etc.

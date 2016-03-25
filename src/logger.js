@@ -6,7 +6,6 @@ var _ = require('lodash');
 // TO DO: add log levels
 
 var isDevel = false;
-
 if( process.browser === true ) { // is in renderer process
 	var remote = window.require('remote');
 	var processserver = remote.require('process');
@@ -35,7 +34,8 @@ var events = [
 var listeners = [];
 
 var ignoredSources = [
-    /iftttService/i,
+   /IftttService/i,
+   /PatternView/i,
     // /ScriptService/
 ];
 

@@ -16,6 +16,7 @@ else {
     nconf = require('nconf');
 }
 
+// var conf_file = getUserHome() + '/.configgg' + '/blink1control2-config.json';
 var conf_file = getUserHome() + '/blink1control2-config.json';
 
 nconf.file({file: conf_file});

@@ -75,7 +75,7 @@ var ScriptService = {
                 log.msg("ScriptService.runScript: str:",str,"last:",self.lastEvents[rule.name]);
                 if( self.lastEvents[rule.name] !== str ) {
                     // if( !rule.logEvents || (null !== rule.logEvents && rule.logEvents) ) {
-                        log.addEvent( {date:Date.now(), text:str.substring(0,20), type:rule.type, id:rule.name} );
+                    log.addEvent( {date:Date.now(), text:str.substring(0,40), type:rule.type, id:rule.name} );
                     // }
                     self.parse(rule,str);
                     self.lastEvents[rule.name] = str;
@@ -98,7 +98,7 @@ var ScriptService = {
                     return log.error(err);
                 }
                 if( self.lastEvents[rule.name] !== data ) {
-                    log.addEvent( {date:Date.now(), text:data.substring(0,20), type:rule.type, id:rule.name} );
+                    log.addEvent( {date:Date.now(), text:data.substring(0,40), type:rule.type, id:rule.name} );
                     self.parse(rule,data);
                     self.lastEvents[rule.name] = data;
                 }

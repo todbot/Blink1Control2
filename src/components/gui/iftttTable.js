@@ -64,12 +64,12 @@ var IftttTable = React.createClass({
 			this.openForm(-1);
 	},
 	deleteRule: function(idx) {
-		console.log("deleteRule:", idx);
+		log.msg("IftttTable.deleteRule:", idx);
 		var rules = this.state.rules.splice(idx,1);
 		this.saveRules(rules);
 	},
 	deleteRuleEdit: function() {
-		console.log("deleteRuleEdit:", this.state.workingIndex);
+		log.msg("IftttTable.deleteRuleEdit:", this.state.workingIndex);
 		if( this.state.workingIndex !== -1 ) {
 			this.deleteRule( this.state.workingIndex );
 			this.setState( {workingIndex: -1} );
@@ -77,12 +77,12 @@ var IftttTable = React.createClass({
 		this.cancelForm();
 	},
 	openForm: function(idx) {
-        console.log("open form",idx, this.state);
+        log.msg("IfttTable.openForm",idx, this.state);
 		this.setState( { workingIndex: idx } );
         this.setState({ showForm: true });
     },
     saveForm: function(data) {
-        console.log("IftttTable.saveForm:",data, "workingIndex:", this.state.workingIndex);
+        log.msg("IftttTable.saveForm:",data, "workingIndex:", this.state.workingIndex);
 		var rules = this.state.rules;
 		var rulenew = {name: data.name, patternId: data.patternId, lastTime:0, source:'n/a' };
 		if( this.state.workingIndex === -1 ) { // new rule
@@ -95,7 +95,7 @@ var IftttTable = React.createClass({
         this.setState({ showForm: false });
     },
     cancelForm: function() {
-        console.log("iftttTable.cancelForm");
+        log.msg("IftttTable.cancelForm");
         this.setState({ showForm: false });
     },
 
