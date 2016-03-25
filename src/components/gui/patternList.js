@@ -77,7 +77,7 @@ var PatternList = React.createClass({
 		var createPatternRow = function(patt, idx) {
 			return (
 				<tr key={patt.id + idx + patt.playing} style={{height:25}}>
-					<td style={{ margin: 0, padding: 3}}>
+					<td style={{ margin: 0, padding: 0}}>
 						<PatternView
 							pattern={patt}
 							onPatternUpdated={this.onPatternUpdated}

@@ -36,24 +36,6 @@ var PatternView = React.createClass({
 		this.setState( {pattern: pattern});
 		// this.props.onPatternUpdated(pattern);
     },
-	onSwatchClick: function(coloridx) {
-		log.msg("PatternView.onSwatchClick", this.props.pattern.id, coloridx);
-		var pattern = this.state.pattern;
-		var acolor = pattern.colors[coloridx];
-
-		// FIXME: this doesn't work
-		if( this.state.editing ) {
-			log.msg("PatternView.onSwatchClick: editing!");
-			this.setState({activeSwatch: coloridx});
-			Blink1Service.fadeToColor( acolor.time*1000, acolor.rgb, acolor.ledn );
-			// which cause "onColorChanged()" to get called
-		}
-		else {
-			// log.msg("color: ", pattern.colors[coloridx]);
-			Blink1Service.fadeToColor( acolor.time*1000, acolor.rgb, acolor.ledn );
-		}
-        //this.props.onSwatchClick(this.props.pattern.id, coloridx);
-	},
 	onAddSwatch: function() {
         // var colors = this.state.pattern.colors;
 		var pattern = this.state.pattern;
@@ -91,10 +73,34 @@ var PatternView = React.createClass({
 			PatternsService.stopPattern(pattern.id);
 		}
 	},
+	onSwatchDoubleClick(coloridx) {
+		log.msg("PatternView.onSwatchDOUBLEClick", this.props.pattern.id, "swatch:",coloridx);
+		var acolor = this.state.pattern.colors[coloridx];
+		Blink1Service.fadeToColor( acolor.time*1000, acolor.rgb, acolor.ledn );
+	},
+	onSwatchClick: function(coloridx) {
+		log.msg("PatternView.onSwatchClick", this.props.pattern.id, "swatch:",coloridx);
+		var pattern = this.state.pattern;
+		var acolor = pattern.colors[coloridx];
+
+		// FIXME: this doesn't work
+		if( this.state.editing ) {
+			log.msg("PatternView.onSwatchClick: editing!");
+			this.setState({activeSwatch: coloridx});
+			// which cause "onColorChanged()" to get called
+		}
+		else {
+			// log.msg("color: ", pattern.colors[coloridx]);
+			Blink1Service.fadeToColor( acolor.time*1000, acolor.rgb, acolor.ledn );
+		}
+        //this.props.onSwatchClick(this.props.pattern.id, coloridx);
+	},
+
 	onColorChanged: function() {
 		log.msg("PatternView.onColorChanged");
 		if( this.state.editing ) {
-			log.msg("PatternView.onColorChanged, editing: activeSwatch",this.state.activeSwatch, "color:", Blink1Service.getCurrentColor().toHexString());
+			log.msg("PatternView.onColorChanged, editing: activeSwatch",this.state.activeSwatch,
+			"color:", Blink1Service.getCurrentColor().toHexString());
 			// var color = pattern.colors[this.state.activeSwatch];
 			var newcolor = {
 				rgb: Blink1Service.getCurrentColor().toHexString(),
@@ -143,16 +149,17 @@ var PatternView = React.createClass({
 		var pattern = this.state.pattern;
 		var pid = pattern.id;
 		//log.msg("PatternView.render: pid:",pid,"playing:",pattern.playing);
-		var editingThis = (this.state.editing);// && (patterneditId === pid));
+		var isEditing = (this.state.editing);// && (patterneditId === pid));
 
-		var pattStyle = { width: 250, display: "inline-block",  border:'0px solid blue'};
+		// var patternViewStyle = {display:'inline-block', border: (isEditing) ? '1px solid red': 'none'};
+		var patternViewStyle = (isEditing) ? {display:'inline-block', background: '#ddd'} : {display:'inline-block'};
+		var pattStyle = { width: 250, margin:0, padding:0, display: "inline-block",  border:'0px solid blue'};
 		var pattNameStyle = {width: 100, display: "inline-block", border: '0px solid blue',
 				textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "80%",
-			borderRight: "1px solid #bbb", marginRight:2, paddingRight:2};
+				borderRight: "1px solid #bbb", marginRight:2, paddingRight:2, marginTop:4 };
         var swatchSetStyle = { width: 115, overflow: "scroll" };
-		var swatchStyle = { width: 15, height: 15, border:0, padding:0,
-			borderWidth: 1, borderColor: "#bbb", borderRadius: 3, borderStyle: "solid", marginLeft: 1, display: "inline-flex",
-			background: "inherit" };
+		var swatchStyle = { width: 17, height: 17, border:0, padding:0, marginLeft: 1, marginTop: 4, display: "inline-flex",
+			borderWidth: 1, borderColor: "#bbb", borderRadius: 3, borderStyle: "solid",	background: "inherit" };
 		var addSwatchStyle = _.clone(swatchStyle);
     	_.assign( addSwatchStyle, { padding: 0, marginTop:0, marginLeft:3, border:0 } );
 		var repeatsStyle = { width: 30, margin:0, padding:0, fontSize: "80%", border:'0px solid green', background: "inherit" };
@@ -161,29 +168,33 @@ var PatternView = React.createClass({
 		var repeats = <i className="fa fa-repeat">{repstr}</i>;
 
 		var nameField = (this.state.editing) ?
-			<input style={pattNameStyle} type="text" name="name" value={pattern.name}
-				onChange={this.onNameChange} />
-			: <span style={{width: 120, cursor:'default'}}><span style={pattNameStyle}>{pattern.name}</span></span>;
+			<input style={pattNameStyle} type="text" name="name" value={pattern.name} onChange={this.onNameChange} />
+			: <span style={pattNameStyle}>{pattern.name}</span>;
+			// : <span style={{width: 120, cursor:'default'}}><span style={pattNameStyle}>{pattern.name}</span></span>;
 
 		// also see: https://facebook.github.io/react/tips/expose-component-functions.html
 		var createSwatch = function(color, i) {
 			var ss = _.clone(swatchStyle); // dont need this now
-			ss.background = color.rgb;
-			if( this.state.editing && i === this.state.activeSwatch ) {
+			// ss.background = color.rgb;
+			ss.background = 'linear-gradient(180deg, '+color.rgb+', '+color.rgb+' 50%, white 50%, white)';
+
+			if( isEditing && i === this.state.activeSwatch ) {
 				 ss.borderColor='#333'; ss.borderWidth = 3;
 			} else {
 				ss.borderColor='#bbb';
 			}
 			return (
-				<div onClick={this.onSwatchClick.bind(this, i)} key={i} style={ss}></div>
+				<div onClick={this.onSwatchClick.bind(this, i)} onDoubleClick={this.onSwatchDoubleClick.bind(this,i)}
+						key={i} style={ss}></div>
 			);
 		};
 
-		var patternStyle = {
-			borderStyle: "solid", borderWidth: 1, borderRadius: "4%", borderColor: "#eee", padding: 2, margin: 0,
-			background: "#fff"
-		};
-		var editButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, borderLeftStyle: "solid", float: "right" };
+		// var patternStyle = {
+		// 	borderStyle: "solid", borderWidth: 1, borderRadius: "4%", borderColor: "#eee", padding: 2, margin: 0,
+		// 	background: "#fff"
+		// };
+		var editButtStyle = {borderStyle: "none", background: "inherit", display: "inline-block", padding: 2,
+			borderLeftStyle: "solid", float: "right" };
 		//var patternStateIcon = (patt.playing) ? 'fa-stop' : 'fa-play';
 		var lockMenuIcon = (pattern.locked) ? "fa fa-lock" : "fa fa-unlock-alt";
 		var lockMenuText = (pattern.locked) ? "Unlock pattern" : "Lock pattern";
@@ -194,9 +205,9 @@ var PatternView = React.createClass({
 		var playButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, outline: 0 };
 		var lockButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, width: 15 };
 
-		var lockButton = (editingThis) ? '':<Button style={lockButtStyle}><i className={pattern.locked ? "fa fa-lock" : ""}></i></Button>;
+		var lockButton = (isEditing) ? '':<Button style={lockButtStyle}><i className={pattern.locked ? "fa fa-lock" : ""}></i></Button>;
 
-//					<Button onClick={this.onDeletePattern} style={playButtStyle}><i className="fa fa-remove"></i></Button>
+//		<Button onClick={this.onDeletePattern} style={playButtStyle}><i className="fa fa-remove"></i></Button>
 		var editOptions =
 			<DropdownButton style={editButtStyle} title="" id={pid} pullRight >
 				<MenuItem eventKey="1" onSelect={this.onEditPattern} disabled={pattern.system || pattern.locked}><i className="fa fa-pencil"></i> Edit pattern</MenuItem>
@@ -204,16 +215,16 @@ var PatternView = React.createClass({
 				<MenuItem eventKey="3" onSelect={this.onCopyPattern}><i className="fa fa-copy"></i> Copy pattern</MenuItem>
 				<MenuItem eventKey="4" onSelect={this.onDeletePattern} disabled={pattern.locked}><i className="fa fa-remove"></i> Delete pattern</MenuItem>
 			</DropdownButton>;
-		if( editingThis ) {
+		if( isEditing ) {
 			editOptions =
 				<span style={{float:'right'}}>
 					<Button onClick={this.onEditDone} style={playButtStyle}><i className="fa fa-check"></i></Button>
 				</span>;
-			patternStyle.borderColor = "#f99";
+			// patternStyle.borderColor = "#f99";
 		}
 
 		return (
-			<span style={{display:'inline-block', border:'0px solid red'}}>
+			<span style={patternViewStyle}>
 
 				<Button onClick={this.onPlayStopPattern} style={playButtStyle}><i className={(pattern.playing) ? "fa fa-stop" : "fa fa-play"}></i></Button>
 
