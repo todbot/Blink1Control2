@@ -88,6 +88,9 @@ var ToolTable = React.createClass({
 		else if( rule.type === 'url' ) {
 			// UrlService.reloadConfig();
 		}
+		else if( rule.type === 'skype' ) {
+
+		}
     },
     handleSaveForm: function(data) {
         log.msg("ToolTable.handleSaveForm:",data, "workingIndex:", this.state.workingIndex);
@@ -180,12 +183,13 @@ var ToolTable = React.createClass({
 					<td>{rule.name}</td>
                     <td>{type}</td>
                     <td>{description}</td>
-					<td style={{textOverflow:'ellipsis',overflow:'hidden',whiteSpace:'nowrap'}}>{patternCell}</td>
+					<td>{patternCell}</td>
 					<td>{lastTime}</td>
-					<td><Button bsSize="xsmall" onClick={this.handleEditRule.bind(this, index, type)} ><i className="fa fa-pencil"></i>
-</Button></td>
+					<td><Button bsSize="xsmall" onClick={this.handleEditRule.bind(this, index, type)} >
+						<i className="fa fa-pencil"></i></Button></td>
 				</tr>
 			);
+//			style={{textOverflow:'ellipsis',overflow:'hidden',whiteSpace:'nowrap'}}
 		};
 
 		return (
@@ -219,7 +223,7 @@ var ToolTable = React.createClass({
 							<tr>
                                 <th>Name</th>
                                 <th style={{width:30}}>Type</th>
-								<th>Description</th>
+								<th style={{width:225}}>Description</th>
 								<th style={{width:140}}>Pattern</th>
 								<th style={{width:140}}>Last value</th>
 								<th style={{width:30}}> </th>
