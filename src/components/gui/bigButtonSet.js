@@ -50,8 +50,8 @@ var BigButtonSet = React.createClass({
         this.state.buttonsUser.push( newbut );
         this.saveButtons( this.state.buttonsUser );
     },
-    onEditButton: function(cmd, idx) {
-        console.log('onEditButton:', cmd, idx);
+    onEdit: function(cmd, idx, arg) {
+        console.log('onEdit:', cmd, idx);
         if( cmd === 'delete' ) {
             delete this.state.buttonsUser[ idx ];
         }
@@ -70,6 +70,9 @@ var BigButtonSet = React.createClass({
         else if( cmd === 'setpattern') {
             this.state.buttonsUser[idx].type = 'pattern';
             this.state.buttonsUser[idx].patternId = PatternsService.getPlayingPatternId();
+        }
+        else if( cmd === 'rename' ) {
+            this.state.buttonsUser[idx].name = arg;
         }
         this.saveButtons( this.state.buttonsUser );
     },
@@ -114,12 +117,11 @@ var BigButtonSet = React.createClass({
         };
         var createBigButtonUser = function(button, index) { // FIXME: understand bind()
             return (
-                <BigButton key={index} name={button.name} type={button.type} color={button.color}
-                    onClick={this.playBigButton.bind(null, button.type, index)} idx={index}
-                    onEdit={this.onEditButton} />
+                <BigButton key={index} idx={index} name={button.name} type={button.type} color={button.color}
+                    onClick={this.playBigButton.bind(null, button.type, index)}
+                    onEdit={this.onEdit} />
             );
         };
-        // var self = this;
         return (
             <div>
                 <ButtonToolbar style={{padding: 10}}>

@@ -176,7 +176,8 @@ var PatternView = React.createClass({
 		var createSwatch = function(color, i) {
 			var ss = _.clone(swatchStyle); // dont need this now
 			// ss.background = color.rgb;
-			ss.background = 'linear-gradient(180deg, '+color.rgb+', '+color.rgb+' 50%, white 50%, white)';
+			// prepare for multiple-colored backgrounds
+			ss.background = 'linear-gradient(180deg, ' + color.rgb+', ' + color.rgb+' 50%, ' + color.rgb+' 50%, ' + color.rgb +')';
 
 			if( isEditing && i === this.state.activeSwatch ) {
 				 ss.borderColor='#333'; ss.borderWidth = 3;

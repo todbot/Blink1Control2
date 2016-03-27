@@ -3,6 +3,10 @@
 var React = require('react');
 
 var Button = require('react-bootstrap').Button;
+var Input = require('react-bootstrap').Input;
+var Modal = require('react-bootstrap').Modal;
+
+var LinkedStateMixin = require('react-addons-linked-state-mixin');
 
 var remote = require('electron').remote;
 var Menu = remote.Menu;
@@ -11,12 +15,23 @@ var MenuItem = remote.MenuItem;
 var currentWindow = remote.getCurrentWindow();
 
 var BigButton = React.createClass({
+	mixins: [LinkedStateMixin],
+
 	propTypes: {
 		name: React.PropTypes.string.isRequired,
 		type: React.PropTypes.string.isRequired,
 		color: React.PropTypes.string,
 		onClick: React.PropTypes.func,
 		onEdit: React.PropTypes.func
+	},
+	getInitialState: function() {
+		return {
+			name: this.props.name
+		};
+		// return {name: this.props.name, editName:false};
+	},
+	componentDidMount: function() {
+		this.makeMenu();
 	},
 	menu: null,
 	makeMenu: function() {
@@ -33,15 +48,21 @@ var BigButton = React.createClass({
 				click: self.doContextMenu.bind(null,null, 'moveleft', idx)})); // fixme
 		menu.append(new MenuItem({ label:'Delete button',
 				click: self.doContextMenu.bind(null,null, 'delete', idx)})); // fixme
-		menu.append(new MenuItem({ label:'Button name "'+this.props.name+'"', click: function() { console.log('item 1 clicked'); } }));
+		menu.append(new MenuItem({ label:'Rename Button',
+				click: self.showEditMenu }));
 		this.menu = menu;
 	},
-	getInitialState: function() {
-		return {};
-		// return {name: this.props.name, editName:false};
+	showEditMenu: function() {
+		this.setState({showEditMenu:true});
 	},
-	componentDidMount: function() {
-		this.makeMenu();
+	hideEditMenu: function() {
+		this.setState({showEditMenu:false});
+	},
+	handleEditClose: function(e) {
+		e.preventDefault();
+		console.log("handleEditClose");
+		this.props.onEdit('rename', this.props.idx, this.state.name); // FIXME: seems really hacky
+		this.hideEditMenu();
 	},
 	showContextMenu: function(e) {
 		console.log("showContextMenu, e.target:", e.target); //, "this:",this);
@@ -93,6 +114,21 @@ var BigButton = React.createClass({
 					{iconContent}
 					<div style={tstyle}>{this.props.name}</div>
 				</Button>
+				<Modal show={this.state.showEditMenu} onHide={this.hideEditMenu} bsSize="small" >
+				  <Modal.Header>
+					<Modal.Title>Edit Button Name</Modal.Title>
+				  </Modal.Header>
+				  <Modal.Body>
+					  <form className="form-horizontal" onSubmit={this.handleEditClose} >
+						  <Input labelClassName="col-xs-5" wrapperClassName="col-xs-7" bsSize="small"
+							  type="text" label="Button Name" valueLink={this.linkState('name')} />
+					  </form>
+				  </Modal.Body>
+				  <Modal.Footer>
+					  <Button onClick={this.hideEditMenu}>Cancel</Button>
+					  <Button type="submit" onClick={this.handleEditClose}>OK</Button>
+				 </Modal.Footer>
+			  </Modal>
 			</div>
 		);
 	}
