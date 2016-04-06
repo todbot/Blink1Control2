@@ -12,6 +12,8 @@ var remote = require('electron').remote;
 var Menu = remote.Menu;
 var MenuItem = remote.MenuItem;
 
+var log = require('../../logger');
+
 var currentWindow = remote.getCurrentWindow();
 
 var BigButton = React.createClass({
@@ -35,7 +37,7 @@ var BigButton = React.createClass({
 	},
 	menu: null,
 	makeMenu: function() {
-		console.log("this.props:",this.props);
+		// log.msg("BigButton.makeMenu: props:",this.props);
 		var self = this;
 		var idx = self.props.idx;
 		var menu = new Menu();
@@ -60,17 +62,16 @@ var BigButton = React.createClass({
 	},
 	handleEditClose: function(e) {
 		e.preventDefault();
-		console.log("handleEditClose");
+		log.msg("BigButton.handleEditClose");
 		this.props.onEdit('rename', this.props.idx, this.state.name); // FIXME: seems really hacky
 		this.hideEditMenu();
 	},
-	showContextMenu: function(e) {
-		console.log("showContextMenu, e.target:", e.target); //, "this:",this);
+	showContextMenu: function() {
 		if( this.props.type === 'sys') { return; } // no context for sys buttons
 	 	this.menu.popup(currentWindow);
 	},
 	doContextMenu: function(event, eventKey) {
-		console.log("doContextMenu: eventKey:",eventKey, "idx:",this.props.idx, "key:",this.props.key  );
+		log.msg("BigButton.doContextMenu: eventKey:",eventKey, "idx:",this.props.idx, "key:",this.props.key  );
 		this.props.onEdit(eventKey, this.props.idx);
 	},
 	render: function() {

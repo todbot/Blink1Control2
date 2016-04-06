@@ -46,7 +46,7 @@ var conf = require('../configuration');
 var log = require('../logger');
 
 var PatternsService = require('./patternsService');
-// var Blink1Service = require('./Blink1Service');
+var Blink1Service = require('./blink1Service');
 
 var baseUrl = 'http://api.thingm.com/blink1/eventsall/';
 
@@ -72,6 +72,7 @@ var IftttService = {
 		}
 		var allrules = conf.readSettings('eventRules') || [];
 		this.rules = allrules.filter( function(r){return r.type==='ifttt';} );
+		this.iftttKey = Blink1Service.iftttKey();
 		log.msg("IftttService.reloadConfig. rules=", this.rules);
 	},
 	getRules: function() {
@@ -89,6 +90,15 @@ var IftttService = {
 	},
 	stop: function() {
 		clearInterval( this.intervalTimer );
+	},
+
+	handleResults: function(rule,event) {
+		var self = this;
+		log.msg("IftttService.handleResults: *** TRIGGERED!!! ***", event);
+		self.lastEvents[rule.name] = event.eventDate;
+		if( rule.enabled ) {
+			PatternsService.playPattern( rule.patternId );
+		}
 	},
 
     fetch: function() {
@@ -113,20 +123,18 @@ var IftttService = {
 			if( respobj.events ) {
 				respobj.events.map( function(evt) {
 					//log.msg("iftttFetcher e:", JSON.stringify(e));
-					var eventDate = new Date(parseInt(1000 * evt.date));
-					if (eventDate > self.lastTime ) { // only notice newer than our startup
-						log.msg('iftttFetcher new event name:"'+ evt.name+'"');
-						log.addEvent( {date:eventDate, text:evt.source, type:'ifttt', id:evt.name} );
+					evt.eventDate = new Date(parseInt(1000 * evt.date));
+					if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
+						log.msg('IftttService.fetch: new event name:"'+ evt.name+'"');
+						log.addEvent( {date:evt.eventDate, text:evt.source, type:'ifttt', id:evt.name} );
 						rules.map( function(r) {
-							log.msg("    ifttFetcher: rule:", JSON.stringify(r));
+							log.msg('IftttService.fetch: rule:', JSON.stringify(r));
 							if( evt.name.trim() === r.name.trim()) {
 								if( !self.lastEvents[r.name] ) { self.lastEvents[r.name] = new Date(0); }
-								log.msg("*** RULE MATCH: ", evt.name, '--', eventDate, '--', self.lastEvents[r.name]);
+								log.msg("IftttService.fetch: *** RULE MATCH:", evt.name, '--', evt.eventDate, '--', self.lastEvents[r.name]);
 								// this.lastEvents[r.name] = this.lastEvents[r.name] || 0;
-								if( eventDate > self.lastEvents[r.name] ) {
-									self.lastEvents[r.name] = eventDate;
-									log.msg("*** TRIGGERED!!! ***", evt);
-									PatternsService.playPattern( r.patternId );
+								if( evt.eventDate > self.lastEvents[r.name] ) {
+									self.handleResults( r, evt );
 								}
 							}
 						});

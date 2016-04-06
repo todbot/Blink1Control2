@@ -6,7 +6,7 @@
 
 var _ = require('lodash');
 
-var doUsbDetect = false;
+// var doUsbDetect = false;
 
 var Blink1 = require('node-blink1');
 var usbDetect = null;
@@ -25,8 +25,8 @@ var blink1serials = []; // no, use hash? Blink1.devices();
 
 var blink1 = null;
 var blink1OpenedSerial;
-var blink1Vid = 0x27B8;
-var blink1Pid = 0x01ED;
+// var blink1Vid = 0x27B8;
+// var blink1Pid = 0x01ED;
 
 //var currentColor = colorparse('#ff00ff');
 // array of colors, one per LED of blink1.
@@ -38,33 +38,42 @@ var lastColors = new Array(18);
 lastColors.fill( tinycolor('#000000') ); // FIXME: hack
 currentColors.fill( tinycolor('#000000') );
 
-var doDeviceRescan = config.readSettings("blink1Service:deviceRescan");
+// var doDeviceRescan = config.readSettings("blink1Service:deviceRescan");
 
 var Blink1Service = {
-
+	toyEnable: false,
+	toyTimer:null,
+	conf: {},
 	start: function() {
 		listeners = {}; // erase previous listeners
 		Blink1Service.scanForDevices();
 	},
-
+	reloadConfig: function() {
+		log.msg("Blink1Service.reloadConfig");
+		Blink1Service._removeAllDevices();
+		// blink1serials = []; // hmmm
+		// if( blink1 ) { blink1.close(); blink1 = null; }
+		Blink1Service.scanForDevices();
+	},
 	scanForDevices: function() {
 		log.msg("Blink1Service","blink1serials:", blink1serials);
 		// initial population of any already-plugged in devices
+		this.conf = config.readSettings('blink1Service');
 		var serials = Blink1.devices();
 		serials.map( function(s) {
 			Blink1Service._addDevice(s);
 		});
 
-		// log.msg("Blink1Service","scanForDevices done");
+		log.msg("Blink1Service.scanForDevices: done. serials:", blink1serials);
 		if( !usbDetect ) {
 			if( blink1serials.length === 0 ) { // look for insertion events
-				if( doDeviceRescan ) {
-					setTimeout( this.scanForDevices.bind(this), 5000);
+				if( this.conf.deviceRescan ) {
+					setTimeout( this.scanForDevices.bind(this), 5000);  // in 5 secs look again
 				}
 			}
 			return;
 		}
-
+		/*
 		// -- USB detection api
 		// https://github.com/MadLittleMods/node-usb-detection
 		usbDetect.on('add', function(device) {
@@ -86,11 +95,12 @@ var Blink1Service = {
 				Blink1Service._removeDevice( serialnumber );
 			}
 		});
+		*/
 	},
-
+	// FIXME:
 	closeAll: function() {
-		log.msg("Blink1ServerApi","closeAll");
-		if( usbDetect ) { usbDetect.stopMonitoring(); }
+		log.msg("Blink1Service","closeAll WHO CALLS THIS");
+		// if( usbDetect ) { usbDetect.stopMonitoring(); }
 		// if( blink1 ) {
 		// 	blink1.off();
 		// 	// blink1.close();
@@ -100,38 +110,55 @@ var Blink1Service = {
 	},
 
 	_addDevice: function(serialnumber) {
-		log.msg("Blink1ServerApi","_addDevice: current serials:", JSON.stringify(blink1serials));
-		if( blink1serials.indexOf(serialnumber) === -1 ) {
-			console.log("new serial " + serialnumber + ", adding it");
-			setTimeout(function() {
-				Blink1Service._setupDevice(serialnumber);  // FIXME: remove
-			}, 500);
+		log.msg("Blink1Service._addDevice: current serials:", blink1serials );
+		if( blink1serials.indexOf(serialnumber) === -1 ) { // if blink1 not already in array // FIXME:
+			log.msg("Blink1Service._addDevice: new serial ", serialnumber);
 			blink1serials.push(serialnumber);
+			if( this.conf.blink1ToUse === 0 || this.conf.blink1ToUse === serialnumber ) {
+				setTimeout(function() {
+					Blink1Service._setupDevice(serialnumber);  // FIXME: remove
+				}, 500);
+			}
 		}
 	},
 	_removeDevice: function(serialnumber) {
-		log.msg("Blink1Service","_removeDevice: current serials:", JSON.stringify(blink1serials));
+		log.msg("Blink1Service","_removeDevice: current serials:", blink1serials);
 		var i = blink1serials.indexOf(serialnumber);
 		if( i > -1 ) {  // FIXME: this seems hacky
 			blink1serials.splice(i, 1);
 		}
 		if( blink1 ) {
-			log.msg('Blink1Service','closing blink1');
+			log.msg('Blink1Service._removeDevice: closing blink1');
 			blink1.close();
 			blink1 = null;
-			this.notifyChange();
+			Blink1Service.notifyChange();
 		}
 		if( blink1serials.length === 0 ) {
 			setTimeout( this.scanForDevices.bind(this), 5000);
 		}
-		log.msg('Blink1Service','_removeDevice: new current serials:', JSON.stringify(blink1serials));
+		log.msg('Blink1Service._removeDevice: new current serials:', blink1serials);
+	},
+	_closeCurrentDevice: function()	{
+		log.msg('Blink1Service._closeCurrentDevice: closing blink1');
+		if( blink1 ) {
+			blink1.close();
+			blink1 = null;
+		}
+	},
+	_removeAllDevices: function() {
+		log.msg("Blink1Service._removeAllDevices");
+		// blink1serials.map( Blink1Service._removeDeviceDumb );
+		blink1serials = []; // FIXME:
+		Blink1Service._closeCurrentDevice();
+		log.msg("Blink1Service._removeAllDevices: serials:",blink1serials);
 	},
 	_setupDevice: function(serialnumber) {
-		log.msg("Blink1Service","opening blink1",serialnumber);
+		log.msg("Blink1Service._setupDevice:",serialnumber);
 		if( !blink1 ) {
-			blink1 = new Blink1();
+			log.msg("Blink1Service._setupDevice: no blink1, so opening ",serialnumber);
+			blink1 = new Blink1(serialnumber);
 			blink1OpenedSerial = serialnumber;
-			this.notifyChange();
+			Blink1Service.notifyChange();
 		}
 	},
 
@@ -239,6 +266,25 @@ var Blink1Service = {
 		this._fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn);
 
 		this.notifyChange();
+	},
+
+	off: function() {
+		this.toyEnable = false;
+		this.fadeToColor(0, '#000000', 0);
+	},
+	colorCycleStart: function() {
+		this.toyEnable = true;
+		this.colorCycleDo();
+	},
+	colorCycleStop: function() {
+		this.toyEnable = false;
+		clearTimeout( this.toyTimer );
+	},
+	colorCycleDo: function() {
+		log.msg("Blink1Service.doColorCycle");
+		if( !this.toyEnable ) { return; }
+		this.fadeToColor( 100, tinycolor.random(), 0 );
+		this.toyTimer = setTimeout(this.colorCycleDo.bind(this), 300);
 	},
 
 	addChangeListener: function(callback, callername) {

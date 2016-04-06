@@ -15,7 +15,20 @@ var ScriptService = {
     lastEvents:{},
     start: function() {
         log.msg("ScriptService.start");
-        this.reloadConfig();
+        // this.reloadConfig();
+        // this.stop();
+        this.config = conf.readSettings('scriptService');
+        if( !this.config ) { this.config = { enabled: false }; }
+        if( !this.config.enabled ) {
+            log.msg("ScriptService: disabled");
+            return;
+        }
+        var allrules = conf.readSettings('eventRules') || [];
+		this.rules = allrules.filter( function(r) {
+            return (r.type==='script' || r.type==='file') && r.enabled;
+        });
+		log.msg("ScriptService.start: rules:", this.rules);
+        this.startScripts();
     },
     stop: function() {
         log.msg("ScriptService.stop");
@@ -24,20 +37,8 @@ var ScriptService = {
         this.ruleTimers = [];
     },
     reloadConfig: function() {
-        log.msg("ScriptService.reloadConfig");
         this.stop();
-        this.config = conf.readSettings('scriptService');
-        if( !this.config ) { this.config = { enabled: false }; }
-        if( !this.config.enabled ) {
-            log.msg("ScriptService: disabled");
-            return;
-        }
-        var allrules = conf.readSettings('eventRules') || [];
-		this.rules = allrules.filter( function(r){
-            return (r.type==='script' || r.type==='file') && r.enabled;
-        });
-		log.msg("ScriptService.reloadConfig: rules:", this.rules);
-        this.startScripts();
+        this.start();
     },
     startScripts: function() {
         var self = this;
@@ -60,9 +61,17 @@ var ScriptService = {
     // - bad parse
     // -
     //
-    parse: function(rule,str) {
-        log.msg("ScriptService.parse stdout data",str);
-        PatternsService.playPattern( str );
+    // FIXME: need to heed patternId
+    handleEvent: function(rule,str) {
+        var self = this;
+        // log.msg("ScriptService.parse stdout data",str);
+        if( self.lastEvents[rule.name] !== str ) {
+            // if( !rule.logEvents || (null !== rule.logEvents && rule.logEvents) ) {
+            log.addEvent( {date:Date.now(), text:str.substring(0,40), type:rule.type, id:rule.name} );
+            // }
+            self.lastEvents[rule.name] = str;
+            PatternsService.playPattern( str );
+        }
     },
     runScript: function(rule) {
         var self = this;
@@ -73,14 +82,7 @@ var ScriptService = {
             script.stdout.on('data', function(data) {
                 var str = data.toString();
                 log.msg("ScriptService.runScript: str:",str,"last:",self.lastEvents[rule.name]);
-                if( self.lastEvents[rule.name] !== str ) {
-                    // if( !rule.logEvents || (null !== rule.logEvents && rule.logEvents) ) {
-                    log.addEvent( {date:Date.now(), text:str.substring(0,40), type:rule.type, id:rule.name} );
-                    // }
-                    self.parse(rule,str);
-                    self.lastEvents[rule.name] = str;
-                }
-                // self.parse(rule,str);
+                self.handleEvent(rule,str);
             });
             script.stderr.on('data', function(data) {
                 log.msg("ScriptService.runScript stderr data",data);

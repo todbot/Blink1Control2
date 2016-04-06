@@ -29,25 +29,35 @@ var MailForm = React.createClass({
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
         this.setState({
+            enabled: rule.enabled,
             type:'mail',
-            name: nextProps.rule.name,
-            patternId: nextProps.rule.patternId,
+            name: rule.name,
+            patternId: rule.patternId,
             mailtype: rule.mailtype || 'IMAP',  // default it
             host: rule.host || '',
             port: rule.port || 993,
             username: rule.username ,
             password: rule.password,
             useSSL: rule.useSSL || true,
+            actionType: 'play-pattern',
             triggerType: rule.triggerType || 'unread',
             triggerVal: rule.triggerVal || '1' ,
+            errormsg: ''
         });
     },
 
     handleClose: function() {
         console.log("CLOSING: state=",this.state);
         if( !this.state.mailtype ) {
-            console.log("mailtype not set!");
             this.setState({errormsg: "mailtype not set!"});
+            return;
+        }
+        else if( !this.state.host ) {
+            this.setState({errormsg: "host not set!"});
+            return;
+        }
+        else if( !this.state.username || !this.state.password ) {
+            this.setState({errormsg: "username or password not set!"});
             return;
         }
         this.props.onSave(this.state);
@@ -75,7 +85,6 @@ var MailForm = React.createClass({
                     <Modal.Body>
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
                       <form className="form-horizontal" >
-                          <input type="hidden" value={this.state.id} />
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                               type="text" label="Name" placeholder="Enter text"
                               valueLink={this.linkState('name')} />
@@ -107,7 +116,7 @@ var MailForm = React.createClass({
                               </Col>
                           </Row>
 
-                          <span><b> Trigger when: </b></span>
+                          <span><b style={{fontSize:"85%"}}> Trigger when: </b></span>
 
                               <Input labelClassName="col-xs-4" wrapperClassName="col-xs-3" bsSize="small"
                                   type="number" label="Unread email count >="
@@ -130,7 +139,7 @@ var MailForm = React.createClass({
                                   addonBefore={<input type="radio" value='sender'
                                       checked={this.state.triggerType==='sender'} onChange={this.onTriggerTypeClick}/>} />
 
-                            <span><b>Pattern: </b></span>
+                             <span><b style={{fontSize:"85%"}}>Play Pattern: </b></span>
 
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
                                 type="select" label="Pattern"
@@ -138,6 +147,8 @@ var MailForm = React.createClass({
                                 {patterns.map( createPatternOption, this )}
                             </Input>
 
+                            <Input wrapperClassName="col-xs-offset-3 col-xs-12" labelClassName="col-xs-3" bsSize="small"
+                                  type="checkbox" label={<b>Enabled</b>} checkedLink={this.linkState('enabled')} />
                       </form>
                     </Modal.Body>
                     <Modal.Footer>

@@ -90,14 +90,16 @@ var BigButtonSet = React.createClass({
 		console.log("playBigButton:", buttontype, buttonindex);
 		if( buttontype === 'sys' ) {
 			var butt = this.state.buttonsSys[buttonindex];
-			console.log("system button parsing goes here");
 			if( butt.name === "White" ) {
 				this.setBlink1Color( "#FFFFFF" );
 			}
 			else if( butt.name === "Off" ) {
-				this.setBlink1Color( "#000000" );
                 PatternsService.stopAllPatterns();
+                Blink1Service.off();
 			}
+            else if( butt.name === "Color Cycle" ) {
+                Blink1Service.colorCycleStart();
+            }
 		}
 		else if( buttontype === 'color' ) {
             console.log("buttontype color");

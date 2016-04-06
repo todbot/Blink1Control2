@@ -21,21 +21,13 @@ var eventsMax = 10;  // FIXME: put in configuration?
 var events = [
 ];
 
-// [
-// 	{ date: Date.now()-800000000, text: "this other thing happened"},
-// 	{ date: Date.now()-800000000, text: "this other thing happened"},
-// 	{ date: Date.now()-700000000, text: "this other thing happened"},
-// 	{ date: Date.now()-600000000, text: "this 3.1 happened", type:'ifttt'},
-// 	{ date: Date.now()-500000000, text: "this 3  happened", type:'script'},
-// 	{ date: Date.now()-300000000, text: "this 2 happened"},
-// 	{ date: Date.now()-200000000, text: "this happened"}
-// ];
 
 var listeners = [];
 
 var ignoredSources = [
    /IftttService/i,
    /PatternView/i,
+   /Blink1ColorPicker/i
     // /ScriptService/
 ];
 

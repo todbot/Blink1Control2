@@ -2,11 +2,13 @@
 
 var React = require('react');
 
-// var Col = require('react-bootstrap').Col;
-// var Row = require('react-bootstrap').Row;
+var Grid = require('react-bootstrap').Grid;
+var Col = require('react-bootstrap').Col;
+var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
+var FormControls = require('react-bootstrap').FormControls;
 // var ButtonGroup = require('react-bootstrap').ButtonGroup;
 // var FormControls = require('react-bootstrap').FormControls;
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
@@ -32,13 +34,15 @@ var ScriptForm = React.createClass({
     },
     // FIXME: why am I doing this instead of getInitialState?
     componentWillReceiveProps: function(nextProps) {
+        var rule = nextProps.rule;
 		this.setState({
-            type:'script',
-            enabled: nextProps.rule.enabled,
-            name: nextProps.rule.name,
-            filepath: nextProps.rule.filepath,
-            patternId: nextProps.rule.patternId || 'content',
-            intervalSecs: nextProps.rule.intervalSecs || 10
+            type: 'script',  // FIXME: allow URL & File here too?
+            enabled: rule.enabled,
+            name: rule.name,
+            actionType: rule.actionType,
+            patternId: rule.patternId,
+            filepath: rule.filepath,
+            intervalSecs: rule.intervalSecs || 10
          });
 	},
     handleClose: function() {
@@ -56,11 +60,20 @@ var ScriptForm = React.createClass({
             self.setState({filepath: filename});
         });
     },
+    handleActionType: function(e) {
+        var actionType = e.target.value;
+        this.setState({actionType:actionType});
+    },
     render: function() {
 
-        var createPatternOption = function(item, idx) {
-            return ( <option key={idx} value={item.id}>{item.name}</option> );
-        };
+        // var createPatternOption = function(item, idx) {
+        //     return ( <option key={idx} value={item.id}>{item.name}</option> );
+        // };
+        // <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
+        //     type="select" label="Pattern"
+        //     valueLink={this.linkState('patternId')} >
+        //     {this.props.patterns.map( createPatternOption, this )}
+        // </Input>
 
         return (
             <div>
@@ -72,33 +85,42 @@ var ScriptForm = React.createClass({
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
                         <p></p>
                         <form className="form-horizontal" >
-                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
+                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
                               type="text" label="Rule Name" placeholder="Descriptive name"
                               valueLink={this.linkState('name')} />
-                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
+                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
                               type="text" label="File Path" placeholder="Click to choose script / program / batch file"
                               valueLink={this.linkState('filepath')}
                               onClick={this.openFileDialog}/>
-                              <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
-                                  type="select" label="Check interval" placeholder="15 seconds"
-                                  valueLink={this.linkState('intervalSecs')} >
-                                  <option value="2">2 seconds</option>
-                                  <option value="5">5 seconds</option>
-                                  <option value="10">10 seconds</option>
-                                  <option value="15">15 seconds</option>
-                                  <option value="30">30 seconds</option>
-                                  <option value="60">1 minute</option>
-                                  <option value="360">5 minutes</option>
-                              </Input>
-
-                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
-                              type="select" label="Pattern"
-                              valueLink={this.linkState('patternId')} >
-                              <option key={99} value="content">Use script content</option>
-                              {this.props.patterns.map( createPatternOption, this )}
+                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
+                              type="select" label="Check interval" placeholder="15 seconds"
+                              valueLink={this.linkState('intervalSecs')} >
+                              <option value="2">2 seconds</option>
+                              <option value="5">5 seconds</option>
+                              <option value="10">10 seconds</option>
+                              <option value="15">15 seconds</option>
+                              <option value="30">30 seconds</option>
+                              <option value="60">1 minute</option>
+                              <option value="360">5 minutes</option>
                           </Input>
-                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8 col-xs-offset-3"
-                              type="checkbox" label={<b>Enabled</b>} checkedLink={this.linkState('enabled')}/>
+                          <Grid >
+                              <Row ><Col xs={2}>
+                                  <label> Parse output as</label>
+                              </Col><Col xs={4} style={{border:'0px solid green'}}>
+                                  <Input
+                                      type="radio" label="Parse output as color" value="parse-as-color"
+                                      checked={this.state.actionType==='parse-as-color'}
+                                      onChange={this.handleActionType} />
+                                  <Input
+                                      type="radio" label="Parse output as pattern name" value="parse-as-pattern"
+                                      checked={this.state.actionType==='parse-as-pattern'}
+                                      onChange={this.handleActionType} />
+                              </Col></Row>
+                          </Grid>
+
+                      <Input wrapperClassName="col-xs-offset-3 col-xs-12" labelClassName="col-xs-3"
+                            type="checkbox" label={<b>Enabled</b>} checkedLink={this.linkState('enabled')} />
+
                         </form>
                     </Modal.Body>
                     <Modal.Footer>

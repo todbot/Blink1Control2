@@ -1,7 +1,7 @@
 "use strict";
 
 var React = require('react');
-// var _ = require('lodash');
+var _ = require('lodash');
 
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
@@ -22,6 +22,13 @@ var ScriptService = require('../../server/scriptService');
 var IftttForm = require('./iftttForm');
 var MailForm = require('./mailForm');
 var ScriptForm = require('./scriptForm');
+var SkypeForm = require('./skypeForm');
+
+// var actionTypeToHuman = {
+// 	'use-output': "Use output",
+// 	'use-output-color': "Use output as color",
+// 	'use-output-pattern': "Use output as pattern name",
+// };
 
 var example_rules = [
 	{
@@ -87,9 +94,10 @@ var ToolTable = React.createClass({
 		}
 		else if( rule.type === 'url' ) {
 			// UrlService.reloadConfig();
+			ScriptService.reloadConfig();
 		}
 		else if( rule.type === 'skype' ) {
-
+			SkypeService.reloadConfig();
 		}
     },
     handleSaveForm: function(data) {
@@ -125,6 +133,18 @@ var ToolTable = React.createClass({
 		}
 		this.setState({ showForm: false });
 	},
+	handleCopyRule: function() {
+		console.log("ToolTable.handleCopyRule");
+		if( this.state.workingIndex >= 0) {
+			var rules = this.state.rules;
+			var rule = _.clone(rules[ this.state.workingIndex ]);
+			rule.id = rule.id + util.cheapUid(4);
+			rule.name = rule.name + ' (copy)';
+			rules.splice( this.state.workingIndex, 0, rule);
+			this.setState({rules: rules});
+		}
+	},
+
     handleAddRule: function(evt,key) {
         log.msg("ToolTable.handleAddRule",key);
         this.setState({showForm:key, workingIndex:-1});
@@ -146,7 +166,7 @@ var ToolTable = React.createClass({
                 desc = rule.type + ':' + rule.name;
             }
             else if( rule.type === 'mail' ) {
-                desc = rule.mailtype+':'+rule.user +':'+rule.triggerType+':'+rule.triggerVal;
+                desc = rule.username +':'+rule.triggerType+':'+rule.triggerVal;
             }
 			else if( rule.type === 'script' ) {
                 desc = rule.intervalSecs +'s:' + rule.filepath;
@@ -157,8 +177,27 @@ var ToolTable = React.createClass({
             else if( rule.type === 'url' ) {
                 desc = rule.url + ' @' +rule.intervalSecs +'s';
             }
+			else if( rule.type === 'skype' ) {
+				desc = rule.username + ':' + rule.triggerType;
+			}
             return desc;
         };
+		var makePattern = function(rule) {
+			var pattstr = 'unknown';
+			if( rule.actionType === 'play-pattern' ) {
+				pattstr = PatternsService.getNameForId( rule.patternId );  // just text
+				if( !pattstr ) {
+					pattstr = rule.actionType;
+			   	} // for cases like scripts where patternid is special
+			}
+			else {
+				pattstr = rule.actionType;
+			}
+			// else if( rule.actionType === 'use-output' ) {
+			// }
+
+		   	return pattstr;
+		};
         var makeLastTime = function(rule) {
             var eventsForMe = events.filter( function(e) {
                 return (e.type===rule.type && e.id === rule.name);
@@ -171,21 +210,20 @@ var ToolTable = React.createClass({
             return lastEvent;
         };
 		var createRow = function(rule, index) {
-			var pattid = this.state.rules[index].patternId;
-			var patternCell = PatternsService.getNameForId( pattid );  // just text
-			if( !patternCell ) { patternCell = pattid; } // for cases like scripts where patternid is special
+			// var pattid = this.state.rules[index].patternId;
+			var patternStr = makePattern(rule);
 			var lastTime = makeLastTime(rule);
             var description = makeDesc(rule);
             var type = rule.type;  type = (type==='ifttt')? 'IFTTT' : type;
-			var rowstyle = (rule.enabled) ? {} : { color:"#999"};
+			var rowstyle = (rule.enabled) ? {} : { color:"#999" };
 			return (
 				<tr key={index} style={rowstyle} onDoubleClick={this.handleEditRule.bind(this, index, type)} >
 					<td>{rule.name}</td>
-                    <td>{type}</td>
                     <td>{description}</td>
-					<td>{patternCell}</td>
+					<td>{type}</td>
+					<td>{patternStr}</td>
 					<td>{lastTime}</td>
-					<td><Button bsSize="xsmall" onClick={this.handleEditRule.bind(this, index, type)} >
+					<td><Button bsSize="xsmall" style={{border:'none'}} onClick={this.handleEditRule.bind(this, index, type)} >
 						<i className="fa fa-pencil"></i></Button></td>
 				</tr>
 			);
@@ -213,6 +251,11 @@ var ToolTable = React.createClass({
                     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
+				<SkypeForm show={this.state.showForm==='skype'}
+                    workingIndex={this.state.workingIndex}
+                    rule={workingRule} patterns={patterns}
+                    onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
+                    onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
 				<div style={{display: "block", overflowY: "scroll", height: 165, border:'1px solid #eee'}}>
                     <div style={{padding:10}} hidden={this.state.rules.length}>
@@ -221,28 +264,28 @@ var ToolTable = React.createClass({
 					<Table bordered condensed hover style={{fontSize:"0.9em"}} hidden={this.state.rules.length===0}>
 						<thead>
 							<tr>
-                                <th>Name</th>
-                                <th style={{width:30}}>Type</th>
+                                <th style={{width:140}}>Name</th>
 								<th style={{width:225}}>Description</th>
-								<th style={{width:140}}>Pattern</th>
-								<th style={{width:140}}>Last value</th>
-								<th style={{width:30}}> </th>
+								<th style={{width: 30}}>Type</th>
+								<th style={{width:130}}>Pattern</th>
+								<th style={{width:150}}>Last value</th>
+								<th style={{width: 30}}> </th>
 							</tr>
 						</thead>
 						<tbody>
 							{this.state.rules.map( createRow, this )}
 						</tbody>
 					</Table>
-					<div style={{position: "absolute", bottom: 0}}>
-						<DropdownButton bsSize="small" onSelect={this.handleAddRule} id="addRule" title={<span><i className="fa fa-plus"></i> add event source</span>}>
-                            <MenuItem eventKey="ifttt">Add IFTTT</MenuItem>
-                            <MenuItem eventKey="mail">Add Mail</MenuItem>
-                            <MenuItem eventKey="script">Add Script</MenuItem>
-                            <MenuItem eventKey="url">Add URL</MenuItem>
-                            <MenuItem eventKey="file">Add File</MenuItem>
-                            <MenuItem eventKey="skype">Add Skype</MenuItem>
-                        </DropdownButton>
-					</div>
+				</div>
+				<div style={{position: "absolute", bottom: 0}}>
+					<DropdownButton bsSize="small" bsStyle="primary" onSelect={this.handleAddRule} id="addRule" title={<span><i className="fa fa-plus"></i> add event source</span>}>
+						<MenuItem eventKey="ifttt">Add IFTTT</MenuItem>
+						<MenuItem eventKey="mail">Add Mail</MenuItem>
+						<MenuItem eventKey="script">Add Script</MenuItem>
+						<MenuItem eventKey="url">Add URL</MenuItem>
+						<MenuItem eventKey="file">Add File</MenuItem>
+						<MenuItem eventKey="skype">Add Skype</MenuItem>
+					</DropdownButton>
 				</div>
 			</div>
         );
