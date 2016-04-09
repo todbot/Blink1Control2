@@ -8,10 +8,12 @@ var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
-var FormControls = require('react-bootstrap').FormControls;
+//var FormControls = require('react-bootstrap').FormControls;
 // var ButtonGroup = require('react-bootstrap').ButtonGroup;
 // var FormControls = require('react-bootstrap').FormControls;
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
+
+var Switch = require('react-bootstrap-switch');
 
 var dialog = require('electron').remote.dialog;
 
@@ -65,6 +67,7 @@ var ScriptForm = React.createClass({
         this.setState({actionType:actionType});
     },
     render: function() {
+        var self = this;
 
         // var createPatternOption = function(item, idx) {
         //     return ( <option key={idx} value={item.id}>{item.name}</option> );
@@ -118,16 +121,23 @@ var ScriptForm = React.createClass({
                               </Col></Row>
                           </Grid>
 
-                      <Input wrapperClassName="col-xs-offset-3 col-xs-12" labelClassName="col-xs-3"
-                            type="checkbox" label={<b>Enabled</b>} checkedLink={this.linkState('enabled')} />
-
                         </form>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button bsStyle="danger" bsSize="small" style={{float:'left'}} onClick={this.props.onDelete}>Delete</Button>
-                        <Button bsSize="small" style={{float:'left'}} onClick={this.props.onCopy}>Copy</Button>
-                        <Button onClick={this.props.onCancel}>Cancel</Button>
-                        <Button onClick={this.handleClose}>OK</Button>
+                        <Row>
+                            <Col xs={5}>
+                                <Button bsStyle="danger" bsSize="small" onClick={this.props.onDelete}  style={{float:'left'}}>Delete</Button>
+                                <Button bsSize="small"  onClick={this.props.onCopy}  style={{float:'left'}}>Copy</Button>
+                            </Col>
+                            <Col xs={3}>
+                                    <Switch labelText="Enable" size="small"
+                                        state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
+                            </Col>
+                            <Col xs={4}>
+                                <Button onClick={this.props.onCancel}>Cancel</Button>
+                                <Button onClick={this.handleClose}>OK</Button>
+                            </Col>
+                        </Row>
                     </Modal.Footer>
               </Modal>
           </div>
