@@ -1,13 +1,14 @@
 
 "use strict";
 
-// this is for webpack
+// these requires are for webpack
 require('../node_modules/bootstrap/dist/css/bootstrap.min.css');
 //require('../node_modules/bootstrap/dist/css/bootstrap-theme.min.css');
 //require('../node_modules/bootstrap/dist/css/bootstrap-yeti.min.css');
 //require('../node_modules/bootstrap/dist/css/bootstrap-lumen.min.css');
 //require('../bootstrap-sb-admin-2.css');
 require('../node_modules/font-awesome/css/font-awesome.min.css');
+require('../node_modules/react-bootstrap-switch/dist/css/bootstrap3/react-bootstrap-switch.min.css');
 
 var React = require('react');
 var ReactDOM = require('react-dom');
