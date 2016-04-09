@@ -3,17 +3,27 @@
 // var _ = require('lodash');
 
 var Imap = require('imap');
+var simplecrypt = require('simplecrypt');
+
 var log = require('../logger');
 
 var retrySecs = 30;
+
+var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control'});
 
 var makeMessage = function(id, type, message ) {
     return [{id:id, type:type, message: message}] ;
 };
 
-
 function ImapSearcher(config, callback) {
     var self = this;
+    var pass = '';
+    try {
+        pass = sc.decrypt( config.password );
+    } catch(err) {
+        log.msg('ImapSearcher: bad password');
+    }
+
     self.callback = callback;
     self.enabled = config.enabled || true;
     self.id = config.name;  // FIXME: potential collision here
@@ -21,7 +31,7 @@ function ImapSearcher(config, callback) {
     self.port = config.port;
     self.useSSL = config.useSSL;
     self.username = config.username;
-    self.password = config.password;
+    self.password = pass;
     // FIXME: this could be an array of rules, maybe:
     // [ { name:'bob', triggerType:'unread', triggerVal:1 },
     //   { name:'george', triggerType:'subject', triggerVal:'fred'}]

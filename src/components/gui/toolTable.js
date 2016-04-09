@@ -8,6 +8,9 @@ var Button = require('react-bootstrap').Button;
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
 var moment = require('moment');
+var simplecrypt = require('simplecrypt');
+
+var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control'});
 
 var conf = require('../../configuration');
 var log = require('../../logger');
@@ -17,7 +20,7 @@ var PatternsService = require('../../server/patternsService');
 var IftttService = require('../../server/iftttService');
 var MailService = require('../../server/mailService');
 var ScriptService = require('../../server/scriptService');
-
+var SkypeService = require('../../server/skypeService');
 
 var IftttForm = require('./iftttForm');
 var MailForm = require('./mailForm');
@@ -104,6 +107,9 @@ var ToolTable = React.createClass({
         log.msg("ToolTable.handleSaveForm:",data, "workingIndex:", this.state.workingIndex);
         var rules = this.state.rules;
         var rulenew = data; //{type:data.type, name: data.name, patternId: data.patternId, lastTime:0, source:'n/a' }; // FIXME:
+		if( rulenew.password ) {
+			rulenew.password = sc.encrypt( rulenew.password );
+		}
         if( this.state.workingIndex === -1 ) { // new rule
             rules.unshift( rulenew );
         }
@@ -152,13 +158,17 @@ var ToolTable = React.createClass({
     render: function() {
         var patterns = PatternsService.getAllPatterns();
         var events = this.state.events;
-        var workingRule = ( this.state.workingIndex !== -1 ) ? // -1 means new rule
-                this.state.rules[this.state.workingIndex] :
-                { name: 'new rule '+ util.cheapUid(4),
-					type: this.state.showForm,
-					enabled: true,
-				}; // FIXME: make createBlankRule(type)
-
+        var workingRule = { name: 'new rule '+ util.cheapUid(4),
+						type: this.state.showForm,
+						enabled: true,
+			}; // FIXME: make createBlankRule(type)
+		if( this.state.workingIndex !== -1 ) { // -1 means new rule
+			workingRule = _.clone( this.state.rules[this.state.workingIndex] );
+		}
+		if( workingRule.password ) {
+			console.log("workingRule:",workingRule.password);
+			workingRule.password = sc.decrypt( workingRule.password );
+		}
         var makeDesc = function(rule) {
             if( rule.description ) { return rule.description; }
             var desc = '';
@@ -263,7 +273,7 @@ var ToolTable = React.createClass({
                     </div>
 					<Table bordered condensed hover style={{fontSize:"0.9em"}} hidden={this.state.rules.length===0}>
 						<thead>
-							<tr>
+							<tr stye={{lineHeight:"100%"}}>
                                 <th style={{width:140}}>Name</th>
 								<th style={{width:225}}>Description</th>
 								<th style={{width: 30}}>Type</th>
