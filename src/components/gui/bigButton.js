@@ -24,7 +24,8 @@ var BigButton = React.createClass({
 		type: React.PropTypes.string.isRequired,
 		color: React.PropTypes.string,
 		onClick: React.PropTypes.func,
-		onEdit: React.PropTypes.func
+		onEdit: React.PropTypes.func,
+		patterns: React.PropTypes.array
 	},
 	getInitialState: function() {
 		return {
@@ -33,7 +34,8 @@ var BigButton = React.createClass({
 		// return {name: this.props.name, editName:false};
 	},
 	componentDidMount: function() {
-		this.makeMenu();
+		console.log("bigButton type:",this.props.type);
+		if( this.props.type !== 'sys' ) { this.makeMenu(); }
 	},
 	menu: null,
 	makeMenu: function() {
@@ -41,11 +43,18 @@ var BigButton = React.createClass({
 		var self = this;
 		var idx = self.props.idx;
 		var menu = new Menu();
+
+		var pattmenu = new Menu();
+		console.log("type",this.props.type,",patterns:",this.props.patterns);
+		this.props.patterns.map( function(p) {
+			pattmenu.append( new MenuItem({label:p.name, click: self.doContextMenu.bind(null,null, 'setpattern', p.id)}) );
+		});
 				// click: self.props.onEdit.bind(null, 'setcolor',self.props.idx)}));
 		menu.append(new MenuItem({ label:'Set to current color',
 				click: self.doContextMenu.bind(null,null, 'setcolor', idx)})); // fixme
-		menu.append(new MenuItem({ label:'Set to last pattern',
-				click: self.doContextMenu.bind(null,null, 'setpattern', idx)})); // fixme
+		menu.append(new MenuItem({ label:'Set to pattern',
+				submenu: pattmenu} ));
+				// click: self.doContextMenu.bind(null,null, 'setpattern', idx)})); // fixme
 		menu.append(new MenuItem({ label:'Move button left',
 				click: self.doContextMenu.bind(null,null, 'moveleft', idx)})); // fixme
 		menu.append(new MenuItem({ label:'Delete button',
@@ -70,9 +79,9 @@ var BigButton = React.createClass({
 		if( this.props.type === 'sys') { return; } // no context for sys buttons
 	 	this.menu.popup(currentWindow);
 	},
-	doContextMenu: function(event, eventKey) {
-		log.msg("BigButton.doContextMenu: eventKey:",eventKey, "idx:",this.props.idx, "key:",this.props.key  );
-		this.props.onEdit(eventKey, this.props.idx);
+	doContextMenu: function(event, eventKey, arg) {
+		log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx, "key:",this.props.key  );
+		this.props.onEdit(eventKey, this.props.idx, arg);
 	},
 	render: function() {
 		var buttonStyle = { width: 64, height: 64, padding: 3, margin: 5 };
@@ -88,6 +97,12 @@ var BigButton = React.createClass({
 			buttonStyle.color = 'white';
 			//iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
 			iconContent = <i className="fa fa-lightbulb-o fa-2x"></i>;
+		}
+		else if( this.props.type === 'pattern' ) {
+			buttonStyle.background = this.props.color;
+			buttonStyle.color = 'white';
+			//iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
+			iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
 		}
 		else if( this.props.type === "sys") {  // FIXME: seems hacky, must be better way surely
 			if( this.props.name === "White") {

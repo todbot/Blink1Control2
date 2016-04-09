@@ -51,7 +51,7 @@ var BigButtonSet = React.createClass({
         this.saveButtons( this.state.buttonsUser );
     },
     onEdit: function(cmd, idx, arg) {
-        console.log('onEdit:', cmd, idx);
+        console.log('onEdit:', cmd, idx, arg);
         if( cmd === 'delete' ) {
             delete this.state.buttonsUser[ idx ];
         }
@@ -69,7 +69,8 @@ var BigButtonSet = React.createClass({
         }
         else if( cmd === 'setpattern') {
             this.state.buttonsUser[idx].type = 'pattern';
-            this.state.buttonsUser[idx].patternId = PatternsService.getPlayingPatternId();
+            this.state.buttonsUser[idx].color = 'grey';
+            this.state.buttonsUser[idx].patternId = arg; // PatternsService.getPlayingPatternId();
         }
         else if( cmd === 'rename' ) {
             this.state.buttonsUser[idx].name = arg;
@@ -111,6 +112,7 @@ var BigButtonSet = React.createClass({
 	},
 
     render: function() {
+        var patterns = PatternsService.getAllPatterns();
         var createBigButtonSys = function(button, index) { // FIXME: understand bind()
             return (
                 <BigButton key={index} name={button.name} type='sys'
@@ -119,7 +121,8 @@ var BigButtonSet = React.createClass({
         };
         var createBigButtonUser = function(button, index) { // FIXME: understand bind()
             return (
-                <BigButton key={index} idx={index} name={button.name} type={button.type} color={button.color}
+                <BigButton key={index} idx={index} name={button.name} type={button.type}
+                    color={button.color} patterns={patterns}
                     onClick={this.playBigButton.bind(null, button.type, index)}
                     onEdit={this.onEdit} />
             );
@@ -132,7 +135,7 @@ var BigButtonSet = React.createClass({
                 <div style={{padding: 10, overflowX: 'auto', overflowY:'hidden'}}>
                     <ButtonToolbar style={{width:1500}} ref="btbar">
                         {this.state.buttonsUser.map(createBigButtonUser, this)}
-                        <BigButton key="add" name="add" type="add" onClick={this.addBigButton}  />
+                        <BigButton key="add" name="add" type="sys" onClick={this.addBigButton}  />
                     </ButtonToolbar>
                 </div>
             </div>
