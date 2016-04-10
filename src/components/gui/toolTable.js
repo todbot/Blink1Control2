@@ -166,8 +166,11 @@ var ToolTable = React.createClass({
 			workingRule = _.clone( this.state.rules[this.state.workingIndex] );
 		}
 		if( workingRule.password ) {
-			console.log("workingRule:",workingRule.password);
-			workingRule.password = sc.decrypt( workingRule.password );
+			try {
+				workingRule.password = sc.decrypt( workingRule.password );
+			} catch(err) {
+				log.msg("toolTable: error decrypting passwd: ",err);
+			}
 		}
         var makeDesc = function(rule) {
             if( rule.description ) { return rule.description; }
@@ -243,7 +246,7 @@ var ToolTable = React.createClass({
 		return (
 			<div style={{position: "relative", height: 200, cursor:'default'}}>
 
-				<ScriptForm show={this.state.showForm==='script' || this.state.showForm==='file' }
+				<ScriptForm show={this.state.showForm==='script' || this.state.showForm==='file' || this.state.showForm === 'url' }
 					workingIndex={this.state.workingIndex}
                     rule={workingRule} patterns={patterns}
 					onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
