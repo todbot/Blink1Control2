@@ -27,7 +27,7 @@
 'use strict';
 
 var _ = require('lodash');
-// var tinycolor = require('tinycolor2');
+var tinycolor = require('tinycolor2');
 
 var config = require('../configuration');
 var log = require('../logger');
@@ -134,7 +134,8 @@ var PatternsService = {
 	},
 
 	getAllPatterns: function() {
-		return patternsUser.concat(patternsSystem); //_clone(patterns);
+		// return patternsUser.concat(patternsSystem); //_clone(patterns);
+		return patternsUser.concat(patternsSystem).concat(patternsTemp);
 	},
 	getNameForId: function(id) {
 		var pattern = _.find(this.getAllPatterns(), {id: id});
@@ -248,40 +249,84 @@ var PatternsService = {
 		return false;
 	},
 
-	/** Play a pattern. Returns false if pattern doesn't exist. Notifys change listeners */
+	/**
+	 * Play a pattern. Returns false if pattern doesn't exist. Notifys change listeners
+	 *
+	 // special meta-pattern
+	 // - #hexcolor
+	 // - ~off
+	 // - ~blink-white-3
+	 // - ~blink-#ff00ff-5
+	 // - ~pattern:3,#ff00ff,0.5,0,#00ff00,1.3,0
+	*/
 	playPattern: function(id) {
+		log.msg("PatternsService.playPattern: id=",id, "patternsTemp:",patternsTemp);
+		var patternstr;
+		// var pattname;
+		var patt;
 		if( id.startsWith('#') ) { // color
 			Blink1Service.fadeToColor(100, id, 0 );
 			return true;
 		}
 		if( id.startsWith('~') ) { // special meta-pattern
+			var blinkre = /~blink-(#*\w+)-(\d+)/;
 			if( id === '~off') {
 				log.msg("PatternsService: playing special '~off' pattern");
 				PatternsService.stopAllPatterns();
 				Blink1Service.fadeToColor( 300, '#000000', 0 );
 				return true;
 			}
-			else if( id.startsWith('~pattern:') ) {
-				var patternstr = id.substring(id.lastIndexOf(':')+1);
-				var pattname = id.substring(id.indexOf(':')+1,id.lastIndexOf(':'));
-				if( pattname===':' ) { pattname = 'temp-'+utils.cheapUid(4);} // if parsing failed, use temp name
-				var patt = _parsePatternStr(patternstr);
-				patt.name = pattname;
-				log.msg("PatternsService: would play temp pattern:",patt);
+			else if( blinkre.test( id ) ) {
+				var match = blinkre.exec( id );
+				var colorstr = match[1];
+				var count = match[2];
+				var c = tinycolor(colorstr);  // FIXME: how does tinycolor fail?
+				// log.msg("matcher:", colorstr, count, c );
+				patternstr = count + ',' + c.toHexString() + ',0.5,0,#000000,0.5,0';
+				patt = _parsePatternStr(patternstr);
+				patt.name = id.substring(1); //'temp-'+utils.cheapUid(4); // if parsing failed, use temp name
+				patt.id = patt.name;
+				patt.temp = true; // FIXME: hmmm
+				patternsTemp.push( patt ); // save temp pattern
+				id = patt.id;
+				// PatternsService.playPattern(patternstr);
+				// return true;
+			}
+			else if( id.startsWith('~pattern:') ) { // FIXME: use regex yo
+				patternstr = id.substring(id.lastIndexOf(':')+1);
+				// pattname = id.substring(id.indexOf(':')+1,id.lastIndexOf(':'));
+				// if( pattname===':' ) { pattname = 'temp-'+utils.cheapUid(4);} // if parsing failed, use temp name
+				patt = _parsePatternStr(patternstr);
+				patt.name = id.substring(9); // 'temp-'+utils.cheapUid(4);  // FIXME:
+				patt.id = patt.name;
+				patt.temp = true; // FIXME: hmmm
+				patternsTemp.push( patt ); // save temp pattern
+				id = patt.id;
+				// log.msg("PatternsService: playing temp pattern:",patt);
+				//PatternsService.playPattern( patt ); // FIXME: hmmm
+			}
+			else {
+				return false;
 			}
 			// } else if( id === '!stop' ) {
 			// }
 			// var tc = tinycolor(id);
 			// if( tinycolor(id) ) { // if 'id' is a hex color
 			// }
-			return false;
 		}
+		// FIXME: meta: this function is doing too many things
 
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		if( !pattern ) {  // check for special built-in patterns
-			log.msg("PatternsService: no normal pattern:", id);
-			return false;  // FIXME: return error?
+			pattern = _.find( patternsTemp, {id:id} );
+			if( !pattern ) {
+				log.msg("PatternsService: no pattern with id:", id);
+				return false;  // FIXME: return error?
+			}
 		}
+		log.msg("PatternsService.playPattern: okay got pattern",pattern);
+		// otherwise, treat 'id' as a pattern object
+
 		if( pattern.playing ) {
 			clearTimeout(pattern.timer);
 		}
@@ -296,6 +341,9 @@ var PatternsService = {
 
 	_playPatternInternal: function(id, callback) {
 		var pattern = _.find(this.getAllPatterns(), {id: id});
+		if( !pattern ) {
+			pattern = _.find( patternsTemp, {id:id});
+		}
 		var color = pattern.colors[pattern.playpos];
 		var rgb = color.rgb;
 		var millis = color.time * 1000;
@@ -312,6 +360,9 @@ var PatternsService = {
 			if( pattern.playcount === pattern.repeats ) {
 				this.stopPattern(playingPatternId); // notifies change listeners
 				if( callback ) { callback(); }  // FIXME: why do this and not notify change?
+				if( pattern.temp ) {   // remove temp pattern after its done
+					_.remove( patternsTemp, {id:pattern.id} );
+				}
 				return;
 			}
 		}
@@ -334,7 +385,7 @@ var PatternsService = {
 		// console.log("PatternsService: addChangelistener", listeners );
 	},
 	removeChangeListener: function(callername) {
-		delete listeners[callername];
+		delete listeners[callername]; /// FIXME: leaves 'undefined' in array
 		console.log("PatternsService: removeChangelistener", listeners );
 	},
 	notifyChange: function() {
