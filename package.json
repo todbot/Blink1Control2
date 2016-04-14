@@ -3,8 +3,8 @@
   "productName": "Blink1Control",
   "author": "ThingM",
   "companyName": "ThingM",
-  "version": "0.1.0",
-  "description": "Blink1Control implemented in ElectronJs, NodeJs, ReactJs",
+  "version": "2.0.0-pre1",
+  "description": "Blink1Control implemented in ElectronJs, NodeJs, & ReactJs",
   "main": "src/main.js",
   "homepage": "http://github.com/todbot/blink1control2",
   "bugs": {
