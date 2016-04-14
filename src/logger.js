@@ -27,6 +27,7 @@ var listeners = [];
 var ignoredSources = [
    /IftttService/i,
    /PatternView/i,
+   /PatternList/i,
    /Blink1ColorPicker/i
     // /ScriptService/
 ];

@@ -87,6 +87,9 @@ var MailService = {
 					if( result.type === 'result' ) { // FIXME
 						PatternsService.playPattern( rule.patternId );
 					}
+					else if( result.type === 'off' ) {
+						PatternsService.stopPattern( rule.patternId );
+					}
 				}
 			});
 		});

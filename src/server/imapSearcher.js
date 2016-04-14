@@ -1,6 +1,6 @@
 "use strict";
 
-// var _ = require('lodash');
+var _ = require('lodash');
 
 var Imap = require('imap');
 var simplecrypt = require('simplecrypt');
@@ -37,8 +37,8 @@ function ImapSearcher(config, callback) {
     //   { name:'george', triggerType:'subject', triggerVal:'fred'}]
     self.triggerType = config.triggerType; //
     self.triggerVal = config.triggerVal; // FIXME
+    self.triggerOff = config.triggerOff;
     self.patternId = config.patternId;
-    self.patternOffId = config.patternOffId;
     self.startdate = Date.now();
     self.lastSeenId = 0; // FIXME: notused
     self.lastResults = [];
@@ -85,11 +85,18 @@ function ImapSearcher(config, callback) {
                 self.callback({id:self.id, type:'error', message:err.message}); // FIXME
                 throw err;
             }
-            log.msg('ImapSearcher: box', box);
-            self.callback( makeMessage( self.id, 'info', 'connected') );
-            self.imap.on('update', function( seqno, info) {
-                log.msg("ImapSearcher.onupdate:", seqno, info);
+            self.lastMsgId = box.uidnext;
+            self.lastResults = [box.uidnext]; // hmmm
+            log.msg('ImapSearcher: lastMsgId:',box.uidnext,' box', box);
+            // self.callback( makeMessage( self.id, 'info', 'connected') ); // FIXME
+            self.searchMail();
 
+            self.imap.on('update', function( seqno, info) {
+                log.msg("ImapSearcher.onupdate:", seqno, info.flags, info);
+                if( info.flags[0] === "\\Seen" ) {
+                    _.remove( self.lastResults, seqno );
+                    log.msg("ImapSearcher.update SEEEN, lastResults:",self.lastResults);
+                }
             });
             self.imap.on('expunge', function( seqno ) {
                 log.msg("ImapSearcher.onexpunge:", seqno);
@@ -114,19 +121,25 @@ ImapSearcher.prototype.searchMail = function(arg) {
                 throw err;
             }
             log.msg("ImapSearcher: search results:", results, "last:",self.lastResults);
-            // we have search results and bigger than last time
-            if( results.length > 0 ) {
-                if( results.length > self.lastResults.length ) {
+
+            if( results.length > 0 ) { // we have search results
+                // count those w/ higher msg id than last time
+                var lastMax = _.max(self.lastResults);
+                var newMax  = _.max(results);
+                if( newMax > lastMax ) {
+                // if( results.length > self.lastResults.length ) {
                     // PatternsService.playPattern( self.patternId );
                     self.callback( makeMessage( self.id, 'result', self.triggerVal) );
-                } // else do nothing
-            }
-            else { // zero results
-                if( self.patternOffId  && self.lastResults.length > 0 ) {
-                    // PatternsService.playPattern( self.patternOffId );
                 }
             }
-            self.lastResults = results;
+            else { // zero results
+                if( self.triggerOff && self.lastResults.length > 0 ) {
+                    // PatternsService.stopPattern( self.patternId );
+                    self.callback( makeMessage( self.id, 'off', self.triggerVal) );
+                }
+            }
+            self.lastResults = _.union(self.lastResults, results).sort();
+            log.msg("ImapSearcher: search lastResults:", self.lastResults);
         }); // search
     }
     else if( self.triggerType === 'sender' ) {
