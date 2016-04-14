@@ -35,7 +35,7 @@ var PreferencesModal = React.createClass({
             startAtLogin:    conf.readSettings('startup:startAtLogin') || false,
             startupPattern:  conf.readSettings('startup:startupPattern') || "",
             enableGamma:     conf.readSettings('blink1Service:enableGamma') || true,
-            apiServerEnable: conf.readSettings('apiServer:enable') || false,
+            apiServerEnable: conf.readSettings('apiServer:enabled') || false,
             apiServerPort:   conf.readSettings('apiServer:port') || 8934,
             apiServerHost:   conf.readSettings('apiServer:host') || 'localhost',
             proxyEnable: false,
@@ -46,20 +46,19 @@ var PreferencesModal = React.createClass({
             patterns: PatternsService.getAllPatterns(),
             blink1ToUse:     conf.readSettings('blink1Service:blink1ToUse') || 0, // 0 == use first avail
             blink1Serials: Blink1Service.getAllSerials(),
-            // blink1Serials: ['2012ABCD', '20229999'],
             patternId: 'whiteflashes'
         };
     },
     // FIXME: why am I doing this?
-    componentWillReceiveProps: function(nextProps) {
-		// this.setState({ name: nextProps.rule.name, patternId: nextProps.rule.patternId }); // FIXME: why
-	},
+    // componentWillReceiveProps: function(nextProps) {
+	// 	// this.setState({ name: nextProps.rule.name, patternId: nextProps.rule.patternId }); // FIXME: why
+	// },
     saveSettings: function() {
         conf.saveSettings('startup:startMinimized', this.state.startMinimized);
         conf.saveSettings('startup:startAtLogin', this.state.startAtLogin);
         conf.saveSettings('blink1Service:enableGamma', this.state.enableGamma);
         conf.saveSettings('blink1Service:blink1ToUse', this.state.blink1ToUse);
-        conf.saveSettings('apiServer:enable', this.state.apiServerEnable);
+        conf.saveSettings('apiServer:enabled', this.state.apiServerEnable);
         conf.saveSettings('apiServer:port', this.state.apiServerPort);
         conf.saveSettings('apiServer:host', this.state.apiServerHost);
         Blink1Service.reloadConfig();
@@ -102,6 +101,10 @@ var PreferencesModal = React.createClass({
             console.log("setting pattern");
         }
     },
+    handleApiServerHostChoice: function(e) {
+        var choice = e.target.value;
+        this.setState({apiServerHost: choice});
+    },
     handleBlink1NonComputerSet: function() {
         console.log("SET!!");
     },
@@ -115,7 +118,7 @@ var PreferencesModal = React.createClass({
         };
         return (
         <div>
-            <Modal show={this.props.show} onHide={this.close} >
+            <Modal show={this.props.show} onHide={this.close} bsSize="large">
                 <Modal.Header>
                     <Modal.Title style={{fontSize:"95%"}}>Preferences</Modal.Title>
                 </Modal.Header>
@@ -123,7 +126,7 @@ var PreferencesModal = React.createClass({
                     <p style={{color: "#f00"}}>{this.state.errormsg}</p>
                     <p></p>
                         <Row>
-                        <Col md={6}>
+                        <Col md={4}>
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>
                                 <h5><u> General </u></h5>
                                 <form className="form-horizontal">
@@ -143,8 +146,82 @@ var PreferencesModal = React.createClass({
                                     <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                                       type="number" label="port" placeholder=""
                                       valueLink={this.linkState('apiServerPort')} />
+                                    <Row className="form-group form-group-sm">
+                                        <Col xs={3} className="control-label">
+                                        <label> host</label>
+                                        </Col><Col xs={4}>
+                                        <Input type="radio" label="localhost" value="localhost"
+                                            checked={this.state.apiServerHost==='localhost'}
+                                            onChange={this.handleApiServerHostChoice}
+                                            wrapperClassName="col-xs-offset-1 col-xs-12" bsSize="small" />
+                                        </Col><Col xs={4}>
+                                        <Input type="radio" label="any" value="any"
+                                            checked={this.state.apiServerHost==='any'}
+                                            onChange={this.handleApiServerHostChoice}
+                                            wrapperClassName="col-xs-offset-1 col-xs-12" bsSize="small"/>
+                                        </Col>
+                                    </Row>
                                 </form>
                             </div>
+                        </Col>
+                        <Col md={4}>
+                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
+                                <h5><u> blink(1) device to use </u></h5>
+                                    <form className="form-horizontal">
+                                        <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
+                                            type="radio" label="First available"  value="first"
+                                            checked={this.state.blink1ToUse===0}
+                                            onChange={this.handleBlink1SerialChoice} />
+                                        <Row><Col xs={6}>
+                                            <Input labelClassName="col-xs-" wrapperClassName="col-xs-12" bsSize="small"
+                                                type="radio" label="Use device:" value="serial"
+                                                checked={this.state.blink1ToUse!==0}
+                                                onChange={this.handleBlink1SerialChoice} />
+                                        </Col><Col xs={6}>
+                                            <Input labelClassName="col-xs-1" wrapperClassName="col-xs-11" bsSize="small"
+                                                type="select" label="" width={7}
+                                                valueLink={this.linkState('blink1ToUse')} >
+                                                {this.state.blink1Serials.map( createBlink1SerialOption, this )}
+                                            </Input>
+                                    </Col></Row>
+                                    </form>
+                            </div>
+                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
+                                <h5><u> blink(1) nightlight mode </u></h5>
+
+                                    <form className="form-horizontal">
+                                        <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
+                                            type="radio" label="Off / Dark" value="off"
+                                            checked={this.state.blink1NonComputer==='off'}
+                                            onChange={this.handleBlink1NonComputerChoice} />
+                                        <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
+                                            type="radio" label="Default pattern" value="default"
+                                            checked={this.state.blink1NonComputer==='default'}
+                                            onChange={this.handleBlink1NonComputerChoice} />
+                                        <Row>
+                                            <Col xs={4}>
+                                        <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
+                                            type="radio" label="Play:" value="pattern"
+                                            checked={this.state.blink1NonComputer==='pattern'}
+                                            onChange={this.handleBlink1NonComputerChoice} />
+                                    </Col><Col xs={8}>
+                                        <Input labelClassName="col-xs-1" wrapperClassName="col-xs-8" bsSize="small"
+                                            type="select" label=""
+                                            valueLink={this.linkState('patternId')} >
+                                            {this.state.patterns.map( createPatternOption, this )}
+                                        </Input>
+                                    </Col></Row>
+                                        <Row>
+                                            <Col xs={1}></Col>
+                                            <Col xs={2}>
+                                                <ButtonInput bsSize="small" value="Set" onClick={this.handleBlink1NonComputerSet} />
+                                            </Col>
+                                        </Row>
+                                    </form>
+
+                            </div>
+                        </Col>
+                        <Col md={4}>
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>
                                 <h5><u> Proxy configuration </u></h5>
                                 <form className="form-horizontal">
@@ -163,53 +240,6 @@ var PreferencesModal = React.createClass({
                                         type="text" label="password" placeholder=""
                                         valueLink={this.linkState('proxyPass')} />
                                 </form>
-                            </div>
-                        </Col>
-                        <Col md={6}>
-                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
-                                <h5><u> blink(1) device to use </u></h5>
-                                    <form className="form-horizontal">
-                                        <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12"
-                                            type="radio" label="First available"  value="first"
-                                            checked={this.state.blink1ToUse===0}
-                                            onChange={this.handleBlink1SerialChoice} />
-                                        <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12"
-                                            type="radio" label="Use device id:"  value="serial"
-                                            checked={this.state.blink1ToUse!==0}
-                                            onChange={this.handleBlink1SerialChoice} />
-                                        <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
-                                            type="select" label="" width={7}
-                                            valueLink={this.linkState('blink1ToUse')} >
-                                            {this.state.blink1Serials.map( createBlink1SerialOption, this )}
-                                        </Input>
-                                    </form>
-                            </div>
-                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
-                                <h5><u> blink(1) nightlight mode </u></h5>
-
-                                    <form className="form-horizontal">
-                                        <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12"
-                                            type="radio" label="Off / Dark" value="off"
-                                            checked={this.state.blink1NonComputer==='off'}
-                                            onChange={this.handleBlink1NonComputerChoice} />
-                                        <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12"
-                                            type="radio" label="Default pattern" value="default"
-                                            checked={this.state.blink1NonComputer==='default'}
-                                            onChange={this.handleBlink1NonComputerChoice}  />
-                                        <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12"
-                                            type="radio" label="Play pattern:" value="pattern"
-                                            checked={this.state.blink1NonComputer==='pattern'}
-                                            onChange={this.handleBlink1NonComputerChoice} />
-                                        <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
-                                            type="select" label=""
-                                            valueLink={this.linkState('patternId')} >
-                                            {this.state.patterns.map( createPatternOption, this )}
-                                        </Input>
-
-                                        <ButtonInput bsSize="small" value="Set" onClick={this.handleBlink1NonComputerSet} />
-
-                                    </form>
-
                             </div>
 
                         </Col>
