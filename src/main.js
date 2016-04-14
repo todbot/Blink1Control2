@@ -142,7 +142,6 @@ app.on('ready', function () {
 			click: function(menuItem) {
 				config.saveSettings('apiServer:enabled', menuItem.checked);
 				mainWindow.webContents.send('reloadConfig', 'apiServer');
-
 			},
 			type: 'checkbox',
 			checked: config.readSettings('apiServer:enabled')
