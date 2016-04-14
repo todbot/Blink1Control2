@@ -13,6 +13,10 @@ require('../node_modules/react-bootstrap-switch/dist/css/bootstrap3/react-bootst
 var React = require('react');
 var ReactDOM = require('react-dom');
 
+// var remote = require('electron').remote;
+// var BrowserWindow = remote.BrowserWindow;
+var ipcRenderer = require('electron').ipcRenderer;
+
 // TESTING BEGIN
 // var express      = require('express');
 // var appsrv = express();
@@ -41,7 +45,7 @@ var ReactDOM = require('react-dom');
 // TESTING END
 
 // maybe this goes in another file?
-var apiServer = require('./server/apiServer');
+var ApiServer = require('./server/apiServer');
 var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
 var IftttService = require('./server/iftttService');
@@ -49,7 +53,7 @@ var MailService = require('./server/mailService');
 var SkypeService = require('./server/skypeService');
 var ScriptService = require('./server/scriptService');
 
-apiServer.start();
+ApiServer.start();
 Blink1Service.start();
 PatternsService.initialize();
 IftttService.start();
@@ -57,7 +61,18 @@ MailService.start();
 SkypeService.start();
 ScriptService.start();
 
-//
+
+ipcRenderer.on('reloadConfig', function( event,arg ) {
+    console.log("RELOAD CONFIG  ...  ",arg);
+    if( arg === 'apiServer' ) {
+        console.log("apiserver reload ");
+        ApiServer.reloadConfig();
+    }
+
+});
+
+
+// do startup script
 var laterfunc = function() {
     var conf = require('./configuration');
     var startupConf = conf.readSettings('startup');
@@ -69,6 +84,7 @@ var laterfunc = function() {
 setTimeout( laterfunc, 1000 );
 
 
+
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 
 var App = React.createClass({
@@ -76,16 +92,17 @@ var App = React.createClass({
     return (
 		// <div className="container-fluid">
 			<Blink1ControlView />
-        // </div>
     );
   }
 });
 
 // window.onbeforeunload = function(e) {
-//     // console.log('I do not want to be closed');
-// apiServer.stop();
-//   Blink1Service.closeAll(); // FIXME: this causes coredump
-//     return true;
+//     console.log('I do not want to be closed',e);
+//     // e.returnValue = false;
+//     // BrowserWindow.getFocusedWindow().hide();
+//     // apiServer.stop();
+//     //   Blink1Service.closeAll(); // FIXME: this causes coredump
+//     //     return true;
 // };
 
 ReactDOM.render( <App />, document.getElementById('app'));

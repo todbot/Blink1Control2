@@ -2,20 +2,16 @@
 
 var electron = require('electron');
 var app = electron.app;
-// var app = require('app');
+
 var BrowserWindow = require('browser-window');
-// var Tray = require('tray');
-// var Menu = require('menu');
-// var path = require('path');
+var Tray = require('tray');
+var Menu = require('menu');
+var path = require('path');
 // var runtime = require('./src/core/runtime');
 // var appMenu = require('./src/core/app-menu');
 
-// var config = require('./configuration');
+var config = require('./configuration');
 
-//var flux = require('./server/fluxtest');
-
-// electron-connect is for development
-//var client = require('electron-connect').client;
 require('crash-reporter').start({
 	productName: 'Blink1Control2',
 	companyName: 'ThingM',
@@ -28,25 +24,26 @@ require('crash-reporter').start({
 // mods.load(runtime);
 
 var mainWindow = null;
+var appIcon = null;
+
 // var menu = null;
-
-//var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
-//var appIcon = null;
-
+// var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
+// var appIcon = null;
+//
 // var configInit = function() {
 // 	// if (!configuration.readSettings('shortcutKeys')) {
-//	 //	 configuration.saveSettings('shortcutKeys', ['ctrl', 'shift']);
-//	 // }
+// 	 //	 configuration.saveSettings('shortcutKeys', ['ctrl', 'shift']);
+// 	 // }
 // 	if (!configuration.readSettings('shortcutKeys')) {
-//		 configuration.saveSettings('shortcutKeys', ['ctrl', 'shift']);
-//	 }
+// 		 configuration.saveSettings('shortcutKeys', ['ctrl', 'shift']);
+// 	 }
 // };
+var isQuitting = false;
 
 var quit = function() {
 	console.log("quitting...");
-	// FIXME: put in blink1 & usb-detection closedown
+	isQuitting = true;
 	app.quit();
-
 };
 
 app.on('window-all-closed', function () {
@@ -56,7 +53,7 @@ app.on('window-all-closed', function () {
 	}
 });
 
-var globalShortcut = electron.globalShortcut;
+// var globalShortcut = electron.globalShortcut;
 
 app.on('ready', function () {
 
@@ -65,15 +62,15 @@ app.on('ready', function () {
     //   console.log('ctrl+x is pressed');
     // });
 	//
-    // if (!ret) {
-    //   console.log('registration failed');
-    // }
+    // if (!ret) { console.log('registration failed');  }
 	//
     // // Check whether a shortcut is registered.
     // console.log(globalShortcut.isRegistered('ctrl+x'));
 
 	if( process.env.NODE_ENV === 'development' ) {
 		mainWindow = new BrowserWindow({
+			// closable: false,
+			maximizable: false,
 			width: 1040,
 			height: 900
 		});
@@ -93,14 +90,22 @@ app.on('ready', function () {
     }
 
 	// mainWindow.setMenu(null);  // remove default menu
-	mainWindow.on('close', function () {
+	mainWindow.on('close', function (e) {
 		console.log("mainWindow will close");
+		if( !isQuitting ) {
+			mainWindow.hide();
+			return e.preventDefault();
+		}
 	});
 
 	mainWindow.on('closed', function () {
 		console.log("mainWindow is now closed");
 		quit();
 		mainWindow = null;
+	});
+	mainWindow.on('minimize', function() {
+		console.log("mainWindow minimize");
+		mainWindow.hide();
 	});
 	mainWindow.webContents.on('new-window', function(e, url) {
 		console.log("HEY THERE EVERYONE");
@@ -112,8 +117,87 @@ app.on('ready', function () {
 		console.log("app will-quit");
 
 	});
+
+	appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px.png') );
+	var contextMenuTemplate = [
+		{
+			label: 'About Blink1Control2',
+			click: function() { console.log("About...");}
+		},
+		{ type: "separator" },
+		{
+			label: 'Start minimized',
+			click: function(menuItem) {	config.saveSettings('startup:startMinimized', menuItem.checked); },
+			type: 'checkbox',
+			checked: config.readSettings('startup:startMinimized')
+		},
+		{
+			label: 'Start at login',
+			click: function(menuItem) {	config.saveSettings('startup:startAtLogin', menuItem.checked); },
+			type: 'checkbox',
+			checked: config.readSettings('startup:startAtLogin')
+		},
+		{
+			label: 'Enable API server',
+			click: function(menuItem) {
+				config.saveSettings('apiServer:enabled', menuItem.checked);
+				mainWindow.webContents.send('reloadConfig', 'apiServer');
+
+			},
+			type: 'checkbox',
+			checked: config.readSettings('apiServer:enabled')
+		},
+		{ type: "separator" },
+		{	label: 'Reload',
+			// icon: trayIconPath,
+			click: function() {  mainWindow.reload(); }
+			//accelerator: 'Command+Z'
+		},
+		{	label: 'Show/Hide',
+			click: function() {	if( mainWindow.isVisible() ) { mainWindow.hide(); } else { mainWindow.show(); } }
+		},
+		{	label: 'Reset',  // Note: only works when DevTools is hiddden, else Cmd-r reloads
+			accelerator: 'CommandOrControl+R',
+			// accelerator: 'CmdOrCtrl+R',
+			click: function() { console.log("RESET!!!"); }
+		},
+		{	label: 'Toggle DevTools',
+			accelerator: 'Alt+Command+I',
+			click: function() {
+				mainWindow.show();
+				mainWindow.toggleDevTools();
+			}
+		},
+		{	label: 'Quit',
+			accelerator: 'CommandOrControl+Q',
+			//selector: 'terminate:',
+			click: function() { quit(); }
+		}
+	];
+	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
+
+	appIcon.setToolTip('Blink1Control2 is running...');
+	appIcon.setContextMenu(contextMenu);
+
+	var template = [
+		{	label: "Blink1Control",
+			submenu: [
+				{ label: "About Blink1Control", selector: "orderFrontStandardAboutPanel:" },
+				{ type: "separator" },
+				{ label: "Quit", accelerator: "CommandOrControl+Q", click: function() { quit(); }}
+			]
+		},
+		{ label: "View",
+			submenu: contextMenuTemplate
+		}
+	];
+	Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+
+
 	mainWindow.focus();
 });
+
+
 
 /*
 	appIcon = new Tray(trayIconPath);
