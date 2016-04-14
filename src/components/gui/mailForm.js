@@ -45,12 +45,13 @@ var MailForm = React.createClass({
             actionType: 'play-pattern',
             triggerType: rule.triggerType || 'unread',
             triggerVal: rule.triggerVal || '1' ,
+            triggerOff: false, // FIXME: this is for "turn off alert when no new email" feature
             errormsg: ''
         });
     },
 
     handleClose: function() {
-        console.log("CLOSING: state=",this.state);
+        // console.log("CLOSING: state=",this.state);
         if( !this.state.mailtype ) {
             this.setState({errormsg: "mailtype not set!"});
             return;
@@ -66,12 +67,12 @@ var MailForm = React.createClass({
         this.props.onSave(this.state);
     },
     onTriggerTypeClick: function(evt) {
-        log.msg("mailForm.onTriggerClick ",evt.target.value,evt);
+        log.msg("mailForm.onTriggerClick ",evt.target.value);//,evt);
         this.setState({triggerType: evt.target.value});
     },
     onTriggerValClick: function(evt) {
-        log.msg("mailForm.onTriggerClick ",evt.target.value,evt);
-        this.setState({triggerVal: evt.target.value});
+        log.msg("mailForm.onTriggerClick ",evt.target.value, evt.target.name);
+        this.setState({triggerVal: evt.target.value, triggerType: evt.target.name});
     },
     render: function() {
         var self = this;
@@ -90,10 +91,10 @@ var MailForm = React.createClass({
                     <form className="form-horizontal" >
                         <Row>
                         <Col xs={6}>
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
+                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                                 type="text" label="Name" placeholder="Enter text"
                                 valueLink={this.linkState('name')} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
+                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-4" bsSize="small"
                                 type="select" label="Account type" placeholder="IMAP"
                                 valueLink={this.linkState('mailtype')} >
                                 <option value="IMAP">IMAP</option>
@@ -121,27 +122,27 @@ var MailForm = React.createClass({
                                 </Col>
                             </Row>
                         </Col>
-                        <Col xs={6} style={{border:'1px solid red'}}>
+                        <Col xs={6} >
 
                             <span><b> Blink when: </b></span>
 
-                            <Input labelClassName="col-xs-5" wrapperClassName="col-xs-6" bsSize="small"
+                            <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
                                 style={{}}
                                 type="number" label="Unread email count >="
                                 value={this.state.triggerType==='unread' ? this.state.triggerVal : ''}
-                                onChange={this.onTriggerValClick}
+                                onChange={this.onTriggerValClick} name="unread"
                                 addonBefore={<input type="radio" value='unread'
                                 checked={this.state.triggerType==='unread'} onChange={this.onTriggerTypeClick} />} />
 
-                            <Input labelClassName="col-xs-4" wrapperClassName="col-xs-5" bsSize="small"
-                                type="text" label="Subject contains"
+                            <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
+                                type="text" label="Subject contains" name="subject"
                                 value={this.state.triggerType==='subject' ? this.state.triggerVal : ''}
                                 onChange={this.onTriggerValClick}
                                 addonBefore={<input type="radio" value='subject'
                                 checked={this.state.triggerType==='subject'} onChange={this.onTriggerTypeClick}/>} />
 
-                            <Input labelClassName="col-xs-4" wrapperClassName="col-xs-5" bsSize="small"
-                                type="text" label="Sender contains"
+                            <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
+                                type="text" label="Sender contains" name="sender"
                                 value={this.state.triggerType==='sender' ? this.state.triggerVal : ''}
                                 onChange={this.onTriggerValClick}
                                 addonBefore={<input type="radio" value='sender'
@@ -149,11 +150,15 @@ var MailForm = React.createClass({
 
                             <span><b> Play Pattern: </b></span>
 
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
+                            <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
                                 type="select" label="Pattern"
                                 valueLink={this.linkState('patternId')} >
                                 {patterns.map( createPatternOption, this )}
                             </Input>
+
+                            <Input labelClassName="col-xs-10" wrapperClassName="col-xs-offset-4 col-xs-8" bsSize="small"
+                                type="checkbox" label="Turn pattern off when done"
+                                checkedLink={this.linkState('triggerOff')} />
 
                         </Col>
                         </Row>

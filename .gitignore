@@ -3,6 +3,7 @@
 
 # build products from browserify (and maybe webpack?)
 dist
+build
 
 # Logs
 logs
