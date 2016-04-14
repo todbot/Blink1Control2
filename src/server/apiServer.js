@@ -19,7 +19,7 @@ app.use(myLogger);
 
 
 app.get('/', function (req, res) {
-	res.send('Blink1Control2 API server');
+	res.send("Blink1Control2 API server\n\n");
 });
 app.get('/blink1(/id)?', function(req,res) {
 	res.json({
@@ -112,6 +112,11 @@ var apiServer = {
 	// 	// config.saveSettings("apiServer:host", 'localhost');
 	// },
 
+    reloadConfig: function() {
+        this.stop();
+        this.start();
+    },
+
 	start: function() {
         this.config = config.readSettings('apiServer');
         if( !this.config ) { // if no config, make sensible defaults & save them
@@ -125,7 +130,13 @@ var apiServer = {
 			return;
 		}
         var port = this.config.port || 8934;
-		this.server = app.listen( port );
+        var host = this.config.host || 'localhost';
+        if( host === 'any' ) {
+            this.server = app.listen(port);
+        }
+        else {
+		    this.server = app.listen( port, host );
+        }
 	},
 
 	stop: function() {
