@@ -137,6 +137,12 @@ var PatternsService = {
 		// return patternsUser.concat(patternsSystem); //_clone(patterns);
 		return patternsUser.concat(patternsSystem).concat(patternsTemp);
 	},
+	getIdForName: function(name) {
+		if( name.startsWith('~') ) { return name; } // assume special names map to ids
+		var pattern = _.find(this.getAllPatterns(), {name: name});
+		if(!pattern) { return ""; }
+		return pattern.id;
+	},
 	getNameForId: function(id) {
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		if( !pattern ) { return ""; }
@@ -193,7 +199,7 @@ var PatternsService = {
 	/** Create a minimal pattern and return it. Does NOT insert into patterns array */
 	newPattern: function(name, color) {
 		if( !name ) {
-			name = 'new pattern ' + patternsUser.length;
+			name = 'pattern ' + patternsUser.length;
 			color = '#55ff00';
 		}
 		var color2 = '#000000';

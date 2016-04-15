@@ -63,12 +63,14 @@ ScriptService.start();
 
 
 ipcRenderer.on('reloadConfig', function( event,arg ) {
-    console.log("RELOAD CONFIG  ...  ",arg);
+    console.log("RELOAD CONFIG ... ",arg);
     if( arg === 'apiServer' ) {
-        console.log("apiserver reload ");
         ApiServer.reloadConfig();
     }
-
+});
+ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {
+    PatternsService.stopAllPatterns();
+    Blink1Service.off();
 });
 
 
@@ -95,14 +97,5 @@ var App = React.createClass({
     );
   }
 });
-
-// window.onbeforeunload = function(e) {
-//     console.log('I do not want to be closed',e);
-//     // e.returnValue = false;
-//     // BrowserWindow.getFocusedWindow().hide();
-//     // apiServer.stop();
-//     //   Blink1Service.closeAll(); // FIXME: this causes coredump
-//     //     return true;
-// };
 
 ReactDOM.render( <App />, document.getElementById('app'));

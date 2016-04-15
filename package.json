@@ -46,6 +46,7 @@
     "tinycolor2": "^1.3.0"
   },
   "devDependencies": {
+    "auto-launch": "^2.0.1",
     "babel": "^6.3.26",
     "babel-core": "^6.4.5",
     "babel-loader": "^6.2.1",
