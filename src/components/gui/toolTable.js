@@ -46,12 +46,26 @@ var example_rules = [
 	}
 ];
 
+// var eventSources = [];
 var ToolTable = React.createClass({
 	// propTypes: {
 	// 	//events: React.PropTypes.array.isRequired,
 	// 	//onClear: React.PropTypes.func.isRequired
 	// },
 	getInitialState: function() {
+		// Imagine:
+		//  "eventSources": [
+		//         { "name": "ifttt", "enabled": true },
+		//         { "name": "mail", "enabled": true },
+		//         { "name": "script", "enabled": true },
+		//         { "name": "skype", "enabled": true },
+		//     ]
+		//   },
+		// eventSources = conf.readSettings('eventSources');
+		// eventSources.map( function(source) {
+		// 	source.form = require('./'+source.name+'Form.js');
+		// FIXME: what about 'script' vs 'url' vs 'file'?
+		// });
 		var rules = conf.readSettings('eventRules');
         if( !rules || rules.length===0 ) {
 			log.msg("ToolTable.getInitialState: no rules, using examples");
@@ -179,7 +193,8 @@ var ToolTable = React.createClass({
                 desc = rule.type + ':' + rule.name;
             }
             else if( rule.type === 'mail' ) {
-                desc = rule.username +':'+rule.triggerType+':'+rule.triggerVal;
+                // desc = MailForm.getDescription(rule); // FIXME: this doesnt work
+				desc = rule.username +':'+rule.triggerType+':'+rule.triggerVal;
             }
 			else if( rule.type === 'script' ) {
                 desc = rule.intervalSecs +'s:' + rule.filepath;
@@ -292,12 +307,12 @@ var ToolTable = React.createClass({
 				</div>
 				<div style={{position: "absolute", bottom: 0}}>
 					<DropdownButton bsSize="small" bsStyle="primary" onSelect={this.handleAddRule} id="addRule" title={<span><i className="fa fa-plus"></i> add event source</span>}>
-						<MenuItem eventKey="ifttt">Add IFTTT</MenuItem>
-						<MenuItem eventKey="mail">Add Mail</MenuItem>
-						<MenuItem eventKey="script">Add Script</MenuItem>
-						<MenuItem eventKey="url">Add URL</MenuItem>
-						<MenuItem eventKey="file">Add File</MenuItem>
-						<MenuItem eventKey="skype">Add Skype</MenuItem>
+						<MenuItem eventKey="ifttt"><img width={15} height={15} src="images/ifttt.png" /> Add IFTTT </MenuItem>
+						<MenuItem eventKey="mail"><i className="fa fa-envelope"></i> Add Mail </MenuItem>
+						<MenuItem eventKey="script"><i className="fa fa-code"></i> Add Script</MenuItem>
+						<MenuItem eventKey="url"><i className="fa fa-cloud"></i> Add URL</MenuItem>
+						<MenuItem eventKey="file"><i className="fa fa-file"></i> Add File</MenuItem>
+						<MenuItem eventKey="skype"><i className="fa fa-skype"></i> Add Skype</MenuItem>
 					</DropdownButton>
 				</div>
 			</div>
