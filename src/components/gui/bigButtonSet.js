@@ -101,6 +101,9 @@ var BigButtonSet = React.createClass({
             else if( butt.name === "Color Cycle" ) {
                 Blink1Service.colorCycleStart();
             }
+            else if( butt.name === "Strobe Light" ) {
+                PatternsService.playPattern( '~blink-white-0' );
+            }
 		}
 		else if( buttontype === 'color' ) {
             console.log("buttontype color");
