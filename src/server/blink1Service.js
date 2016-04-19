@@ -22,8 +22,12 @@ var util = require('../utils');
 // globals because we are a singleton
 var listeners = {};
 var blink1serials = []; // no, use hash? Blink1.devices();
+// var blink1s =  // all blink1s
+// [
+// 	{serial:'', device:null},
+// ];
 
-var blink1 = null;
+var blink1 = null; // the main currently-open blink1
 var blink1OpenedSerial;
 // var blink1Vid = 0x27B8;
 // var blink1Pid = 0x01ED;
@@ -58,7 +62,7 @@ var Blink1Service = {
 	scanForDevices: function() {
 		log.msg("Blink1Service","blink1serials:", blink1serials);
 		// initial population of any already-plugged in devices
-		this.conf = config.readSettings('blink1Service');
+		this.conf = config.readSettings('blink1Service') || {};
 		var serials = Blink1.devices();
 		serials.map( function(s) {
 			Blink1Service._addDevice(s);
@@ -99,7 +103,7 @@ var Blink1Service = {
 	},
 	// FIXME:
 	closeAll: function() {
-		log.msg("Blink1Service","closeAll WHO CALLS THIS");
+		log.msg("Blink1Service.closeAll WHO CALLS THIS");
 		// if( usbDetect ) { usbDetect.stopMonitoring(); }
 		// if( blink1 ) {
 		// 	blink1.off();
@@ -122,7 +126,7 @@ var Blink1Service = {
 		}
 	},
 	_removeDevice: function(serialnumber) {
-		log.msg("Blink1Service","_removeDevice: current serials:", blink1serials);
+		log.msg("Blink1Service._removeDevice: current serials:", blink1serials);
 		var i = blink1serials.indexOf(serialnumber);
 		if( i > -1 ) {  // FIXME: this seems hacky
 			blink1serials.splice(i, 1);
@@ -168,7 +172,7 @@ var Blink1Service = {
 			try {
 				blink1.fadeToRGB( millis, r, g, b, n );
 			} catch(err) {
-				log.msg('Blink1Service', 'error', err);
+				log.msg('Blink1Service._fadeToRGB: error', err);
 				this._removeDevice(blink1OpenedSerial);
 			}
 		}
@@ -254,7 +258,7 @@ var Blink1Service = {
 		//
 		// }
 		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		log.msg("Blink1Service","fadeToColor:", millis,ledn, color.toHexString());//, typeof color, (color instanceof String) );
+		log.msg("Blink1Service.fadeToColor:", millis,ledn, color.toHexString());//, typeof color, (color instanceof String) );
 
 		// handle special meaning: ledn=0 -> all LEDs
 		if( ledn === 0 ) {
@@ -281,7 +285,7 @@ var Blink1Service = {
 		clearTimeout( this.toyTimer );
 	},
 	colorCycleDo: function() {
-		log.msg("Blink1Service.doColorCycle");
+		log.msg("Blink1Service.colorCycleDo");
 		if( !this.toyEnable ) { return; }
 		this.fadeToColor( 100, tinycolor.random(), 0 );
 		this.toyTimer = setTimeout(this.colorCycleDo.bind(this), 300);
@@ -292,9 +296,9 @@ var Blink1Service = {
 		// console.log("Blink1Service: addChangelistener", listeners );
 	},
 	removeChangeListener: function(callername) {
-		log.msg("Blink1Service","removeChangelistener: removing", callername);
+		log.msg("Blink1Service.removeChangelistener: removing", callername);
 		delete listeners[callername];
-		log.msg("Blink1Service","removeChangelistener", listeners );
+		// log.msg("Blink1Service.removeChangelistener", listeners );
 	},
 	removeAllListeners: function() {
 		_.keys( listeners, function(callername) {

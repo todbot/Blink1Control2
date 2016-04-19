@@ -1,0 +1,64 @@
+{
+  "startup": {
+    "startAtLogin": false,
+    "startupPattern": "~pattern:1,#00f300,0.5,0,#000000,0.5,0",
+    "startMinimized": false
+  },
+  "blink1Service": {
+    "deviceRescan": false,
+    "enableGamma": true,
+    "blink1ToUse": 0
+  },
+  "patterns": [
+    {
+      "name": "new pattern 0",
+      "id": "newpattern0",
+      "pattern": "3,#55ff00,0.2,0,#000000,0.2,0"
+    }
+  ],
+  "bigButtons": [
+    {
+      "name": "Available",
+      "type": "color",
+      "color": "#00FF00"
+    }
+  ],
+  "mailService": {
+    "enabled": true
+  },
+  "skypeService": {
+    "enabled": false
+  },
+  "hostId": null,
+  "iftttService": {
+    "intervalSecs": 10,
+    "enabled": true
+  },
+  "scriptService": {
+    "enabled": true
+  },
+  "fileService": {
+    "enabled": true
+  },
+  "apiServer": {
+    "port": 8934,
+    "host": "localhost",
+    "enabled": false
+  },
+  "eventRules": [
+    {
+      "type": "ifttt",
+      "enabled": true,
+      "name": "red wine",
+      "actionType": "play-pattern",
+      "patternId": "redflashes"
+    },
+    {
+      "type": "ifttt",
+      "enabled": true,
+      "name": "green grass",
+      "actionType": "play-pattern",
+      "patternId": "greenflashes"
+    }
+  ]
+}

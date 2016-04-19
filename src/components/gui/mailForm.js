@@ -26,6 +26,10 @@ var MailForm = React.createClass({
         onDelete: React.PropTypes.func,
         onCopy: React.PropTypes.func
     },
+    // given a rule, return a text description
+    getDescription: function(rule) {
+        return rule.username +':'+rule.triggerType+':'+rule.triggerVal;
+    },
     getInitialState: function() {
         return {};// empty state, will be set in componentWillReceiveProps()
     },

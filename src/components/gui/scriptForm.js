@@ -18,7 +18,7 @@ var Switch = require('react-bootstrap-switch');
 var dialog = require('electron').remote.dialog;
 
 
-var log = require('../../logger');
+// var log = require('../../logger');
 
 
 var ScriptForm = React.createClass({

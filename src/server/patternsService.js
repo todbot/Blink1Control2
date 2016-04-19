@@ -1,6 +1,14 @@
 /*
  * Pattern Service singleton
  *
+ *
+ *	special meta-pattern
+ * - #hexcolor
+ * - ~off
+ * - ~blink-white-3
+ * - ~blink-#ff00ff-5
+ * - ~pattern:3,#ff00ff,0.5,0,#00ff00,1.3,0
+ *
  * a fully populated in-memory pattern looks like:
  *  var pattern = {
  *		id: "policecar",
@@ -258,13 +266,7 @@ var PatternsService = {
 	/**
 	 * Play a pattern. Returns false if pattern doesn't exist. Notifys change listeners
 	 *
-	 // special meta-pattern
-	 // - #hexcolor
-	 // - ~off
-	 // - ~blink-white-3
-	 // - ~blink-#ff00ff-5
-	 // - ~pattern:3,#ff00ff,0.5,0,#00ff00,1.3,0
-	*/
+     */
 	playPattern: function(id) {
 		log.msg("PatternsService.playPattern: id=",id, "patternsTemp:",patternsTemp);
 		var patternstr;
@@ -368,6 +370,7 @@ var PatternsService = {
 				if( callback ) { callback(); }  // FIXME: why do this and not notify change?
 				if( pattern.temp ) {   // remove temp pattern after its done
 					_.remove( patternsTemp, {id:pattern.id} );
+					this.notifyChange();
 				}
 				return;
 			}
@@ -392,7 +395,7 @@ var PatternsService = {
 	},
 	removeChangeListener: function(callername) {
 		delete listeners[callername]; /// FIXME: leaves 'undefined' in array
-		console.log("PatternsService: removeChangelistener", listeners );
+		log.msg("PatternsService: removeChangelistener", listeners );
 	},
 	notifyChange: function() {
 		var self = this;

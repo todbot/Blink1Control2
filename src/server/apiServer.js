@@ -39,6 +39,7 @@ app.get('/blink1/fadeToRGB', function(req, res) {
     var color = tinycolor(req.query.rgb);
     var secs = Number(req.query.time) || 0.1;
     var ledn = Number(req.query.ledn) || 0;
+    // var blink1_id = req.query.blink1_id || '';
     var status = "success";
 
     if( color.isValid() ) {
@@ -99,19 +100,46 @@ app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
 });
 app.get('/blink1/pattern/add', function(req,res) {
 	var status = 'pattern add';
+    var pattout = '';
 	if( ! req.query.name || ! req.query.pattern ) {
 		status = "must specify 'name' and 'pattern' string";
 	}
-	var patt = PatternsService.newPatternFromString( req.query.pname, req.query.pattern);
-	if( patt ) { PatternsService.savePattern(patt); }
-	var pattout = PatternsService.formatPatternForOutput(patt);
+    else {
+    	var patt = PatternsService.newPatternFromString( req.query.pname, req.query.pattern);
+    	if( patt ) { PatternsService.savePattern(patt); }
+        pattout = PatternsService.formatPatternForOutput(patt);
+    }
 	res.json({
 		pattern: pattout,
 		status: status
 	});
 });
-
+app.get('/blink1/pattern/del', function(req,res) {
+	var status = 'pattern del';
+    var id = req.query.id;
+	if( ! req.query.name || ! req.query.id ) {
+		status = "must specify 'name' or 'id'";
+	}
+    else {
+        if( req.query.name ) {
+            id = PatternsService.getIdForName( req.query.name );
+        }
+        PatternsService.deletePattern( id );
+        status = "pattern id '"+id+"' deleted";
+    }
+    res.json({
+		status: status
+	});
+});
 //
+app.get('/blink1/input', function(req,res) {
+    var status = 'event inputs';
+    var rules = config.readSettings('eventRules');
+    res.json({
+        status: status,
+        inputs: rules
+    });
+});
 
 var apiServer = {
 	server: null,

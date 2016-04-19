@@ -3,6 +3,7 @@
 
 Random notes
 
+
 ### App capability changes / To-do's
 - Special patterns like '~off' and '~stop:patternname'
 - IFTTT rule_name can be matching rule or specific patternname or special patternname
@@ -12,21 +13,39 @@ Random notes
 - TODO: partion code into client & server so webpack doesn't bundle server code
 - TODO: what about 'parametric patterns', e.g. "blink 5 times, fill in color & on/off time"
 - TODO: Number() vs parseInt() in `PatternsService._parsePatternStr()`?
-- TODO: global shortcut, see:https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md
+- TODO: global shortcut, see: https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md
+
+### Meta Patterns
+- Normally patterns are created, then specified for playing, by `id` (or `name` in some cases)
+- There exist special "meta" patterns that dynamically create a pattern or cause an actionType
+- These special meta-patterns can take the form:
+  - `#<hexcolor>` -- Set a specific color on all LEDs e.g. "#FF00FF", "#000000", or "#ccaabb"
+  - `~off` -- Turn blink(1) off completely (stop patterns, set to dark)
+  - `~blink-color-count` -- blink color-dark-color-dark, count times. e.g. `~blink-white-3`, `~blink-#ff0000-5`
+  - `~pattern:<patternstr>` -- Play a pattern in string form. e.g. `~pattern:3,#ff00ff,0.5,0,#00ff00,1.3,0`
+
+### App menu, Tray menu, window closing, window hiding
+- By default, closing the window doesn't exist Blink1Control, just hides the window
+- On Mac, must `Menu.setApplicationMenu()` to allow Cmd-Q to quit while also allowing red-X to close window but not exist
+
+###  Event Sources structure
+- Event searcher lives in `src/server/<sourcename>Service.js`
+- Config lives in config.eventRules[] and each rule must contain: enabled, type, name
+- Form to set config lives in `src/component/gui/<sourcename>Form.js`
+- toolTable.js loads forms, ask them to format themselves for tables, 
 
 #### General architecture
--- Objects that touch the net or disk run in main process and live in `./src/server`
--- GUI lives in renderer process and makes remote calls to objects in main
 
--- `remote.require()` vs `require()` in renderer process
--- `remote.require()` is based off of project root dir, but `require()` is based of cwd
+- `remote.require()` is based off of project root dir, but `require()` is based of cwd
+- `remote.require()` vs `require()` in renderer process
 
--- Server contains singleton services like: Blink1Service, PatternsService, IftttService, MailService
--- New proposed service: EventService - console.log replacement & recent event display
---- (e.g. eventsvc.log("Did a thing", {type:'debug', from:'VirtualBlink1'}) (use introspection?)
+- There exist singleton services like: Blink1Service, PatternsService, IftttService, MailService
+  - these all live in the renderer process
+- New proposed service: EventService - console.log replacement & recent event display
+  - (e.g. eventsvc.log("Did a thing", {type:'debug', from:'VirtualBlink1'}) (use introspection?)
 
 #### Prepping node-hid
---  do `npm run postinstall` (done automatically on `npm install`)
+-  do `npm run postinstall` (done automatically on `npm install`)
 
 #### Building on Windows
 - Can't use my standard MinGW rxvt shell
@@ -47,8 +66,8 @@ Random notes
 ## old notes
 
 #### Prepping node-hid
--- See 'preinstall' target in package.json
--- also see: https://github.com/voodootikigod/node-serialport/issues/538#issuecomment-184251385
+- See 'preinstall' target in package.json
+- also see: https://github.com/voodootikigod/node-serialport/issues/538#issuecomment-184251385
 
 #### Packaging
 ```

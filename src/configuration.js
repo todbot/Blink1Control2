@@ -2,31 +2,44 @@
 
 'use strict';
 
-var log = require('./logger');
 var nconf = null; // later
+var app = null; //
+var fs = require('fs');
+var log = require('./logger');
+var isRenderer = require('is-electron-renderer');
+
+var confdefaults = require('./blink1control2-config-defaults.json');
 
 // make sure we only use 'nconf' from non-renderer process
 // because nconf uses yargs which makes webpack choke
-var p = process;
-if( process.browser === true ) {
-    p = window.require('remote').require('process');
-    nconf = window.require('remote').require('nconf');
+if( isRenderer ) {
+    var remote = require('electron').remote;
+    // nconf = window.require('remote').require('nconf');
+    // var remote = window.require('remote');
+    // nconf = remote.require('nconf');
+    // app = window.require('remote').app;
+    nconf = remote.require('nconf');
+    app = remote.app;
 }
 else {
     nconf = require('nconf');
+    app = require('electron').app;
 }
 
-// var conf_file = getUserHome() + '/.configgg' + '/blink1control2-config.json';
-var conf_file = getUserHome() + '/blink1control2-config.json';
+var conf_file = getUserDataHome() + '/blink1control2-config.json';
 
-nconf.file({file: conf_file});
-//console.log( "config file", conf_file);
 log.msg("config file:"+conf_file);
+// if no conf file, put in a default one
+if( ! fs.existsSync(conf_file) ) {
+    log.msg("config: no conf file at "+conf_file+", writing defaults");
+    fs.writeFileSync( conf_file, JSON.stringify(confdefaults,null, 2) );
+}
+nconf.file({file: conf_file});
 
-function getUserHome() {
-    var home = p.env[(p.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
-    console.log("configuration: home=",home);
-    return home;
+
+function getUserDataHome() {
+    var userDataHome = app.getPath('userData');
+    return userDataHome;
 }
 
 function saveSettings(settingKey, settingValue) {
@@ -39,9 +52,8 @@ function readSettings(settingKey) {
     return nconf.get(settingKey);
 }
 
-
 module.exports = {
     saveSettings: saveSettings,
     readSettings: readSettings,
-    userHome: getUserHome
+    userHome: getUserDataHome
 };

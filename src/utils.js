@@ -17,9 +17,10 @@ var Utils = {
 		return '#'+Math.floor(Math.random()*0xffffff).toString(16).toUpperCase();
 	},
 
+	// Generate an 8-hexdigit random number for use as hostId
 	generateRandomHostId: function() {
-		return Math.floor(Math.random()*0xffff).toString(16).toUpperCase() +
-		       Math.floor(Math.random()*0xffff).toString(16).toUpperCase();
+		return ("000"+Math.floor(Math.random()*0xffff).toString(16)).slice(-4).toUpperCase() +
+			   ("000"+Math.floor(Math.random()*0xffff).toString(16)).slice(-4).toUpperCase();
 	}
 };
 

@@ -129,7 +129,6 @@ app.on('ready', function () {
 	// stolen from https://github.com/twolfson/google-music-electron/blob/master/lib/google-music-electron.js
 	var openAboutWindow = function () {
 	    var info = [
-			// https://github.com/corysimmons/typographic/blob/2.9.3/scss/typographic.scss#L34
 			'<div style="text-align: center; font-family: \'Helvetica Neue\', \'Helvetica\', \'Arial\', \'sans-serif\'">',
 			'<h2>Blink1Control2</h2>',
 			'<p>',
@@ -196,25 +195,29 @@ app.on('ready', function () {
 			accelerator: 'CommandOrControl+Q',
 			// selector: 'terminate:',
 			click: function() { quit(); }
-		},
-		//
-		// {	type: "separator" },
-		// {	label: 'Reload',
-		// 	// icon: trayIconPath,
-		// 	click: function() {  mainWindow.reload(); }
-		// 	//accelerator: 'Command+Z'
-		// },
-		// {	label: 'Show/Hide',
-		// 	click: function() {	if( mainWindow.isVisible() ) { mainWindow.hide(); } else { mainWindow.show(); } }
-		// },
-		// {	label: 'Toggle DevTools',
-		// 	accelerator: 'Alt+Command+I',
-		// 	click: function() {
-		// 		mainWindow.show();
-		// 		mainWindow.toggleDevTools();
-		// 	}
-		// }
+		}
 	];
+	var devMenuTemplate = [
+		{	type: "separator" },
+		{	label: 'Reload',
+			// icon: trayIconPath,
+			click: function() {  mainWindow.reload(); }
+			//accelerator: 'Command+Z'
+		},
+		{	label: 'Show/Hide',
+			click: function() {	if( mainWindow.isVisible() ) { mainWindow.hide(); } else { mainWindow.show(); } }
+		},
+		{	label: 'Toggle DevTools',
+			accelerator: 'Alt+Command+I',
+			click: function() {
+				mainWindow.show();
+				mainWindow.toggleDevTools();
+			}
+		}
+	];
+	if( process.env.NODE_ENV === 'development' ) {
+		contextMenuTemplate = contextMenuTemplate.concat( devMenuTemplate );
+	}
 	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
 
 	appIcon.setToolTip('Blink1Control2 is running...');

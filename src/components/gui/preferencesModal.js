@@ -72,9 +72,9 @@ var PreferencesModal = React.createClass({
         console.log("CANCEL");
         this.props.onCancel();
     },
-    delete: function() {
-        this.props.onDelete();
-    },
+    // delete: function() {
+    //     this.props.onDelete();
+    // },
     handleBlink1SerialChoice: function(e) {
         // console.log("handleBlink1NonComputerChange: ",e.target.value);
         var choice = e.target.value;
