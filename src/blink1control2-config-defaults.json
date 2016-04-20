@@ -21,42 +21,64 @@
       "name": "Available",
       "type": "color",
       "color": "#00FF00"
+    },
+    {
+      "name": "Busy",
+      "type": "color",
+      "color": "#FF0000"
+    },
+    {
+      "name": "Away",
+      "type": "color",
+      "color": "#FFFF00"
+  },
+    {
+      "name": "Meeting",
+      "type": "color",
+      "color": "#0000FF"
     }
   ],
-  "mailService": {
-    "enabled": true
-  },
-  "skypeService": {
-    "enabled": false
-  },
   "hostId": null,
-  "iftttService": {
-    "intervalSecs": 10,
-    "enabled": true
-  },
-  "scriptService": {
-    "enabled": true
-  },
-  "fileService": {
-    "enabled": true
-  },
   "apiServer": {
     "port": 8934,
     "host": "localhost",
     "enabled": false
   },
+  "eventServices": {
+      "iftttService": {
+          "service": "iftttService",
+          "type": "ifttt",
+          "enabled": true,
+          "intervalSecs": 10
+      },
+      "mailService": {
+          "service": "mailService",
+          "type": "mail",
+          "enabled": true
+      },
+      "scriptService": {
+          "service": "scriptService",
+          "type": "script",
+          "enabled": true
+      },
+      "skypeService": {
+          "service": "skypeService",
+          "type": "skype",
+          "enabled": false
+      }
+  },
   "eventRules": [
     {
       "type": "ifttt",
       "enabled": true,
-      "name": "red wine",
+      "name": "red demo",
       "actionType": "play-pattern",
       "patternId": "redflashes"
     },
     {
       "type": "ifttt",
       "enabled": true,
-      "name": "green grass",
+      "name": "green demo",
       "actionType": "play-pattern",
       "patternId": "greenflashes"
     }
