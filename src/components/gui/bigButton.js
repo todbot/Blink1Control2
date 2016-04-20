@@ -12,6 +12,8 @@ var remote = require('electron').remote;
 var Menu = remote.Menu;
 var MenuItem = remote.MenuItem;
 
+var tinycolor = require('tinycolor2');
+
 var log = require('../../logger');
 
 var currentWindow = remote.getCurrentWindow();
@@ -88,18 +90,21 @@ var BigButton = React.createClass({
 		// var tstyle = { height: 28, border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal'  };
 		// var tstyle = { height: 24, display:'flex',justifyContent:'center',alignItems:'center',border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal', verticalAlign:'middle' };
 		var tstyle = { height: 24, display:'flex',justifyContent:'center', alignItems:'flex-end',
-			color: '#666', fontWeight: '400', fontSize: "0.9em",
+			fontWeight: '400', fontSize: "0.9em",
 			wordWrap:'break-word', whiteSpace:'normal', lineHeight:'85%' };
 
 		var iconContent;
 		if( this.props.type === "color" ) {
 			buttonStyle.background = this.props.color;
-			buttonStyle.color = 'white';
+			if( tinycolor(buttonStyle.background).isDark() ) {
+				buttonStyle.color = '#eee';
+			}
+			// buttonStyle.color = 'white';
 			//iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
 			iconContent = <i className="fa fa-lightbulb-o fa-2x"></i>;
 		}
 		else if( this.props.type === 'pattern' ) {
-			buttonStyle.background = this.props.color;
+			buttonStyle.background = this.props.color; // FIXME: pattern color summary
 			buttonStyle.color = 'white';
 			//iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
 			iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
@@ -130,6 +135,7 @@ var BigButton = React.createClass({
 					{iconContent}
 					<div style={tstyle}>{this.props.name}</div>
 				</Button>
+
 				<Modal show={this.state.showEditMenu} onHide={this.hideEditMenu} bsSize="small" >
 				  <Modal.Header>
 					<Modal.Title>Edit Button Name</Modal.Title>
