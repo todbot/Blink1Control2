@@ -53,7 +53,7 @@ var MailService = {
 	},
     checkMail: function() {
 		var self = this;
-		self.config = conf.readSettings('mailService');
+		self.config = conf.readSettings('eventServices:mailService');
 		if( self.config.enable === false ) { return; }
 		var allrules = conf.readSettings('eventRules') || [];
 		self.rules = allrules.filter( function(r){return r.type==='mail';} );

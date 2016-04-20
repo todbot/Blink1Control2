@@ -17,7 +17,7 @@ var ScriptService = {
         log.msg("ScriptService.start");
         // this.reloadConfig();
         // this.stop();
-        this.config = conf.readSettings('scriptService');
+        this.config = conf.readSettings('eventServices:scriptService');
         if( !this.config ) { this.config = { enabled: false }; }
         if( !this.config.enabled ) {
             log.msg("ScriptService: disabled");

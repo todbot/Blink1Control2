@@ -65,7 +65,7 @@ var IftttService = {
 	getIftttKey: function() { return this.iftttKey; },
 
 	reloadConfig: function() {
-		this.config = conf.readSettings('iftttService');
+		this.config = conf.readSettings('eventServices:iftttService');
 		if( !this.config ) {
 			this.config = { intervalSecs: 10, enabled: true };
 			conf.saveSettings('iftttService', this.config);

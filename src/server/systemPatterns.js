@@ -1,28 +1,28 @@
 module.exports = {
-	patterns: 
+	patterns:
 	[
     {
-        "name": "red flashes",
+        "name": "red flash",
         "patternstr": "2,#ff0000,0.5,0,#000000,0.5"
     },
     {
-        "name": "green flashes",
+        "name": "green flash",
         "patternstr": "2,#00ff00,0.5,0,#000000,0.5"
     },
     {
-        "name": "blue flashes",
+        "name": "blue flash",
         "patternstr": "2,#0000ff,0.5,0,#000000,0.5"
     },
     {
-        "name": "white flashes",
+        "name": "white flash",
         "patternstr": "2,#ffffff,0.5,0,#000000,0.5"
     },
     {
-        "name": "yellow flashes",
+        "name": "yellow flash",
         "patternstr": "2,#ffff00,0.5,0,#000000,0.5"
     },
     {
-        "name": "purple flashes",
+        "name": "purple flash",
         "patternstr": "2,#ff00ff,0.5,0,#000000,0.5"
     },
     {
@@ -38,7 +38,7 @@ module.exports = {
         "patternstr": "6, #ff0000,0.3,1, #ff0000,0.3,2, #000000,0.1,0, #ff0000,0.3,2, #ff0000,0.3,1, #000000,0.1,0"
     },
     {
-        "name": "palete colors",
+        "name": "palette colors",
         "patternstr": "3,#e7009a,1,0,#3d00e7,1,0,#00b8e7,1,0,#00e71e,1,0,#d7e700,1,0,#e70000,1,0,#e7e7e7,1,0"
     },
     {
@@ -60,7 +60,7 @@ module.exports = {
     {
         "name": "molten lava",
         "patternstr": "3,#ff0000,0.2,1,#ff0000,0.2,2,#bd0000,0.1,1,#bd0000,0.1,2,#690000,0.1,1,#690000,0.1,2,#3f0000,0.2,1,#3f0000,0.2,2"
-    },       
+    },
     {
         "name": "lighting storm",
         "patternstr": "3,#6f756f,0,1,#ffffff,0,2,#ffffff,0.4,1,#686868,0.4,2,#000000,0.9,1,#e0e0e0,0,0,#000000,2,0"
@@ -115,4 +115,3 @@ module.exports = {
     }
 	]
 };
-

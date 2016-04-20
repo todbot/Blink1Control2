@@ -37,14 +37,15 @@
 var _ = require('lodash');
 var tinycolor = require('tinycolor2');
 
-var config = require('../configuration');
+var conf = require('../configuration');
 var log = require('../logger');
 var utils = require('../utils');
 
 var Blink1Service = require('./blink1Service');
 
 // returns an array of (partially-filled out) pattern objects
-var systemPatterns = require('./systemPatterns-mini').patterns;
+// var systemPatterns = require('./systemPatterns-mini').patterns;
+var systemPatterns = require('./systemPatterns').patterns;
 // FIXME: two var for same thing
 var patternsSystem;  // The system patterns this service knows about
 var patternsUser; // The user generated patterns
@@ -121,7 +122,7 @@ var PatternsService = {
 		listeners = [];
 		patternsSystem = systemPatterns.map( _systemFixup );
 		patternsUser = [];
-		patternsUser = config.readSettings('patterns');
+		patternsUser = conf.readSettings('patterns') || [];
 		log.msg('PatternsService.initialize, config patterns', patternsUser);
 		patternsUser = patternsUser.map( function(patt) {
 			if( patt.pattern ) {
@@ -184,7 +185,7 @@ var PatternsService = {
 	savePatterns: function() {
 		log.msg("PatternsService.savePatterns");
 		var patternsSave = this.formatPatternsForOutput(patternsUser);
-		config.saveSettings("patterns", patternsSave);
+		conf.saveSettings("patterns", patternsSave);
 		this.notifyChange();  /// FIXME: hmmm, not sure about the philosophy of this
 	},
 	/** Saves new pattern or updates existing pattern */
@@ -348,8 +349,9 @@ var PatternsService = {
 	},
 
 	_playPatternInternal: function(id, callback) {
+		playingPatternId = id;
 		var pattern = _.find(this.getAllPatterns(), {id: id});
-		if( !pattern ) {
+		if( !pattern ) { // look for id in temp pattern list
 			pattern = _.find( patternsTemp, {id:id});
 		}
 		var color = pattern.colors[pattern.playpos];
@@ -366,7 +368,7 @@ var PatternsService = {
 			pattern.playpos = 0;
 			pattern.playcount++;
 			if( pattern.playcount === pattern.repeats ) {
-				this.stopPattern(playingPatternId); // notifies change listeners
+				this.stopPattern(pattern.id); // notifies change listeners
 				if( callback ) { callback(); }  // FIXME: why do this and not notify change?
 				if( pattern.temp ) {   // remove temp pattern after its done
 					_.remove( patternsTemp, {id:pattern.id} );
