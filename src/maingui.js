@@ -44,18 +44,33 @@ var ipcRenderer = require('electron').ipcRenderer;
 
 // TESTING END
 
+var conf = require('./configuration');
+
 // maybe this goes in another file?
 var ApiServer = require('./server/apiServer');
 var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
+
+ApiServer.start();
+Blink1Service.start();
+PatternsService.initialize();
+
+// var _ = require('lodash');
+// var eventServices = conf.readSettings('eventServices');
+// var services = [];
+// console.log("eventServices:");
+// _.map(eventServices, function(s) {
+//     console.log("service:",s.service, s.type, s.enabled);
+//     var service = require('./server/'+s.service);
+//     service.start();
+//     services.push();
+// });
+
 var IftttService = require('./server/iftttService');
 var MailService = require('./server/mailService');
 var SkypeService = require('./server/skypeService');
 var ScriptService = require('./server/scriptService');
 
-ApiServer.start();
-Blink1Service.start();
-PatternsService.initialize();
 IftttService.start();
 MailService.start();
 SkypeService.start();
@@ -74,18 +89,18 @@ ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {
 });
 
 
-// do startup script
+// run startup script, if any
 var laterfunc = function() {
-    var conf = require('./configuration');
-    var startupConf = conf.readSettings('startup');
-    if( startupConf.startupPattern ) {
-        console.log("starting up with:", startupConf.startupPattern);
-        PatternsService.playPattern( startupConf.startupPattern );
+    var startupPattern = conf.readSettings('startup:startupPattern');
+    if( startupPattern ) {
+        console.log("starting up with:", startupPattern);
+        PatternsService.playPattern( startupPattern );
     }
 };
 setTimeout( laterfunc, 1000 );
 
 
+// Begin actual render code
 
 var Blink1ControlView = require('./components/gui/blink1ControlView');
 
