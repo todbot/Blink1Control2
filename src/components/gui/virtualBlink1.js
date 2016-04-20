@@ -54,7 +54,7 @@ var VirtualBlink1 = React.createClass({
 	_colorFaderStart: function() {
 		clearTimeout(this.timer);
 		this.faderMillis = 0;  // goes from 0 to currentMillis
-		this.currentMillis = Blink1Service.getCurrentMillis() || 1; // FIXME: HACK
+		this.currentMillis = Blink1Service.getCurrentMillis() || this.stepMillis; // FIXME: HACK
 		this._colorFader();
 		// console.log("---start:",new Date().getTime() );
 	},
@@ -85,9 +85,9 @@ var VirtualBlink1 = React.createClass({
 				self._colorFader();
 			}, this.stepMillis);
 		}
-		else {
-			// console.log("---  end:",new Date().getTime() );
-		}
+		// else {
+		//   console.log("---  end:",new Date().getTime() );
+		// }
 	},
 
 	render: function() {
