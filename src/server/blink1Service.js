@@ -247,6 +247,7 @@ var Blink1Service = {
 	// if color is a hexstring, it will get converted to tinycolor
 	fadeToColor: function( millis, color, ledn) {
 		ledn = ledn || 0;
+		// millis = millis || 1;  // disallow 0 msecs
 		currentLedN = ledn;
 		currentMillis = millis;
 		lastColors = _.clone(currentColors);
@@ -258,7 +259,7 @@ var Blink1Service = {
 		//
 		// }
 		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		log.msg("Blink1Service.fadeToColor:", millis,ledn, color.toHexString());//, typeof color, (color instanceof String) );
+		log.msg("Blink1Service.fadeToColor:", currentMillis,ledn, color.toHexString());//, typeof color, (color instanceof String) );
 
 		// handle special meaning: ledn=0 -> all LEDs
 		if( ledn === 0 ) {
@@ -267,7 +268,7 @@ var Blink1Service = {
 		 	currentColors[ledn-1] = color;
 		}
 		var crgb = color.toRgb();
-		this._fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn);
+		this._fadeToRGB( currentMillis, crgb.r, crgb.g, crgb.b, ledn);
 
 		this.notifyChange();
 	},
