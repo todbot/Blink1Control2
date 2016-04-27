@@ -16,7 +16,7 @@ else {
 	isDevel = (process.env.NODE_ENV === 'development');
 }
 
-var eventsMax = 10;  // FIXME: put in configuration?
+var eventsMax = 1000;  // FIXME: put in configuration?
 
 var events = [
 ];
@@ -63,6 +63,18 @@ var Logger = {
 		console.error.apply(console, args);
 		// FIXME: log to file?
 	},
+
+	// event is format:
+	// event = {
+	//  date: Date, // time of event as JS Date
+	//  type: 'trigger', 'triggerOff', 'error', 'info' //
+	//  source: 'ifttt,'mail', etc.  event source 'type'
+	//  id: 'red demo'  // event source 'name'
+	//  text: 'blah blah'  // text of event
+	// }
+	// maybe: event.arg == argument for type
+	// maybe: event.emitterId
+	// maybe: event.style == 'log' or 'display' or 'forId'?
 	addEvent: function(event) { // string or {date,text,type,id} object
 		if( typeof event === 'string' ) {
 			event = {text: event};
@@ -70,6 +82,7 @@ var Logger = {
 		if( !event.date ) { event.date = Date.now(); }
 		if( !event.type ) { event.type = ''; }
 		if( !event.id ) { event.id = ''; }
+
 		events.push(event);
 		events.sort( function(a,b) {
 			if( a.date > b.date ) { return 1; }
@@ -83,6 +96,7 @@ var Logger = {
 		}
 		this.notifyChange();
 	},
+	// FIXME:
 	getEvents: function(spec) {
 		var typedEvents = events.filter( function(e) {
 			if( !spec ) { return true; }
@@ -91,7 +105,7 @@ var Logger = {
 		return typedEvents;
 	},
 	getLastEvents: function(n) {
-		n = n ? 10 : n;
+		n = n ? eventsMax : n;
 		n = n > events.length ? events.length : n;
 		var lastEvents = events.slice( 0, n);
 		return lastEvents;
