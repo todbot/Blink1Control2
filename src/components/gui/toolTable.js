@@ -214,9 +214,9 @@ var ToolTable = React.createClass({
 			var pattstr = 'unknown';
 			if( rule.actionType === 'play-pattern' ) {
 				pattstr = PatternsService.getNameForId( rule.patternId );  // just text
-				if( !pattstr ) {
-					pattstr = rule.actionType;
-			   	} // for cases like scripts where patternid is special
+				if( !pattstr ) { // if pattern not found
+					pattstr = 'bad pattern';
+			   	}
 			}
 			else {
 				pattstr = rule.actionType;
@@ -226,23 +226,25 @@ var ToolTable = React.createClass({
 
 		   	return pattstr;
 		};
-        var makeLastTime = function(rule) {
+        var makeLastValue = function(rule) {
             var eventsForMe = events.filter( function(e) {
-                return (e.type===rule.type && e.id === rule.name);
+                return (e.source===rule.type && e.id === rule.name);
             });
             var lastEvent = '-not-seen-yet-';
             if( eventsForMe.length ) {
                 var myEvent = eventsForMe[eventsForMe.length-1];
-                lastEvent = moment(myEvent.date).format('dd LT') + '-' + myEvent.text;
+				// lastEvent = moment(myEvent.date).fromNow() + ': ' + myEvent.text;
+                // lastEvent = <span><i> {moment(myEvent.date).format('LTS') } </i>: {myEvent.text} </span>;
+				lastEvent = <span>{myEvent.text} <i style={{fontSize:'90%'}}> @ {moment(myEvent.date).format('LTS') } </i></span>;
             }
             return lastEvent;
         };
 		var createRow = function(rule, index) {
 			// var pattid = this.state.rules[index].patternId;
 			var patternStr = makePattern(rule);
-			var lastTime = makeLastTime(rule);
+			var lastVal = makeLastValue(rule);
             var description = makeDesc(rule);
-            var type = rule.type;  type = (type==='ifttt')? 'IFTTT' : type;
+            var type = rule.type;  type = (type==='ifttt')? 'IFTTT' : type;  // FIXME
 			var rowstyle = (rule.enabled) ? {} : { color:"#999" };
 			return (
 				<tr key={index} style={rowstyle} onDoubleClick={this.handleEditRule.bind(this, index, type)} >
@@ -250,7 +252,7 @@ var ToolTable = React.createClass({
                     <td>{description}</td>
 					<td>{type}</td>
 					<td>{patternStr}</td>
-					<td>{lastTime}</td>
+					<td>{lastVal}</td>
 					<td><Button bsSize="xsmall" style={{border:'none'}} onClick={this.handleEditRule.bind(this, index, type)} >
 						<i className="fa fa-pencil"></i></Button></td>
 				</tr>
@@ -296,7 +298,7 @@ var ToolTable = React.createClass({
 								<th style={{width:225}}>Description</th>
 								<th style={{width: 30}}>Type</th>
 								<th style={{width:130}}>Pattern</th>
-								<th style={{width:150}}>Last value</th>
+								<th style={{width:150}}>Last event</th>
 								<th style={{width: 30}}> </th>
 							</tr>
 						</thead>

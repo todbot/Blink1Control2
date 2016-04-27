@@ -39,7 +39,7 @@ var MailForm = React.createClass({
             enabled: rule.enabled,
             type:'mail',
             name: rule.name,
-            patternId: rule.patternId,
+            patternId: rule.patternId || this.props.patterns[0],
             mailtype: rule.mailtype || 'IMAP',  // default it
             host: rule.host || '',
             port: rule.port || 993,
@@ -49,7 +49,7 @@ var MailForm = React.createClass({
             actionType: 'play-pattern',
             triggerType: rule.triggerType || 'unread',
             triggerVal: rule.triggerVal || '1' ,
-            triggerOff: false, // FIXME: this is for "turn off alert when no new email" feature
+            triggerOff: rule.triggerOff || false, 
             errormsg: ''
         });
     },
@@ -109,7 +109,7 @@ var MailForm = React.createClass({
                                 type="text" label="Mail server" placeholder="mail.example.com"
                                 valueLink={this.linkState('host')} />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
-                                type="text" label="Username" placeholder="Enter username (usually full email addr)"
+                                type="text" label="Username" placeholder="Enter username (e.g. email addr)"
                                 valueLink={this.linkState('username')} />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                                 type="password" label="Password" placeholder=""

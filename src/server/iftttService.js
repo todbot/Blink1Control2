@@ -126,7 +126,7 @@ var IftttService = {
 					evt.eventDate = new Date(parseInt(1000 * evt.date));
 					if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
 						log.msg('IftttService.fetch: new event name:"'+ evt.name+'"');
-						log.addEvent( {date:evt.eventDate, text:evt.source, type:'ifttt', id:evt.name} );
+						log.addEvent( {date:evt.eventDate, type:'trigger', text:evt.source, source:'ifttt', id:evt.name} );
 						rules.map( function(r) {
 							log.msg('IftttService.fetch: rule:', JSON.stringify(r));
 							if( evt.name.trim() === r.name.trim()) {

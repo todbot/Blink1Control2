@@ -1,3 +1,8 @@
+//
+// Called from mailService
+//
+//
+
 "use strict";
 
 var _ = require('lodash');
@@ -6,42 +11,140 @@ var Imap = require('imap');
 var simplecrypt = require('simplecrypt');
 
 var log = require('../logger');
+var PatternsService = require('./patternsService');
+
+var PatternsService = require('./patternsService');
 
 var retrySecs = 30;
 
 var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control'});
 
-var makeMessage = function(id, type, message ) {
-    return [{id:id, type:type, message: message}] ;
+// var makeMessage = function(id, type, message ) {
+//     return [{id:id, type:type, message: message}] ;
+// };
+
+function ImapSearcher(config) { //}, callback) {
+    var self = this;
+    self.config = config;
+}
+
+// IMAP updates can come fast and furious when marking several msgs
+// So queue up a bit by setting a timer in the future on the first change
+ImapSearcher.prototype.searchMail = function() {
+    log.msg("ImapSearcher.searchMail");
+    var self = this;
+    if( self.searchtimer ) { return; }
+    self.searchtimer = setTimeout( function() {
+        self.searchtimer = null;
+        log.msg("ImapSearcher.searchMail: searchtimer");
+        self.searchMailDo();
+    }, 5000);
 };
 
-function ImapSearcher(config, callback) {
+/// called from an open imap
+ImapSearcher.prototype.searchMailDo = function() {
+    log.msg("ImapSearcher.searchMailDo");
+    var self = this;
+    if( self.triggerType === 'subject' ) {
+        self.imap.search( ['UNSEEN',  ['SUBJECT',[self.triggerVal]]], function(err, results) {
+            if (err) {
+                log.msg("ImapSearcher: search error",err);
+                throw err;
+            }
+            log.msg("ImapSearcher: SUBJECT search results:", results, "last:",self.lastResults);
+
+            if( results.length > 0 ) { // we have search results
+                // count those w/ higher msg id than last time
+                var lastMax = _.max(self.lastResults);
+                var newMax  = _.max(results);
+                if( newMax > lastMax ) {
+                // if( results.length > self.lastResults.length ) {
+                    log.addEvent( {type:'trigger', source:'mail', text:self.triggerVal, id:self.id} );
+                    PatternsService.playPattern( self.patternId );
+                    //self.callback( makeMessage( self.id, 'trigger', self.triggerVal) );
+                }
+            }
+            else { // zero results
+                if( self.triggerOff && self.lastResults.length > 0 ) {
+                    log.addEvent( {type:'triggerOff', source:'mail', text:'off', id:self.id} ); // type mail
+                    PatternsService.stopPattern( self.patternId );
+                    // self.callback( makeMessage( self.id, 'triggerOff', self.triggerVal) );
+                }
+            }
+            self.lastResults = _.union(self.lastResults, results).sort();
+            log.msg("ImapSearcher: search lastResults:", self.lastResults);
+        }); // search
+    }
+    else if( self.triggerType === 'sender' ) {
+
+    }
+    else if( self.triggerType === 'unread' ) {
+        // if( arg > 0 ) {  // arg is numnewmsgs
+        //     self.callback( makeMessage( self.id, 'result', arg + ' unread msgs'));
+        // }
+        self.imap.search( ['UNSEEN'],  function(err, res) {
+            log.msg("ImapSearcher.searchMail: UNSEEN search");
+            if (err) {
+                log.msg("ImapSearcher.searchMail: UNSEEN search error",err);
+                throw err;
+            }
+            if( res.length >= self.triggerVal ) {
+                self.triggered = true;
+                PatternsService.playPattern( self.patternId );
+                log.addEvent( {type:'trigger', source:'mail', id:self.id, text:''+res.length+' unseen msgs'} );
+            } else {
+                if( self.triggerOff && self.triggered ) {
+                    self.triggered = false;
+                    log.addEvent( {type:'triggerOff', source:'mail', text:'off', id:self.id} ); // type mail
+                    PatternsService.stopPattern( self.patternId );
+                }
+                log.addEvent( {type:'info', source:'mail', id:self.id, text:''+res.length+' unseen msgs'} );
+            }
+            // var uncnt = res.length - self.lastResults.length;
+            // if( uncnt > 0 ) { // we have search results
+            //     log.msg("UNSEEN MORE!");
+            //     //self.callback( makeMessage( self.id, 'result', self.triggerVal) );
+            //     // log.addEvent( {type:'info', source:'mail', id:self.id, text:''+uncnt+' unseen msgs'} );
+            // }
+            log.msg("ImapSearcher: unseen:", res === self.lastResults,
+                    res.length, self.lastResults.length,
+                    res.sort(), self.lastResults.sort() );
+            self.lastResults = res; // _.union(self.lastResults, res).sort();
+        });
+
+    }
+
+};
+
+ImapSearcher.prototype.start = function() {
+    log.msg("ImapSearcher starting");
     var self = this;
     var pass = '';
     try {
-        pass = sc.decrypt( config.password );
+        pass = sc.decrypt( self.config.password );
     } catch(err) {
         log.msg('ImapSearcher: bad password');
     }
 
-    self.callback = callback;
-    self.enabled = config.enabled || true;
-    self.id = config.name;  // FIXME: potential collision here
-    self.host = config.host;
-    self.port = config.port;
-    self.useSSL = config.useSSL;
-    self.username = config.username;
+    // self.callback = callback;
+    self.enabled = self.config.enabled || true;
+    self.id = self.config.name;  // FIXME: potential collision here
+    self.host = self.config.host;
+    self.port = self.config.port;
+    self.useSSL = self.config.useSSL;
+    self.username = self.config.username;
     self.password = pass;
     // FIXME: this could be an array of rules, maybe:
     // [ { name:'bob', triggerType:'unread', triggerVal:1 },
     //   { name:'george', triggerType:'subject', triggerVal:'fred'}]
-    self.triggerType = config.triggerType; //
-    self.triggerVal = config.triggerVal; // FIXME
-    self.triggerOff = config.triggerOff;
-    self.patternId = config.patternId;
+    self.triggerType = self.config.triggerType; //
+    self.triggerVal = self.config.triggerVal; // FIXME
+    self.triggerOff = self.config.triggerOff;
+    self.patternId = self.config.patternId;
     self.startdate = Date.now();
     self.lastSeenId = 0; // FIXME: notused
     self.lastResults = [];
+    self.triggered = false;
 
     self.imap = new Imap({
         user: self.username,
@@ -53,7 +156,7 @@ function ImapSearcher(config, callback) {
         keepalive: { interval: 5000 },
         debug: function(msg) {
             // self.callback( makeMessage(self.id, 'info', Math.floor(Date.now()/1000)+'') );
-            log.msg("ImapSearcher.debug:",Math.floor(Date.now()/1000),":",msg);
+            // log.msg("ImapSearcher.debug:",Math.floor(Date.now()/1000),":",msg);
         }
     });
 
@@ -62,7 +165,8 @@ function ImapSearcher(config, callback) {
         if(      msg.indexOf('ENOTFOUND') !== -1 ) { msg = 'server not found'; }
         else if( msg.indexOf('ETIMEDOUT') !== -1 ) { msg = 'server timeout'; }
         // else if( msg)
-        self.callback( makeMessage(self.id, 'error', msg) );
+        // self.callback( makeMessage(self.id, 'error', msg) );
+        log.addEvent( {type:'error', source:'mail', id:self.id, text:msg } );
         log.msg("ImapSearcher error:'"+ err.message+"'", err);
         // self.stop();
         self.timer = setTimeout(function() {
@@ -82,21 +186,22 @@ function ImapSearcher(config, callback) {
         self.imap.openBox('INBOX', true, function(err,box) {
             if (err) {
                 log.msg("ImapSearcher.openBox error",err);
-                self.callback({id:self.id, type:'error', message:err.message}); // FIXME
+                log.addEvent( {type:'error', source:'mail', id:self.id, text:'inbox '-err.message } );
                 throw err;
             }
             self.lastMsgId = box.uidnext;
-            self.lastResults = [box.uidnext]; // hmmm
+            self.lastResults = []; //[box.uidnext]; // hmmm
             log.msg('ImapSearcher: lastMsgId:',box.uidnext,' box', box);
-            // self.callback( makeMessage( self.id, 'info', 'connected') ); // FIXME
+            log.addEvent( {type:'info', source:'mail', id:self.id, text:'connected' } );
             self.searchMail();
 
             self.imap.on('update', function( seqno, info) {
                 log.msg("ImapSearcher.onupdate:", seqno, info.flags, info);
-                if( info.flags[0] === "\\Seen" ) {
-                    _.remove( self.lastResults, seqno );
-                    log.msg("ImapSearcher.update SEEEN, lastResults:",self.lastResults);
-                }
+                // if( info.flags[0] === "\\Seen" ) {
+                //     // _.pull( self.lastResults, seqno );
+                //     //log.msg("ImapSearcher.update SEEEN, lastResults:",self.lastResults);
+                // }
+                self.searchMail();
             });
             self.imap.on('expunge', function( seqno ) {
                 log.msg("ImapSearcher.onexpunge:", seqno);
@@ -104,63 +209,21 @@ function ImapSearcher(config, callback) {
             });
             self.imap.on('mail', function(numnewmsgs ) { // on new mail
                 log.msg("ImapSearcher.onmail:", self.triggerType, numnewmsgs);
-                self.searchMail(numnewmsgs);
+                self.searchMail(); //numnewmsgs);
+                log.msg("ImapSearcher.onmail: done");
             }); // on mail
         }); // openbox
     }); // ready
 
-}
-
-/// called from an open imap
-ImapSearcher.prototype.searchMail = function(arg) {
-    var self = this;
-    if( self.triggerType === 'subject' ) {
-        self.imap.search( ['UNSEEN',  ['SUBJECT',[self.triggerVal]]], function(err, results) {
-            if (err) {
-                log.msg("ImapSearcher: search error",err);
-                throw err;
-            }
-            log.msg("ImapSearcher: search results:", results, "last:",self.lastResults);
-
-            if( results.length > 0 ) { // we have search results
-                // count those w/ higher msg id than last time
-                var lastMax = _.max(self.lastResults);
-                var newMax  = _.max(results);
-                if( newMax > lastMax ) {
-                // if( results.length > self.lastResults.length ) {
-                    // PatternsService.playPattern( self.patternId );
-                    self.callback( makeMessage( self.id, 'result', self.triggerVal) );
-                }
-            }
-            else { // zero results
-                if( self.triggerOff && self.lastResults.length > 0 ) {
-                    // PatternsService.stopPattern( self.patternId );
-                    self.callback( makeMessage( self.id, 'off', self.triggerVal) );
-                }
-            }
-            self.lastResults = _.union(self.lastResults, results).sort();
-            log.msg("ImapSearcher: search lastResults:", self.lastResults);
-        }); // search
-    }
-    else if( self.triggerType === 'sender' ) {
-
-    }
-    else if( self.triggerType === 'unread' ) {
-        if( arg > 0 ) {  // arg is numnewmsgs
-            self.callback( makeMessage( self.id, 'result', arg + ' unread msgs'));
-        }
-
-    }
-
-};
-
-ImapSearcher.prototype.start = function() {
-    log.msg("ImapSearcher starting");
-    this.imap.connect();
+    // and then finally, connect
+    self.imap.connect();
 };
 
 ImapSearcher.prototype.stop = function() {
-    this.imap.end();
+    if( this.imap ) {
+        this.imap.end();
+    }
+    this.imap = null;
     // clearTimeout( this.timer );
 };
 
