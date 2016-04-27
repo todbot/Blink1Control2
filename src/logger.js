@@ -27,7 +27,7 @@ var listeners = [];
 var ignoredSources = [
    /IftttService/i,
    /PatternView/i,
-   /PatternList/i,
+   // /PatternList/i,
    /Blink1ColorPicker/i
     // /ScriptService/
 ];
@@ -76,6 +76,7 @@ var Logger = {
 	// maybe: event.emitterId
 	// maybe: event.style == 'log' or 'display' or 'forId'?
 	addEvent: function(event) { // string or {date,text,type,id} object
+		this.msg("addEvent:",event);
 		if( typeof event === 'string' ) {
 			event = {text: event};
 		}
