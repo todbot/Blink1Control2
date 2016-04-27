@@ -39,7 +39,7 @@ var MailForm = React.createClass({
             enabled: rule.enabled,
             type:'mail',
             name: rule.name,
-            patternId: rule.patternId || this.props.patterns[0],
+            patternId: rule.patternId || this.props.patterns[0].id,
             mailtype: rule.mailtype || 'IMAP',  // default it
             host: rule.host || '',
             port: rule.port || 993,
@@ -49,7 +49,7 @@ var MailForm = React.createClass({
             actionType: 'play-pattern',
             triggerType: rule.triggerType || 'unread',
             triggerVal: rule.triggerVal || '1' ,
-            triggerOff: rule.triggerOff || false, 
+            triggerOff: rule.triggerOff || false,
             errormsg: ''
         });
     },
@@ -70,9 +70,18 @@ var MailForm = React.createClass({
         }
         this.props.onSave(this.state);
     },
+    onMailTypeClick: function(evt) {
+        var mailtype = evt.target.value;
+        log.msg("mailForm.onMailTypeClick ",mailtype);//,evt);
+        if( mailtype === 'GMAIL' ) {
+            this.setState({host:'imap.gmail.com', port:993, useSSL:true});
+        }
+        this.setState({mailtype:mailtype});
+    },
     onTriggerTypeClick: function(evt) {
-        log.msg("mailForm.onTriggerClick ",evt.target.value);//,evt);
-        this.setState({triggerType: evt.target.value});
+        var type = evt.target.value;
+        // log.msg("mailForm.onTriggerTypeClick ",type);//,evt);
+        this.setState({triggerType: type});
     },
     onTriggerValClick: function(evt) {
         log.msg("mailForm.onTriggerClick ",evt.target.value, evt.target.name);
@@ -100,9 +109,9 @@ var MailForm = React.createClass({
                                 valueLink={this.linkState('name')} />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-4" bsSize="small"
                                 type="select" label="Account type" placeholder="IMAP"
-                                valueLink={this.linkState('mailtype')} >
+                                onChange={this.onMailTypeClick} >
                                 <option value="IMAP">IMAP</option>
-                                <option value="Gmail">Gmail</option>
+                                <option value="GMAIL">Gmail</option>
                                 <option value="POP">POP</option>
                             </Input>
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
@@ -161,7 +170,7 @@ var MailForm = React.createClass({
                             </Input>
 
                             <Input labelClassName="col-xs-10" wrapperClassName="col-xs-offset-4 col-xs-8" bsSize="small"
-                                type="checkbox" label="Turn pattern off when done"
+                                type="checkbox" label="Turn blink(1) off when done"
                                 checkedLink={this.linkState('triggerOff')} />
 
                         </Col>

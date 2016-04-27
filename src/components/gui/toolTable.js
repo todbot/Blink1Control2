@@ -99,6 +99,7 @@ var ToolTable = React.createClass({
 		conf.saveSettings("eventRules", rules);
     },
     // based on rulenew, feed appropriate service new rule
+	// FIXME: these "reloadConfig()" should really restart only new/changed rule
     updateService(rule) {
 		if( rule.type === 'ifttt' ) {
 			IftttService.reloadConfig();
