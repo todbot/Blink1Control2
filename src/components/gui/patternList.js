@@ -36,7 +36,7 @@ var PatternList = React.createClass({
 	/** Callback to PatternsService.addChangeListener */
 	updatePatternState: function(allpatterns) {
 		var patts = allpatterns;
-		log.msg("PatternList.updatePatternState:", patts);
+		// log.msg("PatternList.updatePatternState");
 		this.setState( {patterns: patts } );
 	},
 
@@ -78,7 +78,7 @@ var PatternList = React.createClass({
 			return (
 				<tr key={patt.id + idx + patt.playing} style={{height:25}}>
 					<td style={{ margin: 0, padding: 0}}>
-						<PatternView
+						<PatternView 
 							pattern={patt}
 							onPatternUpdated={this.onPatternUpdated}
 							onCopyPattern={this.copyPattern}
@@ -92,7 +92,7 @@ var PatternList = React.createClass({
 			<div>
 				<ButtonToolbar>
 					<Button onClick={this.onStopAllPatterns} bsSize="xsmall" ><i className="fa fa-stop"></i> stop all</Button>
-					<Button onClick={this.onAddPattern} bsSize="xsmall"  style={{float:'right'}}><i className="fa fa-plus"></i> add pattern</Button>
+					<Button onClick={this.onAddPattern} bsSize="xsmall"  style={{float:'right'}}><i className="fa fa-plus"></i> new pattern</Button>
 				</ButtonToolbar>
 				<Table hover style={{display:'block', height:280, overflow:'auto'}} >
 					<tbody >

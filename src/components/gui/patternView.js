@@ -23,7 +23,7 @@ var PatternView = React.createClass({
 	getInitialState: function() {
 		return {
 			activeSwatch: -1,
-            pattern: _.clone(this.props.pattern),
+            pattern: this.props.pattern,  // this was a clone, why?
 			editing: false
 		};
 	},
@@ -149,65 +149,16 @@ var PatternView = React.createClass({
 	render: function() {
 		var pattern = this.state.pattern;
 		var pid = pattern.id;
-		//log.msg("PatternView.render: pid:",pid,"playing:",pattern.playing);
-		var isEditing = (this.state.editing);// && (patterneditId === pid));
+		var isEditing = (this.state.editing); // && (patterneditId === pid));
 
-		// var patternViewStyle = {display:'inline-block', border: (isEditing) ? '1px solid red': 'none'};
-		var patternViewStyle = (isEditing) ? {display:'inline-block', background: '#ddd'} : {display:'inline-block'};
-		var pattStyle = { width: 250, margin:0, padding:0, display: "inline-block",  border:'0px solid blue'};
-		var pattNameStyle = {width: 90, display: "inline-block", border: '0px solid blue',
-				textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "80%",
-				borderRight: "1px solid #bbb", marginRight:2, paddingRight:2, marginTop:4 };
-        var swatchSetStyle = { width: 115, overflow: "scroll" };
-		var swatchStyle = { width: 17, height: 17, border:0, padding:0, marginLeft: 1, marginTop: 4, display: "inline-flex",
-			borderWidth: 1, borderColor: "#bbb", borderRadius: 3, borderStyle: "solid",	background: "inherit" };
-		var addSwatchStyle = _.clone(swatchStyle);
-    	_.assign( addSwatchStyle, { padding: 0, marginTop:0, marginLeft:3, border:0 } );
-		var repeatsStyle = { width: 30, margin:0, padding:0, marginTop:4, fontSize: "80%", border:'0px solid green', background: "inherit" };
-
-
-		var nameField = (this.state.editing) ?
-			<input style={pattNameStyle} type="text" name="name" value={pattern.name} onChange={this.onNameChange} />
-			: <span style={pattNameStyle}>{pattern.name}</span>;
-			// : <span style={{width: 120, cursor:'default'}}><span style={pattNameStyle}>{pattern.name}</span></span>;
-
-		// also see: https://facebook.github.io/react/tips/expose-component-functions.html
-		var createSwatch = function(color, i) {
-			var ss = _.clone(swatchStyle); // dont need this now
-			// ss.background = color.rgb;
-			// prepare for multiple-colored backgrounds
-			ss.background = 'linear-gradient(180deg, ' + color.rgb+', ' + color.rgb+' 50%, ' + color.rgb+' 50%, ' + color.rgb +')';
-
-			if( isEditing && i === this.state.activeSwatch ) {
-				 ss.borderColor='#333'; ss.borderWidth = 3;
-			} else {
-				ss.borderColor='#bbb';
-			}
-			return (
-				<div onClick={this.onSwatchClick.bind(this, i)} onDoubleClick={this.onSwatchDoubleClick.bind(this,i)}
-						key={i} style={ss}></div>
-			);
-		};
-
-		// var patternStyle = {
-		// 	borderStyle: "solid", borderWidth: 1, borderRadius: "4%", borderColor: "#eee", padding: 2, margin: 0,
-		// 	background: "#fff"
-		// };
 		var editButtStyle = {borderStyle: "none", background: "inherit", display: "inline-block", padding: 2,
 			borderLeftStyle: "solid", float: "right" };
-		//var patternStateIcon = (patt.playing) ? 'fa-stop' : 'fa-play';
+
 		var lockMenuIcon = (pattern.locked) ? "fa fa-lock" : "fa fa-unlock-alt";
 		var lockMenuText = (pattern.locked) ? "Unlock pattern" : "Lock pattern";
 
-		var addSwatchButton = (!this.state.editing) ? null :
-            <button onClick={this.onAddSwatch} type="button" key={99} style={addSwatchStyle}><i className="fa fa-plus" style={{}}></i></button>;
+		var littleButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 0, outline: 0 };
 
-		var playButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 0, paddingBottom:2, outline: 0 };
-		var lockButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 2, width: 15 };
-
-		var lockButton = (isEditing) ? '':<Button style={lockButtStyle}><i className={pattern.locked ? "fa fa-lock" : ""}></i></Button>;
-
-//		<Button onClick={this.onDeletePattern} style={playButtStyle}><i className="fa fa-remove"></i></Button>
 		var editOptions =
 			<DropdownButton style={editButtStyle} title="" id={pid} pullRight >
 				<MenuItem eventKey="1" onSelect={this.onEditPattern} disabled={pattern.system || pattern.locked}><i className="fa fa-pencil"></i> Edit pattern</MenuItem>
@@ -216,32 +167,32 @@ var PatternView = React.createClass({
 				<MenuItem eventKey="4" onSelect={this.onDeletePattern} disabled={pattern.locked}><i className="fa fa-remove"></i> Delete pattern</MenuItem>
 			</DropdownButton>;
 		if( isEditing ) {
-			editOptions = <Button onClick={this.onEditDone} style={playButtStyle}><i className="fa fa-check"></i></Button>;
+			editOptions = <Button onClick={this.onEditDone} style={littleButtStyle}><i className="fa fa-check"></i></Button>;
 		}
 
 		/// --- begin the flex-ening
 		var style_pattern = { width: 300, display:'flex', alignItems:'flex-start' };
 		var style_playbutton = { width:20, height:20, marginTop:2 };
-		var style_repeats = { flex:'0 0 auto', height:20, marginTop:2, fontSize:'80%' };
+		var style_repeats = { flex:'0 0 auto', height:20, marginTop:3, fontSize:'80%' };
 		var style_name = { width:100, textAlign:'right', borderRight:'1px grey', marginTop:2, marginRight:2, paddingRight:2,
 			 				overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontSize:'90%' };
 		var style_colorlist = { width:170, display:'flex', flexWrap:'wrap', alignItems:'center'};
 		var style_colorswatch = { flex:'0 0 auto', width:17, height:17, margin:1, padding:1,
 									borderWidth:1, borderStyle:'solid', borderRadius:3, borderColor:'#bbb' };
+		var style_addswatch = _.clone(style_colorswatch); style_addswatch.display = 'flex'; style_addswatch.justifyContent='center';
 		var style_lockbutton={ width:20 };
 		var style_editoptions= { width:20 };
 
-		var nameIsh = (this.state.editing) ?
-				<input type="text" name="name" value={pattern.name} onChange={this.onNameChange} /> : pattern.name;
+		var nameIsh = (isEditing) ? <input type="text" name="name" value={pattern.name} onChange={this.onNameChange} /> : pattern.name;
 
-		// var addSwatch = (!this.state.editing) ? null :
-		// 	<button onClick={this.onAddSwatch} type="button" key={99} ><i className="fa fa-plus" style={{}}></i></button>;
+		var addSwatchButton = (isEditing) ? <Button onClick={this.onAddSwatch} key={99}
+												style={style_addswatch}><i className="fa fa-plus"></i></Button> : '';
 
 		var createColorSwatch = function(color ,i) {
 			var mystyle = _.clone(style_colorswatch);
 			mystyle.backgroundColor = color;
 			mystyle.background = 'linear-gradient(180deg, ' + color.rgb+', ' + color.rgb+' 50%, ' + color.rgb+' 50%, ' + color.rgb +')';
-			if( this.state.editing && i === this.state.activeSwatch ) {
+			if( isEditing && i === this.state.activeSwatch ) {
 				 mystyle.borderColor='#333'; mystyle.borderWidth = 3;
 			}
 			return (
@@ -262,14 +213,13 @@ var PatternView = React.createClass({
 
 	            <div style={style_colorlist}>
                     {pattern.colors.map( createColorSwatch, this)}
-					{this.state.editing ? <button onClick={this.onAddSwatch} key={99} ><i className="fa fa-plus"></i></button> : ''}
+					{addSwatchButton}
 					<div style={style_repeats} onClick={this.onRepeatsClick}>
 						<i className="fa fa-repeat">{(pattern.repeats) ? 'x'+pattern.repeats : ''}</i>
 					</div>
 				</div>
 
-
-				<div style={style_lockbutton}><i className={pattern.locked ? "fa fa-lock" : ""}></i></div>
+				<div style={style_lockbutton}><i style={{}} className={pattern.locked ? "fa fa-lock" : ""}></i></div>
 				<div style={style_editoptions}>{editOptions}</div>
 			</div>
 		);

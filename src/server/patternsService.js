@@ -237,12 +237,12 @@ var PatternsService = {
 	},
 
 	stopAllPatterns: function() {
-		log.msg('PatternsService.stopAllPatterns');
+		// log.msg('PatternsService.stopAllPatterns',JSON.stringify(this.getAllPatterns()));
 		// var self = this;
 		_.forEach( this.getAllPatterns(), function(pattern) {
 			if( pattern.playing ) {
-				console.log("    stopping ",pattern.name);
-				//self.stopPattern(patt.id);
+				// console.log("    stopping ",pattern.name);
+				// self.stopPattern(pattern.id);
 				pattern.playing = false;
 				clearTimeout( pattern.timer );
 				if( playingPatternId === pattern.id ) { playingPatternId = ''; }  // FIXME
@@ -361,15 +361,14 @@ var PatternsService = {
 		// console.log("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
 
 		Blink1Service.fadeToColor( millis, rgb, ledn );
-		this.notifyChange();
 
+		// go to next step in pattern, potentially looping or stopping
 		pattern.playpos++;
 		if( pattern.playpos === pattern.colors.length ) {
 			pattern.playpos = 0;
 			pattern.playcount++;
 			if( pattern.playcount === pattern.repeats ) {
 				this.stopPattern(pattern.id); // notifies change listeners
-				if( callback ) { callback(); }  // FIXME: why do this and not notify change?
 				if( pattern.temp ) {   // remove temp pattern after its done
 					_.remove( patternsTemp, {id:pattern.id} );
 					this.notifyChange();
@@ -377,10 +376,11 @@ var PatternsService = {
 				return;
 			}
 		}
+
+		this.notifyChange();
 		pattern.timer = setTimeout(function() {
 			PatternsService._playPatternInternal(id, callback);
 		}, millis);
-
 	},
 
 	getPlayingPatternId: function() {
