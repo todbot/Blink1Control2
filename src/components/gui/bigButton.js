@@ -36,7 +36,7 @@ var BigButton = React.createClass({
 		// return {name: this.props.name, editName:false};
 	},
 	componentDidMount: function() {
-		console.log("bigButton type:",this.props.type);
+		// log.msg("BigButton.componentDidMount type:",this.props.type);
 		if( this.props.type !== 'sys' ) { this.makeMenu(); }
 	},
 	menu: null,
@@ -47,7 +47,7 @@ var BigButton = React.createClass({
 		var menu = new Menu();
 
 		var pattmenu = new Menu();
-		console.log("type",this.props.type,",patterns:",this.props.patterns);
+		// log.msg("BigButton.makeMenu: type:",this.props.type,",patterns:",this.props.patterns);
 		this.props.patterns.map( function(p) {
 			pattmenu.append( new MenuItem({label:p.name, click: self.doContextMenu.bind(null,null, 'setpattern', p.id)}) );
 		});
