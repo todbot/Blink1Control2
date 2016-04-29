@@ -16,7 +16,7 @@ else {
 	isDevel = (process.env.NODE_ENV === 'development');
 }
 
-var eventsMax = 1000;  // FIXME: put in configuration?
+var eventsMax = 100;  // FIXME: put in configuration?
 
 var events = [
 ];

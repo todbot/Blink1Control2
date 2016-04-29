@@ -5,13 +5,13 @@ Random notes
 
 
 ### App capability changes / To-do's
-- Special patterns like '~off' and '~stop:patternname'
+- DONE: Special patterns like '~off' and '~stop:patternname'
 - IFTTT rule_name can be matching rule or specific patternname or special patternname
 -  (maybe restructure app to not need IFTTT "rules"?)
 - Patterns should allow multiple LEDs to change per step (take array of {color,ledn,time})
-- Add 'enable' flag to each rule in Mail & Tools
+- DONE: TODO: Add 'enable' flag to each rule in Mail & Tools
 - TODO: partion code into client & server so webpack doesn't bundle server code
-- TODO: what about 'parametric patterns', e.g. "blink 5 times, fill in color & on/off time"
+- DONE : TODO: what about 'parametric patterns', e.g. "blink 5 times, fill in color & on/off time"
 - TODO: Number() vs parseInt() in `PatternsService._parsePatternStr()`?
 - TODO: global shortcut, see: https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md
 
@@ -32,7 +32,7 @@ Random notes
 - Event searcher lives in `src/server/<sourcename>Service.js`
 - Config lives in config.eventRules[] and each rule must contain: enabled, type, name
 - Form to set config lives in `src/component/gui/<sourcename>Form.js`
-- toolTable.js loads forms, ask them to format themselves for tables, 
+- toolTable.js loads forms, ask them to format themselves for tables,
 
 #### General architecture
 

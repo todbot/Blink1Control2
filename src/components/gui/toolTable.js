@@ -88,7 +88,7 @@ var ToolTable = React.createClass({
     },
     getUpdates: function() {
         var events = log.getEvents();
-        log.msg("ToolTable.getUpdates, events:",events);
+        // log.msg("ToolTable.getUpdates, events:",events);
 		if( !this.state.showForm ) {  //i.e. don't change when we're in edit mode
         	this.setState({events: events});
 		}

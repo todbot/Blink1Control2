@@ -41,6 +41,7 @@ var ScriptForm = React.createClass({
             type: 'script',  // FIXME: allow URL & File here too?
             enabled: rule.enabled,
             name: rule.name,
+            initialName: rule.name,
             actionType: rule.actionType,
             patternId: rule.patternId,
             filepath: rule.filepath,
