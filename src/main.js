@@ -154,6 +154,18 @@ app.on('ready', function () {
 
 	    aboutWindow.loadURL('data:text/html,' + info);
 	};
+
+	var bigButtonsConfig = config.readSettings('bigButtons') || [];
+	var statusButtons = bigButtonsConfig.map( function(bb,idx) {
+		return {
+			label: bb.name,
+			click: function(/*item*/) {
+				// console.log("click item",item);
+				mainWindow.webContents.send('pressBigButton', idx);
+			} 
+		};
+	});
+
 	var contextMenuTemplate = [
 		{	label: 'About Blink1Control2',
 			click: function() { openAboutWindow(); }
@@ -187,6 +199,10 @@ app.on('ready', function () {
 				config.saveSettings('apiServer:enabled', menuItem.checked);
 				mainWindow.webContents.send('reloadConfig', 'apiServer');
 			}
+		},
+		{	type: "separator" },
+		{ 	label: 'Set Status...',
+			submenu: statusButtons
 		},
 		{	type: "separator" },
 		{	label: 'Open Settings...',

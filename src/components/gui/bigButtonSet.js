@@ -15,7 +15,8 @@ var BigButton = require('./bigButton');
 var buttonsUserDefault = [
     { name: "Available", type: "color", color: "#00FF00", ledn: 0 },
     { name: "Busy", type: "color", color: "#ffFF00", ledn: 0},
-    { name: "Away", type: "color", color: "#ff0000", ledn: 0 }
+    { name: "Away", type: "color", color: "#ff0000", ledn: 0 },
+    { name: "Meeting", type: "color", color: "#00000ff", ledn: 0 }
 ];
 
 var BigButtonSet = React.createClass({
@@ -46,7 +47,6 @@ var BigButtonSet = React.createClass({
             color: Blink1Service.getCurrentColor().toHexString(),
             ledn: Blink1Service.getCurrentLedN()
         };
-        console.log("newbut", newbut);
         this.state.buttonsUser.push( newbut );
         this.saveButtons( this.state.buttonsUser );
     },
@@ -71,6 +71,9 @@ var BigButtonSet = React.createClass({
             this.state.buttonsUser[idx].type = 'pattern';
             this.state.buttonsUser[idx].color = 'grey';
             this.state.buttonsUser[idx].patternId = arg; // PatternsService.getPlayingPatternId();
+            // if( this.state.buttonsUser[idx].name === 'Big Button' ) {
+            //     this.state.buttonsUser[idx].name = pattern.name;
+            // }
         }
         else if( cmd === 'rename' ) {
             this.state.buttonsUser[idx].name = arg;

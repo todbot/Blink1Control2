@@ -44,6 +44,8 @@ var ipcRenderer = require('electron').ipcRenderer;
 
 // TESTING END
 
+var _ = require('lodash');
+
 var conf = require('./configuration');
 
 // maybe this goes in another file?
@@ -77,7 +79,7 @@ MailService.start();
 SkypeService.start();
 ScriptService.start();
 
-
+// events from the main process, from menu actions
 ipcRenderer.on('reloadConfig', function( event,arg ) {
     console.log("RELOAD CONFIG ... ",arg);
     if( arg === 'apiServer' ) {
@@ -87,6 +89,21 @@ ipcRenderer.on('reloadConfig', function( event,arg ) {
 ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {
     PatternsService.stopAllPatterns();
     Blink1Service.off();
+});
+ipcRenderer.on('pressBigButton', function( event,arg ) {
+    var bigButtonsConfig = conf.readSettings('bigButtons');
+    var bigButton = bigButtonsConfig[ arg ];
+    if( bigButton ) {
+        // FIXME: this is duplicating code in BigButton
+        if( bigButton.type === 'color' ) {
+            console.log("buttontype color", bigButton);
+            Blink1Service.fadeToColor( 100, bigButton.color, bigButton.ledn || 0 );
+        }
+        else if( bigButton.type === 'pattern' ) {
+            console.log("buttontype pattern");
+            PatternsService.playPattern( bigButton.patternId );
+        }
+    }
 });
 
 
