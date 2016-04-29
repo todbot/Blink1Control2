@@ -22,10 +22,11 @@ var util = require('../utils');
 // globals because we are a singleton
 var listeners = {};
 var blink1serials = []; // no, use hash? Blink1.devices();
-// var blink1s =  // all blink1s
-// [
-// 	{serial:'', device:null},
-// ];
+// FIXME: IDEA for multiple open blink1s
+var blink1s =  // opened blink1s
+[
+	{serial:'', device:null},
+];
 
 var blink1 = null; // the main currently-open blink1
 var blink1OpenedSerial;
@@ -38,6 +39,13 @@ var currentColors = new Array( 18 ); // FIXME: 18 LEDs in current blink1 firmwar
 var currentMillis = 100;
 var currentLedN = 0;
 var lastColors = new Array(18);
+// FIXME: IDEA for multiple open blink1s
+var currentState = [
+	{
+		colors: new Array(18), // 18 element array, one per LEDs
+		millis: 100
+	}
+];
 
 lastColors.fill( tinycolor('#000000') ); // FIXME: hack
 currentColors.fill( tinycolor('#000000') );
@@ -118,6 +126,8 @@ var Blink1Service = {
 		if( blink1serials.indexOf(serialnumber) === -1 ) { // if blink1 not already in array // FIXME:
 			log.msg("Blink1Service._addDevice: new serial ", serialnumber);
 			blink1serials.push(serialnumber);
+			// blink1ToUse == 0 means use first available
+			// blink1ToUse = [] means open array
 			if( this.conf.blink1ToUse === 0 || this.conf.blink1ToUse === serialnumber ) {
 				setTimeout(function() {
 					Blink1Service._setupDevice(serialnumber);  // FIXME: remove
@@ -245,12 +255,13 @@ var Blink1Service = {
 	// main entry point for this service, sets currentColor & currentLedN
 	// 'color' arg is a tinycolor() color or hextring ('#ff00ff')
 	// if color is a hexstring, it will get converted to tinycolor
-	fadeToColor: function( millis, color, ledn) {
+	fadeToColor: function( millis, color, ledn, blink1_id) {
+	// fadeToColor: function( millis, color, ledn) {
+		blink1_id = blink1_id || 0;
 		ledn = ledn || 0;
-		// millis = millis || 1;  // disallow 0 msecs
 		currentLedN = ledn;
 		currentMillis = millis;
-		lastColors = _.clone(currentColors);
+		lastColors = _.clone(currentColors); // clone to save them
 		// console.log("Blink1Service: color:",typeof color, color);
 		if( typeof color === 'string' ) {
 			color = tinycolor( color ); // FIXME: must be better way
