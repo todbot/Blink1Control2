@@ -193,9 +193,9 @@ ImapSearcher.prototype.start = function() {
 
 ImapSearcher.prototype.stop = function() {
     if( this.imap ) {
-        this.imap.end();
+        this.imap.destroy();
     }
-    this.imap = null;
+    // this.imap = null;
     // clearTimeout( this.timer );
 };
 
