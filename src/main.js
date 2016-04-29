@@ -131,6 +131,8 @@ app.on('ready', function () {
 	    var info = [
 			'<div style="text-align: center; font-family: \'Helvetica Neue\', \'Helvetica\', \'Arial\', \'sans-serif\'">',
 			'<h2>Blink1Control2</h2>',
+			'<p> for blink(1) USB RGB LED notification devices. <p>',
+			'<p><a target="_blank" href="http://blink1.thingm.com/">blink1.thingm.com</a></p>',
 			'<p>',
 			  'Version: ' + pkg.version + '<br/>',
 			  'Electron version: ' + process.versions.electron + '<br/>',
@@ -141,10 +143,15 @@ app.on('ready', function () {
 			].join('');
 	    // DEV: aboutWindow will be garbage collection automatically
 	    var aboutWindow = new BrowserWindow({
-			height: 180,
+			height: 280,
 			width: 400
 			// icon: assets['icon-32'],
 	    });
+		aboutWindow.webContents.on('new-window', function(e, url) {
+			e.preventDefault();
+			require('shell').openExternal(url);
+		});
+
 	    aboutWindow.loadURL('data:text/html,' + info);
 	};
 	var contextMenuTemplate = [
@@ -182,7 +189,7 @@ app.on('ready', function () {
 			}
 		},
 		{	type: "separator" },
-		{	label: 'Open Settings',
+		{	label: 'Open Settings...',
 			click: function() { mainWindow.show(); }
 		},
 		{	label: 'Off / Reset Alerts',  // Note: only works when DevTools is hiddden, else Cmd-r reloads

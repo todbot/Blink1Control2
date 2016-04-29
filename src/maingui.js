@@ -55,6 +55,7 @@ ApiServer.start();
 Blink1Service.start();
 PatternsService.initialize();
 
+// FIXME: IDEA for event source modularity. almost there
 // var _ = require('lodash');
 // var eventServices = conf.readSettings('eventServices');
 // var services = [];
