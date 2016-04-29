@@ -55,7 +55,7 @@ var IftttService = {
 	config: {},
 	rules: {},
 	// FIXME: all these fetched from configuration later
-	iftttKey: 'ABCD1234ABCD1234',
+	iftttKey: '', //ABCD1234ABCD1234',
 	intervalTimer: null,
     lastTime: 0,
 	// lastState: "",
@@ -71,7 +71,7 @@ var IftttService = {
 			conf.saveSettings('iftttService', this.config);
 		}
 		var allrules = conf.readSettings('eventRules') || [];
-		this.rules = allrules.filter( function(r){return r.type==='ifttt';} );
+		this.rules = allrules.filter( function(r){return r.type === 'ifttt';} );
 		this.iftttKey = Blink1Service.iftttKey();
 		log.msg("IftttService.reloadConfig. rules=", this.rules);
 	},
@@ -104,6 +104,7 @@ var IftttService = {
     fetch: function() {
 		var self = this;
 		var rules = self.getRules();
+		var defaultId = (rules.length>0) ? rules[0].id : 'default'; // FIXME:
 
 		//if( rules.length === 0 ) { return; } // no rules, don't waste effort
 		var url = baseUrl + self.iftttKey;
@@ -112,7 +113,8 @@ var IftttService = {
 		needle.get(baseUrl + this.iftttKey, function(error, response) {
 			// FIXME: do error handling like: net error, bad response, etc.
 			if( error || response.statusCode !== 200 ) { // badness
-				log.msg("IftttService.fetch: error fetching");
+				// log.msg("IftttService.fetch: error fetching");
+				log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:'error fetching'} );
 				return;
 			}
 			// console.log("BODY:", response.body);
@@ -126,7 +128,7 @@ var IftttService = {
 					evt.eventDate = new Date(parseInt(1000 * evt.date));
 					if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
 						log.msg('IftttService.fetch: new event name:"'+ evt.name+'"');
-						log.addEvent( {date:evt.eventDate, type:'trigger', text:evt.source, source:'ifttt', id:evt.name} );
+						log.addEvent( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:evt.source  } );
 						rules.map( function(r) {
 							log.msg('IftttService.fetch: rule:', JSON.stringify(r));
 							if( evt.name.trim() === r.name.trim()) {
@@ -148,6 +150,7 @@ var IftttService = {
 				// }
 			}
 			else {
+				log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:'bad response'} );
 				log.msg("IftttFetcher: bad response: ", response);
 			}
         });

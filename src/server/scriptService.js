@@ -25,7 +25,7 @@ var ScriptService = {
         }
         var allrules = conf.readSettings('eventRules') || [];
 		this.rules = allrules.filter( function(r) {
-            return (r.type==='script' || r.type==='file') && r.enabled;
+            return (r.type==='script' || r.type==='file'|| r.type==='url') && r.enabled;
         });
 		log.msg("ScriptService.start: rules:", this.rules);
         this.startScripts();
@@ -67,7 +67,7 @@ var ScriptService = {
         // log.msg("ScriptService.parse stdout data",str);
         if( self.lastEvents[rule.name] !== str ) {
             // if( !rule.logEvents || (null !== rule.logEvents && rule.logEvents) ) {
-            log.addEvent( {date:Date.now(), text:str.substring(0,40), type:rule.type, id:rule.name} );
+            log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str.substring(0,40) } );
             // }
             self.lastEvents[rule.name] = str;
             PatternsService.playPattern( str );
