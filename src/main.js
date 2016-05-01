@@ -7,6 +7,7 @@ var BrowserWindow = require('browser-window');
 var Tray = require('tray');
 var Menu = require('menu');
 var path = require('path');
+var nativeImage = electron.nativeImage;
 
 var AutoLaunch = require('auto-launch');
 
@@ -17,8 +18,8 @@ var pkg = require('../package.json');
 var config = require('./configuration');
 
 require('crash-reporter').start({
-	productName: 'Blink1Control2',
-	companyName: 'ThingM',
+	productName: pkg.productName,
+	companyName: pkg.companyName,
 	submitURL: 'http://thingm.com/blink1/blink1control2-crash-reporter', // FIXME:
 	autoSubmit: true
 });
@@ -130,7 +131,7 @@ app.on('ready', function () {
 	var openAboutWindow = function () {
 	    var info = [
 			'<div style="text-align: center; font-family: \'Helvetica Neue\', \'Helvetica\', \'Arial\', \'sans-serif\'">',
-			'<h2>Blink1Control2</h2>',
+			'<h2>' + pkg.productName + '</h2>',
 			'<p> for blink(1) USB RGB LED notification devices. <p>',
 			'<p><a target="_blank" href="http://blink1.thingm.com/">blink1.thingm.com</a></p>',
 			'<p>',
@@ -155,19 +156,28 @@ app.on('ready', function () {
 	    aboutWindow.loadURL('data:text/html,' + info);
 	};
 
+	// var swatchIconImg = new Jimp(32, 32, 0xFF0000FF, function (err, image) {
+	// };
+	// var swatchIconBuffer = new Buffer( 32 * 32 * 4 );
+	// for( var i = 0; i < swatchIconBuffer.length; i=i+4) {
+	// 	swatchIconBuffer.writeUInt32BE( 0xFF0000FF, i );
+	// }
+	// var swatchIcon = nativeImage.createFromBuffer( swatchIconBuffer );
+
 	var bigButtonsConfig = config.readSettings('bigButtons') || [];
 	var statusButtons = bigButtonsConfig.map( function(bb,idx) {
 		return {
 			label: bb.name,
+			// icon: swatchIcon,
 			click: function(/*item*/) {
 				// console.log("click item",item);
 				mainWindow.webContents.send('pressBigButton', idx);
-			} 
+			}
 		};
 	});
 
 	var contextMenuTemplate = [
-		{	label: 'About Blink1Control2',
+		{	label: 'About ' + pkg.productName,
 			click: function() { openAboutWindow(); }
 		},
 		{	type: "separator" },
@@ -184,7 +194,7 @@ app.on('ready', function () {
 			click: function(menuItem) {
 				config.saveSettings('startup:startAtLogin', menuItem.checked);
 				// test on Mac with:  osascript -e 'tell application "System Events" to get the name of every login item'
-				var blink1ControlAutoLauncher = new AutoLaunch({ name: 'Blink1Control2'});
+				var blink1ControlAutoLauncher = new AutoLaunch({ name: pkg.productName});
 				if( menuItem.checked ) {
 					blink1ControlAutoLauncher.enable();
 				} else {
@@ -243,7 +253,7 @@ app.on('ready', function () {
 	}
 	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
 
-	appIcon.setToolTip('Blink1Control2 is running...');
+	appIcon.setToolTip( pkg.productName + ' is running...');
 	appIcon.setContextMenu(contextMenu);
 
 	// Mac-specific menu  (enables Command-Q )
@@ -251,10 +261,14 @@ app.on('ready', function () {
 		app.dock.setMenu( contextMenu );
 
 		var template = [
-			{	label: "Blink1Control",
+			{	label: pkg.productName,
 				submenu: [
 					// { label: "About Blink1Control", selector: "orderFrontStandardAboutPanel:" },
-					{ label: "About Blink1Control", click: function() { openAboutWindow(); } },
+					{ label: "About "+ pkg.productName, click: function() { openAboutWindow(); } },
+					{ type: 'separator' },
+					{ label: 'Hide '+pkg.productName, accelerator: "CommandOrControl+H", selector: 'hide:' },
+					{ label: 'Hide Others', accelerator: 'Command+Shift+H', selector: 'hideOtherApplications:' },
+					{ label: 'Show All', selector: 'unhideAllApplications:' },
 					{ type: "separator" },
 					{ label: "Quit", accelerator: "CommandOrControl+Q", click: function() { quit(); }}
 				]

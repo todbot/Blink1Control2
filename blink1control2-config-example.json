@@ -1,0 +1,130 @@
+{
+  "startup": {
+    "startAtLogin": false,
+    "startupPattern": "~pattern:1,#00f300,0.5,0,#000000,0.5,0",
+    "startMinimized": false
+  },
+  "blink1Service": {
+    "deviceRescan": false,
+    "enableGamma": true,
+    "blink1ToUse": 0
+  },
+  "patterns": [
+    {
+      "name": "pattern 2",
+      "id": "pattern2",
+      "pattern": "3,#55ff00,0.2,0,#000000,0.2,0,#facc2e,0.5,0"
+    },
+    {
+      "name": "pattern 1",
+      "id": "pattern1",
+      "pattern": "3,#55ff00,0.2,0,#2efe2e,0.2,0,#f7d358,0.2,0,#000000,0.5,0"
+    },
+    {
+      "name": "new pattern boop boop",
+      "id": "newpattern0",
+      "pattern": "3,#fa58ac,0.5,0,#190710,0.5,0"
+    }
+  ],
+  "bigButtons": [
+    {
+      "name": "Available",
+      "type": "color",
+      "color": "#00FF00"
+    },
+    {
+      "name": "Busy",
+      "type": "color",
+      "color": "#FF0000"
+    },
+    {
+      "name": "Away",
+      "type": "color",
+      "color": "#FFFF00"
+    },
+    {
+      "name": "Meeting",
+      "type": "color",
+      "color": "#0000FF"
+    }
+  ],
+  "hostId": "BD9714A6",
+  "apiServer": {
+    "port": 8934,
+    "host": "localhost",
+    "enabled": false
+  },
+  "eventServices": {
+    "iftttService": {
+      "service": "iftttService",
+      "type": "ifttt",
+      "enabled": true,
+      "intervalSecs": 10
+    },
+    "mailService": {
+      "service": "mailService",
+      "type": "mail",
+      "enabled": true
+    },
+    "scriptService": {
+      "service": "scriptService",
+      "type": "script",
+      "enabled": true
+    },
+    "skypeService": {
+      "service": "skypeService",
+      "type": "skype",
+      "enabled": false
+    }
+  },
+  "eventRules": [
+    {
+      "enabled": true,
+      "type": "mail",
+      "name": "todtest@afklab.com",
+      "patternId": "pattern2",
+      "mailtype": "IMAP",
+      "host": "mail.afklab.com",
+      "port": 993,
+      "username": "todtest@afklab.com",
+      "password": "42a11df06616f12a98fb692f61c1077c130d60dbb5517481ee2cac79c4640998",
+      "useSSL": true,
+      "actionType": "play-pattern",
+      "triggerType": "subject",
+      "triggerVal": "bob",
+      "triggerOff": false,
+      "errormsg": ""
+    },
+    {
+      "enabled": false,
+      "type": "mail",
+      "name": "todbottest@gmail.com",
+      "patternId": "pattern1",
+      "mailtype": "IMAP",
+      "host": "imap.gmail.com",
+      "port": 993,
+      "username": "todbottest@gmail.com",
+      "password": "a2d309863f7085b3c5a352849e7c8836889c6fd9da124bc8fdc2323347aee2e0",
+      "useSSL": true,
+      "actionType": "play-pattern",
+      "triggerType": "subject",
+      "triggerVal": "boop",
+      "triggerOff": true,
+      "errormsg": ""
+    },
+    {
+      "type": "ifttt",
+      "enabled": true,
+      "name": "red demo",
+      "actionType": "play-pattern",
+      "patternId": "blueflash"
+    },
+    {
+      "type": "ifttt",
+      "enabled": true,
+      "name": "green demo",
+      "actionType": "play-pattern",
+      "patternId": "newpattern0"
+    }
+  ]
+}

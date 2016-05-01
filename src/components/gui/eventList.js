@@ -59,8 +59,8 @@ var EventList = React.createClass({
 				{revevents.map(createEventLine, this)}
 				</ListGroup>
 				<ButtonToolbar>
-				<Button bsSize="xsmall"  onClick={this.clearEvents}>Clear events</Button>
-				<Button bsSize="xsmall"  onClick={this.showAllEvents}>Show all</Button>
+					<Button bsSize="xsmall"  onClick={this.clearEvents}>Clear events</Button>
+					<Button bsSize="xsmall"  onClick={this.showAllEvents}>Show all</Button>
 				</ButtonToolbar>
 			</Panel>
 			);

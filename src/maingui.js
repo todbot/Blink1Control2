@@ -47,6 +47,7 @@ var ipcRenderer = require('electron').ipcRenderer;
 var _ = require('lodash');
 
 var conf = require('./configuration');
+var log = require('./logger');
 
 // maybe this goes in another file?
 var ApiServer = require('./server/apiServer');
@@ -97,6 +98,7 @@ ipcRenderer.on('pressBigButton', function( event,arg ) {
         // FIXME: this is duplicating code in BigButton
         if( bigButton.type === 'color' ) {
             console.log("buttontype color", bigButton);
+            log.addEvent({type:'trigger', source:'button', id:bigButton.name} );
             Blink1Service.fadeToColor( 100, bigButton.color, bigButton.ledn || 0 );
         }
         else if( bigButton.type === 'pattern' ) {

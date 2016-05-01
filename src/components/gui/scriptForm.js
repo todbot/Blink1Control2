@@ -38,7 +38,7 @@ var ScriptForm = React.createClass({
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
 		this.setState({
-            type: 'script',  // FIXME: allow URL & File here too?
+            type: rule.type || 'script',  // FIXME: allow URL & File here too?
             enabled: rule.enabled,
             name: rule.name,
             initialName: rule.name,
@@ -70,20 +70,19 @@ var ScriptForm = React.createClass({
     render: function() {
         var self = this;
 
-        // var createPatternOption = function(item, idx) {
-        //     return ( <option key={idx} value={item.id}>{item.name}</option> );
-        // };
-        // <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
-        //     type="select" label="Pattern"
-        //     valueLink={this.linkState('patternId')} >
-        //     {this.props.patterns.map( createPatternOption, this )}
-        // </Input>
+        var title = "Script";
+        if( this.state.type === 'file' ) {
+            title = "File";
+        }
+        else if( this.state.type === 'url' ) {
+            title = "URL";
+        }
 
         return (
             <div>
                 <Modal show={this.props.show} onHide={this.handleClose} >
                     <Modal.Header>
-                        <Modal.Title>Script Settings</Modal.Title>
+                        <Modal.Title>{title} Settings</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
@@ -93,7 +92,7 @@ var ScriptForm = React.createClass({
                               type="text" label="Rule Name" placeholder="Descriptive name"
                               valueLink={this.linkState('name')} />
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                              type="text" label="File Path" placeholder="Click to choose script / program / batch file"
+                              type="text" label="{title} Path" placeholder="Click to choose script / program / batch file"
                               valueLink={this.linkState('filepath')}
                               onClick={this.openFileDialog}/>
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
