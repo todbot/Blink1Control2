@@ -3,6 +3,7 @@
 var React = require('react');
 
 var config = require('../../configuration');
+var log = require('../../logger');
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
 
@@ -92,29 +93,30 @@ var BigButtonSet = React.createClass({
 
 	playBigButton: function(buttontype, buttonindex) {
 		console.log("playBigButton:", buttontype, buttonindex);
+        var button = this.state.buttonsUser[buttonindex];
 		if( buttontype === 'sys' ) {
-			var butt = this.state.buttonsSys[buttonindex];
-			if( butt.name === "White" ) {
+			button = this.state.buttonsSys[buttonindex];
+			if( button.name === "White" ) {
 				this.setBlink1Color( "#FFFFFF" );
 			}
-			else if( butt.name === "Off" ) {
+			else if( button.name === "Off" ) {
                 PatternsService.stopAllPatterns();
                 Blink1Service.off();
 			}
-            else if( butt.name === "Color Cycle" ) {
+            else if( button.name === "Color Cycle" ) {
                 Blink1Service.colorCycleStart();
             }
-            else if( butt.name === "Strobe Light" ) {
+            else if( button.name === "Strobe Light" ) {
                 PatternsService.playPattern( '~blink-white-0' );
             }
 		}
 		else if( buttontype === 'color' ) {
-            console.log("buttontype color");
-			this.setBlink1Color( this.state.buttonsUser[buttonindex].color, this.state.buttonsUser[buttonindex].ledn );
+			this.setBlink1Color( button.color, button.ledn );
 		}
         else if( buttontype === 'pattern' ) {
-            this.playPattern( this.state.buttonsUser[buttonindex].patternId );
+            this.playPattern( button.patternId );
         }
+        log.addEvent({type:'trigger', source:'button', id:button.name} );
 	},
 
     render: function() {
