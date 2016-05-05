@@ -121,14 +121,22 @@ var PatternsService = {
 	initialize: function() {
 		listeners = [];
 		patternsSystem = systemPatterns.map( _systemFixup );
-		patternsUser = [];
-		patternsUser = conf.readSettings('patterns') || [];
-		log.msg('PatternsService.initialize, config patterns', patternsUser);
-		patternsUser = patternsUser.map( function(patt) {
-			if( patt.pattern ) {
+		//patternsUser = [];
+		var patternsUserCfg = conf.readSettings('patterns') || [];
+		log.msg('PatternsService.initialize, config patterns', patternsUserCfg);
+		patternsUser = patternsUserCfg.map( function(patt) {
+			if( patt.pattern && patt.pattern !== '') {
 				var ppatt = _parsePatternStr(patt.pattern);
-				patt.colors = ppatt.colors;
+				if( ppatt.colors ) {
+					patt.colors = ppatt.colors;
+				} else {
+					patt.colors = [{rgb:'#000000', time:0.1, ledn:0}];
+				}
 				patt.repeats = ppatt.repeats;
+			}
+			else {  // bad parse
+				patt.colors = [{rgb:'#000000', time:0.1, ledn:0}];
+				patt.repeats = 1;
 			}
 			patt.playing = false;
 			return patt;
