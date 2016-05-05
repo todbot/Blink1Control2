@@ -87,21 +87,22 @@ var PatternView = React.createClass({
 		// FIXME: this doesn't work
 		if( this.state.editing ) {
 			log.msg("PatternView.onSwatchClick: editing!");
-			this.setState({activeSwatch: coloridx});
-			// which cause "onColorChanged()" to get called
+			this.setState({activeSwatch: coloridx},
+				function() { // called when state is actually updated
+					Blink1Service.fadeToColor( acolor.time*1000, acolor.rgb, acolor.ledn );
+				});
+			// which cause "onColorChanged()" to get called ?
 		}
 		else {
 			// log.msg("color: ", pattern.colors[coloridx]);
 			Blink1Service.fadeToColor( acolor.time*1000, acolor.rgb, acolor.ledn );
 		}
-        //this.props.onSwatchClick(this.props.pattern.id, coloridx);
 	},
-
+    // callback for Blink1Service
 	onColorChanged: function() {
-		log.msg("PatternView.onColorChanged");
+		log.msg("PatternView.onColorChanged, editing:",this.state.editing,"activeSwatch:",this.state.activeSwatch,
+				"color:", Blink1Service.getCurrentColor().toHexString());
 		if( this.state.editing ) {
-			log.msg("PatternView.onColorChanged, editing: activeSwatch",this.state.activeSwatch,
-			"color:", Blink1Service.getCurrentColor().toHexString());
 			// var color = pattern.colors[this.state.activeSwatch];
 			var newcolor = {
 				rgb: Blink1Service.getCurrentColor().toHexString(),
@@ -188,6 +189,11 @@ var PatternView = React.createClass({
 		var addSwatchButton = (isEditing) ? <Button onClick={this.onAddSwatch} key={99}
 												style={style_addswatch}><i className="fa fa-plus"></i></Button> : '';
 
+		var repeats =  <i className="fa fa-repeat">{(pattern.repeats) ? 'x'+pattern.repeats : ''}</i>;
+		if( pattern.repeats === 1 ) {
+			repeats = <i className="fa fa-long-arrow-right"></i>;
+		}
+
 		var createColorSwatch = function(color ,i) {
 			var mystyle = _.clone(style_colorswatch);
 			mystyle.backgroundColor = color;
@@ -215,7 +221,7 @@ var PatternView = React.createClass({
                     {pattern.colors.map( createColorSwatch, this)}
 					{addSwatchButton}
 					<div style={style_repeats} onClick={this.onRepeatsClick}>
-						<i className="fa fa-repeat">{(pattern.repeats) ? 'x'+pattern.repeats : ''}</i>
+						{repeats}
 					</div>
 				</div>
 
