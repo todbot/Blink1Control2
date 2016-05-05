@@ -27,23 +27,8 @@ var MailForm = require('./mailForm');
 var ScriptForm = require('./scriptForm');
 var SkypeForm = require('./skypeForm');
 
-// var actionTypeToHuman = {
-// 	'use-output': "Use output",
-// 	'use-output-color': "Use output as color",
-// 	'use-output-pattern': "Use output as pattern name",
-// };
 
 var example_rules = [
-	{
-		"type": "ifttt",
-		"name": "red wine",
-		"patternId": "redflashes"
-	},
-	{
-		"type": "ifttt",
-		"name": "green grass",
-		"patternId": "greenflashes"
-	}
 ];
 
 // var eventSources = [];
@@ -198,13 +183,14 @@ var ToolTable = React.createClass({
 				desc = rule.username +':'+rule.triggerType+':'+rule.triggerVal;
             }
 			else if( rule.type === 'script' ) {
-                desc = rule.intervalSecs +'s:' + rule.filepath;
+                desc = rule.intervalSecs +'s:' + rule.path;
             }
             else if( rule.type === 'file' ) {
-				desc = rule.intervalSecs +'s:' + rule.filepath;
+				desc = rule.intervalSecs +'s:' + rule.path;
             }
             else if( rule.type === 'url' ) {
-                desc = rule.url + ' @' +rule.intervalSecs +'s';
+				desc = rule.intervalSecs +'s:' + rule.path;
+                // desc = rule.path + ' @' +rule.intervalSecs +'s';
             }
 			else if( rule.type === 'skype' ) {
 				desc = rule.username + ':' + rule.triggerType;
@@ -229,9 +215,10 @@ var ToolTable = React.createClass({
 		};
         var makeLastValue = function(rule) {
             var eventsForMe = events.filter( function(e) {
-                return (e.source===rule.type && e.id === rule.name);
+                return ( (e.source===rule.type && e.id === rule.name) ||
+					(e.source==='ifttt' && e.id === null) );
             });
-            var lastEvent = '-not-seen-yet-';
+            var lastEvent = '-not-seen-recently-';
             if( eventsForMe.length ) {
                 var myEvent = eventsForMe[eventsForMe.length-1];
 				// lastEvent = moment(myEvent.date).fromNow() + ': ' + myEvent.text;

@@ -44,10 +44,11 @@ var EventList = React.createClass({
 		var revevents = this.state.events.concat().reverse();
 		var createEventLine = function(event,index) {
 			//return (<li key={event.date}> {event.date} - {event.text} </li>);
-			var humantime = moment(event.date).format('dd LT');
+			// var humantime = moment(event.date).format('dd LTS');
+			var humantime = moment(event.date).format('LTS');
 			var source = event.source;
-			var text = event.text;
-			var id = event.id;
+			var text   = event.text;
+			var id     = event.id;
 			var msg = <span><b>{source}</b> {text} - {id}</span>;
 			return (
 				<ListGroupItem key={index} style={{lineHeight:"100%", fontSize: "0.85em", textIndent:-10}}><i style={{fontSize:'90%'}}>{humantime}:</i> {msg} </ListGroupItem>);
@@ -60,10 +61,10 @@ var EventList = React.createClass({
 				</ListGroup>
 				<ButtonToolbar>
 					<Button bsSize="xsmall"  onClick={this.clearEvents}>Clear events</Button>
-					<Button bsSize="xsmall"  onClick={this.showAllEvents}>Show all</Button>
 				</ButtonToolbar>
 			</Panel>
 			);
+			// <Button bsSize="xsmall"  onClick={this.showAllEvents}>Show all</Button>
 	}
 });
 

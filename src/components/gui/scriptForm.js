@@ -1,3 +1,4 @@
+
 "use strict";
 
 var React = require('react');
@@ -42,15 +43,16 @@ var ScriptForm = React.createClass({
             enabled: rule.enabled,
             name: rule.name,
             initialName: rule.name,
-            actionType: rule.actionType,
-            patternId: rule.patternId,
-            filepath: rule.filepath,
+            actionType: rule.actionType || 'parse-color',
+            actOnNew: rule.actOnNew || true,
+            // patternId: rule.patternId,
+            path: rule.path,
             intervalSecs: rule.intervalSecs || 10
          });
 	},
     handleClose: function() {
-        if( !this.state.filepath ) {
-            this.setState({errormsg: 'Must choose a file'});
+        if( !this.state.path ) {
+            this.setState({errormsg: 'Must choose a path'});
             return;
         }
         this.props.onSave(this.state);
@@ -60,7 +62,7 @@ var ScriptForm = React.createClass({
         dialog.showOpenDialog(function (filenames) {
             if (filenames === undefined) { return; }
             var filename = filenames[0];
-            self.setState({filepath: filename});
+            self.setState({path: filename});
         });
     },
     handleActionType: function(e) {
@@ -69,13 +71,20 @@ var ScriptForm = React.createClass({
     },
     render: function() {
         var self = this;
+        var type = this.state.type;
 
         var title = "Script";
-        if( this.state.type === 'file' ) {
+        var pathlabel = "Script Path";
+        var pathplaceholder = "Click to choose script";
+        if( type === 'file' ) {
             title = "File";
+            pathlabel = "File Path";
+            pathplaceholder = "Click to choose file path";
         }
-        else if( this.state.type === 'url' ) {
+        else if( type === 'url' ) {
             title = "URL";
+            pathlabel = "URL";
+            pathplaceholder = "Enter URL";
         }
 
         return (
@@ -92,9 +101,9 @@ var ScriptForm = React.createClass({
                               type="text" label="Rule Name" placeholder="Descriptive name"
                               valueLink={this.linkState('name')} />
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                              type="text" label="{title} Path" placeholder="Click to choose script / program / batch file"
-                              valueLink={this.linkState('filepath')}
-                              onClick={this.openFileDialog}/>
+                              type="text" label={pathlabel} placeholder={pathplaceholder}
+                              valueLink={this.linkState('path')}
+                              onClick={type!=='url' ? this.openFileDialog : null}/>
                           <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
                               type="select" label="Check interval" placeholder="15 seconds"
                               valueLink={this.linkState('intervalSecs')} >
@@ -107,18 +116,25 @@ var ScriptForm = React.createClass({
                               <option value="360">5 minutes</option>
                           </Input>
                           <Grid >
-                              <Row ><Col xs={2}>
+                              <Row><Col xs={2}>
                                   <label> Parse output as</label>
                               </Col><Col xs={4} style={{border:'0px solid green'}}>
                                   <Input
-                                      type="radio" label="Parse output as color" value="parse-as-color"
-                                      checked={this.state.actionType==='parse-as-color'}
+                                      type="radio" label="Parse output as color" value="parse-color"
+                                      checked={this.state.actionType==='parse-color'}
                                       onChange={this.handleActionType} />
                                   <Input
-                                      type="radio" label="Parse output as pattern name" value="parse-as-pattern"
-                                      checked={this.state.actionType==='parse-as-pattern'}
+                                      type="radio" label="Parse output as pattern name" value="parse-pattern"
+                                      checked={this.state.actionType==='parse-pattern'}
+                                      onChange={this.handleActionType} />
+                                  <Input
+                                      type="radio" label="Parse output as JSON" value="parse-json"
+                                      checked={this.state.actionType==='parse-json'}
                                       onChange={this.handleActionType} />
                               </Col></Row>
+                          <Row><Col xs={4} xsOffset={2}><Input bsSize="small" type="checkbox" label="Trigger on new values only"
+                                        checkedLink={this.linkState('actOnNew')} />
+                            </Col></Row>
                           </Grid>
 
                         </form>
