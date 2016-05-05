@@ -24,9 +24,6 @@ require('crash-reporter').start({
 	autoSubmit: true
 });
 
-// Load external modules
-// var mods = require('./core/modules');
-// mods.load(runtime);
 
 var mainWindow = null;
 var appIcon = null;
@@ -51,6 +48,8 @@ var quit = function() {
 	app.quit();
 };
 
+
+
 app.on('window-all-closed', function () {
 	console.log("app.window-all-closed");
 	if (process.platform !== 'darwin') {
@@ -58,103 +57,39 @@ app.on('window-all-closed', function () {
 	}
 });
 
-// var globalShortcut = electron.globalShortcut;
-
-app.on('ready', function () {
-
-	// Register a 'ctrl+x' shortcut listener.
-    // var ret = globalShortcut.register('ctrl+x', function() {
-    //   console.log('ctrl+x is pressed');
-    // });
-	//
-    // if (!ret) { console.log('registration failed');  }
-	//
-    // // Check whether a shortcut is registered.
-    // console.log(globalShortcut.isRegistered('ctrl+x'));
-
-	if( process.env.NODE_ENV === 'development' ) {
-		mainWindow = new BrowserWindow({
-			// closable: false,
-			maximizable: false,
-			width: 1040,
-			height: 900
-		});
-		mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
-        mainWindow.webContents.openDevTools();
-    }
-    else {
-	  mainWindow = new BrowserWindow({
-		  width: 1040,
-		  height: 700,
-		  // useContentSize: true,
-		  // center: true
-		  resizable: false
-		  // see https://github.com/atom/electron/blob/master/docs/api/browser-window.md
-	  });
-	  mainWindow.loadURL('file://' + __dirname + '/index-prod.html');
-    }
-
-	// mainWindow.setMenu(null);  // remove default menu
-	mainWindow.on('close', function (e) {
-		console.log("mainWindow.close");
-		if( !isQuitting ) {
-			mainWindow.hide();
-			return e.preventDefault();
-		}
+// stolen from https://github.com/twolfson/google-music-electron/blob/master/lib/google-music-electron.js
+var openAboutWindow = function () {
+	var info = [
+		'<div style="text-align: center; font-family: \'Helvetica Neue\', \'Helvetica\', \'Arial\', \'sans-serif\'">',
+		'<h2>' + pkg.productName + '</h2>',
+		'<p> for blink(1) USB RGB LED notification devices. <p>',
+		'<p><a target="_blank" href="http://blink1.thingm.com/">blink1.thingm.com</a></p>',
+		'<p>',
+		  'Version: ' + pkg.version + '<br/>',
+		  'Electron version: ' + process.versions.electron + '<br/>',
+		  'Node.js version: ' + process.versions.node + '<br/>',
+		  'Chromium version: ' + process.versions.chrome,
+		'</p>',
+		'</div>'
+		].join('');
+	// DEV: aboutWindow will be garbage collection automatically
+	var aboutWindow = new BrowserWindow({
+		height: 280,
+		width: 400
+		// icon: assets['icon-32'],
 	});
-
-	mainWindow.on('closed', function () {
-		console.log("mainWindow.closed");
-		quit();
-		mainWindow = null;
-	});
-	mainWindow.on('minimize', function() {
-		console.log("mainWindow.minimize");
-		mainWindow.hide();
-	});
-	mainWindow.webContents.on('new-window', function(e, url) {
-		console.log("mainWindow.new-window: HEY THERE EVERYONE");
+	aboutWindow.webContents.on('new-window', function(e, url) {
 		e.preventDefault();
-	  	require('shell').openExternal(url);
+		require('shell').openExternal(url);
 	});
 
-	app.on('will-quit', function() {
-		console.log("app will-quit");
-	});
-	app.on('activate', function() {
-		mainWindow.show();
-	});
+	aboutWindow.loadURL('data:text/html,' + info);
+};
+
+var makeMenus = function() {
 
 	appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px.png') );
 
-	// stolen from https://github.com/twolfson/google-music-electron/blob/master/lib/google-music-electron.js
-	var openAboutWindow = function () {
-	    var info = [
-			'<div style="text-align: center; font-family: \'Helvetica Neue\', \'Helvetica\', \'Arial\', \'sans-serif\'">',
-			'<h2>' + pkg.productName + '</h2>',
-			'<p> for blink(1) USB RGB LED notification devices. <p>',
-			'<p><a target="_blank" href="http://blink1.thingm.com/">blink1.thingm.com</a></p>',
-			'<p>',
-			  'Version: ' + pkg.version + '<br/>',
-			  'Electron version: ' + process.versions.electron + '<br/>',
-			  'Node.js version: ' + process.versions.node + '<br/>',
-			  'Chromium version: ' + process.versions.chrome,
-			'</p>',
-			'</div>'
-			].join('');
-	    // DEV: aboutWindow will be garbage collection automatically
-	    var aboutWindow = new BrowserWindow({
-			height: 280,
-			width: 400
-			// icon: assets['icon-32'],
-	    });
-		aboutWindow.webContents.on('new-window', function(e, url) {
-			e.preventDefault();
-			require('shell').openExternal(url);
-		});
-
-	    aboutWindow.loadURL('data:text/html,' + info);
-	};
 
 	// var swatchIconImg = new Jimp(32, 32, 0xFF0000FF, function (err, image) {
 	// };
@@ -233,9 +168,7 @@ app.on('ready', function () {
 	var devMenuTemplate = [
 		{	type: "separator" },
 		{	label: 'Reload',
-			// icon: trayIconPath,
 			click: function() {  mainWindow.reload(); }
-			//accelerator: 'Command+Z'
 		},
 		{	label: 'Show/Hide',
 			click: function() {	if( mainWindow.isVisible() ) { mainWindow.hide(); } else { mainWindow.show(); } }
@@ -248,6 +181,7 @@ app.on('ready', function () {
 			}
 		}
 	];
+
 	if( process.env.NODE_ENV === 'development' ) {
 		contextMenuTemplate = contextMenuTemplate.concat( devMenuTemplate );
 	}
@@ -256,10 +190,11 @@ app.on('ready', function () {
 	appIcon.setToolTip( pkg.productName + ' is running...');
 	appIcon.setContextMenu(contextMenu);
 
-	// Mac-specific menu  (enables Command-Q )
 	if (process.platform === 'darwin') {
+		// Make Dock have same context menu
 		app.dock.setMenu( contextMenu );
 
+		// Mac-specific menu  (enables Command-Q )
 		var template = [
 			{	label: pkg.productName,
 				submenu: [
@@ -289,13 +224,85 @@ app.on('ready', function () {
 			}
 		];
 		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-	}
+	} // darwin
+}
+
+
+app.on('ready', function () {
+
+	// var globalShortcut = electron.globalShortcut;
+
+	// Register a 'ctrl+x' shortcut listener.
+    // var ret = globalShortcut.register('ctrl+x', function() {
+    //   console.log('ctrl+x is pressed');
+    // });
+	//
+    // if (!ret) { console.log('registration failed');  }
+	//
+    // // Check whether a shortcut is registered.
+    // console.log(globalShortcut.isRegistered('ctrl+x'));
+
+	if( process.env.NODE_ENV === 'development' ) {
+		mainWindow = new BrowserWindow({
+			// closable: false,
+			maximizable: false,
+			width: 1040,
+			height: 900
+		});
+		mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
+        mainWindow.webContents.openDevTools();
+    }
+    else {
+	  mainWindow = new BrowserWindow({
+		  width: 1040,
+		  height: 700,
+		  // useContentSize: true,
+		  // center: true
+		  resizable: false
+		  // see https://github.com/atom/electron/blob/master/docs/api/browser-window.md
+	  });
+	  mainWindow.loadURL('file://' + __dirname + '/index-prod.html');
+    }
+
+	// mainWindow.setMenu(null);  // remove default menu
+	mainWindow.on('close', function (e) {
+		console.log("mainWindow.close");
+		if( !isQuitting ) {
+			mainWindow.hide();
+			return e.preventDefault();
+		}
+	});
+
+	mainWindow.on('closed', function () {
+		console.log("mainWindow.closed");
+		quit();
+		mainWindow = null;
+	});
+	mainWindow.on('minimize', function() {
+		console.log("mainWindow.minimize");
+		mainWindow.hide();
+	});
+	mainWindow.webContents.on('new-window', function(e, url) {
+		console.log("mainWindow.new-window: HEY THERE EVERYONE");
+		e.preventDefault();
+	  	require('shell').openExternal(url);
+	});
+
+	app.on('will-quit', function() {
+		console.log("app will-quit");
+	});
+	app.on('activate', function() {
+		mainWindow.show();
+	});
 
 	if( config.readSettings('startup:startMinimized') ) {
 		mainWindow.hide();
 	} else  {
 		mainWindow.focus();
 	}
+
+	makeMenus();
+	
 });
 
 
