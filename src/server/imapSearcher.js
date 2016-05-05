@@ -5,7 +5,7 @@
 
 "use strict";
 
-var _ = require('lodash');
+// var _ = require('lodash');
 
 var Imap = require('imap');
 var simplecrypt = require('simplecrypt');

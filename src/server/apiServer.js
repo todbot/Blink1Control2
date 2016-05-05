@@ -1,6 +1,6 @@
 "use strict";
 
-var express      = require('express');
+var express   = require('express');
 var tinycolor = require('tinycolor2');
 
 var config = require('../configuration');
