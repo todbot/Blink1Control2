@@ -72,9 +72,8 @@ var Blink1Status = React.createClass({
 				<PreferencesModal show={this.state.showForm}
 					onSave={this.saveForm} onCancel={this.cancelForm} />
 
-				<div>
-					<VirtualBlink1 />
-				</div>
+				<VirtualBlink1 />
+
 				<Well bsSize="small" style={{margin: 0}}>
 					<div>
 						<span style={labelStyle}>Status:</span>

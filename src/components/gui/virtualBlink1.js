@@ -99,7 +99,8 @@ var VirtualBlink1 = React.createClass({
 		// "radial-gradient(160px 90px at 150px 110px," + 'rgba(0,255,0,1.0)' + " 0%, rgba(255,255,255,0.6) 45% )";
 
 		// linear-gradient(to bottom, rgba(30,87,153,1) 0%,rgba(66,124,183,0) 38%,rgba(125,185,232,0) 100%);
-		var img0style = { width: 240, height: 150, margin: 0, padding: 0,
+		var img0style = { width: 240, height: 150, margin: 0, padding: 0, marginTop:-15, // FIXME why do I need marginTop-15?
+			border: '0px solid grey',
 			//background: this.props.blink1Color
 			backgroundImage: [
 				topgradient,

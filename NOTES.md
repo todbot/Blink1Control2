@@ -5,12 +5,13 @@ Random notes
 
 
 ### App capability changes / To-do's
+- TODO: Support multiple blink(1)s (especially in upcoming IFTTT update)
 - DONE: Special patterns like '~off' and '~stop:patternname'
 - IFTTT rule_name can be matching rule or specific patternname or special patternname
 -  (maybe restructure app to not need IFTTT "rules"?)
 - Patterns should allow multiple LEDs to change per step (take array of {color,ledn,time})
 - DONE: TODO: Add 'enable' flag to each rule in Mail & Tools
-- TODO: partion code into client & server so webpack doesn't bundle server code
+- TODO: partition code into client & server so webpack doesn't bundle server code
 - DONE : TODO: what about 'parametric patterns', e.g. "blink 5 times, fill in color & on/off time"
 - TODO: Number() vs parseInt() in `PatternsService._parsePatternStr()`?
 - TODO: global shortcut, see: https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md
@@ -43,6 +44,7 @@ Random notes
   - these all live in the renderer process
 - New proposed service: EventService - console.log replacement & recent event display
   - (e.g. eventsvc.log("Did a thing", {type:'debug', from:'VirtualBlink1'}) (use introspection?)
+- NO: now everything lives in renderer process.  Only thing in main process is "main.js" window & menu handling
 
 #### Prepping node-hid
 -  do `npm run postinstall` (done automatically on `npm install`)
@@ -55,11 +57,12 @@ Random notes
 
 ### Slow GUI issues
 - console.log() in renderer really seems to slow down GUI
+- Created "logger" that is mostly disabled
 
 
 #### node-hid or usb-detection causing app hanging?
 - needed to do `usb-detection.stopMonitoring()`
--
+- for now, disable use of "usb-detection" and use polling (which can be turned off in config)
 
 
 

@@ -3,27 +3,27 @@ module.exports = {
 	[
     {
         "name": "red flash",
-        "patternstr": "2,#ff0000,0.5,0,#000000,0.5"
+        "patternstr": "9,#ff0000,0.5,0,#000000,0.5"
     },
     {
         "name": "green flash",
-        "patternstr": "2,#00ff00,0.5,0,#000000,0.5"
+        "patternstr": "9,#00ff00,0.5,0,#000000,0.5"
     },
     {
         "name": "blue flash",
-        "patternstr": "2,#0000ff,0.5,0,#000000,0.5"
+        "patternstr": "9,#0000ff,0.5,0,#000000,0.5"
     },
     {
         "name": "white flash",
-        "patternstr": "2,#ffffff,0.5,0,#000000,0.5"
+        "patternstr": "9,#ffffff,0.5,0,#000000,0.5"
     },
     {
         "name": "yellow flash",
-        "patternstr": "2,#ffff00,0.5,0,#000000,0.5"
+        "patternstr": "9,#ffff00,0.5,0,#000000,0.5"
     },
     {
         "name": "purple flash",
-        "patternstr": "2,#ff00ff,0.5,0,#000000,0.5"
+        "patternstr": "9,#ff00ff,0.5,0,#000000,0.5"
     },
     {
         "name": "groovy",

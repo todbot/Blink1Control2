@@ -73,14 +73,14 @@
       "enabled": true,
       "name": "red demo",
       "actionType": "play-pattern",
-      "patternId": "redflashes"
+      "patternId": "redflash"
     },
     {
       "type": "ifttt",
       "enabled": true,
       "name": "green demo",
       "actionType": "play-pattern",
-      "patternId": "greenflashes"
+      "patternId": "greenflash"
     }
   ]
 }
