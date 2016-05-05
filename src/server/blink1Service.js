@@ -233,12 +233,14 @@ var Blink1Service = {
 
 	setCurrentLedN: function(n) {
 		currentLedN = n;
+		this.notifyChange();  // FIXME: the right thing to do?
 	},
 	getCurrentLedN: function() {
 		return currentLedN;
 	},
 	setCurrentMillis: function(m) {
 		currentMillis = m;
+		this.notifyChange();  // FIXME: the right thing to do?
 	},
 	getCurrentMillis: function() {
 		return currentMillis;
@@ -279,7 +281,9 @@ var Blink1Service = {
 		 	currentColors[ledn-1] = color;
 		}
 		var crgb = color.toRgb();
-		this._fadeToRGB( currentMillis, crgb.r, crgb.g, crgb.b, ledn);
+		// divide currentMillis by two to make it appear more responsive
+		// by having blink1 be at destination color for half the time
+		this._fadeToRGB( currentMillis/2, crgb.r, crgb.g, crgb.b, ledn);
 
 		this.notifyChange();
 	},
