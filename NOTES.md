@@ -5,6 +5,7 @@ Random notes
 
 
 ### App capability changes / To-do's
+- TODO: Add "go back to last pattern" or "return to previous state" color pattern
 - TODO: Support multiple blink(1)s (especially in upcoming IFTTT update)
 - DONE: Special patterns like '~off' and '~stop:patternname'
 - IFTTT rule_name can be matching rule or specific patternname or special patternname
