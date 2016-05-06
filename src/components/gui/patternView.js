@@ -88,7 +88,9 @@ var PatternView = React.createClass({
 		if( this.state.editing ) {
 			log.msg("PatternView.onSwatchClick: editing!");
 			this.setState({activeSwatch: coloridx},
-				function() { // called when state is actually updated
+				// function called when state is actually updated
+				// see https://stackoverflow.com/questions/29490581/react-state-not-updated
+				function() {
 					Blink1Service.fadeToColor( acolor.time*1000, acolor.rgb, acolor.ledn );
 				});
 			// which cause "onColorChanged()" to get called ?
@@ -172,7 +174,7 @@ var PatternView = React.createClass({
 		}
 
 		/// --- begin the flex-ening
-		var style_pattern = { width: 300, display:'flex', alignItems:'flex-start' };
+		var style_pattern = { width: 320, display:'flex', alignItems:'flex-start' };
 		var style_playbutton = { width:20, height:20, marginTop:2 };
 		var style_repeats = { flex:'0 0 auto', height:20, marginTop:3, fontSize:'80%' };
 		var style_name = { width:100, textAlign:'right', borderRight:'1px grey', marginTop:2, marginRight:2, paddingRight:2,
