@@ -8,15 +8,20 @@ var React = require('react');
 var htmlcolors = require('./htmlColorsList');
 
 var HtmlColorChart = React.createClass({
+    propTypes: {
+        handleClick: React.PropTypes.func,
+        currentColor: React.PropTypes.string
+    },
     handleColorClick: function(color) { //,f,g) {
         this.props.handleClick(color);
     },
     render: function() {
         var createCell = function(color,i) {
-            var w = (i===24) ? 25 : 12;
+            var w = (i===24) ? 15 : 12;
+            var borderCurr = (color.toUpperCase()===this.props.currentColor.toUpperCase())? '2px solid #bbb' : '';
             return (
                 <td onClick={this.handleColorClick.bind(this,color)} key={color}
-                    style={{width:w, height:13, background:color }}></td>
+                    style={{width:w, height:13, background:color, border:borderCurr }}></td>
             );
         };
         var createRow = function(colorrow,i) {

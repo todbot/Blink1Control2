@@ -42,7 +42,7 @@ var Blink1ColorPicker = React.createClass({
 		var rgb = currentColor.toRgb();
 		var secs = Blink1Service.getCurrentMillis()/1000; // FIXME: hack
 		log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
-		this.setState( { color: currentColor, ledn: ledn, r: rgb.r, g: rgb.g, b: rgb.b, secs:secs });
+		this.setState( { color: currentColor.toHexString(), ledn: ledn, r: rgb.r, g: rgb.g, b: rgb.b, secs:secs });
 	},
 	setColorHex: function(color) {
 		Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn ); // FIXME: time
@@ -87,47 +87,47 @@ var Blink1ColorPicker = React.createClass({
 		this.setColor( tc );
 	},
 	handleHexChange: function(event) {
-		console.log("handleHexChange!");
+		console.log("handleHexChange!",event.target.value);  //FIXME: this does nothing
 	},
 
 	render: function() {
 		return (
 				<div>
-					<HtmlColorChart handleClick={this.setColorHex}/>
-						<div className="row" style={{paddingTop:5, fontSize:'0.9em'}}>
-							<ButtonGroup vertical className="col-sm-3">
-							  <Button onClick={this.setLedN.bind(this, 0)} active={this.state.ledn===0}
-								  bsSize="small" style={{padding:0}} >LED AB </Button>
-							  <Button onClick={this.setLedN.bind(this, 1)} active={this.state.ledn===1}
-								  bsSize="small" style={{padding:0}} >LED A </Button>
-							  <Button onClick={this.setLedN.bind(this, 2)} active={this.state.ledn===2}
-								  bsSize="small" style={{padding:0}} >LED B </Button>
-							</ButtonGroup>
-							<table className="col-sm-4" style={{ border:'0px solid #ddd'}}>
-								<tbody>
-								<tr><td style={{textAlign:'right'}}>R:</td><td>
+					<HtmlColorChart handleClick={this.setColorHex} currentColor={this.state.color}/>
+					<div className="row" style={{paddingTop:5, fontSize:'0.9em'}}>
+						<ButtonGroup vertical className="col-sm-3">
+						  <Button onClick={this.setLedN.bind(this, 0)} active={this.state.ledn===0}
+							  bsSize="small" style={{padding:0}} >LED AB </Button>
+						  <Button onClick={this.setLedN.bind(this, 1)} active={this.state.ledn===1}
+							  bsSize="small" style={{padding:0}} >LED A </Button>
+						  <Button onClick={this.setLedN.bind(this, 2)} active={this.state.ledn===2}
+							  bsSize="small" style={{padding:0}} >LED B </Button>
+						</ButtonGroup>
+						<table className="col-sm-4" style={{ border:'0px solid #ddd'}}>
+							<tbody>
+							<tr><td style={{textAlign:'right'}}>R:</td><td>
 								<input type="number" min={0} max={255} step={1} size={3}
 									className="input" style={{textAlign:'right'}}
 		  						    value={this.state.r} onChange={this.handleChangeR}/></td></tr>
-								<tr><td style={{textAlign:'right'}}>G:</td><td>
+							<tr><td style={{textAlign:'right'}}>G:</td><td>
 								<input type="number" min={0} max={255} step={1} size={3}
 									className="input" style={{textAlign:'right'}}
 		  						    value={this.state.g} onChange={this.handleChangeG}/></td></tr>
-								<tr><td style={{textAlign:'right'}}>B:</td><td>
+							<tr><td style={{textAlign:'right'}}>B:</td><td>
 								<input type="number" min={0} max={255} step={1} size={3}
 									className="input" style={{textAlign:'right'}}
 		  						    value={this.state.b} onChange={this.handleChangeB}/></td></tr>
-								<tr><td style={{textAlign:'right'}}>hex:</td><td>
-							  <input type="text" size={7} className="input" style={{textAlign:'right',fontFamily:'monospace'}}
+							<tr><td style={{textAlign:'right'}}>hex:</td><td>
+							  	<input type="text" size={7} className="input" style={{fontFamily:'monospace'}}
 								  value={this.state.color} onChange={this.handleHexChange}/></td></tr>
-						  </tbody>
-						  </table>
-						  <div className="col-sm-4">
-								time(s):
-								<input type="number" className="input" min={0.1} max={10.0} step={0.1} size={3}
-									value={this.state.secs} onChange={this.handleChangeSecs} />
-						  </div>
-						</div>
+						  	</tbody>
+					  	</table>
+					  	<div className="col-sm-4">
+							time(s):
+							<input type="number" className="input" min={0.1} max={10.0} step={0.1} size={3}
+								value={this.state.secs} onChange={this.handleChangeSecs} />
+					  	</div>
+					</div>
 				</div>
 		);
 	}
