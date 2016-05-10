@@ -64,7 +64,7 @@ var ToolTable = React.createClass({
 			rules: rules,
             events: events, // FIXME: hmmmmm
 			workingIndex:-1,
-			showForm: false
+			showForm: false,
 		};
 	},
     componentDidMount: function() {
@@ -96,7 +96,9 @@ var ToolTable = React.createClass({
 			ScriptService.reloadConfig();
 		}
 		else if( rule.type === 'url' ) {
-			// UrlService.reloadConfig();
+			ScriptService.reloadConfig();
+		}
+		else if( rule.type === 'file' ) {
 			ScriptService.reloadConfig();
 		}
 		else if( rule.type === 'skype' ) {
@@ -158,11 +160,12 @@ var ToolTable = React.createClass({
     render: function() {
         var patterns = PatternsService.getAllPatterns();
         var events = this.state.events;
-        var workingRule = { name: 'new rule '+ util.cheapUid(4),
+        var workingRule = { name: 'new '+ this.state.showForm + ' rule '+ (this.state.rules.length+1),
 						type: this.state.showForm,
 						enabled: true,
 			}; // FIXME: make createBlankRule(type)
-		if( this.state.workingIndex !== -1 ) { // -1 means new rule
+		if( this.state.workingIndex !== -1 ) { // -1 means new rule, otherwise real rule
+			// clone so form works on a copy. FIXME: needed?
 			workingRule = _.clone( this.state.rules[this.state.workingIndex] );
 		}
 		if( workingRule.password ) {
@@ -216,7 +219,7 @@ var ToolTable = React.createClass({
         var makeLastValue = function(rule) {
             var eventsForMe = events.filter( function(e) {
                 return ( (e.source===rule.type && e.id === rule.name) ||
-					(e.source==='ifttt' && e.id === null) );
+					(e.source==='ifttt' && e.id === '-default-') );
             });
             var lastEvent = '-not-seen-recently-';
             if( eventsForMe.length ) {
