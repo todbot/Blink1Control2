@@ -39,7 +39,7 @@ var tinycolor = require('tinycolor2');
 
 var conf = require('../configuration');
 var log = require('../logger');
-var utils = require('../utils');
+// var utils = require('../utils');
 
 var Blink1Service = require('./blink1Service');
 
@@ -50,6 +50,7 @@ var systemPatterns = require('./systemPatterns').patterns;
 var patternsSystem;  // The system patterns this service knows about
 var patternsUser; // The user generated patterns
 var patternsTemp = [];
+var playingStack = [];
 
 var playingPatternId = '';
 // var lastPatternId = ''; // last pattern that was recently played, or none
@@ -323,7 +324,7 @@ var PatternsService = {
 				//PatternsService.playPattern( patt ); // FIXME: hmmm
 			}
 			else {
-				return false;
+				return false; // no matching meta ("~") pattern
 			}
 			// } else if( id === '!stop' ) {
 			// }
@@ -351,7 +352,7 @@ var PatternsService = {
 		pattern.playcount = 0;
 		pattern.playing = true;
 		playingPatternId = id;
-		// this._playPatternInternal(id, donecallback);
+		// playingStack.push( id );
 		this._playPatternInternal(id, null);
 		return true;
 	},
