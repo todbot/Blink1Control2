@@ -6,6 +6,7 @@ Random notes
 
 ### App capability changes / To-do's
 - TODO: Add "go back to last pattern" or "return to previous state" color pattern
+-- (maybe via a "pattern stack" and new patterns like "red always")
 - TODO: Support multiple blink(1)s (especially in upcoming IFTTT update)
 - DONE: Special patterns like '~off' and '~stop:patternname'
 - IFTTT rule_name can be matching rule or specific patternname or special patternname
@@ -25,6 +26,13 @@ Random notes
   - `~off` -- Turn blink(1) off completely (stop patterns, set to dark)
   - `~blink-color-count` -- blink color-dark-color-dark, count times. e.g. `~blink-white-3`, `~blink-#ff0000-5`
   - `~pattern:<patternstr>` -- Play a pattern in string form. e.g. `~pattern:3,#ff00ff,0.5,0,#00ff00,1.3,0`
+
+### URL / Script / Tool color & pattern matching
+- In general, try to match previous behavior at https://github.com/todbot/blink1/blob/master/docs/blink1control-file-script-url-format.md
+- In configuration, now specify "parse as color", "parse as pattern", or "parse as JSON"
+- In "parse as color", look for hex color codes, "color: [foo]" and parse "[foo]" as color name
+- In "parse as pattern", look for "pattern: [foo]" and parse "[foo]" as pattern name (including meta-patterns)
+- In "parse as JSON", accept either 'color' or 'pattern' keys
 
 ### App menu, Tray menu, window closing, window hiding
 - By default, closing the window doesn't exist Blink1Control, just hides the window
