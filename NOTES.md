@@ -44,6 +44,19 @@ Random notes
 - Form to set config lives in `src/component/gui/<sourcename>Form.js`
 - toolTable.js loads forms, ask them to format themselves for tables,
 
+### Event log API  
+- Event sources are responsible to triggering patterns via PatternsService or colors via Blink1Service (FIXME: change this?)
+- Event sources also log events via `logger.addEvent(event)`
+- Events logged via addEvent are used for human-display by ToolTable and RecentEvents
+- Structure of event is:
+        event = {
+            date: [Date],
+            type: ['trigger','info','error'],
+            source: [event source, e.g. 'mail', 'ifttt', 'file', etc.],
+            id: [name of event source, e.g. 'red demo'],
+            text: [message of event, e.g. number of unread msgs, error details]
+        }
+
 #### General architecture
 
 - `remote.require()` is based off of project root dir, but `require()` is based of cwd
