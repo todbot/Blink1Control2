@@ -54,11 +54,9 @@ var baseUrl = 'http://api.thingm.com/blink1/eventsall/';
 var IftttService = {
 	config: {},
 	rules: {},
-	// FIXME: all these fetched from configuration later
-	iftttKey: '', //ABCD1234ABCD1234',
+	iftttKey: '',
 	intervalTimer: null,
     lastTime: 0,
-	// lastState: "",
 	lastEvents: {},
 
 	setIftttKey: function(k) { this.iftttKey = k; },
@@ -75,10 +73,10 @@ var IftttService = {
 		this.iftttKey = Blink1Service.iftttKey();
 		log.msg("IftttService.reloadConfig. rules=", this.rules);
 	},
-	getRules: function() {
-		log.msg("IftttService.getRules, rules:",this.rules);
-		return (this.rules) ? this.rules : [];
-	},
+	// getRules: function() {
+	// 	log.msg("IftttService.getRules, rules:",this.rules);
+	// 	return (this.rules) ? this.rules : [];
+	// },
 	start: function() {
 		this.reloadConfig();
 		log.msg("IftttService.start: rules", this.rules);
@@ -103,23 +101,24 @@ var IftttService = {
 
     fetch: function() {
 		var self = this;
-		var rules = self.getRules();
-		var defaultId = (rules.length>0) ? rules[0].id : 'default'; // FIXME:
+		var rules = self.rules; //self.getRules();
+		var defaultId = '-default-'; // FIXME: see ToolTable.render.makeLastValue
 
 		//if( rules.length === 0 ) { return; } // no rules, don't waste effort
 		var url = baseUrl + self.iftttKey;
-		log.msg("IftttService.fetch:", url, self.lastTime);
+		// log.msg("IftttService.fetch:", url, self.lastTime, "defaultId:",defaultId);
         // request(baseUrl + this.iftttKey, function(error, response, body) {
-		needle.get(baseUrl + this.iftttKey, function(error, response) {
+		needle.get( url, function(error, response) {
 			// FIXME: do error handling like: net error, bad response, etc.
-			if( error || response.statusCode !== 200 ) { // badness
-				// log.msg("IftttService.fetch: error fetching");
+			if( error ) {
 				log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:'error fetching'} );
 				return;
 			}
-			// console.log("BODY:", response.body);
+			if( response.statusCode !== 200 ) {
+				log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:response.statusMessage} );
+				return;
+			}
 			// otherwise continue as normal
-			// var respobj = JSON.parse(body);
 			var respobj = response.body; //JSON.parse(response.body);
 			// var shouldSave = false;
 			if( respobj.events ) {
@@ -127,7 +126,7 @@ var IftttService = {
 					//log.msg("iftttFetcher e:", JSON.stringify(e));
 					evt.eventDate = new Date(parseInt(1000 * evt.date));
 					if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
-						log.msg('IftttService.fetch: new event name:"'+ evt.name+'"');
+						// log.msg('IftttService.fetch: new event name:"'+ evt.name+'"');
 						log.addEvent( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:evt.source  } );
 						rules.map( function(r) {
 							log.msg('IftttService.fetch: rule:', JSON.stringify(r));
