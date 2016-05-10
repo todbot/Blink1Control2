@@ -57,26 +57,6 @@ var ScriptService = {
             self.ruleTimers.push( timer );
         });
     },
-    // need to indicate:
-    // - missing file
-    // - bad URL
-    // - bad parse
-    // -
-    //
-    // FIXME: need to heed patternId
-    // FIXME: handleEvent & parse() are same thing
-    // handleEvent: function(rule,str) {
-    //     var self = this;
-    //     // log.msg("ScriptService.parse stdout data",str);
-    //     if( self.lastEvents[rule.name] !== str ) {
-    //         // if( !rule.logEvents || (null !== rule.logEvents && rule.logEvents) ) {
-    //         log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str.substring(0,40) } );
-    //         // }
-    //         self.lastEvents[rule.name] = str;
-    //         PatternsService.playPattern( str );
-    //     }
-    // },
-
     // FIXME: put limits in to "str" length
     runScript: function(rule) {
         var self = this;
@@ -107,11 +87,11 @@ var ScriptService = {
                     return;
                     // return log.error(err);
                 }
-                if( self.lastEvents[rule.name] !== data ) {
+                // if( self.lastEvents[rule.name] !== data ) {
                     log.addEvent( { type:'trigger', text:data.substring(0,40), source:rule.type, id:rule.name} );
                     self.parse(rule,data); // NOPE
-                    self.lastEvents[rule.name] = data;
-                }
+                    // self.lastEvents[rule.name] = data;
+                // }
             });
         }
         else if( rule.type === 'url' ) {
@@ -137,6 +117,10 @@ var ScriptService = {
     parse: function(rule, str) {
         log.msg("ScriptService.parse:", rule, "string:",str);
         var self = this;
+        var patternre = /pattern:\s*(#*\w+)/;
+        var colorre = /(#[0-9a-f]{6}|#[0-9a-f]{3}|color:\s*(.+?)\s)/i;
+        var matches;
+
         if( self.lastEvents[rule.name] === str && rule.actOnNew ) {
             log.addEvent( {type:'info', source:rule.type, id:rule.name, text:'not modified'});
             return;
@@ -158,27 +142,45 @@ var ScriptService = {
                         log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+json.pattern});
                     }
                 }
+                if( json.color ) {
+                    var c = tinycolor(json.color);
+                    if( c.isValid() ) {
+                        log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:json.color});
+                        PatternsService.playPattern( "~pattern:1,"+c.toHexString()+",0.1,0" );
+                    } else {
+                        log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+json.color});
+                    }
+                }
             } catch(error) {
-                // err = error.message;
                 log.addEvent( {type:'error', source:rule.type, id:rule.name, text:error.message});
             }
         }
         else if( actionType === 'parse-pattern' ) {
-            if( PatternsService.playPattern( str ) ) {
-                log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str});
+            matches = patternre.exec( str );
+            if( matches ) {
+                if( PatternsService.playPattern( matches[1] ) ) {
+                    log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str});
+                }
+                log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
             }
             else {
                 log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
             }
         }
         else { // parse-color
-            if( str.indexOf('#') !== -1 ) {
-                str = str.substring( str.indexOf('#'));
-            }
-            var color = tinycolor(str);
-            if( color.isValid() ) {
-                log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str});
-                PatternsService.playPattern( "~pattern:1,"+color.toHexString()+",0.1,0" );
+            // if( str.indexOf('#') !== -1 ) {
+            //     str = str.substring( str.indexOf('#'));
+            // }
+            matches = colorre.exec(str);
+            if( matches ) {
+                var color = tinycolor( matches[2]);
+                if( color.isValid() ) {
+                    log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str});
+                    PatternsService.playPattern( "~pattern:1,"+color.toHexString()+",0.1,0" );
+                }
+                else {
+                    log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+str});
+                }
             }
             else {
                 log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+str});
@@ -189,3 +191,24 @@ var ScriptService = {
 };
 
 module.exports = ScriptService;
+
+
+// need to indicate:
+// - missing file
+// - bad URL
+// - bad parse
+// -
+//
+// FIXME: need to heed patternId
+// FIXME: handleEvent & parse() are same thing
+// handleEvent: function(rule,str) {
+//     var self = this;
+//     // log.msg("ScriptService.parse stdout data",str);
+//     if( self.lastEvents[rule.name] !== str ) {
+//         // if( !rule.logEvents || (null !== rule.logEvents && rule.logEvents) ) {
+//         log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str.substring(0,40) } );
+//         // }
+//         self.lastEvents[rule.name] = str;
+//         PatternsService.playPattern( str );
+//     }
+// },
