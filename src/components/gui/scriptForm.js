@@ -2,7 +2,6 @@
 "use strict";
 
 var React = require('react');
-
 var Grid = require('react-bootstrap').Grid;
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
@@ -17,9 +16,6 @@ var LinkedStateMixin = require('react-addons-linked-state-mixin');
 var Switch = require('react-bootstrap-switch');
 
 var dialog = require('electron').remote.dialog;
-
-
-// var log = require('../../logger');
 
 
 var ScriptForm = React.createClass({
