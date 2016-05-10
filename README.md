@@ -2,7 +2,7 @@
 
 Blink1Control written in ElectronJs, ReactJs and NodeJs.
 
-See NOTES.md for more info.
+See [NOTES.md](NOTES.md) for more info.
 
 
 ### Setup steps (for development)
