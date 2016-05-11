@@ -1,9 +1,11 @@
 'use strict';
 
-var _ = require('lodash');
-
 // TO DO: add log to file
 // TO DO: add log levels
+
+var _ = require('lodash');
+
+var conf = require('./configuration');
 
 var isDevel = false;
 if( process.browser === true ) { // is in renderer process
@@ -16,28 +18,27 @@ else {
 	isDevel = (process.env.NODE_ENV === 'development');
 }
 
-var eventsMax = 100;  // FIXME: put in configuration?
+// var ignoredSources = [
+//    // /IftttService/i,
+//    // /PatternView/i,
+//    // /PatternList/i,
+//    // /Blink1ColorPicker/i
+//     // /ScriptService/
+// ];
 
-var events = [
-];
-
-
+var events = [];
 var listeners = [];
 
-var ignoredSources = [
-   /IftttService/i,
-   /PatternView/i,
-   // /PatternList/i,
-   /Blink1ColorPicker/i
-    // /ScriptService/
-];
+var logconfig = conf.readSettings('logger');
+if( !logconfig.maxEvents ) {logconfig.maxEvents = 100; }
+if( !logconfig.ignoredSources ) { logconfig.ignoredSources = []; }
+
 
 var Logger = {
-
 	msg: function(/* msg,msg,msg */) {
 		var iargs = arguments;
-        if( isDevel ) {
-			var ignore = ignoredSources.some( function(is) {
+        if( logconfig.showDebug ) {
+			var ignore = logconfig.ignoredSources.some( function(is) {
 				return iargs[0].toString().match(is) ;
 			});
 			if( ignore ) { return; }
@@ -66,23 +67,38 @@ var Logger = {
 
 	// event is format:
 	// event = {
-	//  date: Date, // time of event as JS Date
-	//  type: 'trigger', 'triggerOff', 'error', 'info' //
-	//  source: 'ifttt,'mail', etc.  event source 'type'
+	//  date: Date, // time of event as JS Date, if omitted == now
+	//  type: 'trigger', 'triggerOff', 'error', 'info'
+	//  source: 'ifttt, 'mail', etc. ==  event source 'type'
 	//  id: 'red demo'  // event source 'name'
 	//  text: 'blah blah'  // text of event
 	// }
 	// maybe: event.arg == argument for type
-	// maybe: event.emitterId
-	// maybe: event.style == 'log' or 'display' or 'forId'?
 	addEvent: function(event) { // string or {date,text,type,id} object
-		this.msg("addEvent:",event);
+		var log = this;
+		// log.msg("Log:"+events.length+":",event, "\nevents:",JSON.stringify(events));
+		log.msg("logevent:"+JSON.stringify(event));
 		if( typeof event === 'string' ) {
 			event = {text: event};
 		}
 		if( !event.date ) { event.date = Date.now(); }
 		if( !event.type ) { event.type = ''; }
 		if( !event.id ) { event.id = ''; }
+
+		if( events.length > logconfig.maxEvents ) {
+			// "remove first (oldest) element matching kind of event we're just adding"
+			// FIXME: surely there's a more concise way of doing this?
+			var removeCount = 0;
+			var removed = _.remove( events, function(e) {
+				if( removeCount===0 ) {
+					var isSimilar = ( e.type === event.type && e.type===event.type && e.id===event.id );
+					if( isSimilar ) { removeCount++; }
+					return isSimilar;
+				}
+				return false;
+			});
+			log.msg("Log.addEvent: at maxEvents, new length",events.length, "removed:", removed);
+		}
 
 		events.push(event);
 		events.sort( function(a,b) {
@@ -91,10 +107,6 @@ var Logger = {
 			return 0;
 		});
 
-		if( events.length > eventsMax ) {
-			this.msg("Log: dropped at eventMax");
-			events.shift();
-		}
 		this.notifyChange();
 	},
 	// FIXME:
@@ -106,7 +118,7 @@ var Logger = {
 		return typedEvents;
 	},
 	getLastEvents: function(n) {
-		n = n ? eventsMax : n;
+		n = n ? logconfig.maxEvents : n;
 		n = n > events.length ? events.length : n;
 		var lastEvents = events.slice( 0, n);
 		return lastEvents;
@@ -118,10 +130,10 @@ var Logger = {
 
 	addChangeListener: function(callback, callername) {
 		listeners[callername] = callback;
-		this.msg("logger.addChangelistener", callername );
+		this.msg("Log.addChangelistener", callername );
 	},
 	removeChangeListener: function(callername) {
-		this.msg("logger.removeChangelistener", callername);
+		this.msg("Log.removeChangelistener", callername);
 		delete listeners[callername];
 		// this.msg("logger.removeChangelistener", listeners );
 	},
