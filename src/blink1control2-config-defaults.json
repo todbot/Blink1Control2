@@ -4,6 +4,11 @@
     "startupPattern": "~pattern:1,#00f300,0.5,0,#000000,0.5,0",
     "startMinimized": false
   },
+  "logger": {
+    "maxEvents": 10,
+    "ignoredSources":[],
+    "showDebug": false
+  },
   "blink1Service": {
     "deviceRescan": false,
     "enableGamma": true,
@@ -59,7 +64,8 @@
       "scriptService": {
           "service": "scriptService",
           "type": "script",
-          "enabled": true
+          "enabled": true,
+          "maxStringLength": 200
       },
       "skypeService": {
           "service": "skypeService",
