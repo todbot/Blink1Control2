@@ -28,7 +28,7 @@ var Blink1Status = React.createClass({
 		PatternsService.addChangeListener( this.updatePatternState, "blink1Status" );
 	},
 	// updateState: function(colors) { // FIXME: this called mostly for color, don't need other parts?
-	updateColorState: function(currentColor, colors,ledn) {
+	updateColorState: function(currentColor /*, colors,ledn */) {
 		// FIXME: this called mostly for color, don't need other parts?
 		// console.log("updateState");
 		this.setState({
@@ -46,7 +46,6 @@ var Blink1Status = React.createClass({
 		console.log("ifttKey click!");
 	},
 	onPrefsClick: function() {
-		console.log("prefsCLICK");
 		this.setState({showForm: true});
 	},
 	saveForm: function(data) {

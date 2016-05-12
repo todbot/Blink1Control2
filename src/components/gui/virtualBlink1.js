@@ -9,7 +9,7 @@
 
 "use strict";
 
-var _ = require('lodash');
+// var _ = require('lodash');
 
 var React = require('react');
 
@@ -34,7 +34,7 @@ var VirtualBlink1 = React.createClass({
 		Blink1Service.addChangeListener( this.fetchBlink1Color, "virtualBlink1" );
 	},
 	// callback to Blink1Service
-	fetchBlink1Color: function(lastColor, newcolors, ledn) { // FIXME: where's millis?
+	fetchBlink1Color: function(lastColor, newcolors /*, ledn */) { // FIXME: where's millis?
 		this.lastColors = this.state.colors;
 		this.nextColors = newcolors;
 		// this.setState( {

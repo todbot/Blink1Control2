@@ -5,12 +5,12 @@
     "startMinimized": false
   },
   "logger": {
-    "maxEvents": 10,
+    "maxEvents": 200,
     "ignoredSources":[],
     "showDebug": false
   },
   "blink1Service": {
-    "deviceRescan": false,
+    "deviceRescan": true,
     "enableGamma": true,
     "blink1ToUse": 0
   },

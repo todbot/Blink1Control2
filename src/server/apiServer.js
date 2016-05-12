@@ -39,11 +39,13 @@ app.get('/blink1/fadeToRGB', function(req, res) {
     var color = tinycolor(req.query.rgb);
     var secs = Number(req.query.time) || 0.1;
     var ledn = Number(req.query.ledn) || 0;
+    var blink1_id = Number(req.query.blink1_id) || 0;
+
     // var blink1_id = req.query.blink1_id || '';
     var status = "success";
 
     if( color.isValid() ) {
-        status = Blink1Service.fadeToColor( secs*1000, color, ledn );
+        status = Blink1Service.fadeToColor( secs*1000, color, ledn, blink1_id );
     }
     else {
         status = "bad hex color specified " + req.query.rgb;

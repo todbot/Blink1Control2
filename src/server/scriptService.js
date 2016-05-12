@@ -9,6 +9,7 @@ var conf = require('../configuration');
 var log = require('../logger');
 var PatternsService = require('./patternsService');
 
+
 var ScriptService = {
     config: {},
     rules: [],
@@ -19,10 +20,13 @@ var ScriptService = {
         // this.reloadConfig();
         // this.stop();
         this.config = conf.readSettings('eventServices:scriptService');
-        if( !this.config ) { this.config = { enabled: false }; }
+        if( !this.config ) { this.config = { enabled: false, maxStringLength: 200 }; }
         if( !this.config.enabled ) {
             log.msg("ScriptService: disabled");
             return;
+        }
+        if( !this.config.maxStringLength ) {
+            this.config.maxStringLength = 200;
         }
         var allrules = conf.readSettings('eventRules') || [];
 		this.rules = allrules.filter( function(r) {
@@ -88,8 +92,7 @@ var ScriptService = {
                     // return log.error(err);
                 }
                 // if( self.lastEvents[rule.name] !== data ) {
-                    log.addEvent( { type:'trigger', text:data.substring(0,40), source:rule.type, id:rule.name} );
-                    self.parse(rule,data); // NOPE
+                self.parse(rule,data); // NOPE
                     // self.lastEvents[rule.name] = data;
                 // }
             });
@@ -115,7 +118,8 @@ var ScriptService = {
     },
 
     parse: function(rule, str) {
-        log.msg("ScriptService.parse:", rule, "string:",str);
+        str = str.substring(0,this.config.maxStringLength);
+        log.msg("ScriptService.parse:", str, "rule:",rule);
         var self = this;
         var patternre = /pattern:\s*(#*\w+)/;
         var colorre = /(#[0-9a-f]{6}|#[0-9a-f]{3}|color:\s*(.+?)\s)/i;
@@ -126,6 +130,7 @@ var ScriptService = {
             return;
         }
         self.lastEvents[rule.name] = str;
+        // log.addEvent( { type:'trigger', text:data.substring(0,40), source:rule.type, id:rule.name} );
 
         var actionType = rule.actionType;
         if( actionType === 'parse-json' ) {
@@ -168,18 +173,16 @@ var ScriptService = {
             }
         }
         else { // parse-color
-            // if( str.indexOf('#') !== -1 ) {
-            //     str = str.substring( str.indexOf('#'));
-            // }
             matches = colorre.exec(str);
             if( matches ) {
-                var color = tinycolor( matches[2]);
+                var colormatch = matches[2];
+                var color = tinycolor( colormatch );
                 if( color.isValid() ) {
-                    log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str});
+                    log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:colormatch});
                     PatternsService.playPattern( "~pattern:1,"+color.toHexString()+",0.1,0" );
                 }
                 else {
-                    log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+str});
+                    log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+colormatch});
                 }
             }
             else {

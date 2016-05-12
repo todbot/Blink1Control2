@@ -6,11 +6,7 @@
 
 var _ = require('lodash');
 
-// var doUsbDetect = false;
-
 var Blink1 = require('node-blink1');
-var usbDetect = null;
-// if( doUsbDetect ) { usbDetect = require('usb-detection'); }
 
 var tinycolor = require('tinycolor2');
 
@@ -21,36 +17,30 @@ var util = require('../utils');
 
 // globals because we are a singleton
 var listeners = {};
-var blink1serials = []; // no, use hash? Blink1.devices();
-// FIXME: IDEA for multiple open blink1s
-var blink1s =  // opened blink1s
-[
-	{serial:'', device:null},
-];
 
-var blink1 = null; // the main currently-open blink1
-var blink1OpenedSerial;
-// var blink1Vid = 0x27B8;
-// var blink1Pid = 0x01ED;
+// blink1 devices currently opened
+// one entry per blink1, with always at least one entry
+// entry 0 is 'default' entry when no blink1 is plugged in
+// format is
+var blink1s = []; // collection of opened blink1s
+    // {   serial: '12345678',
+    //     device: new Blink1()
+    // }
+// var blink1IdOpen = 0;
 
-//var currentColor = colorparse('#ff00ff');
-// array of colors, one per LED of blink1.
-var currentColors = new Array( 18 ); // FIXME: 18 LEDs in current blink1 firmware
-var currentMillis = 100;
-var currentLedN = 0;
-var lastColors = new Array(18);
-// FIXME: IDEA for multiple open blink1s
-var currentState = [
+// one entry per blink1, with always at least one entry
+// entry 0 is 'default' entry when no blink1 is plugged in
+var currentState = new Array(8);  // 8 is max number of blink1s allowed
+currentState[0] =
 	{
-		colors: new Array(18), // 18 element array, one per LEDs
-		millis: 100
-	}
-];
+		colors: new Array(18), // replaces "currentColor", 18 element array, one per LEDs
+		millis: 100, // replaces "currentMillis"
+		ledn:0 // replaces curerntLedN
+	};
+currentState[0].colors.fill( tinycolor('#000000'));
+currentState.fill( currentState[0] ); // hmmmm
+var lastState = _.clone( currentState ); // FIXME: what am I using lastState for?
 
-lastColors.fill( tinycolor('#000000') ); // FIXME: hack
-currentColors.fill( tinycolor('#000000') );
-
-// var doDeviceRescan = config.readSettings("blink1Service:deviceRescan");
 
 var Blink1Service = {
 	toyEnable: false,
@@ -62,155 +52,110 @@ var Blink1Service = {
 	},
 	reloadConfig: function() {
 		log.msg("Blink1Service.reloadConfig");
+        this.conf = config.readSettings('blink1Service') || {};
 		Blink1Service._removeAllDevices();
-		// blink1serials = []; // hmmm
-		// if( blink1 ) { blink1.close(); blink1 = null; }
 		Blink1Service.scanForDevices();
 	},
 	scanForDevices: function() {
-		log.msg("Blink1Service","blink1serials:", blink1serials);
+		log.msg("Blink1Service.scanForDevices");
 		// initial population of any already-plugged in devices
-		this.conf = config.readSettings('blink1Service') || {};
 		var serials = Blink1.devices();
+        serials.sort();
 		serials.map( function(s) {
 			Blink1Service._addDevice(s);
 		});
 
-		log.msg("Blink1Service.scanForDevices: done. serials:", blink1serials);
-		if( !usbDetect ) {
-			if( blink1serials.length === 0 ) { // look for insertion events
-				if( this.conf.deviceRescan ) {
-					setTimeout( this.scanForDevices.bind(this), 5000);  // in 5 secs look again
-				}
-			}
-			return;
-		}
-		/*
-		// -- USB detection api
-		// https://github.com/MadLittleMods/node-usb-detection
-		usbDetect.on('add', function(device) {
-			console.log('add', JSON.stringify(device), device);
-			var vid = device.vendorId;
-			var pid = device.productId;
-			var serialnumber = device.serialNumber;
-			if( vid === blink1Vid && pid === blink1Pid ) {
-				//console.log('Blink1ServerApi.deviceListener, added', vid, pid, serialnumber);
-				Blink1Service._addDevice( serialnumber );
-			}
-		});
-		usbDetect.on('remove', function(device) {
-			//console.log('remove', device);
-			var vid = device.vendorId;
-			var pid = device.productId;
-			var serialnumber = device.serialNumber;
-			if( vid === blink1Vid && pid === blink1Pid ) {
-				Blink1Service._removeDevice( serialnumber );
-			}
-		});
-		*/
-	},
-	// FIXME:
-	closeAll: function() {
-		log.msg("Blink1Service.closeAll WHO CALLS THIS");
-		// if( usbDetect ) { usbDetect.stopMonitoring(); }
-		// if( blink1 ) {
-		// 	blink1.off();
-		// 	// blink1.close();
-		// }
-		// blink1serials.map( Blink1Service._removeDevice );
-		//this.removeAllListeners();
-	},
-
-	_addDevice: function(serialnumber) {
-		log.msg("Blink1Service._addDevice: current serials:", blink1serials );
-		if( blink1serials.indexOf(serialnumber) === -1 ) { // if blink1 not already in array // FIXME:
-			log.msg("Blink1Service._addDevice: new serial ", serialnumber);
-			blink1serials.push(serialnumber);
-			// blink1ToUse == 0 means use first available
-			// blink1ToUse = [] means open array
-			if( this.conf.blink1ToUse === 0 || this.conf.blink1ToUse === serialnumber ) {
-				setTimeout(function() {
-					Blink1Service._setupDevice(serialnumber);  // FIXME: remove
-				}, 500);
+		log.msg("Blink1Service.scanForDevices: done. serials:", serials);
+		if( serials.length === 0 ) { // no blink1s, look for insertion events
+			if( this.conf.deviceRescan ) {
+				setTimeout( this.scanForDevices.bind(this), 5000);  // look again in 5 secs
 			}
 		}
 	},
-	_removeDevice: function(serialnumber) {
-		log.msg("Blink1Service._removeDevice: current serials:", blink1serials);
-		var i = blink1serials.indexOf(serialnumber);
-		if( i > -1 ) {  // FIXME: this seems hacky
-			blink1serials.splice(i, 1);
-		}
-		if( blink1 ) {
-			log.msg('Blink1Service._removeDevice: closing blink1');
-			blink1.close();
-			blink1 = null;
-			Blink1Service.notifyChange();
-		}
-		if( blink1serials.length === 0 ) {
-			setTimeout( this.scanForDevices.bind(this), 5000);
-		}
-		log.msg('Blink1Service._removeDevice: new current serials:', blink1serials);
-	},
-	_closeCurrentDevice: function()	{
-		log.msg('Blink1Service._closeCurrentDevice: closing blink1');
-		if( blink1 ) {
-			blink1.close();
-			blink1 = null;
-		}
-	},
+    _addDevice: function(serialnumber) {
+        log.msg("Blink1Service._addDevice:", serialnumber);
+        var olddev = _.find( blink1s, {serial:serialnumber} );
+        if( !olddev ) {
+            log.msg("Blink1Service._addDevice: new serial ", serialnumber);
+            blink1s.push( { serial: serialnumber, device: null, toSetup:true } );
+        }
+        // set up all devices at once
+        // we wait 500msec because it was failing without it
+        setTimeout( Blink1Service._setupFoundDevices, 500);
+    },
+    _setupFoundDevices: function() {
+        log.msg("Blink1Service._setupFoundDevices", blink1s);
+        blink1s.map( function(b1) {
+            if( !b1.device ) {
+                log.msg("Blink1Service._setupFoundDevice: opening ",b1.serial);
+                b1.device = new Blink1(b1.serial);
+            }
+        });
+        Blink1Service.notifyChange();
+    },
+    _removeDevice: function(serialnumber) {
+    	log.msg("Blink1Service._removeDevice: current devices:", blink1s);
+        var olds = _.remove( blink1s, {serial:serialnumber} );
+        olds.forEach( function(b1) {
+            if( b1.device ) {
+                b1.device.close();
+                b1.device = null;
+            }
+        });
+        setTimeout( this.scanForDevices.bind(this), 5000);
+    },
 	_removeAllDevices: function() {
 		log.msg("Blink1Service._removeAllDevices");
-		// blink1serials.map( Blink1Service._removeDeviceDumb );
-		blink1serials = []; // FIXME:
-		Blink1Service._closeCurrentDevice();
-		log.msg("Blink1Service._removeAllDevices: serials:",blink1serials);
-	},
-	_setupDevice: function(serialnumber) {
-		log.msg("Blink1Service._setupDevice:",serialnumber);
-		if( !blink1 ) {
-			log.msg("Blink1Service._setupDevice: no blink1, so opening ",serialnumber);
-			blink1 = new Blink1(serialnumber);
-			blink1OpenedSerial = serialnumber;
-			Blink1Service.notifyChange();
-		}
+        blink1s.forEach( function(b1) {
+            if( b1.device ) {
+                b1.device.close();
+                b1.device = null;
+            }
+        });
+        blink1s = [ ]; //{serial: '', device: null } ]; // startup state
+		log.msg("Blink1Service._removeAllDevices: done");
+        // FIXME: notify?
 	},
 
 	// private function, accesses hardware
-	_fadeToRGB: function( millis, r, g, b, n ) {
-		if( blink1 ) {
-			try {
-				blink1.fadeToRGB( millis, r, g, b, n );
+    _fadeToRGB: function( millis, r,g,b, ledn, blink1_id ) {
+        var id = (blink1_id) ? blink1_id : 0; // FIXME: maybe is serial
+
+        if( blink1s[id] && blink1s[id].device ) {
+            try {
+				blink1s[id].device.fadeToRGB( millis, r, g, b, ledn );
 			} catch(err) {
 				log.msg('Blink1Service._fadeToRGB: error', err);
-				this._removeDevice(blink1OpenedSerial);
+				this._removeDevice( blink1s[id].serial );
 			}
-		}
-		// else { console.log("Blink1Service._fadeToRGB: no blink1"); }
-	},
+        }
+    },
+
 
 	// begin public functions
 
 	getAllSerials: function() {
-		//blink1serials = Blink1.devices();
-		return _.clone(blink1serials);
+		return blink1s.map(function(b1) { return b1.serial; });
 	},
-
+    // FIXME: support multiple blink1s
 	isConnected: function() {
-		return (blink1serials.length > 0);
+        // return (blink1serials.length > 0);
+        var isConnected = false;
+        blink1s.map( function(b1) {
+            if( b1.device ) { isConnected = true; }
+        });
+        return isConnected;
 	},
-
+    // FIXME: support multiple blink1s
 	serialNumber: function() {
 		if( this.isConnected() ) {
-			return blink1serials[0];
+			return blink1s[0].serial;
 		}
 		return '';
 	},
+    // FIXME: support multiple blink1s
 	serialNumberForDisplay: function() {
-		if( this.isConnected() ) {
-			return blink1serials[0];
-		}
-		return '-';
+		return (this.isConnected()) ? this.serialNumber() : '-';
 	},
 	// FIXME: fix and call this blink1Id or something
 	iftttKey: function() {  // FIXME:
@@ -231,66 +176,72 @@ var Blink1Service = {
 		// this.notifyChange();
 	},
 
+    // FIXME: support multiple blink1s
 	setCurrentLedN: function(n) {
-		currentLedN = n;
-		this.notifyChange();  // FIXME: the right thing to do?
+		currentState[0].ledn = n;
+		this.notifyChange();
 	},
+    // FIXME: support multiple blink1s
 	getCurrentLedN: function() {
-		return currentLedN;
+		return currentState[0].ledn;
 	},
+    // FIXME: support multiple blink1s
 	setCurrentMillis: function(m) {
-		currentMillis = m;
-		this.notifyChange();  // FIXME: the right thing to do?
+		currentState[0].millis = m;
+		this.notifyChange();
 	},
+    // FIXME: support multiple blink1s
 	getCurrentMillis: function() {
-		return currentMillis;
+		return currentState[0].millis;
 	},
+    // FIXME: support multiple blink1s
 	getCurrentColor: function() { // FIXME
-		// console.log("Blink1Service.getCurrentColor: ", currentLedN);
-		var ledn = (currentLedN>0) ? currentLedN-1 : currentLedN;
-		return currentColors[ ledn ];
+		// var ledn = (currentLedN>0) ? currentLedN-1 : currentLedN;
+		var curledn = currentState[0].ledn;
+		curledn = (curledn>0) ? curledn-1 : curledn;
+		return currentState[0].colors[ curledn ];
 	},
 	getCurrentColors: function() {
-		return currentColors;
+		// return currentColors;
+		return currentState[0].colors;
 	},
-
 	// main entry point for this service, sets currentColor & currentLedN
 	// 'color' arg is a tinycolor() color or hextring ('#ff00ff')
 	// if color is a hexstring, it will get converted to tinycolor
+	// ledn is 1-index into color array, and ledn=0 means "all leds"
+    // blink1_id is index into blink1s array (but should also be by serialnumber)
+    // FIXME: currentState[0] will be currentState[blink1_id]
+    //
 	fadeToColor: function( millis, color, ledn, blink1_id) {
-	// fadeToColor: function( millis, color, ledn) {
-		blink1_id = blink1_id || 0;
+		var id = blink1_id || 0;
 		ledn = ledn || 0;
-		currentLedN = ledn;
-		currentMillis = millis;
-		lastColors = _.clone(currentColors); // clone to save them
-		// console.log("Blink1Service: color:",typeof color, color);
 		if( typeof color === 'string' ) {
 			color = tinycolor( color ); // FIXME: must be better way
 		}
-		// else if( !color.isValid() ) {
-		//
-		// }
-		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		log.msg("Blink1Service.fadeToColor:", currentMillis,ledn, color.toHexString());//, typeof color, (color instanceof String) );
 
+		var colors = _.clone(currentState[id].colors);
 		// handle special meaning: ledn=0 -> all LEDs
-		if( ledn === 0 ) {
-			currentColors.fill( color );
-		} else {
-		 	currentColors[ledn-1] = color;
-		}
+		if( ledn === 0 ) { colors.fill( color );
+		} else {           colors[ledn-1] = color;	}
+
+		lastState[id] = currentState[id];
+		currentState[id] = {ledn: ledn, millis: millis, colors };
+
+		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
+		log.msg("Blink1Service.fadeToColor:"+id+":", millis,ledn, color.toHexString());
+                //, typeof color, (color instanceof String) );
 		var crgb = color.toRgb();
+
 		// divide currentMillis by two to make it appear more responsive
 		// by having blink1 be at destination color for half the time
-		this._fadeToRGB( currentMillis/2, crgb.r, crgb.g, crgb.b, ledn);
+		this._fadeToRGB( millis/2, crgb.r, crgb.g, crgb.b, ledn, id);
 
 		this.notifyChange();
 	},
 
 	off: function() {
 		this.toyEnable = false;
-		this.fadeToColor(0, '#000000', 0);
+		this.fadeToColor(0, '#000000', 0); // 0 = all leds
 	},
 	colorCycleStart: function() {
 		this.toyEnable = true;
@@ -324,7 +275,8 @@ var Blink1Service = {
 	notifyChange: function() {
 		_.forIn( listeners, function(callback) {
 			// currentColor and currentColors are tinycolor objects
-			callback( Blink1Service.getCurrentColor(), currentColors, currentLedN, currentMillis);
+			// callback( Blink1Service.getCurrentColor(), currentColors, currentLedN, currentMillis);
+            callback( Blink1Service.getCurrentColor(), currentState[0].colors, currentState[0].ledn, currentState[0].millis );
 		});
 	},
 
@@ -333,3 +285,11 @@ var Blink1Service = {
 
 
 module.exports = Blink1Service;
+
+// _closeCurrentDevice: function()	{
+// 	log.msg('Blink1Service._closeCurrentDevice: closing blink1');
+// 	if( blink1 ) {
+// 		blink1.close();
+// 		blink1 = null;
+// 	}
+// },

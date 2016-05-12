@@ -283,7 +283,7 @@ var PatternsService = {
 		// var pattname;
 		var patt;
 		if( id.startsWith('#') ) { // color
-			Blink1Service.fadeToColor(100, id, 0 );
+			Blink1Service.fadeToColor(100, id, 0 ); // 0 == all LEDs
 			return true;
 		}
 		if( id.startsWith('~') ) { // special meta-pattern
@@ -291,7 +291,7 @@ var PatternsService = {
 			if( id === '~off') {
 				log.msg("PatternsService: playing special '~off' pattern");
 				PatternsService.stopAllPatterns();
-				Blink1Service.fadeToColor( 300, '#000000', 0 );
+				Blink1Service.fadeToColor( 300, '#000000', 0 ); // 0 = all LEDs
 				return true;
 			}
 			else if( blinkre.test( id ) ) {

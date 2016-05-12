@@ -99,7 +99,7 @@ ipcRenderer.on('pressBigButton', function( event,arg ) {
         if( bigButton.type === 'color' ) {
             console.log("buttontype color", bigButton);
             log.addEvent({type:'trigger', source:'button', id:bigButton.name} );
-            Blink1Service.fadeToColor( 100, bigButton.color, bigButton.ledn || 0 );
+            Blink1Service.fadeToColor( 100, bigButton.color, bigButton.ledn || 0 );  // 0=all leds
         }
         else if( bigButton.type === 'pattern' ) {
             console.log("buttontype pattern");

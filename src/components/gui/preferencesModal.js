@@ -2,11 +2,11 @@
 
 var React = require('react');
 
-var Grid = require('react-bootstrap').Grid;
+// var Grid = require('react-bootstrap').Grid;
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
-var Well = require('react-bootstrap').Well;
-var Panel = require('react-bootstrap').Panel;
+// var Well = require('react-bootstrap').Well;
+// var Panel = require('react-bootstrap').Panel;
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var ButtonInput = require('react-bootstrap').ButtonInput;
@@ -17,8 +17,11 @@ var LinkedStateMixin = require('react-addons-linked-state-mixin');
 
 var PatternsService = require('../../server/patternsService');
 var Blink1Service   = require('../../server/blink1Service');
+var ApiServer   = require('../../server/apiServer');
 
 var conf = require('../../configuration');
+
+var Blink1SerialOption = require('./blink1SerialOption');
 
 var PreferencesModal = React.createClass({
     mixins: [LinkedStateMixin],
@@ -28,8 +31,6 @@ var PreferencesModal = React.createClass({
         // onPatternUpdated: React.PropTypes.func.isRequired
 	},
     getInitialState: function() {
-        // var rule = this.props.rule;
-        // console.log("iftttForm rule:",rule);
         return {
             startMinimized:  conf.readSettings('startup:startMinimized') || false,
             startAtLogin:    conf.readSettings('startup:startAtLogin') || false,
@@ -45,7 +46,8 @@ var PreferencesModal = React.createClass({
             proxyPass: '',
             patterns: PatternsService.getAllPatterns(),
             blink1ToUse:     conf.readSettings('blink1Service:blink1ToUse') || 0, // 0 == use first avail
-            blink1Serials: Blink1Service.getAllSerials(),
+            // blink1Serials: Blink1Service.getAllSerials(),
+            blink1Serials: ['12345678','abcdabcd'], // FIXME: make a prop
             patternId: 'whiteflashes'
         };
     },
@@ -62,29 +64,31 @@ var PreferencesModal = React.createClass({
         conf.saveSettings('apiServer:port', this.state.apiServerPort);
         conf.saveSettings('apiServer:host', this.state.apiServerHost);
         Blink1Service.reloadConfig();
+        ApiServer.reloadConfig();
     },
     close: function() {
-        console.log("CLOSING: state=",this.state);
+        // console.log("CLOSING: state=",this.state);
         this.saveSettings();
         this.props.onSave(this.state);
     },
     cancel: function() {
-        console.log("CANCEL");
+        // console.log("CANCEL");
         this.props.onCancel();
     },
     // delete: function() {
     //     this.props.onDelete();
     // },
     handleBlink1SerialChoice: function(e) {
-        // console.log("handleBlink1NonComputerChange: ",e.target.value);
+        console.log("handleBlink1NonComputerChange: ",e.target.value);
         var choice = e.target.value;
         if( choice === 'first' ) {
             this.setState({blink1ToUse: 0});
         }
         else if( choice === 'serial' ) {
-            if( this.state.blink1Serials.length > 0 ) {
-                this.setState({blink1ToUse: this.state.blink1Serials[0]});
-            }
+            // this.setState({blink1ToUse: });
+            // if( this.state.blink1Serials.length > 0 ) {
+            //     this.setState({blink1ToUse: this.state.blink1Serials[0]});
+            // }
         }
     },
     handleBlink1NonComputerChoice: function(e) {
@@ -109,13 +113,21 @@ var PreferencesModal = React.createClass({
         console.log("SET!!");
     },
     render: function() {
-        // console.log("preferencesModal render:",this.state, this.props);
         var createPatternOption = function(item, idx) {
             return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
-        var createBlink1SerialOption = function(item,idx) {
-            return ( <option key={idx} value={item}>{item}</option> );
-        };
+        // var createBlink1SerialOption = function(item,idx) {
+        //     return ( <option key={idx} value={item}>{item}</option> );
+        // };
+        // var createBlink1SerialList = (
+        //     <Input labelClassName="col-xs-1" wrapperClassName="col-xs-11" bsSize="small"
+        //         type="select" label="" width={7}
+        //         valueLink={this.linkState('blink1ToUse')} >
+        //         {this.state.blink1Serials.map( createBlink1SerialOption, this )}
+        //     </Input>
+        // );
+
+
         return (
         <div>
             <Modal show={this.props.show} onHide={this.close} bsSize="large">
@@ -178,12 +190,9 @@ var PreferencesModal = React.createClass({
                                                 checked={this.state.blink1ToUse!==0}
                                                 onChange={this.handleBlink1SerialChoice} />
                                         </Col><Col xs={6}>
-                                            <Input labelClassName="col-xs-1" wrapperClassName="col-xs-11" bsSize="small"
-                                                type="select" label="" width={7}
-                                                valueLink={this.linkState('blink1ToUse')} >
-                                                {this.state.blink1Serials.map( createBlink1SerialOption, this )}
-                                            </Input>
-                                    </Col></Row>
+                                            <Blink1SerialOption labelClassName="col-xs-1" wrapperClassName="col-xs-11"
+                                                serials={this.state.blink1Serials} onChange={this.handleBlink1SerialChoice}/>
+                                        </Col></Row>
                                     </form>
                             </div>
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>
