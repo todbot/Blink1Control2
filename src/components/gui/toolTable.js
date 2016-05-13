@@ -38,25 +38,12 @@ var ToolTable = React.createClass({
 	// 	//onClear: React.PropTypes.func.isRequired
 	// },
 	getInitialState: function() {
-		// Imagine:
-		//  "eventSources": [
-		//         { "name": "ifttt", "enabled": true },
-		//         { "name": "mail", "enabled": true },
-		//         { "name": "script", "enabled": true },
-		//         { "name": "skype", "enabled": true },
-		//     ]
-		//   },
-		// eventSources = conf.readSettings('eventSources');
-		// eventSources.map( function(source) {
-		// 	source.form = require('./'+source.name+'Form.js');
-		// FIXME: what about 'script' vs 'url' vs 'file'?
-		// });
 		var rules = conf.readSettings('eventRules');
         if( !rules || rules.length===0 ) {
 			log.msg("ToolTable.getInitialState: no rules, using examples");
 			rules = example_rules;
 			conf.saveSettings("eventRules", rules);
-			this.updateService(rules[0]);
+			this.updateService(rules[0]);  // FIXME: why is this here?
 		}
         var events = log.getEvents();
 		// MailService.addChangeListener(this.updateSearchStatus, "MailTable");
@@ -65,6 +52,7 @@ var ToolTable = React.createClass({
             events: events, // FIXME: hmmmmm
 			workingIndex:-1,
 			showForm: false,
+			allowMultiBlink1: conf.readSettings("blink1Service:allowMulti")
 		};
 	},
     componentDidMount: function() {
@@ -256,25 +244,25 @@ var ToolTable = React.createClass({
 
 				<ScriptForm show={this.state.showForm==='script' || this.state.showForm==='file' || this.state.showForm === 'url' }
 					workingIndex={this.state.workingIndex}
-                    rule={workingRule} patterns={patterns}
+                    rule={workingRule} patterns={patterns} allowMultiBlink1={this.state.allowMultiBlink1}
 					onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
 					onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
                 <MailForm show={this.state.showForm==='mail'}
 					workingIndex={this.state.workingIndex}
-                    rule={workingRule} patterns={patterns}
+                    rule={workingRule} patterns={patterns} allowMultiBlink1={this.state.allowMultiBlink1}
 					onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
 					onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
                 <IftttForm show={this.state.showForm==='ifttt'}
                     workingIndex={this.state.workingIndex}
-                    rule={workingRule} patterns={patterns}
+                    rule={workingRule} patterns={patterns} allowMultiBlink1={this.state.allowMultiBlink1}
                     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
 				<SkypeForm show={this.state.showForm==='skype'}
                     workingIndex={this.state.workingIndex}
-                    rule={workingRule} patterns={patterns}
+                    rule={workingRule} patterns={patterns} allowMultiBlink1={this.state.allowMultiBlink1}
                     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 

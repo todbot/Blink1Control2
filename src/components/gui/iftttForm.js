@@ -7,18 +7,20 @@ var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
-// var ButtonGroup = require('react-bootstrap').ButtonGroup;
-// var FormControls = require('react-bootstrap').FormControls;
+
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
 
 var Switch = require('react-bootstrap-switch');
 
+var Blink1SerialOption = require('./blink1SerialOption');
+var Blink1Service = require('../../server/blink1Service');
 
 var IftttForm = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
 		rule: React.PropTypes.object.isRequired,
         patterns: React.PropTypes.array,
+        allowMultiBlink1: React.PropTypes.bool,
         onSave: React.PropTypes.func,
         onCancel: React.PropTypes.func,
         onDelete: React.PropTypes.func,
@@ -38,15 +40,27 @@ var IftttForm = React.createClass({
             enabled: rule.enabled,
             name: rule.name,
             actionType: rule.actionType,
-            patternId: rule.patternId
+            patternId: rule.patternId,
+            blink1Id: rule.blink1Id
          }); // FIXME: why
 	},
     handleClose: function() {
         this.props.onSave(this.state);
     },
+    handleBlink1SerialChange: function(e) {
+        var blink1Id = e.target.value;
+        console.log("handleBlink1SerialChange: ",blink1Id);
+        if( blink1Id === '- use default - ' ) {
+            blink1Id = 0;  // FIXME
+        }
+        this.setState({blink1Id: blink1Id});
+    },
 
     render: function() {
         var self = this;
+
+        var serials = Blink1Service.getAllSerials();
+        serials.unshift('- use default -');
 
         var createPatternOption = function(item, idx) {
           return ( <option key={idx} value={item.id}>{item.name}</option> );
@@ -70,6 +84,10 @@ var IftttForm = React.createClass({
                                 valueLink={this.linkState('patternId')} >
                                 {this.props.patterns.map( createPatternOption, this )}
                             </Input>
+                            {this.props.allowMultiBlink1 ?
+
+                                <Blink1SerialOption label="blink(1) to use" labelClassName="col-xs-3" wrapperClassName="col-xs-3"
+                                    serial={this.state.blink1Id} serials={serials} onChange={this.handleBlink1SerialChange}/> : null}
                         </form>
                     </Modal.Body>
                     <Modal.Footer>

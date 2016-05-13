@@ -33,22 +33,23 @@ var PreferencesModal = React.createClass({
 	},
     getInitialState: function() {
         return {
-            startMinimized:  conf.readSettings('startup:startMinimized') || false,
-            startAtLogin:    conf.readSettings('startup:startAtLogin') || false,
-            startupPattern:  conf.readSettings('startup:startupPattern') || "",
-            enableGamma:     conf.readSettings('blink1Service:enableGamma') || true,
-            apiServerEnable: conf.readSettings('apiServer:enabled') || false,
-            apiServerPort:   conf.readSettings('apiServer:port') || 8934,
-            apiServerHost:   conf.readSettings('apiServer:host') || 'localhost',
+            startMinimized:   conf.readSettings('startup:startMinimized') || false,
+            startAtLogin:     conf.readSettings('startup:startAtLogin') || false,
+            startupPattern:   conf.readSettings('startup:startupPattern') || "",
+            enableGamma:      conf.readSettings('blink1Service:enableGamma') || true,
+            blink1ToUse:      conf.readSettings('blink1Service:blink1ToUse') || 0, // 0 == use first avail
+            allowMultiBlink1: conf.readSettings('blink1Service:allowMulti') || false,
+            apiServerEnable:  conf.readSettings('apiServer:enabled') || false,
+            apiServerPort:    conf.readSettings('apiServer:port') || 8934,
+            apiServerHost:    conf.readSettings('apiServer:host') || 'localhost',
             proxyEnable: false,
             proxyHost: 'localhost',
             proxyPort: 8080,
             proxyUser: '',
             proxyPass: '',
             patterns: PatternsService.getAllPatterns(),
-            blink1ToUse:     conf.readSettings('blink1Service:blink1ToUse') || 0, // 0 == use first avail
-            // blink1Serials: Blink1Service.getAllSerials(),
-            blink1Serials: ['12345678','abcdabcd'], // FIXME: make a prop
+            blink1Serials: Blink1Service.getAllSerials(),
+            // blink1Serials: ['12345678','abcdabcd'], // FIXME: make a prop
             patternId: 'whiteflashes'
         };
     },
@@ -61,6 +62,7 @@ var PreferencesModal = React.createClass({
         conf.saveSettings('startup:startAtLogin', this.state.startAtLogin);
         conf.saveSettings('blink1Service:enableGamma', this.state.enableGamma);
         conf.saveSettings('blink1Service:blink1ToUse', this.state.blink1ToUse);
+        conf.saveSettings('blink1Service:allowMulti', this.state.allowMultiBlink1);
         conf.saveSettings('apiServer:enabled', this.state.apiServerEnable);
         conf.saveSettings('apiServer:port', this.state.apiServerPort);
         conf.saveSettings('apiServer:host', this.state.apiServerHost);
@@ -176,10 +178,10 @@ var PreferencesModal = React.createClass({
                                                 onChange={this.handleBlink1SerialChoice} />
                                         </Col><Col xs={6}>
                                             <Blink1SerialOption labelClassName="col-xs-1" wrapperClassName="col-xs-11"
-                                                serials={this.state.blink1Serials} onChange={this.handleBlink1SerialChange}/>
+                                                serial={this.state.blink1ToUse} serials={this.state.blink1Serials} onChange={this.handleBlink1SerialChange}/>
                                         </Col></Row>
                                         <Input labelClassName="col-xs-12" wrapperClassName="col-xs-12" bsSize="small"
-                                            type="checkbox" label="Use multi blink(1) devices in rules" checkedLink={this.linkState('multiBlink1 ')}  />
+                                            type="checkbox" label="Use multi blink(1) devices in rules" checkedLink={this.linkState('allowMultiBlink1')}  />
                                     </form>
                             </div>
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>
@@ -218,7 +220,7 @@ var PreferencesModal = React.createClass({
                             </div>
                         </Col>
                         <Col md={4}>
-                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
+                            <div style={{border:'1px solid #ddd', paddingLeft:15}} enabled={false}>
                                 <h5><u> Proxy configuration </u></h5>
                                 <form className="form-horizontal">
                                     <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
@@ -242,8 +244,8 @@ var PreferencesModal = React.createClass({
                         </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                  <Button onClick={this.cancel}>Cancel</Button>
-                  <Button onClick={this.close}>OK</Button>
+                  <Button bsSize="small" onClick={this.cancel}>Cancel</Button>
+                  <Button bsSize="small" onClick={this.close}>OK</Button>
                 </Modal.Footer>
             </Modal>
         </div>

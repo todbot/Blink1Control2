@@ -10,17 +10,18 @@ var Input = require('react-bootstrap').Input;
 var Blink1SerialOption = React.createClass({
     propTypes: {
         serials: React.PropTypes.array.isRequired,
+        serial: React.PropTypes.string,
+        label: React.PropTypes.string,
         labelClassName: React.PropTypes.string,
         wrapperClassName: React.PropTypes.string,
         onChange: React.PropTypes.func.isRequired
 	},
     getInitialState: function() {
         return {
-            serial: 0,
+            serial: this.props.serial,
         };
     },
     handleChange: function(e) {
-        // console.log("handleChange:",e.target.value);
         this.setState( {serial:e.target.value});
         this.props.onChange(e);
     },
@@ -31,7 +32,7 @@ var Blink1SerialOption = React.createClass({
 
         return (
             <Input labelClassName={this.props.labelClassName} wrapperClassName={this.props.wrapperClassName}
-                    bsSize="small" type="select" label="" width={7}
+                    bsSize="small" type="select" label={this.props.label} width={7}
                     value={this.state.serial} onChange={this.handleChange} >
                     {this.props.serials.map( createBlink1SerialOption, this )}
             </Input>
