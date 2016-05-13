@@ -20,6 +20,7 @@ var Blink1Service   = require('../../server/blink1Service');
 var ApiServer   = require('../../server/apiServer');
 
 var conf = require('../../configuration');
+var log = require('../../logger');
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
@@ -67,66 +68,50 @@ var PreferencesModal = React.createClass({
         ApiServer.reloadConfig();
     },
     close: function() {
-        // console.log("CLOSING: state=",this.state);
         this.saveSettings();
         this.props.onSave(this.state);
     },
     cancel: function() {
-        // console.log("CANCEL");
         this.props.onCancel();
     },
     // delete: function() {
     //     this.props.onDelete();
     // },
     handleBlink1SerialChoice: function(e) {
-        console.log("handleBlink1NonComputerChange: ",e.target.value);
+        // log.msg("handleBlink1SerialChoice: ",e.target.value);
         var choice = e.target.value;
         if( choice === 'first' ) {
             this.setState({blink1ToUse: 0});
         }
-        else if( choice === 'serial' ) {
-            // this.setState({blink1ToUse: });
-            // if( this.state.blink1Serials.length > 0 ) {
-            //     this.setState({blink1ToUse: this.state.blink1Serials[0]});
-            // }
-        }
+    },
+    handleBlink1SerialChange: function(e) {
+        // log.msg("handleBlink1NonComputerChange: ",e.target.value);
+        this.setState({blink1ToUse: e.target.value});
     },
     handleBlink1NonComputerChoice: function(e) {
         var choice = e.target.value;
-        console.log("handleBlink1NonComputerChange: ",choice);
+        log.msg("handleBlink1NonComputerChange: ",choice);
         this.setState({blink1NonComputer: choice});
         if( choice === 'off' ) {
-            console.log("settting OFF");
+            log.msg("settting OFF");
         }
         else if( choice === 'default' ) {
-            console.log("settting OFF");
+            log.msg("settting default");
         }
         else if( choice === 'pattern' ) {
-            console.log("setting pattern");
+            log.msg("setting pattern");
         }
     },
     handleApiServerHostChoice: function(e) {
-        var choice = e.target.value;
-        this.setState({apiServerHost: choice});
+        this.setState({apiServerHost: e.target.value});
     },
     handleBlink1NonComputerSet: function() {
-        console.log("SET!!");
+        log.msg("SET!!");
     },
     render: function() {
         var createPatternOption = function(item, idx) {
             return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
-        // var createBlink1SerialOption = function(item,idx) {
-        //     return ( <option key={idx} value={item}>{item}</option> );
-        // };
-        // var createBlink1SerialList = (
-        //     <Input labelClassName="col-xs-1" wrapperClassName="col-xs-11" bsSize="small"
-        //         type="select" label="" width={7}
-        //         valueLink={this.linkState('blink1ToUse')} >
-        //         {this.state.blink1Serials.map( createBlink1SerialOption, this )}
-        //     </Input>
-        // );
-
 
         return (
         <div>
@@ -191,8 +176,10 @@ var PreferencesModal = React.createClass({
                                                 onChange={this.handleBlink1SerialChoice} />
                                         </Col><Col xs={6}>
                                             <Blink1SerialOption labelClassName="col-xs-1" wrapperClassName="col-xs-11"
-                                                serials={this.state.blink1Serials} onChange={this.handleBlink1SerialChoice}/>
+                                                serials={this.state.blink1Serials} onChange={this.handleBlink1SerialChange}/>
                                         </Col></Row>
+                                        <Input labelClassName="col-xs-12" wrapperClassName="col-xs-12" bsSize="small"
+                                            type="checkbox" label="Use multi blink(1) devices in rules" checkedLink={this.linkState('multiBlink1 ')}  />
                                     </form>
                             </div>
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>

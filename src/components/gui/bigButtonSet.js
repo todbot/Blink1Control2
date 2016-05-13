@@ -43,7 +43,7 @@ var BigButtonSet = React.createClass({
     },
     addBigButton: function() { // FIXME: this is hacky
         var newbut = {
-            name: "Big Button",
+            name: "Big Button "+this.state.buttonsUser.length,
             type: "color",
             color: Blink1Service.getCurrentColor().toHexString(),
             ledn: Blink1Service.getCurrentLedN()

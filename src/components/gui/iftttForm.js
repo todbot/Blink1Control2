@@ -75,16 +75,16 @@ var IftttForm = React.createClass({
                     <Modal.Footer>
                         <Row>
                             <Col xs={5}>
-                                <Button bsStyle="danger" bsSize="small" onClick={this.props.onDelete}  style={{float:'left'}}>Delete</Button>
-                                <Button bsSize="small"  onClick={this.props.onCopy}  style={{float:'left'}}>Copy</Button>
+                                <Button bsSize="small" bsStyle="danger" onClick={this.props.onDelete} style={{float:'left'}}>Delete</Button>
+                                <Button bsSize="small"  onClick={this.props.onCopy} style={{float:'left'}}>Copy</Button>
                           </Col>
                           <Col xs={3}>
                                 <Switch labelText="Enable" size="small"
                                     state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
                           </Col>
                           <Col xs={4}>
-                                <Button onClick={this.props.onCancel}>Cancel</Button>
-                                <Button onClick={this.handleClose}>OK</Button>
+                                <Button bsSize="small" onClick={this.props.onCancel}>Cancel</Button>
+                                <Button bsSize="small" onClick={this.handleClose}>OK</Button>
                           </Col>
                         </Row>
                     </Modal.Footer>

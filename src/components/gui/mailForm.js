@@ -36,8 +36,8 @@ var MailForm = React.createClass({
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
         this.setState({
-            enabled: rule.enabled,
             type:'mail',
+            enabled: rule.enabled,
             name: rule.name,
             patternId: rule.patternId || this.props.patterns[0].id,
             mailtype: rule.mailtype || 'IMAP',  // default it
@@ -180,16 +180,16 @@ var MailForm = React.createClass({
                 <Modal.Footer>
                     <Row>
                         <Col xs={5}>
-                            <Button bsStyle="danger" bsSize="small" onClick={this.props.onDelete}  style={{float:'left'}}>Delete</Button>
-                            <Button bsSize="small"  onClick={this.props.onCopy}  style={{float:'left'}}>Copy</Button>
+                            <Button bsSize="small" bsStyle="danger" onClick={this.props.onDelete} style={{float:'left'}}>Delete</Button>
+                            <Button bsSize="small" onClick={this.props.onCopy} style={{float:'left'}}>Copy</Button>
                         </Col>
                         <Col xs={3}>
-                                <Switch labelText="Enable" size="small"
+                                <Switch size="small" labelText="Enable"
                                     state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
                         </Col>
                         <Col xs={4}>
-                            <Button onClick={this.props.onCancel}>Cancel</Button>
-                            <Button onClick={this.handleClose}>OK</Button>
+                            <Button bsSize="small" onClick={this.props.onCancel}>Cancel</Button>
+                            <Button bsSize="small" onClick={this.handleClose}>OK</Button>
                         </Col>
                     </Row>
                 </Modal.Footer>
