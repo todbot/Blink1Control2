@@ -118,15 +118,16 @@ var Blink1Service = {
 	},
 
 	// private function, accesses hardware
-    _fadeToRGB: function( millis, r,g,b, ledn, blink1_id ) {
-        var id = (blink1_id) ? blink1_id : 0; // FIXME: maybe is serial
-
-        if( blink1s[id] && blink1s[id].device ) {
+	// assumes defined blink1idx, ledn
+	// blink1idx is index into blink1s array
+    _fadeToRGB: function( millis, r,g,b, ledn, blink1idx ) {
+		// if the device exists
+        if( blink1s[blink1idx] && blink1s[blink1idx].device ) {
             try {
-				blink1s[id].device.fadeToRGB( millis, r, g, b, ledn );
+				blink1s[blink1idx].device.fadeToRGB( millis, r, g, b, ledn );
 			} catch(err) {
 				log.msg('Blink1Service._fadeToRGB: error', err);
-				this._removeDevice( blink1s[id].serial );
+				this._removeDevice( blink1s[blink1idx].serial );
 			}
         }
     },
@@ -205,6 +206,14 @@ var Blink1Service = {
 		// return currentColors;
 		return currentState[0].colors;
 	},
+
+	// lookup blink1id and map to an blink1id
+	// uses conf.blink1Service.blink1ToUse
+	idToIndex: function(blink1id) {
+		var blink1idx = blink1id || 0;   // FIXME: should use 'conf.blink1Service.blink1touse'
+		return blink1idx;
+	},
+
 	// main entry point for this service, sets currentColor & currentLedN
 	// 'color' arg is a tinycolor() color or hextring ('#ff00ff')
 	// if color is a hexstring, it will get converted to tinycolor
@@ -213,28 +222,30 @@ var Blink1Service = {
     // FIXME: currentState[0] will be currentState[blink1_id]
     //
 	fadeToColor: function( millis, color, ledn, blink1_id) {
-		var id = blink1_id || 0;
-		ledn = ledn || 0;
+		ledn = ledn || 0;  // 0 == all LEDs
 		if( typeof color === 'string' ) {
 			color = tinycolor( color ); // FIXME: must be better way
 		}
 
-		var colors = _.clone(currentState[id].colors);
+		var blink1idx = this.idToIndex(blink1_id);
+
+		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
+		log.msg("Blink1Service.fadeToColor:"+blink1idx+":", millis,ledn, color.toHexString());
+
+		var colors = _.clone(currentState[blink1idx].colors);
 		// handle special meaning: ledn=0 -> all LEDs
 		if( ledn === 0 ) { colors.fill( color );
 		} else {           colors[ledn-1] = color;	}
 
-		lastState[id] = currentState[id];
-		currentState[id] = {ledn: ledn, millis: millis, colors };
+		lastState[blink1idx] = currentState[blink1idx];
+		currentState[blink1idx] = {ledn: ledn, millis: millis, colors };
 
-		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		log.msg("Blink1Service.fadeToColor:"+id+":", millis,ledn, color.toHexString());
                 //, typeof color, (color instanceof String) );
 		var crgb = color.toRgb();
 
 		// divide currentMillis by two to make it appear more responsive
 		// by having blink1 be at destination color for half the time
-		this._fadeToRGB( millis/2, crgb.r, crgb.g, crgb.b, ledn, id);
+		this._fadeToRGB( millis/2, crgb.r, crgb.g, crgb.b, ledn, blink1idx);
 
 		this.notifyChange();
 	},

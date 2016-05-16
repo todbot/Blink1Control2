@@ -272,54 +272,66 @@ var PatternsService = {
 		}
 		return false;
 	},
-
+	playPatternByRule: function(rule) {
+		var allowMultiBlink1 = false; // FIXME:
+		if( rule.enabled ) {
+			if( allowMultiBlink1 && rule.blink1Id ) {
+				this.playPattern(rule.patternId, rule.blink1Id);
+			} else {
+				this.playPattern(rule.patternId);
+			}
+		}
+	},
 	/**
 	 * Play a pattern. Returns false if pattern doesn't exist. Notifys change listeners
 	 *
      */
-	playPattern: function(id) {
-		log.msg("PatternsService.playPattern: id=",id, "patternsTemp:",patternsTemp);
+	playPattern: function(pattid, blink1id) {
+		log.msg("PatternsService.playPattern: id:",pattid, ", blink1id:",blink1id, "patternsTemp:",patternsTemp);
+		// blink1id = blink1id || 0;
 		var patternstr;
 		// var pattname;
 		var patt;
-		if( id.startsWith('#') ) { // color
-			Blink1Service.fadeToColor(100, id, 0 ); // 0 == all LEDs
+		// first, is the pattern actually a hex color?
+		if( pattid.startsWith('#') ) { // color
+			Blink1Service.fadeToColor(100, pattid, 0, blink1id ); // 0 == all LEDs
 			return true;
 		}
-		if( id.startsWith('~') ) { // special meta-pattern
+		// then, look for special meta-pattern
+		if( pattid.startsWith('~') ) {
 			var blinkre = /~blink-(#*\w+)-(\d+)/;
-			if( id === '~off') {
+			if( pattid === '~off') {
 				log.msg("PatternsService: playing special '~off' pattern");
 				PatternsService.stopAllPatterns();
-				Blink1Service.fadeToColor( 300, '#000000', 0 ); // 0 = all LEDs
+				Blink1Service.fadeToColor( 300, '#000000', 0, blink1id ); // 0 = all LEDs
 				return true;
 			}
-			else if( blinkre.test( id ) ) {
-				var match = blinkre.exec( id );
+			else if( blinkre.test( pattid ) ) { // "~blink-5-#ff00ff"
+				var match = blinkre.exec( pattid );
 				var colorstr = match[1];
 				var count = match[2];
 				var c = tinycolor(colorstr);  // FIXME: how does tinycolor fail?
 				// log.msg("matcher:", colorstr, count, c );
 				patternstr = count + ',' + c.toHexString() + ',0.5,0,#000000,0.5,0';
 				patt = _parsePatternStr(patternstr);
-				patt.name = id.substring(1); //'temp-'+utils.cheapUid(4); // if parsing failed, use temp name
+				patt.name = pattid.substring(1); //'temp-'+utils.cheapUid(4); // if parsing failed, use temp name
 				patt.id = patt.name;
 				patt.temp = true; // FIXME: hmmm
 				patternsTemp.push( patt ); // save temp pattern
-				id = patt.id;
+				pattid = patt.id;
 				// PatternsService.playPattern(patternstr);
 				// return true;
 			}
-			else if( id.startsWith('~pattern:') ) { // FIXME: use regex yo
-				patternstr = id.substring(id.lastIndexOf(':')+1);
+			else if( pattid.startsWith('~pattern:') ) { // FIXME: use regex yo
+				patternstr = pattid.substring(pattid.lastIndexOf(':')+1);
 				// pattname = id.substring(id.indexOf(':')+1,id.lastIndexOf(':'));
 				// if( pattname===':' ) { pattname = 'temp-'+utils.cheapUid(4);} // if parsing failed, use temp name
 				patt = _parsePatternStr(patternstr);
-				patt.name = id.substring(9); // 'temp-'+utils.cheapUid(4);  // FIXME:
+				patt.name = pattid.substring(9); // 'temp-'+utils.cheapUid(4);  // FIXME:
 				patt.id = patt.name;
 				patt.temp = true; // FIXME: hmmm
 				patternsTemp.push( patt ); // save temp pattern
-				id = patt.id;
+				pattid = patt.id;
 				// log.msg("PatternsService: playing temp pattern:",patt);
 				//PatternsService.playPattern( patt ); // FIXME: hmmm
 			}
@@ -332,13 +344,14 @@ var PatternsService = {
 			// if( tinycolor(id) ) { // if 'id' is a hex color
 			// }
 		}
-		// FIXME: meta: this function is doing too many things
+		// FIXME: this function is doing too many things
 
-		var pattern = _.find(this.getAllPatterns(), {id: id});
+		// finally, look for the pattern as an id
+		var pattern = _.find(this.getAllPatterns(), {id: pattid});
 		if( !pattern ) {  // check for special built-in patterns
-			pattern = _.find( patternsTemp, {id:id} );
+			pattern = _.find( patternsTemp, {id: pattid} );
 			if( !pattern ) {
-				log.msg("PatternsService: no pattern with id:", id);
+				log.msg("PatternsService: no pattern with id:", pattid);
 				return false;  // FIXME: return error?
 			}
 		}
@@ -351,13 +364,13 @@ var PatternsService = {
 		pattern.playpos = 0;
 		pattern.playcount = 0;
 		pattern.playing = true;
-		playingPatternId = id;
-		// playingStack.push( id );
-		this._playPatternInternal(id, null);
+		playingPatternId = pattid;
+		// playingStack.push( id ); // FIXME: idea for pattern stack
+		this._playPatternInternal(pattid, blink1id, null);
 		return true;
 	},
 
-	_playPatternInternal: function(id, callback) {
+	_playPatternInternal: function(id, blink1id, callback) {
 		playingPatternId = id;
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		if( !pattern ) { // look for id in temp pattern list
@@ -369,7 +382,7 @@ var PatternsService = {
 		var ledn = color.ledn;
 		// console.log("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
 
-		Blink1Service.fadeToColor( millis, rgb, ledn );
+		Blink1Service.fadeToColor( millis, rgb, ledn, blink1id );
 
 		// go to next step in pattern, potentially looping or stopping
 		pattern.playpos++;
@@ -388,7 +401,7 @@ var PatternsService = {
 
 		this.notifyChange();
 		pattern.timer = setTimeout(function() {
-			PatternsService._playPatternInternal(id, callback);
+			PatternsService._playPatternInternal(id, blink1id, callback);
 		}, millis);
 	},
 
