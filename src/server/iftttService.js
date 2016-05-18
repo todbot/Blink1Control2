@@ -94,9 +94,10 @@ var IftttService = {
 		var self = this;
 		log.msg("IftttService.handleResults: *** TRIGGERED!!! ***", event);
 		self.lastEvents[rule.name] = event.eventDate;
-		if( rule.enabled ) {
-			PatternsService.playPattern( rule.patternId );
-		}
+		PatternsService.playPattern( rule );
+		// if( rule.enabled ) {
+		// 	// if( Blink1Service.rule.blink1Id ) {
+		// }
 	},
 
     fetch: function() {

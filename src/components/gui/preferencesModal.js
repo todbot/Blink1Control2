@@ -68,6 +68,8 @@ var PreferencesModal = React.createClass({
         conf.saveSettings('apiServer:host', this.state.apiServerHost);
         Blink1Service.reloadConfig();
         ApiServer.reloadConfig();
+        // FIXME: a hack to get ToolTable to refetch allowMulti pref
+        log.addEvent({type:'info', source:'preferences', text:'settings updated'});
     },
     close: function() {
         this.saveSettings();
@@ -165,21 +167,11 @@ var PreferencesModal = React.createClass({
                         </Col>
                         <Col md={4}>
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>
-                                <h5><u> blink(1) device to use </u></h5>
+                                <h5><u> blink(1) device use </u></h5>
                                     <form className="form-horizontal">
-                                        <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
-                                            type="radio" label="First available"  value="first"
-                                            checked={this.state.blink1ToUse===0}
-                                            onChange={this.handleBlink1SerialChoice} />
-                                        <Row><Col xs={6}>
-                                            <Input labelClassName="col-xs-" wrapperClassName="col-xs-12" bsSize="small"
-                                                type="radio" label="Use device:" value="serial"
-                                                checked={this.state.blink1ToUse!==0}
-                                                onChange={this.handleBlink1SerialChoice} />
-                                        </Col><Col xs={6}>
-                                            <Blink1SerialOption labelClassName="col-xs-1" wrapperClassName="col-xs-11"
-                                                serial={this.state.blink1ToUse} serials={this.state.blink1Serials} onChange={this.handleBlink1SerialChange}/>
-                                        </Col></Row>
+                                        <Blink1SerialOption labelClassName="col-xs-6" wrapperClassName="col-xs-5"
+                                            label="preferred device"
+                                            serial={this.state.blink1ToUse} serials={this.state.blink1Serials} onChange={this.handleBlink1SerialChange}/>
                                         <Input labelClassName="col-xs-12" wrapperClassName="col-xs-12" bsSize="small"
                                             type="checkbox" label="Use multi blink(1) devices in rules" checkedLink={this.linkState('allowMultiBlink1')}  />
                                     </form>

@@ -22,19 +22,25 @@ var Blink1SerialOption = React.createClass({
         };
     },
     handleChange: function(e) {
-        this.setState( {serial:e.target.value});
-        this.props.onChange(e);
+        var blink1Id = e.target.value;
+        if( blink1Id === '-use first-' ) {
+            blink1Id = 0;
+        }
+        this.setState( {serial:blink1Id});
+        this.props.onChange(blink1Id);
     },
     render: function() {
         var createBlink1SerialOption = function(item,idx) {
             return ( <option key={idx} value={item}>{item}</option> );
         };
+        var serials = this.props.serials.slice();
+        serials.unshift('-use first-');
 
         return (
             <Input labelClassName={this.props.labelClassName} wrapperClassName={this.props.wrapperClassName}
                     bsSize="small" type="select" label={this.props.label} width={7}
                     value={this.state.serial} onChange={this.handleChange} >
-                    {this.props.serials.map( createBlink1SerialOption, this )}
+                    {serials.map( createBlink1SerialOption, this )}
             </Input>
         );
     }
