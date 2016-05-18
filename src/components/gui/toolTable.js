@@ -52,16 +52,18 @@ var ToolTable = React.createClass({
             events: events, // FIXME: hmmmmm
 			workingIndex:-1,
 			showForm: false,
-			allowMultiBlink1: conf.readSettings("blink1Service:allowMulti")
 		};
 	},
     componentDidMount: function() {
         this.getUpdates(); // set up polling, ugh FIXME:
 		log.addChangeListener( this.getUpdates, "ToolTable" );
     },
+	// callback called by event service
     getUpdates: function() {
         var events = log.getEvents();
-        // log.msg("ToolTable.getUpdates, events:",events);
+        log.msg("ToolTable.getUpdates, events:",events);
+		this.setState({'allowMultiBlink1': conf.readSettings("blink1Service:allowMulti") });
+
 		if( !this.state.showForm ) {  //i.e. don't change when we're in edit mode
         	this.setState({events: events});
 		}
@@ -189,6 +191,7 @@ var ToolTable = React.createClass({
             return desc;
         };
 		var makePattern = function(rule) {
+			// log.msg("toolTable.render: makePattern:",rule);
 			var pattstr = 'unknown';
 			if( rule.actionType === 'play-pattern' ) {
 				pattstr = PatternsService.getNameForId( rule.patternId );  // just text
