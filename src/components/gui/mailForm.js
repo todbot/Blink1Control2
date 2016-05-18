@@ -80,11 +80,16 @@ var MailForm = React.createClass({
     },
     onTriggerTypeClick: function(evt) {
         var type = evt.target.value;
+        // var val = 1;
         // log.msg("mailForm.onTriggerTypeClick ",type);//,evt);
+        // if( (type === 'sender' || type === 'subject') && this.state.triggerVal is not a number) {
+        //     val = this.state.triggerVal;
+        // }
+        // this.setState({triggerType: type, triggerVal: val});
         this.setState({triggerType: type});
     },
     onTriggerValClick: function(evt) {
-        log.msg("mailForm.onTriggerClick ",evt.target.value, evt.target.name);
+        // log.msg("mailForm.onTriggerClick ",evt.target.value, evt.target.name);
         this.setState({triggerVal: evt.target.value, triggerType: evt.target.name});
     },
     render: function() {
@@ -137,7 +142,7 @@ var MailForm = React.createClass({
                         </Col>
                         <Col xs={6} >
 
-                            <span><b> Blink when: </b></span>
+                            <span><b> Play pattern when </b></span>
 
                             <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
                                 style={{}}
@@ -161,7 +166,7 @@ var MailForm = React.createClass({
                                 addonBefore={<input type="radio" value='sender'
                                 checked={this.state.triggerType==='sender'} onChange={this.onTriggerTypeClick}/>} />
 
-                            <span><b> Play Pattern: </b></span>
+                            <span><b> Pattern </b></span>
 
                             <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
                                 type="select" label="Pattern"
@@ -169,7 +174,7 @@ var MailForm = React.createClass({
                                 {patterns.map( createPatternOption, this )}
                             </Input>
 
-                            <Input labelClassName="col-xs-10" wrapperClassName="col-xs-offset-4 col-xs-8" bsSize="small"
+                            <Input labelClassName="col-xs-10" wrapperClassName="col-xs-offset-3 col-xs-8" bsSize="small"
                                 type="checkbox" label="Turn blink(1) off when done"
                                 checkedLink={this.linkState('triggerOff')} />
 

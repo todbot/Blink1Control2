@@ -69,7 +69,6 @@ var IftttForm = React.createClass({
                     </Modal.Header>
                     <Modal.Body>
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
-                        <p></p>
                         <form className="form-horizontal" >
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
                                 type="text" label="Rule Name" placeholder="Name of rule on IFTTT"

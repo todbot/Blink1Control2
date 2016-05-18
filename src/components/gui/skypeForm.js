@@ -2,6 +2,7 @@
 
 var React = require('react');
 
+var Grid = require('react-bootstrap').Grid;
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
@@ -37,87 +38,76 @@ var MailForm = React.createClass({
             username: rule.username,
             password: rule.password,
             actionType: 'play-pattern',
+            patternId: rule.patternId || nextProps.patterns[0].id,
             triggerType: rule.triggerType || 'any',
             triggerVal: rule.triggerVal || '1' ,
-            patternId: rule.patternId
         });
     },
 
     handleClose: function() {
         console.log("CLOSING: state=",this.state);
-        if( !this.state.mailtype ) {
-            console.log("mailtype not set!");
-            this.setState({errormsg: "mailtype not set!"});
+        if( !this.state.username || !this.state.password ) {
+            this.setState({errormsg: "username or password not set!"});
             return;
         }
         this.props.onSave(this.state);
     },
-    onTriggerTypeClick: function(evt) {
-        log.msg("mailForm.onTriggerClick ",evt.target.value,evt);
+    handleTriggerType: function(evt) {
+        log.msg("mailForm.handleTriggerType ",evt.target.value,evt);
         this.setState({triggerType: evt.target.value});
-    },
-    onTriggerValClick: function(evt) {
-        log.msg("mailForm.onTriggerClick ",evt.target.value,evt);
-        this.setState({triggerVal: evt.target.value});
     },
     render: function() {
         var self = this;
-        var patterns = this.props.patterns;
+        // var patterns = this.props.patterns;
         var createPatternOption = function(item, idx) {
             return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
 
         return (
             <div>
-                <Modal show={this.props.show} onHide={this.close} >
+                <Modal show={this.props.show} onHide={this.handleClose} >
                     <Modal.Header>
                         <Modal.Title>Skype Settings</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
                         <form className="form-horizontal" >
+                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
+                                type="text" label="Name" placeholder="Enter text"
+                                valueLink={this.linkState('name')} />
+                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
+                                type="text" label="Skype username" placeholder="Enter username (usually full email address)"
+                                valueLink={this.linkState('username')} />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
-                              type="text" label="Name" placeholder="Enter text"
-                              valueLink={this.linkState('name')} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6"
-                              type="text" label="Skype username" placeholder="Enter username (usually full email addr)"
-                              valueLink={this.linkState('username')} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6"
-                              type="password" label="Password" placeholder=""
-                              valueLink={this.linkState('password')} />
+                                type="password" label="Password" placeholder=""
+                                valueLink={this.linkState('password')} />
 
-                            <span><b> Trigger when: FIXME THIS IS WRONG</b></span>
+                            <Grid >
+                                <Row><Col xs={2}>
+                                    <label> Play pattern on</label>
+                                </Col><Col xs={4} style={{border:'0px solid green'}}>
+                                    <Input
+                                        type="radio" label="Any Skype event" value="any"
+                                        checked={this.state.triggerType==='any'}
+                                        onChange={this.handleTriggerType} />
+                                    <Input
+                                        type="radio" label="Incoming call" value="incoming-call"
+                                        checked={this.state.triggerType==='incoming-call'}
+                                        onChange={this.handleTriggerType} />
+                                    <Input
+                                        type="radio" label="Incoming text message" value="incoming-text"
+                                        checked={this.state.triggerType==='incoming-text'}
+                                        onChange={this.handleTriggerType} />
+                                </Col></Row>
+                            </Grid>
 
-                            <Input labelClassName="col-xs-4" wrapperClassName="col-xs-3" bsSize="small"
-                                type="number" label="Unread email count >="
-                                value={this.state.triggerType==='unread' ? this.state.triggerVal : ''}
-                                onChange={this.onTriggerValClick}
-                                addonBefore={<input type="radio" value='unread'
-                                checked={this.state.triggerType==='unread'} onChange={this.onTriggerTypeClick} />} />
-
-                              <Input labelClassName="col-xs-4" wrapperClassName="col-xs-5" bsSize="small"
-                                  type="text" label="Subject contains"
-                                  value={this.state.triggerType==='subject' ? this.state.triggerVal : ''}
-                                  onChange={this.onTriggerValClick}
-                                  addonBefore={<input type="radio" value='subject'
-                                       checked={this.state.triggerType==='subject'} onChange={this.onTriggerTypeClick}/>} />
-
-                              <Input labelClassName="col-xs-4" wrapperClassName="col-xs-5" bsSize="small"
-                                  type="text" label="Sender contains"
-                                  value={this.state.triggerType==='sender' ? this.state.triggerVal : ''}
-                                  onChange={this.onTriggerValClick}
-                                  addonBefore={<input type="radio" value='sender'
-                                      checked={this.state.triggerType==='sender'} onChange={this.onTriggerTypeClick}/>} />
-
-                            <span><b>Play Pattern: </b></span>
-
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5" bsSize="small"
+                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
                                 type="select" label="Pattern"
                                 valueLink={this.linkState('patternId')} >
-                                {patterns.map( createPatternOption, this )}
+                                {this.props.patterns.map( createPatternOption, this )}
                             </Input>
 
-                      </form>
+                        </form>
                     </Modal.Body>
                     <Modal.Footer>
                         <Row>

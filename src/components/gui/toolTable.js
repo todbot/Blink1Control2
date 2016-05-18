@@ -62,10 +62,10 @@ var ToolTable = React.createClass({
     getUpdates: function() {
         var events = log.getEvents();
         log.msg("ToolTable.getUpdates, events:",events);
-		this.setState({'allowMultiBlink1': conf.readSettings("blink1Service:allowMulti") });
 
 		if( !this.state.showForm ) {  //i.e. don't change when we're in edit mode
         	this.setState({events: events});
+			this.setState({'allowMultiBlink1': conf.readSettings("blink1Service:allowMulti") });
 		}
     },
     saveRules: function(rules) {

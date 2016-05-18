@@ -100,52 +100,52 @@ var ScriptForm = React.createClass({
                     </Modal.Header>
                     <Modal.Body>
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
-                        <p></p>
                         <form className="form-horizontal" >
-                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                              type="text" label="Rule Name" placeholder="Descriptive name"
-                              valueLink={this.linkState('name')} />
-                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                              type="text" label={pathlabel} placeholder={pathplaceholder}
-                              valueLink={this.linkState('path')}
-                              onClick={type!=='url' ? this.openFileDialog : null}/>
-                          <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
-                              type="select" label="Check interval" placeholder="15 seconds"
-                              valueLink={this.linkState('intervalSecs')} >
-                              <option value="2">2 seconds</option>
-                              <option value="5">5 seconds</option>
-                              <option value="10">10 seconds</option>
-                              <option value="15">15 seconds</option>
-                              <option value="30">30 seconds</option>
-                              <option value="60">1 minute</option>
-                              <option value="360">5 minutes</option>
-                          </Input>
-                          <Grid >
-                              <Row><Col xs={2}>
-                                  <label> Parse output as </label>
-                              </Col><Col xs={4} style={{border:'0px solid green'}}>
-                                  <Input
+                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
+                                type="text" label="Rule Name" placeholder="Descriptive name"
+                                valueLink={this.linkState('name')} />
+                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
+                                type="text" label={pathlabel} placeholder={pathplaceholder}
+                                valueLink={this.linkState('path')}
+                                onClick={type!=='url' ? this.openFileDialog : null}/>
+                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
+                                type="select" label="Check interval" placeholder="15 seconds"
+                                valueLink={this.linkState('intervalSecs')} >
+                                <option value="2">2 seconds</option>
+                                <option value="5">5 seconds</option>
+                                <option value="10">10 seconds</option>
+                                <option value="15">15 seconds</option>
+                                <option value="30">30 seconds</option>
+                                <option value="60">1 minute</option>
+                                <option value="360">5 minutes</option>
+                            </Input>
+                            <Grid >
+                                <Row><Col xs={2}>
+                                    <label> Parse output as </label>
+                                </Col><Col xs={4} style={{border:'0px solid green'}}>
+                                    <Input
                                       type="radio" label="Parse output as color" value="parse-color"
                                       checked={this.state.actionType==='parse-color'}
                                       onChange={this.handleActionType} />
-                                  <Input
+                                    <Input
                                       type="radio" label="Parse output as pattern name" value="parse-pattern"
                                       checked={this.state.actionType==='parse-pattern'}
                                       onChange={this.handleActionType} />
-                                  <Input
+                                    <Input
                                       type="radio" label="Parse output as JSON" value="parse-json"
                                       checked={this.state.actionType==='parse-json'}
                                       onChange={this.handleActionType} />
-                              </Col></Row>
-                          <Row><Col xs={4} xsOffset={2}><Input bsSize="small" type="checkbox" label="Trigger on new values only"
+                                </Col></Row>
+                                <Row><Col xs={4} xsOffset={2}>
+                                    <Input bsSize="small" type="checkbox" label="Trigger on new values only"
                                         checkedLink={this.linkState('actOnNew')} />
-                            </Col></Row>
-                          </Grid>
+                                </Col></Row>
+                            </Grid>
 
-                          {this.props.allowMultiBlink1 ?
+                            {this.props.allowMultiBlink1 ?
 
-                              <Blink1SerialOption label="blink(1) to use" labelClassName="col-xs-3" wrapperClassName="col-xs-3"
-                                  serial={this.state.blink1Id} serials={Blink1Service.getAllSerials()} onChange={this.handleBlink1SerialChange}/> : null}
+                                <Blink1SerialOption label="blink(1) to use" labelClassName="col-xs-3" wrapperClassName="col-xs-3"
+                                    serial={this.state.blink1Id} serials={Blink1Service.getAllSerials()} onChange={this.handleBlink1SerialChange}/> : null}
 
 
                         </form>
