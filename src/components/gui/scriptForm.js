@@ -17,11 +17,15 @@ var Switch = require('react-bootstrap-switch');
 
 var dialog = require('electron').remote.dialog;
 
+var Blink1SerialOption = require('./blink1SerialOption');
+var Blink1Service = require('../../server/blink1Service'); // FIXME: shouldn't need this dep
+
 
 var ScriptForm = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
 		rule: React.PropTypes.object.isRequired,
+        allowMultiBlink1: React.PropTypes.bool,
         patterns: React.PropTypes.array,
         onSave: React.PropTypes.func,
         onCancel: React.PropTypes.func,
@@ -42,6 +46,7 @@ var ScriptForm = React.createClass({
             actionType: rule.actionType || 'parse-color',
             actOnNew: rule.actOnNew,
             // patternId: rule.patternId,
+            blink1Id: rule.blink1Id,
             path: rule.path,
             intervalSecs: rule.intervalSecs || 10
          });
@@ -64,6 +69,10 @@ var ScriptForm = React.createClass({
     handleActionType: function(e) {
         var actionType = e.target.value;
         this.setState({actionType:actionType});
+    },
+    handleBlink1SerialChange: function(blink1Id) {
+        // console.log("handleBlink1SerialChange: ",e);//,blink1Id);
+        this.setState({blink1Id: blink1Id});
     },
     render: function() {
         var self = this;
@@ -113,7 +122,7 @@ var ScriptForm = React.createClass({
                           </Input>
                           <Grid >
                               <Row><Col xs={2}>
-                                  <label> Parse output as</label>
+                                  <label> Parse output as </label>
                               </Col><Col xs={4} style={{border:'0px solid green'}}>
                                   <Input
                                       type="radio" label="Parse output as color" value="parse-color"
@@ -132,6 +141,12 @@ var ScriptForm = React.createClass({
                                         checkedLink={this.linkState('actOnNew')} />
                             </Col></Row>
                           </Grid>
+
+                          {this.props.allowMultiBlink1 ?
+
+                              <Blink1SerialOption label="blink(1) to use" labelClassName="col-xs-3" wrapperClassName="col-xs-3"
+                                  serial={this.state.blink1Id} serials={Blink1Service.getAllSerials()} onChange={this.handleBlink1SerialChange}/> : null}
+
 
                         </form>
                     </Modal.Body>
