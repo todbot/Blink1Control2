@@ -35,24 +35,20 @@ var IftttForm = React.createClass({
     // FIXME: why am I doing this?
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
+        console.log("nextProps:",nextProps.rule);
 		this.setState({
             type: 'ifttt',
             enabled: rule.enabled,
             name: rule.name,
-            actionType: rule.actionType,
-            patternId: rule.patternId,
+            actionType: 'play-pattern',
+            patternId: rule.patternId || nextProps.patterns[0].id,
             blink1Id: rule.blink1Id
          }); // FIXME: why
 	},
     handleClose: function() {
         this.props.onSave(this.state);
     },
-    handleBlink1SerialChange: function(e) {
-        var blink1Id = e.target.value;
-        console.log("handleBlink1SerialChange: ",blink1Id);
-        if( blink1Id === '- use default - ' ) {
-            blink1Id = 0;  // FIXME
-        }
+    handleBlink1SerialChange: function(blink1Id) {
         this.setState({blink1Id: blink1Id});
     },
 
@@ -60,7 +56,6 @@ var IftttForm = React.createClass({
         var self = this;
 
         var serials = Blink1Service.getAllSerials();
-        serials.unshift('- use default -');
 
         var createPatternOption = function(item, idx) {
           return ( <option key={idx} value={item.id}>{item.name}</option> );
