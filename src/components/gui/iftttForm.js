@@ -35,7 +35,6 @@ var IftttForm = React.createClass({
     // FIXME: why am I doing this?
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
-        console.log("nextProps:",nextProps.rule);
 		this.setState({
             type: 'ifttt',
             enabled: rule.enabled,
