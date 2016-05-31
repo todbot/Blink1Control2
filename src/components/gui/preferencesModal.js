@@ -42,11 +42,11 @@ var PreferencesModal = React.createClass({
             apiServerEnable:  conf.readSettings('apiServer:enabled') || false,
             apiServerPort:    conf.readSettings('apiServer:port') || 8934,
             apiServerHost:    conf.readSettings('apiServer:host') || 'localhost',
-            proxyEnable: false,
-            proxyHost: 'localhost',
-            proxyPort: 8080,
-            proxyUser: '',
-            proxyPass: '',
+            proxyEnable:      conf.readSettings('proxy:enable') || false,
+            proxyHost:        conf.readSettings('proxy:host') || 'localhost',
+            proxyPort:        conf.readSettings('proxy:port') || 8080,
+            proxyUser:        conf.readSettings('proxy:username') || '',
+            proxyPass:        conf.readSettings('proxy:password') || '',
             patterns: PatternsService.getAllPatterns(),
             blink1Serials: Blink1Service.getAllSerials(),
             // blink1Serials: ['12345678','abcdabcd'], // FIXME: make a prop
@@ -66,8 +66,15 @@ var PreferencesModal = React.createClass({
         conf.saveSettings('apiServer:enabled', this.state.apiServerEnable);
         conf.saveSettings('apiServer:port', this.state.apiServerPort);
         conf.saveSettings('apiServer:host', this.state.apiServerHost);
+        conf.saveSettings('proxy:enable', this.state.proxyEnable);
+        conf.saveSettings('proxy:host', this.state.proxyHost);
+        conf.saveSettings('proxy:port', this.state.proxyPort);
+        conf.saveSettings('proxy:username', this.state.proxyUser);
+        conf.saveSettings('proxy:password', this.state.proxyPass);
+
         Blink1Service.reloadConfig();
         ApiServer.reloadConfig();
+        
         // FIXME: a hack to get ToolTable to refetch allowMulti pref
         log.addEvent({type:'info', source:'preferences', text:'settings updated'});
     },

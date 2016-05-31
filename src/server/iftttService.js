@@ -92,12 +92,25 @@ var IftttService = {
 
 	handleResults: function(rule,event) {
 		var self = this;
-		log.msg("IftttService.handleResults: *** TRIGGERED!!! ***", event);
+		log.msg("IftttService.handleResults: *** TRIGGERED!!! ***", event,rule);
 		self.lastEvents[rule.name] = event.eventDate;
-		PatternsService.playPattern( rule );
+		PatternsService.playPatternByRule( rule );
 		// if( rule.enabled ) {
 		// 	// if( Blink1Service.rule.blink1Id ) {
 		// }
+	},
+	makeProxyUrl() {
+		var proxy = conf.readSettings('proxy');
+		var proxyurl  = '';
+		if( proxy && proxy.enable ) {
+			if( proxy.username ) {
+				proxyurl += proxy.username +':'+ proxy.password + '@';
+			}
+			if( proxy.host ) {
+				proxyurl = 'http://' + proxyurl + proxy.host + ':' + proxy.port;
+			}
+		}
+		return proxyurl;
 	},
 
     fetch: function() {
@@ -107,12 +120,22 @@ var IftttService = {
 
 		//if( rules.length === 0 ) { return; } // no rules, don't waste effort
 		var url = baseUrl + self.iftttKey;
+
+		var opts = {};
+		// var proxyurl = self.makeProxyUrl();
+		// if( proxyurl ) {
+		// 	opts.proxy = proxyurl;
+		// }
+		// log.msg("iftttService.fetch: opts:",opts);
+
 		// log.msg("IftttService.fetch:", url, self.lastTime, "defaultId:",defaultId);
         // request(baseUrl + this.iftttKey, function(error, response, body) {
-		needle.get( url, function(error, response) {
+		needle.get( url, opts, function(error, response) {
 			// FIXME: do error handling like: net error, bad response, etc.
 			if( error ) {
-				log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:'error fetching'} );
+				var errmsg = error.message;
+				if( errmsg.indexOf('ENOTFOUND') !== -1 ) { errmsg = 'connection offline'; }
+				log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:errmsg} );
 				return;
 			}
 			if( response.statusCode !== 200 ) {
@@ -124,7 +147,10 @@ var IftttService = {
 			// var shouldSave = false;
 			if( respobj.events ) {
 				respobj.events.map( function(evt) {
-					//log.msg("iftttFetcher e:", JSON.stringify(e));
+
+					// FIXME
+					// log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:'no new events' } );
+
 					evt.eventDate = new Date(parseInt(1000 * evt.date));
 					if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
 						// log.msg('IftttService.fetch: new event name:"'+ evt.name+'"');

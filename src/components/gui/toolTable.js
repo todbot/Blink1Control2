@@ -210,7 +210,7 @@ var ToolTable = React.createClass({
         var makeLastValue = function(rule) {
             var eventsForMe = events.filter( function(e) {
                 return ( (e.source===rule.type && e.id === rule.name) ||
-					(e.source==='ifttt' && e.id === '-default-') );
+					(e.source==='ifttt' && rule.type==='ifttt' && e.id === '-default-') );
             });
             var lastEvent = '-not-seen-recently-';
             if( eventsForMe.length ) {

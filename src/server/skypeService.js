@@ -15,6 +15,7 @@ var SkypeService = {
 	// 	// config.saveSettings("apiServer:enabled", false);
 	// 	// config.saveSettings("apiServer:host", 'localhost');
 	// },
+	
 
 	start: function() {
         var self = this;
