@@ -2,43 +2,78 @@
 "use strict";
 
 var Skyweb = require('skyweb');
+var simplecrypt = require('simplecrypt');
 
 var conf = require('../configuration');
 var log = require('../logger');
 var PatternsService = require('./patternsService');
 
+var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control'});
+
+
 var SkypeService = {
 	skyweb: null,
     config: {},
-	// init: function() { // FIXME: bad name
-	// 	// config.saveSettings("apiServer:port",8934);
-	// 	// config.saveSettings("apiServer:enabled", false);
-	// 	// config.saveSettings("apiServer:host", 'localhost');
-	// },
-	
 
+	reloadConfig: function() {
+		this.stop();
+		this.start();
+	},
+
+	stop: function() {
+		this.skyweb = null;
+	},
 	start: function() {
         var self = this;
-        var config = conf.readSettings('skypeService');
+        var config = conf.readSettings('eventServices:skypeService');
         if( !config ) { config = { enabled: false, rules:[] }; }
+		self.config = config;
         if( !config.enabled ) {
             log.msg("SkypeService: disabled");
             return;
         }
-        var rule = config.rules[0];
-        // if( !rule.triggerType) { config.triggerType = 'any'; }
 
-        log.msg("SkypeService.start");
+		var allrules = conf.readSettings('eventRules') || [];
+		self.rules = allrules.filter( function(r){return r.type==='skype';} );
+		log.msg("SkypeService.start. rules=", self.rules);
+
+        var rule = self.rules[0]; // FIXME:
+
+		if( !rule.enabled ) {
+			return;
+		}
+		var pass = '';
+	    try {
+	        pass = sc.decrypt( rule.password );
+	    } catch(err) {
+	        log.msg('SkypeService: bad password for rule',rule.name);
+			return;
+	    }
 
         var skyweb = new Skyweb();
         self.skyweb = skyweb;
-        self.config = config;
 
-        skyweb.login(rule.username, rule.password).then((skypeAccount) => {
+		self.success= false;
+		log.addEvent( {type:'info', source:'skype', id:rule.name, text:'connecting...'});
+
+        skyweb.login(rule.username, pass).then((skypeAccount) => {
+			self.success = true;
             console.log('Skyweb is initialized now');
             console.log('Here is some info about you:' + JSON.stringify(skypeAccount.selfInfo, null, 2));
+			log.addEvent( {type:'info', source:'skype', id:rule.name, text:'connected'});
             // console.log('Your contacts : ' + JSON.stringify(skyweb.contactsService.contacts, null, 2));
-        });
+        }); // this doesn't work
+		//, () => {
+		//	console.log("Skyweb error!!!!");
+		//}
+		//);
+		// super hacky way to see if Skyweb succeeeded because it sucks at error handling
+		setTimeout( function() {
+			if( !self.success ) {
+				log.addEvent( {type:'error', source:'skype', id:rule.name, text:'login error '});
+			}
+		}, 10000 );
+
         skyweb.authRequestCallback = (requests) => {
             requests.forEach((request) => {
                 skyweb.acceptAuthRequest(request.sender);
