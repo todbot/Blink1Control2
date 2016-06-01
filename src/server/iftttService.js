@@ -135,7 +135,8 @@ var IftttService = {
 			if( error ) {
 				var errmsg = error.message;
 				if( errmsg.indexOf('ENOTFOUND') !== -1 ) { errmsg = 'connection offline'; }
-				log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:errmsg} );
+				// log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:errmsg} );
+				log.msg('IFTTT connection offline'); // FIXME:
 				return;
 			}
 			if( response.statusCode !== 200 ) {
