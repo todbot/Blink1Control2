@@ -4,8 +4,8 @@ Blink1Control written in ElectronJs, ReactJs and NodeJs.
 
 See [NOTES.md](NOTES.md) for more info.
 
-![blink1control2-screenshot1](docs/blink1control2-screnshot1.png)
-![blink1control2-screenshot2](docs/blink1control2-screnshot2.png)
+![blink1control2-screenshot1](./docs/blink1control2-screenshot1.png)
+![blink1control2-screenshot2](./docs/blink1control2-screenshot2.png)
 
 ### Setup steps (for development)
 
