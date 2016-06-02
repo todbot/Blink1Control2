@@ -2,8 +2,8 @@
 
 Blink1Control written in ElectronJs, ReactJs and NodeJs.
 
-<img src="./docs/blink1control2-screenshot1.png" width="400">
-<img src="./docs/blink1control2-screenshot2.png" width="400">
+<img src="./docs/blink1control2-screenshot1.png" width="425">
+<img src="./docs/blink1control2-screenshot2.png" width="425">
 
 See [NOTES.md](NOTES.md) for more info.
 
