@@ -58,8 +58,8 @@ var SkypeService = {
 
         skyweb.login(rule.username, pass).then((skypeAccount) => {
 			self.success = true;
-            console.log('Skyweb is initialized now');
-            console.log('Here is some info about you:' + JSON.stringify(skypeAccount.selfInfo, null, 2));
+            log.msg('SkywebService is initialized now!');
+            // log.msg('Here is some info about you:' + JSON.stringify(skypeAccount.selfInfo, null, 2));
 			log.addEvent( {type:'info', source:'skype', id:rule.name, text:'connected'});
             // console.log('Your contacts : ' + JSON.stringify(skyweb.contactsService.contacts, null, 2));
         }); // this doesn't work
@@ -67,6 +67,7 @@ var SkypeService = {
 		//	console.log("Skyweb error!!!!");
 		//}
 		//);
+
 		// super hacky way to see if Skyweb succeeeded because it sucks at error handling
 		setTimeout( function() {
 			if( !self.success ) {
@@ -85,11 +86,11 @@ var SkypeService = {
                 var convlink = message.resource.conversationLink;
                 var cname = convlink.substring(convlink.lastIndexOf('/8:')+3);
                 log.msg("SkypeService msg type:",message.resource.messagetype, "cname:",cname,
-                "dispname:",message.resource.imdisplayname, "content:",message.resource.content, message);
+                		"dispname:",message.resource.imdisplayname, "content:",message.resource.content, message);
                 if( rule.triggerType === 'text' || rule.triggerType === 'any' ) {
                     if( message.resource.messagetype === 'Text' ) {
                         log.msg("SkypeService: INCOMING TEXT FROM",cname);
-                        log.addEvent( 'Skype text: '+cname);
+                        log.addEvent( {type:'trigger', source:'skype', id:rule.name, text:'text: '+cname});
                         PatternsService.playPattern( rule.patternId );
                     }
                 }
@@ -97,7 +98,8 @@ var SkypeService = {
                     if( message.resource.messagetype === 'Event/Call' &&
                         message.resource.content.includes('started') ) {
                         log.msg("SkypeService: INCOMING CALL FROM",cname);
-                        log.addEvent( 'Skype call: '+cname);
+						log.addEvent( {type:'trigger', source:'skype', id:rule.name, text:'call: '+cname});
+                        // log.addEvent( 'Skype call: '+cname);
                         PatternsService.playPattern( rule.patternId );
                     }
                 }
