@@ -3,7 +3,7 @@
 var React = require('react');
 var Panel = require('react-bootstrap').Panel;
 var Well = require('react-bootstrap').Well;
-var Button = require('react-bootstrap').Button;
+// var Button = require('react-bootstrap').Button;
 
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');

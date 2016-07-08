@@ -244,7 +244,7 @@ var PatternsService = {
 		_.remove(patternsUser, {id: id});
 		this.savePatterns();
 	},
-
+	/** Stops all patterns playing. Notifies change listeners */
 	stopAllPatterns: function() {
 		// log.msg('PatternsService.stopAllPatterns',JSON.stringify(this.getAllPatterns()));
 		// var self = this;

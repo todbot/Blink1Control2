@@ -99,7 +99,7 @@ var IftttService = {
 		// 	// if( Blink1Service.rule.blink1Id ) {
 		// }
 	},
-	makeProxyUrl() {
+	makeProxyUrl: function() {
 		var proxy = conf.readSettings('proxy');
 		var proxyurl  = '';
 		if( proxy && proxy.enable ) {

@@ -4,7 +4,7 @@ var React = require('react');
 var Panel = require('react-bootstrap').Panel;
 var Button = require('react-bootstrap').Button;
 var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
-var ButtonGroup = require('react-bootstrap').ButtonGroup;
+// var ButtonGroup = require('react-bootstrap').ButtonGroup;
 var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
 

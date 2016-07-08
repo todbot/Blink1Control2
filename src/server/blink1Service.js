@@ -72,6 +72,11 @@ var Blink1Service = {
 			}
 		}
 	},
+	/**
+ 	 * Add a blink1 to the device list.
+ 	 * @constructor
+ 	 * @param {string} serialnumber - serialnumber of blink1 to add
+ 	 */
     _addDevice: function(serialnumber) {
         log.msg("Blink1Service._addDevice:", serialnumber);
         var olddev = _.find( blink1s, {serial:serialnumber} );
@@ -93,6 +98,11 @@ var Blink1Service = {
         });
         Blink1Service.notifyChange();
     },
+	/**
+	 * Remove a blink1 from the device list.  Triggers a scanForDevices()
+	 * @method function
+	 * @param  {string} serialnumber serial number of blink1 to remove
+	 */
     _removeDevice: function(serialnumber) {
     	log.msg("Blink1Service._removeDevice: current devices:", blink1s);
         var olds = _.remove( blink1s, {serial:serialnumber} );
@@ -120,6 +130,18 @@ var Blink1Service = {
 	// private function, accesses hardware
 	// assumes defined blink1idx, ledn
 	// blink1idx is index into blink1s array
+	/**
+	 * Fade to an RGB color over time, on particular LED and blink1 device.
+	 *  Private function, accesses hardware.
+	 *  assumes defined blink1idx, ledn
+ 	 *  blink1idx is index into blink1s array
+	 * @param  {number} millis    milliseconds to fade
+	 * @param  {number} r         red 0-255
+	 * @param  {number} g         green 0-255
+	 * @param  {number} b         blue 0-255
+	 * @param  {number} ledn      which led, 0=all, 1-18
+	 * @param  {number} blink1idx which blink1
+	 */
     _fadeToRGB: function( millis, r,g,b, ledn, blink1idx ) {
 		// if the device exists
         if( blink1s[blink1idx] && blink1s[blink1idx].device ) {
@@ -132,9 +154,12 @@ var Blink1Service = {
         }
     },
 
-
 	// begin public functions
 
+	/**
+	 * Return array of all blink1 serialnumbers
+	 * @return {Array} array of blink1 serialnumbers
+	 */
 	getAllSerials: function() {
 		return blink1s.map(function(b1) { return b1.serial; });
 	},
@@ -238,7 +263,7 @@ var Blink1Service = {
 		} else {           colors[ledn-1] = color;	}
 
 		lastState[blink1idx] = currentState[blink1idx];
-		currentState[blink1idx] = {ledn: ledn, millis: millis, colors };
+		currentState[blink1idx] = {ledn: ledn, millis: millis, colors: colors };
 
                 //, typeof color, (color instanceof String) );
 		var crgb = color.toRgb();

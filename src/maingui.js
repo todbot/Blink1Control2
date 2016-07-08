@@ -44,7 +44,7 @@ var ipcRenderer = require('electron').ipcRenderer;
 
 // TESTING END
 
-var _ = require('lodash');
+// var _ = require('lodash');
 
 var conf = require('./configuration');
 var log = require('./logger');

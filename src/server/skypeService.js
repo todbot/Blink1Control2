@@ -62,7 +62,7 @@ var SkypeService = {
             // log.msg('Here is some info about you:' + JSON.stringify(skypeAccount.selfInfo, null, 2));
 			log.addEvent( {type:'info', source:'skype', id:rule.name, text:'connected'});
             // console.log('Your contacts : ' + JSON.stringify(skyweb.contactsService.contacts, null, 2));
-        }); // this doesn't work
+        }); // this following doesn't work
 		//, () => {
 		//	console.log("Skyweb error!!!!");
 		//}
@@ -70,11 +70,13 @@ var SkypeService = {
 
 		// super hacky way to see if Skyweb succeeeded because it sucks at error handling
 		setTimeout( function() {
+			// check to see if we're okay or not
 			if( !self.success ) {
 				log.addEvent( {type:'error', source:'skype', id:rule.name, text:'login error '});
 			}
 		}, 10000 );
 
+		// FIXME: is this callback required?
         skyweb.authRequestCallback = (requests) => {
             requests.forEach((request) => {
                 skyweb.acceptAuthRequest(request.sender);
