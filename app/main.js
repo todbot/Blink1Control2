@@ -13,7 +13,7 @@ var AutoLaunch = require('auto-launch');
 
 // var runtime = require('./src/core/runtime');
 // var appMenu = require('./src/core/app-menu');
-var pkg = require('../package.json');
+var pkg = require('./package.json');
 
 var config = require('./configuration');
 
@@ -182,9 +182,9 @@ var makeMenus = function() {
 		}
 	];
 
-	if( process.env.NODE_ENV === 'development' ) {
+	// if( process.env.NODE_ENV === 'development' ) {
 		contextMenuTemplate = contextMenuTemplate.concat( devMenuTemplate );
-	}
+	// }
 	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
 
 	appIcon.setToolTip( pkg.productName + ' is running...');
@@ -225,7 +225,7 @@ var makeMenus = function() {
 		];
 		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 	} // darwin
-}
+};
 
 
 app.on('ready', function () {
@@ -302,7 +302,7 @@ app.on('ready', function () {
 	}
 
 	makeMenus();
-	
+
 });
 
 

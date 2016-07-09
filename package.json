@@ -1,35 +1,17 @@
 {
   "name": "blink1control2",
-  "productName": "Blink1Control2",
   "author": "ThingM",
-  "companyName": "ThingM",
   "version": "2.0.0-pre1",
-  "description": "Blink1Control implemented in ElectronJs, NodeJs, & ReactJs",
-  "main": "src/main.js",
-  "homepage": "http://github.com/todbot/blink1control2",
-  "bugs": {
-    "url": "http://github.com/todbot/blink1control2/issues"
-  },
-  "license": "ISC",
-  "repository": "todbot/blink1control2",
   "scripts": {
-    "starto": "NODE_ENV=development ./node_modules/electron-prebuilt/dist/Electron.app/Contents/MacOS/Electron .",
-    "start": "NODE_ENV=development electron .",
-    "startp": "electron .",
-    "start-win": "set NODE_ENV=development&& node_modules\\electron-prebuilt\\dist\\electron.exe .",
-    "startp-win": "node_modules\\electron-prebuilt\\dist\\electron.exe .",
-    "env": "env",
+    "startdev": "NODE_ENV=development npm run start",
+    "start": "electron app",
     "watch": "NODE_ENV=development webpack-dev-server --hot --inline",
     "pack": "webpack -p ",
     "pkg-mac": "electron-packager . $npm_package_productName --overwrite --out=dist --prune --asar --platform=darwin --arch=x64 --version=$npm_package_electronVersion --icon=assets/blink1-icon0.icns --ignore='^/dist$'",
     "dist:mac": "build --mac",
-    "build-osx": "webpack -p --config webpack.config.js && electron-packager . $npm_package_productName --overwrite --out=dist --prune --asar --platform=darwin --arch=x64 --version=$npm_package_electronVersion --icon=assets/blink1-icon0.icns --ignore='^/dist$'",
-    "build-win": "webpack -p --config webpack.config.js && electron-packager . $npm_package_productName --overwrite --out=dist --prune --asar --platform=win32 --arch=x64 --version=$npm_package_electronVersion --icon=assets/epp.icns --ignore='^/dist$'",
-    "build-win1": "webpack -p --config webpack.config.js; node_modules\\.bin\\electron-packager . $npm_package_productName --overwrite --out=dist --ignore='^/dist$' --prune --asar --platform=win32 --arch=all --version=$npm_package_electronVersion --icon=assets/epp.ico",
-    "build-win2": "webpack --config webpack.config.js && node_modules\\.bin\\electron-packager . Blink1Control2 --overwrite --out=dist --ignore='^/dist$' --prune --asar --platform=win32 --arch=x64 --version=0.36.5 --icon=assets/epp.ico",
-    "clean": "rm -rf node_modules",
-    "nodehid-rebuild": "electron-rebuild -v 0.36.5 --pre-gyp-fix --force --module_dir . -w node-hid -e node_modules/electron-prebuilt",
-    "postinstall": "electron-rebuild --pre-gyp-fix --force"
+    "clean": "rimraf node_modules app/node_modules",
+    "env": "env",
+    "postinstall": "install-app-deps && electron-rebuild --pre-gyp-fix --force --module-dir app"
   },
   "build": {
     "appId": "com.thingm.blink1control2",
@@ -37,70 +19,42 @@
     "iconUrl": "http://eatodo.s3.amazonaws.com/icon.ico",
     "asar": false,
     "mac": {
-        "title": "Blink1Control2",
-        "background": "pkg/background.png",
-        "icon": "pkg/icon.icns",
-        "icon-size": 128,
-        "contents": [
-          {
-            "x": 355,
-            "y": 125,
-            "type": "link",
-            "path": "/Applications"
-          },
-          {
-            "x": 155,
-            "y": 125,
-            "type": "file"
-          }
+      "title": "Blink1Control2",
+      "background": "pkg/background.png",
+      "icon": "pkg/icon.icns",
+      "icon-size": 128,
+      "contents": [
+        {
+          "x": 355,
+          "y": 125,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 155,
+          "y": 125,
+          "type": "file"
+        }
       ]
     }
   },
-  "dependencies": {
-    "debug": "^2.2.0",
-    "express": "^4.13.4",
-    "imap": "^0.8.16",
-    "is-electron-renderer": "^2.0.0",
-    "lodash": "^4.2.1",
-    "moment": "^2.11.2",
-    "nconf": "^0.8.4",
-    "needle": "^1.0.0",
-    "node-blink1": "^0.2.2",
-    "node-hid": "^0.5.1",
-    "object-assign": "^4.0.1",
-    "simplecrypt": "^0.1.0",
-    "tinycolor2": "^1.3.0"
-  },
   "devDependencies": {
-    "auto-launch": "^2.0.1",
     "babel": "^6.3.26",
     "babel-core": "^6.4.5",
     "babel-loader": "^6.2.1",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-react": "^6.3.13",
-    "bootstrap": "^3.3.6",
     "css-loader": "^0.23.1",
     "electron-builder": "^5.11.2",
     "electron-prebuilt": "^0.36.9",
     "electron-rebuild": "^1.1.3",
-    "file-loader": "^0.8.5",
-    "font-awesome": "^4.5.0",
+    "file-loader": "^0.9.0",
     "json-loader": "^0.5.4",
-    "less": "^2.5.3",
-    "less-loader": "^2.2.2",
     "node-libs-browser": "^1.0.0",
-    "react": "^0.14.7",
-    "react-addons-linked-state-mixin": "^0.14.7",
-    "react-bootstrap": "^0.28.2",
-    "react-bootstrap-switch": "^3.4.4",
-    "react-color": "^1.3.6",
-    "react-dom": "^0.14.7",
-    "react-fontawesome": "^0.3.3",
     "reflexbox": "^1.1.0",
-    "skyweb": "Leoperd87/skyweb",
-    "style-loader": "^0.13.0",
+    "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
-    "webpack": "^1.12.12",
+    "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
   }
 }
