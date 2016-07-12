@@ -7,7 +7,7 @@ var BrowserWindow = require('browser-window');
 var Tray = require('tray');
 var Menu = require('menu');
 var path = require('path');
-var nativeImage = electron.nativeImage;
+// var nativeImage = electron.nativeImage;
 
 var AutoLaunch = require('auto-launch');
 

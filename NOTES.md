@@ -97,13 +97,14 @@ Random notes / documentation while developing the app
 - When devices are found, they are opened and added to device list
 - Device removal is detected by attempting to command device and failing.  
     - (this was done because `usb-detection` package had issues in 2015, it was updated recently. check if it works)
-- Devices are sorted in device list by serialnumber
+- Devices are sorted in device list by serialnumber string
 - Lowest-numbered serialnumber wins "default device"
     - unless `config.Blink1Service.deviceToUse` is set to non-zero
-- `blink1_id` is used to address a specific device.
-    - it is current index into device list
-    - but one day should also allow this to be serialnumber
-
+- `blink1id` is used to address a specific device.
+    - it is the serial number of the blink1
+    - if blink1id is undefined or zero, use first device or default device
+    - was (is) also index into device list
+- QUESTION: what about resetting of IFTTT Key on device change?
 
 #### General architecture
 

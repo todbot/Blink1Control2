@@ -187,6 +187,7 @@ var PatternView = React.createClass({
 		var style_editoptions= { width:20 };
 
 		var nameIsh = (isEditing) ? <input type="text" name="name" value={pattern.name} onChange={this.onNameChange} /> : pattern.name;
+		var pidstr = "pattId:"+pid;
 
 		var addSwatchButton = (isEditing) ? <Button onClick={this.onAddSwatch} key={99}
 												style={style_addswatch}><i className="fa fa-plus"></i></Button> : '';
@@ -217,7 +218,7 @@ var PatternView = React.createClass({
 					<i className={(pattern.playing) ? "fa fa-stop" : "fa fa-play"}></i>
 				</div>
 
-	        	<div style={style_name}>{nameIsh}</div>
+	        	<div style={style_name} title={pidstr}>{nameIsh}</div>
 
 	            <div style={style_colorlist}>
                     {pattern.colors.map( createColorSwatch, this)}
