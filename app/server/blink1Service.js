@@ -41,7 +41,6 @@ currentState[0].colors.fill( tinycolor('#000000'));
 currentState.fill( currentState[0] ); // hmmmm
 var lastState = _.clone( currentState ); // FIXME: what am I using lastState for?
 
-
 var Blink1Service = {
 	toyEnable: false,
 	toyTimer:null,
@@ -133,14 +132,14 @@ var Blink1Service = {
 	/**
 	 * Fade to an RGB color over time, on particular LED and blink1 device.
 	 *  Private function, accesses hardware.
-	 *  assumes defined blink1idx, ledn
+	 *  assumes good & defined blink1idx, ledn, r,g,b, millis
  	 *  blink1idx is index into blink1s array
 	 * @param  {number} millis    milliseconds to fade
 	 * @param  {number} r         red 0-255
 	 * @param  {number} g         green 0-255
 	 * @param  {number} b         blue 0-255
 	 * @param  {number} ledn      which led, 0=all, 1-18
-	 * @param  {number} blink1idx which blink1
+	 * @param  {number} blink1idx index into blink1s array
 	 */
     _fadeToRGB: function( millis, r,g,b, ledn, blink1idx ) {
 		// if the device exists
@@ -148,7 +147,7 @@ var Blink1Service = {
             try {
 				blink1s[blink1idx].device.fadeToRGB( millis, r, g, b, ledn );
 			} catch(err) {
-				log.msg('Blink1Service._fadeToRGB: error', err);
+				log.error('Blink1Service._fadeToRGB: error', err);
 				this._removeDevice( blink1s[blink1idx].serial );
 			}
         }
@@ -185,6 +184,7 @@ var Blink1Service = {
 	},
 	// FIXME: fix and call this blink1Id or something
 	iftttKey: function() {  // FIXME:
+		// console.log("IFTTT KEY:",this.serialNumber());
 		var s = this.serialNumber() || '00000000';
 		var k = this.hostId() + s;
 		return k;
@@ -231,31 +231,59 @@ var Blink1Service = {
 		// return currentColors;
 		return currentState[0].colors;
 	},
-
-	// lookup blink1id and map to an blink1id
-	// uses conf.blink1Service.blink1ToUse
-	idToIndex: function(blink1id) {
-		var blink1idx = blink1id || 0;   // FIXME: should use 'conf.blink1Service.blink1touse'
+	/**
+	 * Lookup blink1id and map to an index in blink1s array
+	 *  If 'blink1ToUse' is set, and blink1id is undefined or 0, use blink1ToUse
+	 *  FIXME: Should use conf.blink1Service.blink1ToUse
+	 *  FIXME: should convert serial to index
+	 * @param  {number|String} blink1id array id (0-maxblink1s) or 8-digit blink1serial
+	 * @return {number}        index into blink1s array or 0
+	 */
+	idToBlink1Index: function(blink1id) {
+		if( !blink1id ) {
+			if( this.conf.blink1ToUse ) {
+				blink1id = this.conf.blink1ToUse;
+			}
+			else { return 0; } // no blink1, no preferred, return 0th
+		}
+		var blink1idx = 0;   // FIXME: should use 'conf.blink1Service.blink1touse'
+		if( blink1id < blink1s.length ) {  // it's an array index
+			return blink1idx;
+		}
+		blink1id = blink1id.toString().toUpperCase();
+		// otherwise it's a blink1 serialnumber
+		blink1s.map( function(b,idx) {
+			if( blink1id === b.serial ) {
+				blink1idx = idx;
+			}
+		});
 		return blink1idx;
 	},
 
-	// main entry point for this service, sets currentColor & currentLedN
-	// 'color' arg is a tinycolor() color or hextring ('#ff00ff')
-	// if color is a hexstring, it will get converted to tinycolor
-	// ledn is 1-index into color array, and ledn=0 means "all leds"
-    // blink1_id is index into blink1s array (but should also be by serialnumber)
-    // FIXME: currentState[0] will be currentState[blink1_id]
-    //
+    /**
+	 * Main entry point for this service, sets currentColor & currentLedN
+	 * 'color' arg is a tinycolor() color or hextring ('#ff00ff')
+	 * if color is a hexstring, it will get converted to tinycolor
+	 * ledn is 1-index into color array, and ledn=0 means "all leds"
+     * blink1_id is index into blink1s array (but should also be by serialnumber)
+     * FIXME: currentState[0] will be currentState[blink1_id]
+     *
+     * @param  {[type]} millis    [description]
+     * @param  {[type]} color     [description]
+     * @param  {[type]} ledn      [description]
+     * @param  {[type]} blink1_id [description]
+     * @return {[type]}           [description]
+     */
 	fadeToColor: function( millis, color, ledn, blink1_id) {
 		ledn = ledn || 0;  // 0 == all LEDs
 		if( typeof color === 'string' ) {
 			color = tinycolor( color ); // FIXME: must be better way
 		}
-
-		var blink1idx = this.idToIndex(blink1_id);
+		// convert blink1_id to array index
+		var blink1idx = this.idToBlink1Index(blink1_id);
 
 		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		log.msg("Blink1Service.fadeToColor:"+blink1idx+":", millis,ledn, color.toHexString());
+		log.msg("Blink1Service.fadeToColor:"+blink1idx+":", millis,ledn, color.toHexString(), "currentState:",currentState);
 
 		var colors = _.clone(currentState[blink1idx].colors);
 		// handle special meaning: ledn=0 -> all LEDs

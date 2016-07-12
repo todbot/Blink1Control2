@@ -273,7 +273,8 @@ var PatternsService = {
 		return false;
 	},
 	playPatternByRule: function(rule) {
-		var allowMultiBlink1 = false; // FIXME:
+		var allowMultiBlink1 = conf.readSettings('blink1Service:allowMulti') || false;
+		log.msg("PatternsService.playPatternByRule: ",rule, ", multi:",allowMultiBlink1);
 		if( rule.enabled ) {
 			if( allowMultiBlink1 && rule.blink1Id ) {
 				this.playPattern(rule.patternId, rule.blink1Id);

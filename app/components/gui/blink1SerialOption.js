@@ -1,4 +1,6 @@
-
+/**
+ *
+ */
 "use strict";
 
 var React = require('react');
@@ -13,6 +15,7 @@ var Blink1SerialOption = React.createClass({
         serial: React.PropTypes.string,
         label: React.PropTypes.string,
         labelClassName: React.PropTypes.string,
+        defaultText: React.PropTypes.string,
         wrapperClassName: React.PropTypes.string,
         onChange: React.PropTypes.func.isRequired
 	},
@@ -23,7 +26,7 @@ var Blink1SerialOption = React.createClass({
     },
     handleChange: function(e) {
         var blink1Id = e.target.value;
-        if( blink1Id === '-use first-' ) {
+        if( blink1Id === this.props.defaultText ) {
             blink1Id = 0;
         }
         this.setState( {serial:blink1Id});
@@ -34,7 +37,7 @@ var Blink1SerialOption = React.createClass({
             return ( <option key={idx} value={item}>{item}</option> );
         };
         var serials = this.props.serials.slice();
-        serials.unshift('-use first-');
+        serials.unshift( this.props.defaultText );
 
         return (
             <Input labelClassName={this.props.labelClassName} wrapperClassName={this.props.wrapperClassName}

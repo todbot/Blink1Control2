@@ -78,9 +78,10 @@ var IftttForm = React.createClass({
                                 {this.props.patterns.map( createPatternOption, this )}
                             </Input>
                             {this.props.allowMultiBlink1 ?
-
-                                <Blink1SerialOption label="blink(1) to use" labelClassName="col-xs-3" wrapperClassName="col-xs-3"
-                                    serial={this.state.blink1Id} serials={serials} onChange={this.handleBlink1SerialChange}/> : null}
+                                <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
+                                    labelClassName="col-xs-3" wrapperClassName="col-xs-3"
+                                    serial={this.state.blink1Id} serials={serials} onChange={this.handleBlink1SerialChange}/>
+                            : null}
                         </form>
                     </Modal.Body>
                     <Modal.Footer>

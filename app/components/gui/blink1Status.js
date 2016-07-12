@@ -18,6 +18,7 @@ var Blink1Status = React.createClass({
 			blink1Color: Blink1Service.getCurrentColor(),
 			statusStr: Blink1Service.isConnected() ? "connected" : "not connected",
 			serialNumber: Blink1Service.serialNumberForDisplay(),
+			blink1Serials: Blink1Service.getAllSerials(),
 			iftttKey: Blink1Service.iftttKey(),
 			currentPattern: '-',
 			showForm: false
@@ -35,6 +36,7 @@ var Blink1Status = React.createClass({
 						blink1ColorLast: currentColor,
 						statusStr: Blink1Service.isConnected() ? "connected" : "not connected",
 						serialNumber: Blink1Service.serialNumberForDisplay(),
+						blink1Serials: Blink1Service.getAllSerials(),
 						iftttKey: Blink1Service.iftttKey()
 					});
 	},
@@ -49,11 +51,9 @@ var Blink1Status = React.createClass({
 		this.setState({showForm: true});
 	},
 	saveForm: function(data) {
-		console.log(".saveForm:",data);
 		this.setState({ showForm: false });
 	},
 	cancelForm: function() {
-		console.log(".cancelForm");
 		this.setState({ showForm: false });
 	},
 
@@ -62,6 +62,8 @@ var Blink1Status = React.createClass({
 		var currentPattern = this.state.currentPattern;
 		if( !currentPattern ) { currentPattern = '-'; }
 		var labelStyle = {width: 80, display: "inline-block"};
+		var serialNums = "serials:\n";
+		this.state.blink1Serials.forEach(function(s){ serialNums+= "device:"+s+"\n"; });
 
 		// <VirtualBlink1 blink1Color={this.state.blink1Color} /> // FIXME
 		var header = <h4>Device <button style={{float:'right' }} bsStyle='link' onClick={this.onPrefsClick}><i className="fa fa-gear"></i></button></h4>;
@@ -69,7 +71,7 @@ var Blink1Status = React.createClass({
 		return (
 			<Panel header={header} style={{ width: 280, height: 320, margin:5, padding:0 }}>
 				<PreferencesModal show={this.state.showForm}
-					onSave={this.saveForm} onCancel={this.cancelForm} />
+					onSave={this.saveForm} onCancel={this.cancelForm} blink1Serials={this.state.blink1Serials} />
 
 				<VirtualBlink1 />
 
@@ -79,8 +81,8 @@ var Blink1Status = React.createClass({
 						<span><b>{this.state.statusStr}</b></span>
 					</div>
 					<div>
-						<span style={labelStyle}>Serial num:</span>
-						<code style={{WebkitUserSelect: "text"}}>
+						<span style={labelStyle} title={serialNums}>Serial num:</span>
+						<code style={{WebkitUserSelect: "text"}} title={serialNums}>
 							{this.state.serialNumber}
 						</code>
 					</div>

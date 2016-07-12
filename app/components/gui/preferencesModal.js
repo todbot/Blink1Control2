@@ -30,6 +30,7 @@ var PreferencesModal = React.createClass({
 		// rule: React.PropTypes.object.isRequired
         // patternId: React.PropTypes.string.isRequired,
         // onPatternUpdated: React.PropTypes.func.isRequired
+        blink1Serials:  React.PropTypes.array
 	},
     getInitialState: function() {
         return {
@@ -48,7 +49,7 @@ var PreferencesModal = React.createClass({
             proxyUser:        conf.readSettings('proxy:username') || '',
             proxyPass:        conf.readSettings('proxy:password') || '',
             patterns: PatternsService.getAllPatterns(),
-            blink1Serials: Blink1Service.getAllSerials(),
+            // blink1Serials: Blink1Service.getAllSerials(),
             // blink1Serials: ['12345678','abcdabcd'], // FIXME: make a prop
             patternId: 'whiteflashes'
         };
@@ -74,7 +75,7 @@ var PreferencesModal = React.createClass({
 
         Blink1Service.reloadConfig();
         ApiServer.reloadConfig();
-        
+
         // FIXME: a hack to get ToolTable to refetch allowMulti pref
         log.addEvent({type:'info', source:'preferences', text:'settings updated'});
     },
@@ -88,16 +89,16 @@ var PreferencesModal = React.createClass({
     // delete: function() {
     //     this.props.onDelete();
     // },
-    handleBlink1SerialChoice: function(e) {
-        // log.msg("handleBlink1SerialChoice: ",e.target.value);
-        var choice = e.target.value;
-        if( choice === 'first' ) {
-            this.setState({blink1ToUse: 0});
-        }
-    },
-    handleBlink1SerialChange: function(e) {
-        // log.msg("handleBlink1NonComputerChange: ",e.target.value);
-        this.setState({blink1ToUse: e.target.value});
+    // handleBlink1SerialChoice: function(e) {
+    //     // log.msg("handleBlink1SerialChoice: ",e.target.value);
+    //     var choice = e.target.value;
+    //     if( choice === 'first' ) {
+    //         this.setState({blink1ToUse: 0});
+    //     }
+    // },
+    handleBlink1SerialChange: function(serial) {
+        log.msg("handleBlink1NonComputerChange: ",serial);
+        this.setState({blink1ToUse: serial});
     },
     handleBlink1NonComputerChoice: function(e) {
         var choice = e.target.value;
@@ -177,8 +178,8 @@ var PreferencesModal = React.createClass({
                                 <h5><u> blink(1) device use </u></h5>
                                     <form className="form-horizontal">
                                         <Blink1SerialOption labelClassName="col-xs-6" wrapperClassName="col-xs-5"
-                                            label="preferred device"
-                                            serial={this.state.blink1ToUse} serials={this.state.blink1Serials} onChange={this.handleBlink1SerialChange}/>
+                                            label="preferred device" defaultText="- use first -"
+                                            serial={this.state.blink1ToUse} serials={this.props.blink1Serials} onChange={this.handleBlink1SerialChange}/>
                                         <Input labelClassName="col-xs-12" wrapperClassName="col-xs-12" bsSize="small"
                                             type="checkbox" label="Use multi blink(1) devices in rules" checkedLink={this.linkState('allowMultiBlink1')}  />
                                     </form>

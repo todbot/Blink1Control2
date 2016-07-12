@@ -71,17 +71,18 @@ app.get('/blink1/pattern(s)?', function(req,res) {
 app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
 	var patt_id = req.query.id ;
     var patt_name = req.query.pname;
+    var blink1id = req.query.blink1id || 0;
 	var status = 'no pattern with that id';
 	if( req.params.type === 'play' ) {
         if( patt_id ) {
-    		if( PatternsService.playPattern( patt_id ) ) { // returns true on found pattern // FIXME: go back to using 'findPattern'
+    		if( PatternsService.playPattern( patt_id, blink1id ) ) { // returns true on found pattern // FIXME: go back to using 'findPattern'
     			status = 'playing pattern ' +patt_id;
     		}
         }
         else if( patt_name ) {
             patt_id = PatternsService.getIdForName(patt_name);
             console.log("patt_name:",patt_name,"patt_id:",patt_id);
-            if( PatternsService.playPattern( patt_id ) ) { // returns true on found pattern // FIXME: go back to using 'findPattern'
+            if( PatternsService.playPattern( patt_id, blink1id ) ) { // returns true on found pattern // FIXME: go back to using 'findPattern'
     			status = 'playing pattern ' +patt_name;
     		}
         }

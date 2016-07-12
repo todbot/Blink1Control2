@@ -50,12 +50,12 @@ var conf = require('./configuration');
 var log = require('./logger');
 
 // maybe this goes in another file?
-var ApiServer = require('./server/apiServer');
 var Blink1Service = require('./server/blink1Service');
+var ApiServer = require('./server/apiServer');
 var PatternsService = require('./server/patternsService');
 
-ApiServer.start();
 Blink1Service.start();
+ApiServer.start();
 PatternsService.initialize();
 
 // FIXME: IDEA for event source modularity. almost there
@@ -75,10 +75,15 @@ var MailService = require('./server/mailService');
 var SkypeService = require('./server/skypeService');
 var ScriptService = require('./server/scriptService');
 
-IftttService.start();
-MailService.start();
-SkypeService.start();
-ScriptService.start();
+// FIXME:
+// Need to start these after a bit, so blink1s can be registerd
+// (really, they should be called on a calback of Blink1Service.isReady() or something)
+setTimeout( function() {
+    IftttService.start();
+    MailService.start();
+    SkypeService.start();
+    ScriptService.start();
+}, 3000);
 
 // events from the main process, from menu actions
 ipcRenderer.on('reloadConfig', function( event,arg ) {
