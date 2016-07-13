@@ -13,7 +13,6 @@ var LinkedStateMixin = require('react-addons-linked-state-mixin');
 var Switch = require('react-bootstrap-switch');
 
 var Blink1SerialOption = require('./blink1SerialOption');
-var Blink1Service = require('../../server/blink1Service');
 
 var IftttForm = React.createClass({
     mixins: [LinkedStateMixin],
@@ -54,8 +53,6 @@ var IftttForm = React.createClass({
     render: function() {
         var self = this;
 
-        var serials = Blink1Service.getAllSerials();
-
         var createPatternOption = function(item, idx) {
           return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
@@ -77,11 +74,10 @@ var IftttForm = React.createClass({
                                 valueLink={this.linkState('patternId')} >
                                 {this.props.patterns.map( createPatternOption, this )}
                             </Input>
-                            {this.props.allowMultiBlink1 ?
+                            {!this.props.allowMultiBlink1 ? null :
                                 <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
                                     labelClassName="col-xs-3" wrapperClassName="col-xs-3"
-                                    serial={this.state.blink1Id} serials={serials} onChange={this.handleBlink1SerialChange}/>
-                            : null}
+                                    serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
                         </form>
                     </Modal.Body>
                     <Modal.Footer>

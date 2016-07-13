@@ -30,11 +30,10 @@ var Blink1Status = React.createClass({
 	},
 	// updateState: function(colors) { // FIXME: this called mostly for color, don't need other parts?
 	updateColorState: function(currentColor /*, colors,ledn */) {
-		// FIXME: this called mostly for color, don't need other parts?
-		// console.log("updateState");
+		var cnt = Blink1Service.isConnected();
 		this.setState({
 						blink1ColorLast: currentColor,
-						statusStr: Blink1Service.isConnected() ? "connected" : "not connected",
+						statusStr: (cnt>1) ? cnt + " connected" : (cnt) ? "connected" : "not connected",
 						serialNumber: Blink1Service.serialNumberForDisplay(),
 						blink1Serials: Blink1Service.getAllSerials(),
 						iftttKey: Blink1Service.iftttKey()
@@ -63,7 +62,7 @@ var Blink1Status = React.createClass({
 		if( !currentPattern ) { currentPattern = '-'; }
 		var labelStyle = {width: 80, display: "inline-block"};
 		var serialNums = "serials:\n";
-		this.state.blink1Serials.forEach(function(s){ serialNums+= "device:"+s+"\n"; });
+		this.state.blink1Serials.forEach(function(s){ serialNums+= "blink1:"+s+"\n"; });
 
 		// <VirtualBlink1 blink1Color={this.state.blink1Color} /> // FIXME
 		var header = <h4>Device <button style={{float:'right' }} bsStyle='link' onClick={this.onPrefsClick}><i className="fa fa-gear"></i></button></h4>;

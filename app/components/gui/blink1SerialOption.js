@@ -7,11 +7,11 @@ var React = require('react');
 
 var Input = require('react-bootstrap').Input;
 
-// var Blink1Service   = require('../../server/blink1Service');
+var Blink1Service = require('../../server/blink1Service');
+var log = require('../../logger');
 
 var Blink1SerialOption = React.createClass({
     propTypes: {
-        serials: React.PropTypes.array.isRequired,
         serial: React.PropTypes.string,
         label: React.PropTypes.string,
         labelClassName: React.PropTypes.string,
@@ -36,7 +36,8 @@ var Blink1SerialOption = React.createClass({
         var createBlink1SerialOption = function(item,idx) {
             return ( <option key={idx} value={item}>{item}</option> );
         };
-        var serials = this.props.serials.slice();
+        var serials = Blink1Service.getAllSerials();
+        serials = serials.slice(); //copy
         serials.unshift( this.props.defaultText );
 
         return (

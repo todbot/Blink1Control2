@@ -26,7 +26,6 @@ var blink1s = []; // collection of opened blink1s
     // {   serial: '12345678',
     //     device: new Blink1()
     // }
-// var blink1IdOpen = 0;
 
 // one entry per blink1, with always at least one entry
 // entry 0 is 'default' entry when no blink1 is plugged in
@@ -163,13 +162,17 @@ var Blink1Service = {
 		return blink1s.map(function(b1) { return b1.serial; });
 	},
     // FIXME: support multiple blink1s
+    /**
+     * Returns true if connected, really returns number of devices connected
+     * @return {Number} return number of devices connected
+     */
 	isConnected: function() {
         // return (blink1serials.length > 0);
-        var isConnected = false;
+        var cnt = 0;
         blink1s.map( function(b1) {
-            if( b1.device ) { isConnected = true; }
+            if( b1.device ) { cnt++; }
         });
-        return isConnected;
+        return cnt;
 	},
     // FIXME: support multiple blink1s
 	serialNumber: function() {
@@ -240,18 +243,18 @@ var Blink1Service = {
 	 * @return {number}        index into blink1s array or 0
 	 */
 	idToBlink1Index: function(blink1id) {
-		if( !blink1id ) {
+		if( !blink1id ) { // if undefined or zero
 			if( this.conf.blink1ToUse ) {
 				blink1id = this.conf.blink1ToUse;
 			}
-			else { return 0; } // no blink1, no preferred, return 0th
+			else { return 0; } // else no blink1 & no preferred, return 0th
 		}
-		var blink1idx = 0;   // FIXME: should use 'conf.blink1Service.blink1touse'
 		if( blink1id < blink1s.length ) {  // it's an array index
 			return blink1idx;
 		}
+		// otherwise it's a blink1 serialnumber, so search for it
+		var blink1idx = 0; // default to first blink1
 		blink1id = blink1id.toString().toUpperCase();
-		// otherwise it's a blink1 serialnumber
 		blink1s.map( function(b,idx) {
 			if( blink1id === b.serial ) {
 				blink1idx = idx;

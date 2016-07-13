@@ -48,8 +48,6 @@ var log = require('../logger');
 var PatternsService = require('./patternsService');
 var Blink1Service = require('./blink1Service');
 
-var baseUrl = 'http://api.thingm.com/blink1/eventsall/';
-
 
 var IftttService = {
 	config: {},
@@ -65,8 +63,15 @@ var IftttService = {
 	reloadConfig: function() {
 		this.config = conf.readSettings('eventServices:iftttService');
 		if( !this.config ) {
-			this.config = { intervalSecs: 10, enabled: true };
-			conf.saveSettings('iftttService', this.config);
+			log.msg("IftttService.reloadConfig: NO CONFIG");
+			this.config = {
+				type: 'ifttt',
+				service: 'iftttService',
+				intervalSecs: 10,
+				enabled: true,
+				baseUrl: 'http://api.thingm.com/blink1/eventsall/'
+			};
+			conf.saveSettings('eventServices:iftttService', this.config);
 		}
 		var allrules = conf.readSettings('eventRules') || [];
 		this.rules = allrules.filter( function(r){return r.type === 'ifttt';} );
@@ -119,7 +124,7 @@ var IftttService = {
 		var defaultId = '-default-'; // FIXME: see ToolTable.render.makeLastValue
 
 		//if( rules.length === 0 ) { return; } // no rules, don't waste effort
-		var url = baseUrl + self.iftttKey;
+		var url = this.config.baseUrl + self.iftttKey;
 
 		var opts = {};
 		// var proxyurl = self.makeProxyUrl();

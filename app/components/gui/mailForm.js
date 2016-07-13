@@ -15,6 +15,7 @@ var Switch = require('react-bootstrap-switch');
 
 var log = require('../../logger');
 
+var Blink1SerialOption = require('./blink1SerialOption');
 
 var MailForm = React.createClass({
     mixins: [LinkedStateMixin],
@@ -54,6 +55,9 @@ var MailForm = React.createClass({
         });
     },
 
+    handleBlink1SerialChange: function(blink1Id) {
+        this.setState({blink1Id: blink1Id});
+    },
     handleClose: function() {
         // console.log("CLOSING: state=",this.state);
         if( !this.state.mailtype ) {
@@ -177,6 +181,11 @@ var MailForm = React.createClass({
                             <Input labelClassName="col-xs-10" wrapperClassName="col-xs-offset-3 col-xs-8" bsSize="small"
                                 type="checkbox" label="Turn blink(1) off when done"
                                 checkedLink={this.linkState('triggerOff')} />
+
+                                {!this.props.allowMultiBlink1 ? null :
+                                    <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
+                                        labelClassName="col-xs-3 col-xs-offset-3" wrapperClassName="col-xs-4"
+                                        serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
 
                         </Col>
                         </Row>

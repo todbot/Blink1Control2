@@ -38,7 +38,7 @@ var PreferencesModal = React.createClass({
             startAtLogin:     conf.readSettings('startup:startAtLogin') || false,
             startupPattern:   conf.readSettings('startup:startupPattern') || "",
             enableGamma:      conf.readSettings('blink1Service:enableGamma') || true,
-            blink1ToUse:      conf.readSettings('blink1Service:blink1ToUse') || 0, // 0 == use first avail
+            blink1ToUse:      conf.readSettings('blink1Service:blink1ToUse') || "0", // 0 == use first avail
             allowMultiBlink1: conf.readSettings('blink1Service:allowMulti') || false,
             apiServerEnable:  conf.readSettings('apiServer:enabled') || false,
             apiServerPort:    conf.readSettings('apiServer:port') || 8934,
@@ -98,6 +98,8 @@ var PreferencesModal = React.createClass({
     // },
     handleBlink1SerialChange: function(serial) {
         log.msg("handleBlink1NonComputerChange: ",serial);
+        // if( serial )
+        PatternsService.playPattern( '~blink-#888888-3', serial);
         this.setState({blink1ToUse: serial});
     },
     handleBlink1NonComputerChoice: function(e) {
@@ -117,8 +119,8 @@ var PreferencesModal = React.createClass({
     handleApiServerHostChoice: function(e) {
         this.setState({apiServerHost: e.target.value});
     },
-    handleBlink1NonComputerSet: function() {
-        log.msg("SET!!");
+    handleBlink1NonComputerSet: function(e) {
+        log.msg("SET!!",e);
     },
     render: function() {
         var createPatternOption = function(item, idx) {
@@ -179,7 +181,7 @@ var PreferencesModal = React.createClass({
                                     <form className="form-horizontal">
                                         <Blink1SerialOption labelClassName="col-xs-6" wrapperClassName="col-xs-5"
                                             label="preferred device" defaultText="- use first -"
-                                            serial={this.state.blink1ToUse} serials={this.props.blink1Serials} onChange={this.handleBlink1SerialChange}/>
+                                            serial={this.state.blink1ToUse} onChange={this.handleBlink1SerialChange}/>
                                         <Input labelClassName="col-xs-12" wrapperClassName="col-xs-12" bsSize="small"
                                             type="checkbox" label="Use multi blink(1) devices in rules" checkedLink={this.linkState('allowMultiBlink1')}  />
                                     </form>

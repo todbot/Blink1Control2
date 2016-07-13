@@ -204,8 +204,13 @@ var ToolTable = React.createClass({
 			}
 			// else if( rule.actionType === 'use-output' ) {
 			// }
-
 		   	return pattstr;
+		};
+		var makeBlink1IdStr = function(rule) {
+			if( rule.blink1Id ) {
+				return "\nblink1:"+rule.blink1Id ;
+			}
+			return '';
 		};
         var makeLastValue = function(rule) {
             var eventsForMe = events.filter( function(e) {
@@ -224,6 +229,7 @@ var ToolTable = React.createClass({
 		var createRow = function(rule, index) {
 			// var pattid = this.state.rules[index].patternId;
 			var patternStr = makePattern(rule);
+			var blink1IdStr = makeBlink1IdStr(rule);
 			var lastVal = makeLastValue(rule);
             var description = makeDesc(rule);
             var type = rule.type;  type = (type==='ifttt')? 'IFTTT' : type;  // FIXME
@@ -233,7 +239,7 @@ var ToolTable = React.createClass({
 					<td>{rule.name}</td>
                     <td>{description}</td>
 					<td>{type}</td>
-					<td>{patternStr}</td>
+					<td>{patternStr}{blink1IdStr}</td>
 					<td>{lastVal}</td>
 					<td><Button bsSize="xsmall" style={{border:'none'}} onClick={this.handleEditRule.bind(this, index, type)} >
 						<i className="fa fa-pencil"></i></Button></td>
