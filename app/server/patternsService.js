@@ -272,6 +272,11 @@ var PatternsService = {
 		}
 		return false;
 	},
+	/**
+	 * Play pattern from an event source rule
+	 * @param  {Rule} rule Event rule: {patternId:"", blink1Id:""}
+	 * @return none
+	 */
 	playPatternByRule: function(rule) {
 		var allowMultiBlink1 = conf.readSettings('blink1Service:allowMulti') || false;
 		log.msg("PatternsService.playPatternByRule: ",rule, ", multi:",allowMultiBlink1);
@@ -283,16 +288,21 @@ var PatternsService = {
 			}
 		}
 	},
-	/**
-	 * Play a pattern. Returns false if pattern doesn't exist. Notifys change listeners
-	 *
+
+    /**
+     * Play a pattern. Returns false if pattern doesn't exist. Notifies change listeners.
+     *
+     *
+     * @param  {String} pattid   Id of pattern to play, or
+     * @param  {[type]} blink1id blink(1) serial number to use, or undef
+     * @return {boolean} false if pattern doesn't exist
      */
 	playPattern: function(pattid, blink1id) {
 		log.msg("PatternsService.playPattern: id:",pattid, ", blink1id:",blink1id, "patternsTemp:",patternsTemp);
-		// blink1id = blink1id || 0;
 		var patternstr;
-		// var pattname;
 		var patt;
+		var blinkre = /~blink-(#*\w+)-(\d+)(-(.+))?/;
+		// var blinkre = /~blink-(#*\w+)-(\d+)/;
 		// first, is the pattern actually a hex color?
 		if( pattid.startsWith('#') ) { // color
 			Blink1Service.fadeToColor(100, pattid, 0, blink1id ); // 0 == all LEDs
@@ -300,28 +310,30 @@ var PatternsService = {
 		}
 		// then, look for special meta-pattern
 		if( pattid.startsWith('~') ) {
-			var blinkre = /~blink-(#*\w+)-(\d+)/;
 			if( pattid === '~off') {
 				log.msg("PatternsService: playing special '~off' pattern");
 				PatternsService.stopAllPatterns();
 				Blink1Service.fadeToColor( 300, '#000000', 0, blink1id ); // 0 = all LEDs
 				return true;
 			}
-			else if( blinkre.test( pattid ) ) { // "~blink-5-#ff00ff"
+			// FIXME: make this clause its own function?
+			// FIXME: allow specing of time, e.g. "~blink-#ff0ff-5-0.2"
+			else if( blinkre.test( pattid ) ) { // "~blink-#ff00ff-5"
 				var match = blinkre.exec( pattid );
 				var colorstr = match[1];
 				var count = match[2];
+				var secstr = match[4];
+				var secs = (secstr===undefined && secstr>0) ? 0.3 : Number.parseFloat(secstr);
 				var c = tinycolor(colorstr);  // FIXME: how does tinycolor fail?
 				// log.msg("matcher:", colorstr, count, c );
-				patternstr = count + ',' + c.toHexString() + ',0.5,0,#000000,0.5,0';
+				// patternstr = count + ',' + c.toHexString() + ',0.5,0,#000000,0.5,0';
+				patternstr = count + ',' + c.toHexString() + ','+secs+',0,#000000,'+secs+',0';
 				patt = _parsePatternStr(patternstr);
 				patt.name = pattid.substring(1); //'temp-'+utils.cheapUid(4); // if parsing failed, use temp name
 				patt.id = patt.name;
 				patt.temp = true; // FIXME: hmmm
 				patternsTemp.push( patt ); // save temp pattern
 				pattid = patt.id;
-				// PatternsService.playPattern(patternstr);
-				// return true;
 			}
 			else if( pattid.startsWith('~pattern:') ) { // FIXME: use regex yo
 				patternstr = pattid.substring(pattid.lastIndexOf(':')+1);
@@ -334,7 +346,6 @@ var PatternsService = {
 				patternsTemp.push( patt ); // save temp pattern
 				pattid = patt.id;
 				// log.msg("PatternsService: playing temp pattern:",patt);
-				//PatternsService.playPattern( patt ); // FIXME: hmmm
 			}
 			else {
 				return false; // no matching meta ("~") pattern
