@@ -2,13 +2,13 @@
 "use strict";
 
 // these requires are for webpack
-require('./node_modules/bootstrap/dist/css/bootstrap.min.css');
+require('../node_modules/bootstrap/dist/css/bootstrap.min.css');
 //require('../node_modules/bootstrap/dist/css/bootstrap-theme.min.css');
 //require('../node_modules/bootstrap/dist/css/bootstrap-yeti.min.css');
 //require('../node_modules/bootstrap/dist/css/bootstrap-lumen.min.css');
 //require('../bootstrap-sb-admin-2.css');
-require('./node_modules/font-awesome/css/font-awesome.min.css');
-require('./node_modules/react-bootstrap-switch/dist/css/bootstrap3/react-bootstrap-switch.min.css');
+require('../node_modules/font-awesome/css/font-awesome.min.css');
+require('../node_modules/react-bootstrap-switch/dist/css/bootstrap3/react-bootstrap-switch.min.css');
 
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -54,9 +54,25 @@ var Blink1Service = require('./server/blink1Service');
 var ApiServer = require('./server/apiServer');
 var PatternsService = require('./server/patternsService');
 
+log.msg("---- before service start");
+
 Blink1Service.start();
 ApiServer.start();
 PatternsService.initialize();
+
+log.msg("---- before render");
+
+// Begin actual render code
+var Blink1ControlView = require('./components/gui/blink1ControlView');
+var App = React.createClass({
+  render: function() {
+    return ( <Blink1ControlView /> );
+  }
+});
+ReactDOM.render( <App />, document.getElementById('app'));
+
+log.msg("---- after render");
+
 
 // FIXME: IDEA for event source modularity. almost there
 // var _ = require('lodash');
@@ -123,19 +139,3 @@ var laterfunc = function() {
     }
 };
 setTimeout( laterfunc, 1000 );
-
-
-// Begin actual render code
-
-var Blink1ControlView = require('./components/gui/blink1ControlView');
-
-var App = React.createClass({
-  render: function() {
-    return (
-		// <div className="container-fluid">
-			<Blink1ControlView />
-    );
-  }
-});
-
-ReactDOM.render( <App />, document.getElementById('app'));

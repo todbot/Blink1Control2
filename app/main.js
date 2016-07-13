@@ -74,6 +74,7 @@ var openAboutWindow = function () {
 		].join('');
 	// DEV: aboutWindow will be garbage collection automatically
 	var aboutWindow = new BrowserWindow({
+		alwaysOnTop: true,
 		height: 280,
 		width: 400
 		// icon: assets['icon-32'],
@@ -84,6 +85,7 @@ var openAboutWindow = function () {
 	});
 
 	aboutWindow.loadURL('data:text/html,' + info);
+	return aboutWindow;
 };
 
 var makeMenus = function() {
@@ -229,6 +231,9 @@ var makeMenus = function() {
 
 
 app.on('ready', function () {
+
+	var splash = openAboutWindow();
+	setTimeout( function() { splash.close(); }, 2000 );
 
 	// var globalShortcut = electron.globalShortcut;
 
