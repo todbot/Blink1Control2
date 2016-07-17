@@ -45,8 +45,8 @@ var VirtualBlink1 = React.createClass({
 	},
 
 	ledn: 0,
-	nextColors: new Array(18).fill(tinycolor('#ff00ff')),
-	lastColors: new Array(18).fill(tinycolor('#ff00ff')),
+	nextColors: new Array(18).fill(tinycolor('#ff00ff')), // ledn colors
+	lastColors: new Array(18).fill(tinycolor('#ff00ff')), // last ledn colors
 	timer: null,
 	faderMillis: 0,
 	currentMillis: 0,
@@ -116,20 +116,28 @@ var VirtualBlink1 = React.createClass({
 				botgradient,
 			]
 		};
-		//	<img style={img2style} src="images/device-light-bg.png" />
-		//	<img style={img3style} src="images/device-light-mask.png" />
-		// var img1style = { width: 240, height: 192 };
-		// var img2style = { width: 240, height: 192, position: "relative", top: 0 };
-		// var img3style = { width: 240, height: 192, position: "relative", top: 0 };
-		return (
-			<div style={img0style}></div>
-			);
+			//	<img style={img2style} src="images/device-light-bg.png" />
+			//	<img style={img3style} src="images/device-light-mask.png" />
+			// var img1style = { width: 240, height: 192 };
+			// var img2style = { width: 240, height: 192, position: "relative", top: 0 };
+			// var img3style = { width: 240, height: 192, position: "relative", top: 0 };
 
-			// <div>
-			// <svg>
-         //  		<circle cx={50} cy={50} r={10} fill="red" ref='todbot' onClick={this.boop} onMouseOver={this.boop} />
-        	// </svg>
-			// </div>
+		var makeMiniBlink1 = function(serial,idx) {
+			var colr = Blink1Service.getCurrentColor(idx);
+			if( colr.getBrightness() === 0 ) { colr = '#888'; }
+			var serstr = 'serial:'+serial;
+			return <div style={{width:16, height:14, margin:3, padding:0,background:colr}} title={serstr} key={idx}></div>;
+		};
+		var serials = Blink1Service.getAllSerials();
+		var miniBlink1s = (serials.length > 1 ) ? serials.map(makeMiniBlink1, this) : null;
+		return (
+			<div style={{position:'relative', border:'opx solid green'}}>
+				<div style={img0style}></div>
+				<div style={{position:'absolute', top:5, left:0, padding:0, marginLeft:0}}>
+					{miniBlink1s}
+				</div>
+			</div>
+		);
 	}
 });
 

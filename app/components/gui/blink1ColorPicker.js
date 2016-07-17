@@ -20,6 +20,7 @@ var Blink1Service = require('../../server/blink1Service');
 var HtmlColorChart = require('./htmlColorChart');
 var tinycolor = require('tinycolor2');
 
+
 var Blink1ColorPicker = React.createClass({
 	getInitialState: function() {
 		return {
@@ -29,6 +30,7 @@ var Blink1ColorPicker = React.createClass({
 			r: 0, // FIXME: should use color but easier & cleaner this way
 			g: 1,
 			b: 2,
+			blink1Idx: 0,
 		};
 	},
 	componentDidMount: function() {
@@ -44,13 +46,14 @@ var Blink1ColorPicker = React.createClass({
 		log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
 		this.setState( { color: currentColor.toHexString(), ledn: ledn, r: rgb.r, g: rgb.g, b: rgb.b, secs:secs });
 	},
+	// called by HtmlColorChart  why are there two?
 	setColorHex: function(color) {
-		Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn ); // FIXME: time
+		Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn, this.state.blink1Idx ); // FIXME: time
 	},
-	// called by colorpicker
+	// called by colorpicker & handleChange{R,G,B}
 	setColor: function(color) {
-		// console.log("colorpicker.setColor",color.hex, this.state.ledn);
-		Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn ); // FIXME: time
+		// console.log("colorpicker.setColor",color.hex, this.state.ledn, this.state.blink1Idx);
+		Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn, this.state.blink1Idx ); // FIXME: time
 		// and the above will call 'fetchBlink1Color' anyway
 		// there must be a better way to do this
 	},
@@ -89,8 +92,23 @@ var Blink1ColorPicker = React.createClass({
 	handleHexChange: function(event) {
 		console.log("handleHexChange!",event.target.value);  //FIXME: this does nothing
 	},
-
+	handleBlink1IdxChange: function(evt) {
+		var idx = evt.target.value;
+		console.log("handleBlink1IdxChange:",idx);
+		this.setState( {blink1Idx: idx});
+	},
 	render: function() {
+		var serials = Blink1Service.getAllSerials();
+		var makeBlink1Option = function(serial,idx) {
+			return <option value={idx} key={idx}>{serial}</option>;
+		};
+		var deviceCombo = (serials.length <= 1) ? null :
+			<div> device:
+				<select style={{fontSize:'80%'}} onChange={this.handleBlink1IdxChange}>
+					{serials.map( makeBlink1Option )}
+				</select>
+			</div>;
+
 		return (
 				<div>
 					<HtmlColorChart handleClick={this.setColorHex} currentColor={this.state.color}/>
@@ -126,6 +144,7 @@ var Blink1ColorPicker = React.createClass({
 							time(s):
 							<input type="number" className="input" min={0.1} max={10.0} step={0.1} size={3}
 								value={this.state.secs} onChange={this.handleChangeSecs} />
+							{deviceCombo}
 					  	</div>
 					</div>
 				</div>

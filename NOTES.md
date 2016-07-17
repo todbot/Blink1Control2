@@ -16,7 +16,7 @@ Random notes / documentation while developing the app
 - DONE : TODO: what about 'parametric patterns', e.g. "blink 5 times, fill in color & on/off time"
 - TODO: Number() vs parseInt() in `PatternsService._parsePatternStr()`?
 - TODO: global shortcut, see: https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md
-- TODO: Support multiple blink(1)s (especially in upcoming IFTTT update)
+- DONE: Support multiple blink(1)s (especially in upcoming IFTTT update)
     - partially working, verify with:
         - `curl 'http://localhost:8934/blink1/id'`
         - `curl 'http://localhost:8934/blink1/fadeToRGB?rgb=%230000ff&blink1_id=1'`
@@ -28,6 +28,9 @@ Random notes / documentation while developing the app
         - BigButton maybe?
         - ToolTable and/or EventList?
         - Preferences dialog?
+- TODO: Fix ImapSearcher's "new mail" issues.
+    - doesn't seem to re-trigger when more new mail happens
+    - does retrigger every time on restart (save last msgid in config?)
 
 
 ### General Program structure

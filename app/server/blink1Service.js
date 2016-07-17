@@ -18,27 +18,35 @@ var util = require('../utils');
 // globals because we are a singleton
 var listeners = {};
 
-// blink1 devices currently opened
-// one entry per blink1, with always at least one entry
-// entry 0 is 'default' entry when no blink1 is plugged in
-// format is
+/**
+ * blink1 devices currently opened.
+ * One entry per blink1, with always at least one entry.
+ * Entry 0 is 'default' entry when no blink1 is plugged in.
+ * Format:
+ *  {  serial: '12345678',
+ *     device: new Blink1()
+ *  }
+ * @type {Array}
+ */
 var blink1s = []; // collection of opened blink1s
-    // {   serial: '12345678',
-    //     device: new Blink1()
-    // }
 
-// one entry per blink1, with always at least one entry
-// entry 0 is 'default' entry when no blink1 is plugged in
+/**
+ * Current color state of all blink1s and their last used millis & ledns,
+ *  with at least one entry.
+ *  Entry 0 is 'default' entry when no blink1 is present.
+ *  Supports 8 blink1s currently.
+ * @type Array
+ */
 var currentState = new Array(8);  // 8 is max number of blink1s allowed
 currentState[0] =
 	{
-		colors: new Array(18), // replaces "currentColor", 18 element array, one per LEDs
+		colors: new Array(18), // replaces "currentColor", 18 element array, one per LED
 		millis: 100, // replaces "currentMillis"
-		ledn:0 // replaces curerntLedN
+		ledn:0 // replaces curerntLedN   FIXME: ***** this is confusing & maybe a remnant at this point ****
 	};
 currentState[0].colors.fill( tinycolor('#000000'));
 currentState.fill( currentState[0] ); // hmmmm
-var lastState = _.clone( currentState ); // FIXME: what am I using lastState for?
+// var lastState = _.clone( currentState ); // FIXME: what am I using lastState for?
 
 var Blink1Service = {
 	toyEnable: false,
@@ -125,26 +133,22 @@ var Blink1Service = {
         // FIXME: notify?
 	},
 
-	// private function, accesses hardware
-	// assumes defined blink1idx, ledn
-	// blink1idx is index into blink1s array
 	/**
 	 * Fade to an RGB color over time, on particular LED and blink1 device.
 	 *  Private function, accesses hardware.
 	 *  assumes good & defined blink1idx, ledn, r,g,b, millis
  	 *  blink1idx is index into blink1s array
 	 * @param  {number} millis    milliseconds to fade
-	 * @param  {number} r         red 0-255
-	 * @param  {number} g         green 0-255
-	 * @param  {number} b         blue 0-255
+	 * @param  {Color}  color     tinycolor object
 	 * @param  {number} ledn      which led, 0=all, 1-18
 	 * @param  {number} blink1idx index into blink1s array
 	 */
-    _fadeToRGB: function( millis, r,g,b, ledn, blink1idx ) {
+    _fadeToRGB: function( millis, color, ledn, blink1idx ) {
 		// if the device exists
         if( blink1s[blink1idx] && blink1s[blink1idx].device ) {
+			var crgb = color.toRgb();
             try {
-				blink1s[blink1idx].device.fadeToRGB( millis, r, g, b, ledn );
+				blink1s[blink1idx].device.fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn );
 			} catch(err) {
 				log.error('Blink1Service._fadeToRGB: error', err);
 				this._removeDevice( blink1s[blink1idx].serial );
@@ -219,20 +223,20 @@ var Blink1Service = {
 		currentState[0].millis = m;
 		this.notifyChange();
 	},
-    // FIXME: support multiple blink1s
-	getCurrentMillis: function() {
-		return currentState[0].millis;
+	getCurrentMillis: function(blink1idx) {
+		blink1idx = blink1idx || 0;
+		return currentState[blink1idx].millis;
 	},
-    // FIXME: support multiple blink1s
-	getCurrentColor: function() { // FIXME
+	getCurrentColor: function(blink1idx) { // FIXME
+		blink1idx = blink1idx || 0;
 		// var ledn = (currentLedN>0) ? currentLedN-1 : currentLedN;
-		var curledn = currentState[0].ledn;
-		curledn = (curledn>0) ? curledn-1 : curledn;
-		return currentState[0].colors[ curledn ];
+		var curledn = currentState[blink1idx].ledn;
+		curledn = (curledn>0) ? curledn-1 : curledn; // 0 = all LEDs in a blink1
+		return currentState[blink1idx].colors[ curledn ];
 	},
-	getCurrentColors: function() {
-		// return currentColors;
-		return currentState[0].colors;
+	getCurrentColors: function(blink1idx) {
+		blink1idx = blink1idx || 0;
+		return currentState[blink1idx].colors;
 	},
 	/**
 	 * Lookup blink1id and map to an index in blink1s array
@@ -243,6 +247,7 @@ var Blink1Service = {
 	 * @return {number}        index into blink1s array or 0
 	 */
 	idToBlink1Index: function(blink1id) {
+		log.msg("*** idToBlink1Index: ",blink1id);
 		if( !blink1id ) { // if undefined or zero
 			if( this.conf.blink1ToUse ) {
 				blink1id = this.conf.blink1ToUse;
@@ -250,7 +255,7 @@ var Blink1Service = {
 			else { return 0; } // else no blink1 & no preferred, return 0th
 		}
 		if( blink1id < blink1s.length ) {  // it's an array index
-			return blink1idx;
+			return blink1id;
 		}
 		// otherwise it's a blink1 serialnumber, so search for it
 		var blink1idx = 0; // default to first blink1
@@ -269,7 +274,7 @@ var Blink1Service = {
 	 * if color is a hexstring, it will get converted to tinycolor
 	 * ledn is 1-index into color array, and ledn=0 means "all leds"
      * blink1_id is index into blink1s array (but should also be by serialnumber)
-     * FIXME: currentState[0] will be currentState[blink1_id]
+     * FIXME: currentState[0] will be currentState[blink1idx]
      *
      * @param  {[type]} millis    [description]
      * @param  {[type]} color     [description]
@@ -283,25 +288,25 @@ var Blink1Service = {
 			color = tinycolor( color ); // FIXME: must be better way
 		}
 		// convert blink1_id to array index
-		var blink1idx = this.idToBlink1Index(blink1_id);
+		var blink1Idx = this.idToBlink1Index(blink1_id);
 
 		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		log.msg("Blink1Service.fadeToColor:"+blink1idx+":", millis,ledn, color.toHexString(), "currentState:",currentState);
+		log.msg('Blink1Service.fadeToColor: idx:'+blink1Idx+' msec:'+millis+' ledn:'+ledn+
+			' c:'+color.toHexString()+ " -- currentState:",currentState);
 
-		var colors = _.clone(currentState[blink1idx].colors);
+		var colors = _.clone(currentState[blink1Idx].colors);
 		// handle special meaning: ledn=0 -> all LEDs
 		if( ledn === 0 ) { colors.fill( color );
 		} else {           colors[ledn-1] = color;	}
 
-		lastState[blink1idx] = currentState[blink1idx];
-		currentState[blink1idx] = {ledn: ledn, millis: millis, colors: colors };
-
-                //, typeof color, (color instanceof String) );
-		var crgb = color.toRgb();
+		// FIXME: do we need these states and the blink1s struct?
+		// lastState[blink1idx] = currentState[blink1idx];
+		currentState[blink1Idx] = {ledn: ledn, millis: millis, colors: colors };
 
 		// divide currentMillis by two to make it appear more responsive
 		// by having blink1 be at destination color for half the time
-		this._fadeToRGB( millis/2, crgb.r, crgb.g, crgb.b, ledn, blink1idx);
+		// color & blink1idx is known-good at this point
+		this._fadeToRGB( millis/2, color, blink1Idx);
 
 		this.notifyChange();
 	},
