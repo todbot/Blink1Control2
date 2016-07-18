@@ -26,7 +26,7 @@ var VirtualBlink1 = React.createClass({
 			// colors: [ tinycolor('#ff00ff'), tinycolor('#00ffff') ],
 			// nextColors: [ tinycolor('#ff00ff'), tinycolor('#00ffff') ],
 			// lastColors:[ tinycolor('#ff00ff'), tinycolor('#00ffff')],
-			colors: new Array(18).fill(tinycolor('#000033')),
+			colors: new Array(2).fill(tinycolor('#000033')),
 			// millis: []
 		};
 	},
@@ -34,19 +34,21 @@ var VirtualBlink1 = React.createClass({
 		Blink1Service.addChangeListener( this.fetchBlink1Color, "virtualBlink1" );
 	},
 	// callback to Blink1Service
-	fetchBlink1Color: function(lastColor, newcolors /*, ledn */) { // FIXME: where's millis?
+	// fetchBlink1Color: function(lastColor, newcolors /*, ledn */) { // FIXME: where's millis?
+	fetchBlink1Color: function(/* lastColor,  newcolors, ledn */ ) { // FIXME: where's millis?
 		this.lastColors = this.state.colors;
-		this.nextColors = newcolors;
-		// this.setState( {
-		// 	// colors: colors,
-		// 	ledn: ledn // unused currently
-		// });
+		this.nextColors = Blink1Service.getCurrentColors( Blink1Service.getCurrentBlink1Id() );
+		// this.nextColors = newcolors;
+		// // this.setState( {
+		// // 	// colors: colors,
+		// // 	ledn: ledn // unused currently
+		// // });
 		this._colorFaderStart();
 	},
 
 	ledn: 0,
-	nextColors: new Array(18).fill(tinycolor('#ff00ff')), // ledn colors
-	lastColors: new Array(18).fill(tinycolor('#ff00ff')), // last ledn colors
+	nextColors: new Array(2).fill(tinycolor('#ff00ff')), // ledn colors
+	lastColors: new Array(2).fill(tinycolor('#ff00ff')), // last ledn colors
 	timer: null,
 	faderMillis: 0,
 	currentMillis: 0,

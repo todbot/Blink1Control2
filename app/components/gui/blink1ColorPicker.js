@@ -39,12 +39,18 @@ var Blink1ColorPicker = React.createClass({
 		// Blink1Service.fadeToColor(200, this.state.color);
 	},
 	/**  Callback for Blink1Service notifyChange */
-	updateCurrentColor: function(currentColor, colors, ledn) {
+	updateCurrentColor: function(/*currentColor0, colors, ledn0*/) {
 		// currentColor and colors are tinycolor objects
-		var rgb = currentColor.toRgb();
-		var secs = Blink1Service.getCurrentMillis()/1000; // FIXME: hack
-		log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
-		this.setState( { color: currentColor.toHexString(), ledn: ledn, r: rgb.r, g: rgb.g, b: rgb.b, secs:secs });
+		// var rgb = currentColor.toRgb();
+		// var secs = Blink1Service.getCurrentMillis()/1000; // FIXME: hack
+		// log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
+
+		// FIXME: the Blink1Service callback is crusty now
+		var colr = Blink1Service.getCurrentColor( this.state.blink1Idx );
+		var secs = Blink1Service.getCurrentMillis( this.state.blink1Idx ) / 1000;
+		var ledn = Blink1Service.getCurrentLedN( this.state.blink1Idx );
+		var crgb = colr.toRgb();
+		this.setState( { color: colr.toHexString(), ledn: ledn, r: crgb.r, g: crgb.g, b: crgb.b, secs:secs });
 	},
 	// called by HtmlColorChart  why are there two?
 	setColorHex: function(color) {
@@ -94,7 +100,7 @@ var Blink1ColorPicker = React.createClass({
 	},
 	handleBlink1IdxChange: function(evt) {
 		var idx = evt.target.value;
-		console.log("handleBlink1IdxChange:",idx);
+		Blink1Service.setCurrentBlink1Id(idx);
 		this.setState( {blink1Idx: idx});
 	},
 	render: function() {

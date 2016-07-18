@@ -29,6 +29,7 @@ var listeners = {};
  * @type {Array}
  */
 var blink1s = []; // collection of opened blink1s
+var currentBlink1Id = 0; // current blink1 (as set by colorpicker)
 
 /**
  * Current color state of all blink1s and their last used millis & ledns,
@@ -209,14 +210,21 @@ var Blink1Service = {
 		// this.notifyChange();
 	},
 
+	setCurrentBlink1Id(id) {
+		currentBlink1Id = id;
+	},
+	getCurrentBlink1Id() {
+		return currentBlink1Id;
+	},
     // FIXME: support multiple blink1s
 	setCurrentLedN: function(n) {
 		currentState[0].ledn = n;
 		this.notifyChange();
 	},
     // FIXME: support multiple blink1s
-	getCurrentLedN: function() {
-		return currentState[0].ledn;
+	getCurrentLedN: function(blink1idx) {
+		blink1idx = blink1idx || 0;
+		return currentState[blink1idx].ledn;
 	},
     // FIXME: support multiple blink1s
 	setCurrentMillis: function(m) {
@@ -247,14 +255,16 @@ var Blink1Service = {
 	 * @return {number}        index into blink1s array or 0
 	 */
 	idToBlink1Index: function(blink1id) {
-		log.msg("*** idToBlink1Index: ",blink1id);
-		if( !blink1id ) { // if undefined or zero
+		if( blink1id === undefined ) {
 			if( this.conf.blink1ToUse ) {
 				blink1id = this.conf.blink1ToUse;
 			}
-			else { return 0; } // else no blink1 & no preferred, return 0th
+			else {
+				return currentBlink1Id; 
+			}
 		}
-		if( blink1id < blink1s.length ) {  // it's an array index
+ 		// it's an array index
+ 		if( blink1id >= 0 && blink1id < blink1s.length ) {
 			return blink1id;
 		}
 		// otherwise it's a blink1 serialnumber, so search for it
@@ -305,15 +315,22 @@ var Blink1Service = {
 
 		// divide currentMillis by two to make it appear more responsive
 		// by having blink1 be at destination color for half the time
-		// color & blink1idx is known-good at this point
-		this._fadeToRGB( millis/2, color, blink1Idx);
+		// color, ledn, & blink1idx is known-good at this point
+		this._fadeToRGB( millis/2, color, ledn, blink1Idx);
 
 		this.notifyChange();
 	},
 
-	off: function() {
-		this.toyEnable = false;
-		this.fadeToColor(0, '#000000', 0); // 0 = all leds
+	off: function(blink1id) {
+		var self = this;
+		self.toyEnable = false;
+		if( blink1id === undefined ) {
+			blink1s.map( function(serial,idx) {
+				self.fadeToColor(100, '#000000', 0, idx);
+			});
+		} else {
+			self.fadeToColor(100, '#000000', 0, blink1id); // 0 = all leds
+		}
 	},
 	colorCycleStart: function() {
 		this.toyEnable = true;
