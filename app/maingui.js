@@ -132,6 +132,7 @@ ipcRenderer.on('pressBigButton', function( event,arg ) {
 
 // run startup script, if any
 var laterfunc = function() {
+    Blink1Service.off();
     var startupPattern = conf.readSettings('startup:startupPattern');
     if( startupPattern ) {
         console.log("starting up with:", startupPattern);
