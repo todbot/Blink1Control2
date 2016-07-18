@@ -49,8 +49,15 @@ var Blink1ColorPicker = React.createClass({
 		var colr = Blink1Service.getCurrentColor( this.state.blink1Idx );
 		var secs = Blink1Service.getCurrentMillis( this.state.blink1Idx ) / 1000;
 		var ledn = Blink1Service.getCurrentLedN( this.state.blink1Idx );
+		var blink1Id = Blink1Service.getCurrentBlink1Id();
 		var crgb = colr.toRgb();
-		this.setState( { color: colr.toHexString(), ledn: ledn, r: crgb.r, g: crgb.g, b: crgb.b, secs:secs });
+		this.setState( {
+			color: colr.toHexString(),
+			ledn: ledn,
+			r: crgb.r, g: crgb.g, b: crgb.b,
+			secs:secs,
+		 	blink1Idx: blink1Id
+		});
 	},
 	// called by HtmlColorChart  why are there two?
 	setColorHex: function(color) {
@@ -110,7 +117,7 @@ var Blink1ColorPicker = React.createClass({
 		};
 		var deviceCombo = (serials.length <= 1) ? null :
 			<div> device:
-				<select style={{fontSize:'80%'}} onChange={this.handleBlink1IdxChange}>
+				<select style={{fontSize:'80%'}} onChange={this.handleBlink1IdxChange} value={this.state.blink1Idx}>
 					{serials.map( makeBlink1Option )}
 				</select>
 			</div>;
@@ -147,7 +154,7 @@ var Blink1ColorPicker = React.createClass({
 						  	</tbody>
 					  	</table>
 					  	<div className="col-sm-4">
-							time(s):
+							time (sec):
 							<input type="number" className="input" min={0.1} max={10.0} step={0.1} size={3}
 								value={this.state.secs} onChange={this.handleChangeSecs} />
 							{deviceCombo}

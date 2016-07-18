@@ -212,6 +212,7 @@ var Blink1Service = {
 
 	setCurrentBlink1Id(id) {
 		currentBlink1Id = id;
+		this.notifyChange();
 	},
 	getCurrentBlink1Id() {
 		return currentBlink1Id;
@@ -260,7 +261,7 @@ var Blink1Service = {
 				blink1id = this.conf.blink1ToUse;
 			}
 			else {
-				return currentBlink1Id; 
+				return currentBlink1Id;
 			}
 		}
  		// it's an array index

@@ -38,6 +38,7 @@ var VirtualBlink1 = React.createClass({
 	fetchBlink1Color: function(/* lastColor,  newcolors, ledn */ ) { // FIXME: where's millis?
 		this.lastColors = this.state.colors;
 		this.nextColors = Blink1Service.getCurrentColors( Blink1Service.getCurrentBlink1Id() );
+		this.blink1Idx = Blink1Service.getCurrentBlink1Id();
 		// this.nextColors = newcolors;
 		// // this.setState( {
 		// // 	// colors: colors,
@@ -45,7 +46,11 @@ var VirtualBlink1 = React.createClass({
 		// // });
 		this._colorFaderStart();
 	},
+	handleBlink1IdxChange: function(idx) {
+		Blink1Service.setCurrentBlink1Id(idx);
+	},
 
+	blink1Idx: 0,
 	ledn: 0,
 	nextColors: new Array(2).fill(tinycolor('#ff00ff')), // ledn colors
 	lastColors: new Array(2).fill(tinycolor('#ff00ff')), // last ledn colors
@@ -125,15 +130,26 @@ var VirtualBlink1 = React.createClass({
 			// var img3style = { width: 240, height: 192, position: "relative", top: 0 };
 
 		var makeMiniBlink1 = function(serial,idx) {
-			var colr = Blink1Service.getCurrentColor(idx);
-			if( colr.getBrightness() === 0 ) { colr = '#888'; }
+			var colrs = Blink1Service.getCurrentColors(idx);
+			var colrA = colrs[0]; var colrB = colrs[1];
+			if( colrA.getBrightness() === 0 ) { colrA = '#888'; }
+			if( colrB.getBrightness() === 0 ) { colrB = '#888'; }
 			var serstr = 'serial:'+serial;
-			return <div style={{width:16, height:14, margin:3, padding:0,background:colr}} title={serstr} key={idx}></div>;
+			var borderStyle = (idx===this.blink1Idx) ? '2px solid #aaa' : '2px solid #eee';
+			return (<div key={idx} onClick={this.handleBlink1IdxChange.bind(null,idx)} value={idx}
+						style={{border:borderStyle, borderRadius:5, padding:0, margin:3 }}>
+					<div style={{width:16, height:7, margin:0,padding:0,background:colrA, borderRadius:'3px 3px 0 0'}}
+						title={serstr} ></div>
+					<div style={{width:16, height:7, margin:0,padding:0,background:colrB, borderRadius:'0 0 3px 3px'}}
+						title={serstr} ></div>
+					</div>
+			);
+
 		};
 		var serials = Blink1Service.getAllSerials();
 		var miniBlink1s = (serials.length > 1 ) ? serials.map(makeMiniBlink1, this) : null;
 		return (
-			<div style={{position:'relative', border:'opx solid green'}}>
+			<div style={{position:'relative', border:'0px solid green'}}>
 				<div style={img0style}></div>
 				<div style={{position:'absolute', top:5, left:0, padding:0, marginLeft:0}}>
 					{miniBlink1s}
