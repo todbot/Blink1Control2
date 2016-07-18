@@ -102,6 +102,13 @@ setTimeout( function() {
 }, 3000);
 
 // events from the main process, from menu actions
+ipcRenderer.on('quitting', function( event,arg ) {
+    console.log("QUITTING ... ",arg);
+    Blink1Service.off();
+    // if( arg === 'apiServer' ) {
+    //     ApiServer.reloadConfig();
+    // }
+});
 ipcRenderer.on('reloadConfig', function( event,arg ) {
     console.log("RELOAD CONFIG ... ",arg);
     if( arg === 'apiServer' ) {

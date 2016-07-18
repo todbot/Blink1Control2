@@ -43,7 +43,10 @@ var appIcon = null;
 var isQuitting = false;
 
 var quit = function() {
-	console.log("quit. quitting...");
+	console.log("quit. quitting...",isQuitting);
+	if( !isQuitting ) {
+		mainWindow.webContents.send('quitting', 'blink1control2');
+	}
 	isQuitting = true;
 	app.quit();
 };
