@@ -35,7 +35,7 @@ var Blink1ControlView = React.createClass({
 		return (
 			<div style={{ width: 1200, height: 700, background: "#f0f0f0", margin: 0, padding: 10,
 						WebkitUserSelect: "none" }}>
-			<div fluid style={{padding:0, margin:0}}>
+			<div style={{padding:0, margin:0}}>
 				<Row>
 					<Col md={3}>
 						<Blink1Status />
