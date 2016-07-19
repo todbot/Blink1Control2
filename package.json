@@ -8,8 +8,10 @@
   "bugs": "http://github.com/todbot/blink1control2/issues",
   "scripts": {
     "startdev": "NODE_ENV=development npm run start",
+    "startdev:win": "set NODE_ENV=development&& npm run start",
     "start": "electron app",
     "watch": "NODE_ENV=development webpack-dev-server --hot --inline",
+    "watch:win": "set NODE_ENV=development&& webpack-dev-server --hot --inline",
     "pack": "webpack -p ",
     "pkg:mac": "electron-packager . $npm_package_productName --overwrite --out=dist --prune --asar --platform=darwin --arch=x64 --version=$npm_package_electronVersion --icon=assets/blink1-icon0.icns --ignore='^/dist$'",
     "dist:test": "build --dir",

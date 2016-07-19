@@ -1,7 +1,7 @@
 {
   "startup": {
     "startAtLogin": false,
-    "startupPattern": "~pattern:1,#00f300,0.5,0,#000000,0.5,0",
+    "startupPattern": "~pattern:1,#00a300,0.5,0,#000000,0.5,0",
     "startMinimized": false
   },
   "logger": {
@@ -12,6 +12,7 @@
   "blink1Service": {
     "deviceRescan": true,
     "enableGamma": true,
+    "allowMulti": true,
     "blink1ToUse": 0
   },
   "patterns": [
@@ -50,28 +51,35 @@
     "enabled": false
   },
   "eventServices": {
-      "iftttService": {
-          "service": "iftttService",
-          "type": "ifttt",
-          "enabled": true,
-          "intervalSecs": 10
-      },
       "mailService": {
-          "service": "mailService",
-          "type": "mail",
-          "enabled": true
+        "service": "mailService",
+        "type": "mail",
+        "enabled": true
       },
       "scriptService": {
-          "service": "scriptService",
-          "type": "script",
-          "enabled": true,
-          "maxStringLength": 200
+        "service": "scriptService",
+        "type": "script",
+        "enabled": true
       },
       "skypeService": {
-          "service": "skypeService",
-          "type": "skype",
-          "enabled": false
+        "service": "skypeService",
+        "type": "skype",
+        "enabled": true
+      },
+      "iftttService": {
+        "type": "ifttt",
+        "service": "iftttService",
+        "intervalSecs": 10,
+        "enabled": true,
+        "baseUrl": "http://api.thingm.com/blink1/eventsall/"
       }
+  },
+  "proxy": {
+      "enable": false,
+      "host": "127.0.0.1",
+      "port": "7777",
+      "username": "",
+      "password": ""
   },
   "eventRules": [
     {

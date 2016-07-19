@@ -212,6 +212,8 @@ var makeMenus = function() {
 					{ label: 'Hide Others', accelerator: 'Command+Shift+H', selector: 'hideOtherApplications:' },
 					{ label: 'Show All', selector: 'unhideAllApplications:' },
 					{ type: "separator" },
+					{ label: 'Close Window', accelerator: "CommandOrControl+W", selector:'hide:' },
+					{ type: "separator" },
 					{ label: "Quit", accelerator: "CommandOrControl+Q", click: function() { quit(); }}
 				]
 			},
