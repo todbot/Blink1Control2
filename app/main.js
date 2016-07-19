@@ -79,7 +79,8 @@ var openAboutWindow = function () {
 	// DEV: aboutWindow will be garbage collection automatically
 	var aboutWindow = new BrowserWindow({
 		alwaysOnTop: true,
-		height: 280,
+		autoHideMenuBar: true,
+		height: 300,
 		width: 400
 		// icon: assets['icon-32'],
 	});
@@ -94,9 +95,6 @@ var openAboutWindow = function () {
 };
 
 var makeMenus = function() {
-
-	appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px.png') );
-
 
 	// var swatchIconImg = new Jimp(32, 32, 0xFF0000FF, function (err, image) {
 	// };
@@ -190,10 +188,14 @@ var makeMenus = function() {
 	];
 
 	// if( process.env.NODE_ENV === 'development' ) {
-		contextMenuTemplate = contextMenuTemplate.concat( devMenuTemplate );
+	contextMenuTemplate = contextMenuTemplate.concat( devMenuTemplate );
 	// }
 	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
 
+	appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px.png') );
+	appIcon.on('click', function() {
+		mainWindow.show();
+	});
 	appIcon.setToolTip( pkg.productName + ' is running...');
 	appIcon.setContextMenu(contextMenu);
 
