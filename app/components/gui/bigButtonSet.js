@@ -52,7 +52,7 @@ var BigButtonSet = React.createClass({
         this.saveButtons( this.state.buttonsUser );
     },
     onEdit: function(cmd, idx, arg) {
-        console.log('onEdit:', cmd, idx, arg);
+        // console.log('onEdit:', cmd, idx, arg);
         if( cmd === 'delete' ) {
             delete this.state.buttonsUser[ idx ];
         }
@@ -83,7 +83,7 @@ var BigButtonSet = React.createClass({
     },
     // internal function used by differnt kinds of buttons
     setBlink1Color: function(color, ledn) {
-        console.log("BigButtonSet.setBlink1Color:",color);
+        // console.log("BigButtonSet.setBlink1Color:",color);
         ledn = ledn || 0; // 0 means all
         Blink1Service.fadeToColor( 100, color, ledn );  // FIXME: millis
     },
@@ -92,7 +92,7 @@ var BigButtonSet = React.createClass({
     },
 
 	playBigButton: function(buttontype, buttonindex) {
-		console.log("playBigButton:", buttontype, buttonindex);
+		// console.log("playBigButton:", buttontype, buttonindex);
         var button = this.state.buttonsUser[buttonindex];
 		if( buttontype === 'sys' ) {
 			button = this.state.buttonsSys[buttonindex];
