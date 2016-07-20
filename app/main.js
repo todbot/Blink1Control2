@@ -62,20 +62,7 @@ app.on('window-all-closed', function () {
 
 // stolen from https://github.com/twolfson/google-music-electron/blob/master/lib/google-music-electron.js
 var openAboutWindow = function () {
-	// var info = [
-	// 	'<div style="text-align: center; font-family: \'Helvetica Neue\', \'Helvetica\', \'Arial\', \'sans-serif\'">',
-	// 	'<h2>' + pkg.productName + '</h2>',
-	// 	'<p> for blink(1) USB RGB LED notification devices. <p>',
-	// 	'<p><a target="_blank" href="http://blink1.thingm.com/">blink1.thingm.com</a></p>',
-	// 	'<p>tod<img src="./images/icons/blink1mk2-icon-16px.png"></p>',
-	// 	'<p>',
-	// 	  'Version: ' + pkg.version + '<br/>',
-	// 	  'Electron version: ' + process.versions.electron + '<br/>',
-	// 	  'Node.js version: ' + process.versions.node + '<br/>',
-	// 	  'Chromium version: ' + process.versions.chrome,
-	// 	'</p>',
-	// 	'</div>'
-	// 	].join('');
+
 	// DEV: aboutWindow will be garbage collection automatically
 	var aboutWindow = new BrowserWindow({
 		alwaysOnTop: true,
@@ -192,7 +179,7 @@ var makeMenus = function() {
 	// }
 	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
 
-	appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px.png') );
+	appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px@2x.png') );
 	appIcon.on('click', function() {
 		mainWindow.show();
 	});

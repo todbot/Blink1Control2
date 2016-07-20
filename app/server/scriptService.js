@@ -20,14 +20,19 @@ var ScriptService = {
         // this.reloadConfig();
         // this.stop();
         this.config = conf.readSettings('eventServices:scriptService');
-        if( !this.config ) { this.config = { enabled: false, maxStringLength: 200 }; }
+        if( !this.config ) {
+            this.config = {
+                type: 'script',
+                enabled: false,
+                maxStringLength: 200
+            };
+        }
         if( !this.config.enabled ) {
             log.msg("ScriptService: disabled");
             return;
         }
-        if( !this.config.maxStringLength ) {
-            this.config.maxStringLength = 200;
-        }
+        this.config.maxStringLength = this.config.maxStringLength || 200;
+
         var allrules = conf.readSettings('eventRules') || [];
 		this.rules = allrules.filter( function(r) {
             return (r.type==='script' || r.type==='file'|| r.type==='url') && r.enabled;
@@ -62,6 +67,13 @@ var ScriptService = {
         });
     },
     // FIXME: put limits in to "str" length
+    // script rule:
+    // {
+    //   name: 'name of script'
+    //   type: 'script'
+    //   path: filepath to run
+    //   actOnNew: true/false
+    // }
     runScript: function(rule) {
         var self = this;
         log.msg("ScriptService.runScript:",rule,"timers:",self.ruleTimers);
