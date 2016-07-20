@@ -179,7 +179,12 @@ var makeMenus = function() {
 	// }
 	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
 
-	appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px@2x.png') );
+	if( process.platform === 'win32' ) {
+		appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon2-128px.ico') );
+	}
+	else {
+		appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px.png') );
+	}
 	appIcon.on('click', function() {
 		mainWindow.show();
 	});
