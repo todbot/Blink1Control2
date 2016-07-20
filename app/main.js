@@ -26,7 +26,7 @@ require('crash-reporter').start({
 
 
 var mainWindow = null;
-var appIcon = null;
+var tray = null;
 
 // var menu = null;
 // var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
@@ -180,16 +180,21 @@ var makeMenus = function() {
 	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
 
 	if( process.platform === 'win32' ) {
-		appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon2-128px.ico') );
+		tray = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon2-128px.ico') );
 	}
 	else {
-		appIcon = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px.png') );
+		tray = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px.png') );
 	}
-	appIcon.on('click', function() {
+	tray.on('click', function() {
+		console.log("tray CLICK!");
+		tray.popUpContextMenu();
+	});
+	tray.on('double-click', function() {
+		console.log("tray DOUBLE-CLICK!");
 		mainWindow.show();
 	});
-	appIcon.setToolTip( pkg.productName + ' is running...');
-	appIcon.setContextMenu(contextMenu);
+	tray.setToolTip( pkg.productName + ' is running...');
+	tray.setContextMenu(contextMenu);
 
 	if (process.platform === 'darwin') {
 		// Make Dock have same context menu
