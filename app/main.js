@@ -202,7 +202,7 @@ var makeMenus = function() {
 	if (process.platform === 'darwin') {
 		// Make Dock have same context menu
 		app.dock.setMenu( contextMenu );
-
+	}
 		// Mac-specific menu  (enables Command-Q )
 		var template = [
 			{	label: pkg.productName,
@@ -235,7 +235,6 @@ var makeMenus = function() {
 			}
 		];
 		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-	} // darwin
 };
 
 
