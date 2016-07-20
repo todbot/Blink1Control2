@@ -325,8 +325,9 @@ var Blink1Service = {
 	off: function(blink1id) {
 		var self = this;
 		self.toyEnable = false;
-		if( blink1id === undefined ) {
+		if( blink1id === undefined && blink1s.length > 0 ) {
 			blink1s.map( function(serial,idx) {
+				console.log("POOP");
 				self.fadeToColor(100, '#000000', 0, idx);
 			});
 		} else {
