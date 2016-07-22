@@ -61,7 +61,7 @@ var ToolTable = React.createClass({
 	// callback called by event service
     getUpdates: function() {
         var events = log.getEvents();
-        log.msg("ToolTable.getUpdates, events:",events);
+        // log.msg("ToolTable.getUpdates, events:",events);
 
 		if( !this.state.showForm ) {  //i.e. don't change when we're in edit mode
         	this.setState({events: events});
@@ -222,7 +222,7 @@ var ToolTable = React.createClass({
                 var myEvent = eventsForMe[eventsForMe.length-1];
 				// lastEvent = moment(myEvent.date).fromNow() + ': ' + myEvent.text;
                 // lastEvent = <span><i> {moment(myEvent.date).format('LTS') } </i>: {myEvent.text} </span>;
-				lastEvent = <span>{myEvent.text} <i style={{fontSize:'90%'}}> @ {moment(myEvent.date).format('LTS') } </i></span>;
+				lastEvent = <span>{myEvent.text} <i style={{fontSize:'90%'}}><br/> @ {moment(myEvent.date).format('LTS') } </i></span>;
             }
             return lastEvent;
         };
