@@ -12,15 +12,27 @@ var HtmlColorChart = React.createClass({
         handleClick: React.PropTypes.func,
         currentColor: React.PropTypes.string
     },
-    handleColorClick: function(color) { //,f,g) {
+    handleColorClick: function(color) {
+        this.down = true;
         this.props.handleClick(color);
+    },
+    handleColorUp: function() {
+        this.down = false;
+    },
+    handleColorMove: function(color) {
+        if( this.down ) {
+            this.props.handleClick(color);
+        }
     },
     render: function() {
         var createCell = function(color,i) {
             var w = (i===24) ? 15 : 12;
             var borderCurr = (color.toUpperCase()===this.props.currentColor.toUpperCase())? '2px solid #bbb' : '';
             return (
-                <td onMouseDown={this.handleColorClick.bind(null,color)} key={color}
+                <td onMouseDown={this.handleColorClick.bind(null,color)}
+                    onMouseOver={this.handleColorMove.bind(null,color)}
+                    onMouseUp={this.handleColorUp}
+                    key={color}
                     style={{width:w, height:13, background:color, border:borderCurr }}></td>
             );
         };
@@ -29,7 +41,7 @@ var HtmlColorChart = React.createClass({
 
         };
 		return (
-            <table style={{borderCollapse:'collapse', border:'1px solid #eee', padding:0 }}>
+            <table style={{borderCollapse:'collapse', border:'1px solid #eee', padding:0, cursor:'crosshair' }}>
                 <tbody>
                 {htmlcolors.map(createRow,this)}
                 </tbody>
