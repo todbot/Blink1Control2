@@ -43,25 +43,23 @@ var EventList = React.createClass({
 	render: function() {
 		var revevents = this.state.events.concat().reverse();
 		var createEventLine = function(event,index) {
-			//return (<li key={event.date}> {event.date} - {event.text} </li>);
-			// var humantime = moment(event.date).format('dd LTS');
 			var humantime = moment(event.date).format('LTS');
 			var source = event.source;
 			var text   = event.text;
 			var id     = event.id;
 			var msg = <span><b>{source}</b> {text} - {id}</span>;
 			return (
-				<ListGroupItem key={index} style={{lineHeight:"100%", fontSize: "0.85em", textIndent:-10}}><i style={{fontSize:'90%'}}>{humantime}:</i> {msg} </ListGroupItem>);
+				<ListGroupItem key={index} style={{lineHeight:"100%", fontSize: "0.85em", textIndent:-10}}><i style={{fontSize:'90%'}}>{humantime}:</i> {msg} </ListGroupItem>
+			);
 		};
+		var header = <h4>Recent Events <button style={{float:'right',fontSize:'80%' }}
+			bsStyle='link' onClick={this.clearEvents}>Clear</button></h4> ;
 
 		return (
-			<Panel header={<h4>Recent Events</h4>} style={{ width: 280, height: 305, margin:5, padding:0}}>
-				<ListGroup style={{	height: 210, overflowY: 'scroll', overflowX:'hidden', padding:0, margin:0, marginBottom:10}}>
+			<Panel header={header} style={{ width: 280, height: 305, margin:5, padding:0}}>
+				<ListGroup style={{	height: 240, overflowY: 'scroll', overflowX:'hidden', padding:0, margin:0, marginBottom:10}}>
 				{revevents.map(createEventLine, this)}
 				</ListGroup>
-				<ButtonToolbar>
-					<Button bsSize="xsmall"  onClick={this.clearEvents}>Clear events</Button>
-				</ButtonToolbar>
 			</Panel>
 			);
 			// <Button bsSize="xsmall"  onClick={this.showAllEvents}>Show all</Button>
