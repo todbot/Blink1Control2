@@ -8,6 +8,7 @@
  * - ~blink-white-3
  * - ~blink-#ff00ff-5
  * - ~pattern:3,#ff00ff,0.5,0,#00ff00,1.3,0
+ * - ~pattern-stop:pattname
  *
  * a fully populated in-memory pattern looks like:
  *  var pattern = {
@@ -257,6 +258,7 @@ var PatternsService = {
 				if( playingPatternId === pattern.id ) { playingPatternId = ''; }  // FIXME
 			}
 		});
+		patternsTemp = [];
 		this.notifyChange();
 	},
 	/** Stop a playing pattern.  Notifies change listeners */
@@ -268,25 +270,26 @@ var PatternsService = {
 			clearTimeout( pattern.timer );
 			if( playingPatternId === pattern.id ) { playingPatternId = ''; }  // FIXME
 			this.notifyChange();
-			return true;
+			return pattern.id;
 		}
 		return false;
 	},
 	/**
 	 * Play pattern from an event source rule
 	 * @param  {Rule} rule Event rule: {patternId:"", blink1Id:""}
-	 * @return none
+	 * @return {pattid} id of pattern, or false if pattern doesn't exist
 	 */
 	playPatternByRule: function(rule) {
 		var allowMultiBlink1 = conf.readSettings('blink1Service:allowMulti') || false;
 		log.msg("PatternsService.playPatternByRule: ",rule, ", multi:",allowMultiBlink1);
 		if( rule.enabled ) {
 			if( allowMultiBlink1 && rule.blink1Id ) {
-				this.playPattern(rule.patternId, rule.blink1Id);
+				return this.playPattern(rule.patternId, rule.blink1Id);
 			} else {
-				this.playPattern(rule.patternId);
+				return this.playPattern(rule.patternId);
 			}
 		}
+		return false;
 	},
 
     /**
@@ -295,18 +298,17 @@ var PatternsService = {
      *
      * @param  {String} pattid   Id of pattern to play, or
      * @param  {[type]} blink1id blink(1) serial number to use, or undef
-     * @return {boolean} false if pattern doesn't exist
+     * @return {pattid} id of pattern playing, or false if pattern doesn't exist
      */
 	playPattern: function(pattid, blink1id) {
 		log.msg("PatternsService.playPattern: id:",pattid, ", blink1id:",blink1id, "patternsTemp:",patternsTemp);
 		var patternstr;
 		var patt;
-		var blinkre = /~blink-(#*\w+)-(\d+)(-(.+))?/;
-		// var blinkre = /~blink-(#*\w+)-(\d+)/;
+		var blinkre = /~blink-(#*\w+)-(\d+)(-(.+))?/;  // blink-color-cnt-time
 		// first, is the pattern actually a hex color?
 		if( pattid.startsWith('#') ) { // color
 			Blink1Service.fadeToColor(100, pattid, 0, blink1id ); // 0 == all LEDs
-			return true;
+			return pattid;
 		}
 		// then, look for special meta-pattern
 		if( pattid.startsWith('~') ) {
@@ -314,7 +316,7 @@ var PatternsService = {
 				log.msg("PatternsService: playing special '~off' pattern");
 				PatternsService.stopAllPatterns();
 				Blink1Service.fadeToColor( 300, '#000000', 0, blink1id ); // 0 = all LEDs
-				return true;
+				return pattid;
 			}
 			// FIXME: make this clause its own function?
 			// FIXME: allow specing of time, e.g. "~blink-#ff0ff-5-0.2"
@@ -329,11 +331,16 @@ var PatternsService = {
 				// patternstr = count + ',' + c.toHexString() + ',0.5,0,#000000,0.5,0';
 				patternstr = count + ',' + c.toHexString() + ','+secs+',0,#000000,'+secs+',0';
 				patt = _parsePatternStr(patternstr);
-				patt.name = pattid.substring(1); //'temp-'+utils.cheapUid(4); // if parsing failed, use temp name
+				patt.name = pattid;
+				// patt.name = pattid.substring(1); //'temp-'+utils.cheapUid(4); // if parsing failed, use temp name
 				patt.id = patt.name;
 				patt.temp = true; // FIXME: hmmm
 				patternsTemp.push( patt ); // save temp pattern
 				pattid = patt.id;
+			}
+			else if( pattid.startsWith('~pattern-stop:') ) { // FIXME: use regex yo
+				patternstr = pattid.substring(pattid.lastIndexOf(':')+1);
+				return PatternsService.stopPattern( patternstr );
 			}
 			else if( pattid.startsWith('~pattern:') ) { // FIXME: use regex yo
 				patternstr = pattid.substring(pattid.lastIndexOf(':')+1);
@@ -356,10 +363,14 @@ var PatternsService = {
 			// if( tinycolor(id) ) { // if 'id' is a hex color
 			// }
 		}
+
 		// FIXME: this function is doing too many things
 
-		// finally, look for the pattern as an id
-		var pattern = _.find(this.getAllPatterns(), {id: pattid});
+		var pattern = _.find(this.getAllPatterns(), {name: pattid});
+		if( !pattern ) {
+			// finally, look for the pattern as an id
+			pattern = _.find(this.getAllPatterns(), {id: pattid});
+		}
 		if( !pattern ) {  // check for special built-in patterns
 			pattern = _.find( patternsTemp, {id: pattid} );
 			if( !pattern ) {
@@ -378,11 +389,20 @@ var PatternsService = {
 		pattern.playing = true;
 		playingPatternId = pattid;
 		// playingStack.push( id ); // FIXME: idea for pattern stack
-		this._playPatternInternal(pattid, blink1id, null);
-		return true;
+		this._playPatternInternal(pattern.id, blink1id, null);
+		return pattid;
 	},
 
+	/**
+	 * Internal function for playing a pattern by id
+	 * @method function
+	 * @param  {String}   id       id of pattern
+	 * @param  {String}   blink1id serial of blink1 to play on, or 0 or undef
+	 * @param  {Function} callback unused now?
+	 * @return no return value
+	 */
 	_playPatternInternal: function(id, blink1id, callback) {
+		log.msg("_playPatternInternal:",id);
 		playingPatternId = id;
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		if( !pattern ) { // look for id in temp pattern list
