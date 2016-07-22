@@ -15,10 +15,10 @@ var ScriptService = {
     rules: [],
     ruleTimers: [],
     lastEvents:{},
+    lastPatterns: {},
+
     start: function() {
         log.msg("ScriptService.start");
-        // this.reloadConfig();
-        // this.stop();
         this.config = conf.readSettings('eventServices:scriptService');
         if( !this.config ) {
             this.config = {
@@ -129,6 +129,31 @@ var ScriptService = {
 
     },
 
+    playPattern: function(pattid,ruleid) {
+        if( PatternsService.playPattern( pattid ) ) {
+            this.lastPatterns[ruleid] = pattid;
+            return pattid;
+        }
+        return false;
+    },
+
+    /**
+     * Parse the output string of a script, file, or URL.
+     * Plays patterns if match.
+     * Sends log messages with source & id of rule.
+     * Checks for the following content:
+     * if 'actionType == 'parse-json', treat content as JSON,
+     *   and look for 'pattern' or 'color' keys
+     *   'pattern' can be meta-pattern like: '~off' and '~blink'
+     * if 'actionType == 'parse-pattern', attempt to find a pattern
+     *   with the "pattern:<patternname>" format, and play it.
+     *   Can also use meta-patterns here.
+     * Otherwise, look in text for a color string.
+     *
+     * @param  {Rule} rule eventRules rule for this content
+     * @param  {String} str  the content to be parsed
+     * @return {[type]}      [description]
+     */
     parse: function(rule, str) {
         str = str.substring(0,this.config.maxStringLength);
         log.msg("ScriptService.parse:", str, "rule:",rule);
@@ -147,23 +172,22 @@ var ScriptService = {
         var actionType = rule.actionType;
         if( actionType === 'parse-json' ) {
             var json = null;
-            // var err = null;
             try {
                 json = JSON.parse(str);
                 if( json.pattern ) {
                     // returns true on found pattern // FIXME: go back to using 'findPattern'
-                    if( PatternsService.playPattern( json.pattern ) ) {
+                    if( this.playPattern( json.pattern, rule.name ) ) {
                         log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:json.pattern});
                     }
                     else {
                         log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+json.pattern});
                     }
                 }
-                if( json.color ) {
+                else if( json.color ) {
                     var c = tinycolor(json.color);
                     if( c.isValid() ) {
                         log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:json.color});
-                        PatternsService.playPattern( "~pattern:1,"+c.toHexString()+",0.1,0" );
+                        this.playPattern( c.toHexString(), rule.name );
                     } else {
                         log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+json.color});
                     }
@@ -175,7 +199,8 @@ var ScriptService = {
         else if( actionType === 'parse-pattern' ) {
             matches = patternre.exec( str );
             if( matches ) {
-                if( PatternsService.playPattern( matches[1] ) ) {
+                var patt_name = matches[1];
+                if( this.playPattern( patt_name, rule.name  ) ) {
                     log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str});
                 }
                 log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
@@ -191,7 +216,7 @@ var ScriptService = {
                 var color = tinycolor( colormatch );
                 if( color.isValid() ) {
                     log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:colormatch});
-                    PatternsService.playPattern( "~pattern:1,"+color.toHexString()+",0.1,0" );
+                    this.playPattern( color.toHexString(), rule.name );
                 }
                 else {
                     log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+colormatch});
@@ -206,24 +231,3 @@ var ScriptService = {
 };
 
 module.exports = ScriptService;
-
-
-// need to indicate:
-// - missing file
-// - bad URL
-// - bad parse
-// -
-//
-// FIXME: need to heed patternId
-// FIXME: handleEvent & parse() are same thing
-// handleEvent: function(rule,str) {
-//     var self = this;
-//     // log.msg("ScriptService.parse stdout data",str);
-//     if( self.lastEvents[rule.name] !== str ) {
-//         // if( !rule.logEvents || (null !== rule.logEvents && rule.logEvents) ) {
-//         log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str.substring(0,40) } );
-//         // }
-//         self.lastEvents[rule.name] = str;
-//         PatternsService.playPattern( str );
-//     }
-// },
