@@ -20,7 +20,7 @@ var HtmlColorChart = React.createClass({
             var w = (i===24) ? 15 : 12;
             var borderCurr = (color.toUpperCase()===this.props.currentColor.toUpperCase())? '2px solid #bbb' : '';
             return (
-                <td onClick={this.handleColorClick.bind(this,color)} key={color}
+                <td onMouseDown={this.handleColorClick.bind(null,color)} key={color}
                     style={{width:w, height:13, background:color, border:borderCurr }}></td>
             );
         };
@@ -32,7 +32,7 @@ var HtmlColorChart = React.createClass({
             <table style={{borderCollapse:'collapse', border:'1px solid #eee', padding:0 }}>
                 <tbody>
                 {htmlcolors.map(createRow,this)}
-            </tbody>
+                </tbody>
             </table>
         );
     }
