@@ -99,6 +99,9 @@ ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {
     PatternsService.stopAllPatterns();
     Blink1Service.off();
 });
+ipcRenderer.on('showPreferences', function( /*event,arg*/ ) {
+
+});
 ipcRenderer.on('pressBigButton', function( event,arg ) {
     var bigButtonsConfig = conf.readSettings('bigButtons');
     var bigButton = bigButtonsConfig[ arg ];

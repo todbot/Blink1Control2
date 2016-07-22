@@ -73,32 +73,37 @@ app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
     var patt_name = req.query.pname;
     var blink1id = req.query.blink1id || 0;
 	var status = 'no pattern with that id';
+
+    if( patt_name ) {
+        patt_id = PatternsService.getIdForName(patt_name);
+        // returns true on found pattern // FIXME: go back to using 'findPattern'?
+    }
+
 	if( req.params.type === 'play' ) {
         if( patt_id ) {
-    		if( PatternsService.playPattern( patt_id, blink1id ) ) { // returns true on found pattern // FIXME: go back to using 'findPattern'
+            // returns true on found pattern // FIXME: go back to using 'findPattern'
+    		if( PatternsService.playPattern( patt_id, blink1id ) ) {
     			status = 'playing pattern ' +patt_id;
     		}
         }
-        else if( patt_name ) {
-            patt_id = PatternsService.getIdForName(patt_name);
-            console.log("patt_name:",patt_name,"patt_id:",patt_id);
-            if( PatternsService.playPattern( patt_id, blink1id ) ) { // returns true on found pattern // FIXME: go back to using 'findPattern'
-    			status = 'playing pattern ' +patt_name;
-    		}
-        }
 	}
-	else {
-        if( !patt_id ) {
+	else { // stop
+        if( !patt_id && !patt_name ) {
             PatternsService.stopAllPatterns();
             status = 'stopping all patterns';
-        } else {
+        }
+        else if( patt_id ) {
             if( PatternsService.stopPattern( patt_id ) ) {
 			    status = 'stopping pattern ' +patt_id;
             }
-		}
+        }
 	}
+
 	res.json({
-		status: status
+		status: status,
+        id: patt_id,
+        pname: patt_name,
+        blink1id: blink1id
 	});
 });
 app.get('/blink1/pattern/add', function(req,res) {

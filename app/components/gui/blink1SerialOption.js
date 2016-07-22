@@ -8,15 +8,15 @@ var React = require('react');
 var Input = require('react-bootstrap').Input;
 
 var Blink1Service = require('../../server/blink1Service');
-var log = require('../../logger');
+// var log = require('../../logger');
 
 var Blink1SerialOption = React.createClass({
     propTypes: {
-        serial: React.PropTypes.string,
         label: React.PropTypes.string,
         labelClassName: React.PropTypes.string,
         defaultText: React.PropTypes.string,
         wrapperClassName: React.PropTypes.string,
+        serial: React.PropTypes.string,
         onChange: React.PropTypes.func.isRequired
 	},
     getInitialState: function() {
