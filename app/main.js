@@ -62,7 +62,6 @@ app.on('window-all-closed', function () {
 
 // stolen from https://github.com/twolfson/google-music-electron/blob/master/lib/google-music-electron.js
 var openAboutWindow = function () {
-
 	// DEV: aboutWindow will be garbage collection automatically
 	var aboutWindow = new BrowserWindow({
 		alwaysOnTop: true,
@@ -79,6 +78,11 @@ var openAboutWindow = function () {
 	// aboutWindow.loadURL('data:text/html,' + info);
 	aboutWindow.loadURL( 'file://' + __dirname + '/about.html' );
 	return aboutWindow;
+};
+
+var openPreferences = function() {
+	mainWindow.show();
+	mainWindow.webContents.send('showPreferences');
 };
 
 var makeMenus = function() {
@@ -179,7 +183,7 @@ var makeMenus = function() {
 	// }
 	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
 
-	if( process.platform === 'win32' ) {
+	if( process.platform === 'win32' ) {  // FIXME: make this icon better for Windows
 		tray = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon2-128px.ico') );
 	}
 	else {
@@ -197,34 +201,34 @@ var makeMenus = function() {
 	tray.setContextMenu(contextMenu);
 
 	if (process.platform === 'darwin') {
-		// Make Dock have same context menu
-		app.dock.setMenu( contextMenu );
+		app.dock.setMenu( contextMenu ); // Make Dock have same context menu
 	}
-		// Mac-specific menu  (enables Command-Q )
+		// Mac-specific menu  (hide, unhide, etc. enables Command-Q )
 		var template = [
 			{	label: pkg.productName,
 				submenu: [
 					// { label: "About Blink1Control", selector: "orderFrontStandardAboutPanel:" },
 					{ label: "About "+ pkg.productName, click: function() { openAboutWindow(); } },
 					{ type: 'separator' },
-					{ label: 'Hide '+pkg.productName, accelerator: "CommandOrControl+H", selector: 'hide:' },
-					{ label: 'Hide Others', accelerator: 'Command+Shift+H', selector: 'hideOtherApplications:' },
-					{ label: 'Show All', selector: 'unhideAllApplications:' },
+					{ label: 'Hide '+pkg.productName, accelerator: "CommandOrControl+H", role: 'hide' },
+					{ label: 'Hide Others', accelerator: 'Command+Shift+H', role: 'hideothers' },
+					{ label: 'Show All', role: 'unhide' },
 					{ type: "separator" },
-					{ label: 'Close Window', accelerator: "CommandOrControl+W", selector:'hide:' },
+					{ label: 'Preferences', accelerator: "CommandOrControl+.", click: function() { openPreferences(); } },
+					{ label: 'Close Window', accelerator: "CommandOrControl+W", role:'close' },
 					{ type: "separator" },
-					{ label: "Quit", accelerator: "CommandOrControl+Q", click: function() { quit(); }}
+					{ label: "Quit", accelerator: "CommandOrControl+Q", role: 'quit' } //click: function() { quit(); }}
 				]
 			},
 			{	label: "Edit",
 				submenu: [
-					{ label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-					{ label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+					{ label: "Undo", accelerator: "CmdOrCtrl+Z", role: "undo" },
+					{ label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", role: "redo" },
 					{ type: "separator" },
-					{ label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-					{ label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-					{ label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-					{ label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+					{ label: "Cut", accelerator: "CmdOrCtrl+X", role: "cut" },
+					{ label: "Copy", accelerator: "CmdOrCtrl+C", role: "copy" },
+					{ label: "Paste", accelerator: "CmdOrCtrl+V", role: "paste" },
+					{ label: "Select All", accelerator: "CmdOrCtrl+A", role: "selectall" }
 				]
 			},
 			{ label: "View",
