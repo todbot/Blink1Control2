@@ -2,11 +2,13 @@
 
 var electron = require('electron');
 var app = electron.app;
+var ipcMain = electron.ipcMain;
 
 var BrowserWindow = require('browser-window');
 var Tray = require('tray');
 var Menu = require('menu');
 var path = require('path');
+
 // var nativeImage = electron.nativeImage;
 
 var AutoLaunch = require('auto-launch');
@@ -83,6 +85,21 @@ var openAboutWindow = function () {
 var openPreferences = function() {
 	mainWindow.show();
 	mainWindow.webContents.send('showPreferences');
+};
+
+// called via ipcMain below
+var openHelpWindow = function() {
+	var helpWindow = new BrowserWindow({
+			alwaysOnTop: true,
+			autoHideMenuBar: true,
+			height: 700,
+			width: 800
+			// icon: assets['icon-32'],
+		});
+	helpWindow.on("closed", function() {
+		// helpWindow = null;
+	});
+	helpWindow.loadURL( 'file://' + __dirname + '/help/index.html' );
 };
 
 var makeMenus = function() {
@@ -316,6 +333,10 @@ app.on('ready', function () {
 	}
 
 	makeMenus();
+
+	ipcMain.on('openHelpWindow', function() {
+		openHelpWindow();
+	});
 
 });
 

@@ -15,8 +15,6 @@ var ReactDOM = require('react-dom');
 
 // var Perf = require('react-addons-perf');
 
-// var remote = require('electron').remote;
-// var BrowserWindow = remote.BrowserWindow;
 var ipcRenderer = require('electron').ipcRenderer;
 
 
@@ -98,9 +96,6 @@ ipcRenderer.on('reloadConfig', function( event,arg ) {
 ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {
     PatternsService.stopAllPatterns();
     Blink1Service.off();
-});
-ipcRenderer.on('showPreferences', function( /*event,arg*/ ) {
-
 });
 ipcRenderer.on('pressBigButton', function( event,arg ) {
     var bigButtonsConfig = conf.readSettings('bigButtons');

@@ -3,7 +3,8 @@
 var React = require('react');
 var Panel = require('react-bootstrap').Panel;
 var Well = require('react-bootstrap').Well;
-// var Button = require('react-bootstrap').Button;
+
+var ipcRenderer = require('electron').ipcRenderer;
 
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
@@ -30,8 +31,12 @@ var Blink1Status = React.createClass({
 		};
 	},
 	componentDidMount: function() {
+		var self = this;
 		Blink1Service.addChangeListener( this.updateColorState, "blink1Status" );
 		PatternsService.addChangeListener( this.updatePatternState, "blink1Status" );
+		ipcRenderer.on('showPreferences', function( /*event,arg*/ ) {
+			self.setState({showForm: true});
+		});
 	},
 	// updateState: function(colors) { // FIXME: this called mostly for color, don't need other parts?
 	updateColorState: function(currentColor /*, colors,ledn */) {
