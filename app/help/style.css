@@ -1,0 +1,327 @@
+@page {
+    margin-bottom: 5pt;
+    margin-top: 5pt
+    }
+
+.body {
+    display: block;
+    line-break: strict;
+    white-space: pre-wrap
+    }
+.calibre {
+    display: block;
+    font-size: 1.41667em;
+    line-height: 1.2;
+    margin-bottom: 0;
+    margin-left: 5pt;
+    margin-right: 5pt;
+    margin-top: 0;
+    padding-left: 0;
+    padding-right: 0
+    }
+.calibre1 {
+    display: inline-block;
+    margin-bottom: 2.5641%;
+    margin-left: 0%;
+    margin-right: 0%;
+    margin-top: 2.5641%;
+    text-indent: 0;
+    vertical-align: baseline;
+    width: 42.626em
+    }
+.calibre2 {
+    height: auto;
+    width: 42.626em
+    }
+.calibre3 {
+    display: inline-block;
+    margin-bottom: 2.7778%;
+    margin-left: 0%;
+    margin-right: 0%;
+    margin-top: 2.7778%;
+    text-indent: 0;
+    vertical-align: baseline;
+    width: 11.909em
+    }
+.calibre4 {
+    height: auto;
+    width: 11.909em
+    }
+.calibre5 {
+    display: inline-block;
+    float: left;
+    margin-bottom: 0%;
+    margin-left: 29.9145%;
+    margin-right: 0%;
+    margin-top: 0%;
+    text-indent: 0;
+    vertical-align: baseline;
+    width: 14.795em
+    }
+.calibre6 {
+    height: auto;
+    width: 14.795em
+    }
+.calibre7 {
+    display: inline-block;
+    float: left;
+    margin-bottom: 0%;
+    margin-left: 65.3846%;
+    margin-right: 0%;
+    margin-top: 0%;
+    text-indent: 0;
+    vertical-align: baseline;
+    width: 14.795em
+    }
+.calibre8 {
+    display: inline-block;
+    margin-bottom: 0%;
+    margin-left: 0%;
+    margin-right: 0%;
+    margin-top: 0%;
+    text-indent: 0;
+    vertical-align: baseline;
+    width: 14.795em
+    }
+.s {
+    -webkit-hyphens: none;
+    color: #232323;
+    display: block;
+    font-family: "Helvetica Neue Medium";
+    font-size: 0.70588em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    hyphens: none;
+    letter-spacing: 0;
+    margin-bottom: 0%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 0%;
+    padding-right: 0%;
+    text-align: left;
+    text-decoration: none;
+    text-indent: 0%;
+    text-transform: none
+    }
+.s1 {
+    -webkit-hyphens: none;
+    color: #232323;
+    display: block;
+    font-family: "Helvetica Neue Medium";
+    font-size: 0.70588em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    hyphens: none;
+    letter-spacing: 0;
+    margin-bottom: 0%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 0%;
+    padding-right: 0%;
+    text-align: left;
+    text-indent: 0%;
+    text-transform: none
+    }
+.s2 {
+    -webkit-hyphens: none;
+    color: #444;
+    display: block;
+    font-family: "Helvetica Neue";
+    font-size: 1em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: bold;
+    hyphens: none;
+    letter-spacing: 0;
+    line-height: 1.2;
+    margin-bottom: 0%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 1.7077%;
+    padding-right: 0%;
+    text-align: left;
+    text-decoration: none;
+    text-indent: -1.7077%;
+    text-transform: none
+    }
+.s3 {
+    -webkit-hyphens: none;
+    color: #232323;
+    display: block;
+    font-family: "Helvetica Neue";
+    font-size: 0.70588em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    hyphens: none;
+    letter-spacing: 0;
+    margin-bottom: 2.5641%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 0%;
+    padding-right: 0%;
+    text-align: left;
+    text-decoration: none;
+    text-indent: 0;
+    text-transform: none
+    }
+.s4 {
+    -webkit-hyphens: none;
+    color: #232323;
+    display: block;
+    font-family: "Helvetica Neue";
+    font-size: 0.70588em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    hyphens: none;
+    letter-spacing: 0;
+    margin-bottom: 2.5641%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 0%;
+    padding-right: 0%;
+    text-align: left;
+    text-decoration: none;
+    text-indent: 0%;
+    text-transform: none
+    }
+.s5 {
+    -webkit-hyphens: none;
+    color: #444;
+    display: block;
+    font-family: "Helvetica Neue";
+    font-size: 1em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: bold;
+    hyphens: none;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 0%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 0%;
+    padding-right: 0%;
+    text-align: left;
+    text-decoration: none;
+    text-indent: 0%;
+    text-transform: none
+    }
+.s6 {
+    -webkit-hyphens: none;
+    color: #000;
+    display: block;
+    font-family: "Helvetica Neue";
+    font-size: 0.70588em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    hyphens: none;
+    letter-spacing: 0;
+    margin-bottom: 0%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 0%;
+    padding-right: 0%;
+    text-align: left;
+    text-indent: 0%;
+    text-transform: none
+    }
+.s7 {
+    -webkit-hyphens: none;
+    color: #000;
+    display: block;
+    font-family: "Helvetica Neue";
+    font-size: 0.70588em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    hyphens: none;
+    letter-spacing: 0;
+    margin-bottom: 0%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 0%;
+    padding-right: 0%;
+    text-align: left;
+    text-decoration: none;
+    text-indent: 0%;
+    text-transform: none
+    }
+.s8 {
+    -webkit-hyphens: none;
+    color: #000;
+    display: block;
+    font-family: "Helvetica Neue";
+    font-size: 0.70588em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: bold;
+    hyphens: none;
+    letter-spacing: 0;
+    margin-bottom: 0%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 0%;
+    padding-right: 0%;
+    text-align: left;
+    text-decoration: none;
+    text-indent: 0%;
+    text-transform: none
+    }
+.s9 {
+    -webkit-hyphens: none;
+    color: #444;
+    display: block;
+    font-family: "Helvetica Neue";
+    font-size: 0.70588em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: bold;
+    hyphens: none;
+    letter-spacing: -0.01em;
+    margin-bottom: 0%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 0%;
+    padding-right: 0%;
+    text-align: left;
+    text-decoration: none;
+    text-indent: 0%;
+    text-transform: none
+    }
+.s10 {
+    -webkit-hyphens: none;
+    color: #232323;
+    display: block;
+    font-family: "Helvetica Neue";
+    font-size: 0.70588em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    hyphens: none;
+    letter-spacing: 0;
+    margin-bottom: 2.5641%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0%;
+    padding-left: 0%;
+    padding-right: 0%;
+    text-align: left;
+    text-indent: 0%;
+    text-transform: none
+    }
+
