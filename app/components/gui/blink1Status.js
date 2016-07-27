@@ -13,10 +13,15 @@ var PreferencesModal = require('./PreferencesModal');
 
 var Blink1Status = React.createClass({
 
+	getStatusString: function() {
+		//return Blink1Service.isConnected() ? "connected" : "not connected",
+		var cnt = Blink1Service.isConnected();
+		return (cnt>1) ? cnt + " devices connected" : (cnt) ? "device connected" : "device not connected";
+	},
 	getInitialState: function() {
 		return {
 			blink1Color: Blink1Service.getCurrentColor(),
-			statusStr: Blink1Service.isConnected() ? "connected" : "not connected",
+			statusStr: this.getStatusString(),
 			serialNumber: Blink1Service.serialNumberForDisplay(),
 			blink1Serials: Blink1Service.getAllSerials(),
 			iftttKey: Blink1Service.iftttKey(),
@@ -30,10 +35,9 @@ var Blink1Status = React.createClass({
 	},
 	// updateState: function(colors) { // FIXME: this called mostly for color, don't need other parts?
 	updateColorState: function(currentColor /*, colors,ledn */) {
-		var cnt = Blink1Service.isConnected();
 		this.setState({
 						blink1ColorLast: currentColor,
-						statusStr: (cnt>1) ? cnt + " connected" : (cnt) ? "connected" : "not connected",
+						statusStr: this.getStatusString(),
 						serialNumber: Blink1Service.serialNumberForDisplay(),
 						blink1Serials: Blink1Service.getAllSerials(),
 						iftttKey: Blink1Service.iftttKey()
