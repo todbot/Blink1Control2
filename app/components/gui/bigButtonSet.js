@@ -106,6 +106,9 @@ var BigButtonSet = React.createClass({
             else if( button.name === "Color Cycle" ) {
                 Blink1Service.colorCycleStart();
             }
+            else if( button.name === "Mood Light" ) {
+                Blink1Service.moodLightStart();
+            }
             else if( button.name === "Strobe Light" ) {
                 PatternsService.playPattern( '~blink-white-0' );
             }
@@ -116,11 +119,12 @@ var BigButtonSet = React.createClass({
         else if( buttontype === 'pattern' ) {
             this.playPattern( button.patternId );
         }
-        log.addEvent({type:'trigger', source:'button', id:button.name} );
+        log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
 	},
 
     render: function() {
         var patterns = PatternsService.getAllPatterns();
+        var serials = Blink1Service.getAllSerials();
         var createBigButtonSys = function(button, index) { // FIXME: understand bind()
             return (
                 <BigButton key={index} name={button.name} type='sys'
@@ -130,7 +134,7 @@ var BigButtonSet = React.createClass({
         var createBigButtonUser = function(button, index) { // FIXME: understand bind()
             return (
                 <BigButton key={index} idx={index} name={button.name} type={button.type}
-                    color={button.color} patterns={patterns}
+                    color={button.color} patterns={patterns} serials={serials}
                     onClick={this.playBigButton.bind(null, button.type, index)}
                     onEdit={this.onEdit} />
             );

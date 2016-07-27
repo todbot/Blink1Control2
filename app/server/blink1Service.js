@@ -52,6 +52,7 @@ currentState.fill( currentState[0] ); // hmmmm
 var Blink1Service = {
 	toyEnable: false,
 	toyTimer:null,
+	toyValue:0,
 	conf: {},
 	start: function() {
 		listeners = {}; // erase previous listeners
@@ -327,15 +328,31 @@ var Blink1Service = {
 		self.toyEnable = false;
 		if( blink1id === undefined && blink1s.length > 0 ) {
 			blink1s.map( function(serial,idx) {
-				console.log("POOP");
+				// console.log("POOP");
 				self.fadeToColor(100, '#000000', 0, idx);
 			});
 		} else {
 			self.fadeToColor(100, '#000000', 0, blink1id); // 0 = all leds
 		}
 	},
+	moodLightStart: function() {
+		this.toyEnable = true;
+		this.toyValue = 5000;
+		this.moodLightDo();
+	},
+	moodLightDo: function() {
+		log.msg("Blink1Service.moodLightDo");
+		if( !this.toyEnable ) { return; }
+		this.fadeToColor( this.toyValue, tinycolor.random(), 0 );
+		this.toyTimer = setTimeout(this.moodLightDo.bind(this), this.toyValue);
+	},
+	moodLightStop: function() {
+		this.toyEnable = false;
+		clearTimeout( this.toyTimer );
+	},
 	colorCycleStart: function() {
 		this.toyEnable = true;
+		this.toyValue = Math.floor( Math.random() * 360 );
 		this.colorCycleDo();
 	},
 	colorCycleStop: function() {
@@ -343,10 +360,13 @@ var Blink1Service = {
 		clearTimeout( this.toyTimer );
 	},
 	colorCycleDo: function() {
-		log.msg("Blink1Service.colorCycleDo");
+		log.msg("Blink1Service.colorCycleDo",this.toyValue);
 		if( !this.toyEnable ) { return; }
-		this.fadeToColor( 100, tinycolor.random(), 0 );
-		this.toyTimer = setTimeout(this.colorCycleDo.bind(this), 300);
+		this.toyValue += 1;
+		this.toyValue = (this.toyValue>360) ? 0 : this.toyValue;
+		var color = tinycolor({h:this.toyValue, s:1, v:1});
+		this.fadeToColor( 100, color, 0 );
+		this.toyTimer = setTimeout(this.colorCycleDo.bind(this), 100);
 	},
 
 	addChangeListener: function(callback, callername) {
