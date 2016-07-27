@@ -35,6 +35,12 @@ if( !logconfig.ignoredSources ) { logconfig.ignoredSources = []; }
 
 
 var Logger = {
+	/**
+	 * Log a message
+	 *
+	 * @method function
+	 * @return {[type]} [description]
+	 */
 	msg: function(/* msg,msg,msg */) {
 		var iargs = arguments;
         if( logconfig.showDebug ) {
@@ -126,6 +132,7 @@ var Logger = {
 
 	clearEvents: function() {
 		events = [];
+		this.notifyChange();
 	},
 
 	addChangeListener: function(callback, callername) {
