@@ -136,16 +136,25 @@ var IftttService = {
 		// log.msg("IftttService.fetch:", url, self.lastTime, "defaultId:",defaultId);
         // request(baseUrl + this.iftttKey, function(error, response, body) {
 		needle.get( url, opts, function(error, response) {
+			var msg = '';
 			// FIXME: do error handling like: net error, bad response, etc.
 			if( error ) {
-				var errmsg = error.message;
-				if( errmsg.indexOf('ENOTFOUND') !== -1 ) { errmsg = 'connection offline'; }
+				msg = error.message;
+				if( msg.indexOf('ENOTFOUND') !== -1 ) { msg = 'cannot reach IFTTT gateway'; }
+				else {
+					msg = 'IFTTT connection offline';
+				}
 				// log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:errmsg} );
-				log.msg('IFTTT connection offline'); // FIXME:
+				// log.msg( msg +' for '+self.iftttKey); // FIXME:
+				log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:msg} );
 				return;
 			}
 			if( response.statusCode !== 200 ) {
-				log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:response.statusMessage} );
+				msg = response.statusMessage;
+				if( response.statusCode === 404 ) {
+					msg = 'no IFTTT events';
+				}
+				log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:msg} );
 				return;
 			}
 			// otherwise continue as normal
