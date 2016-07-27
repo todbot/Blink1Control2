@@ -27,7 +27,8 @@ var BigButton = React.createClass({
 		color: React.PropTypes.string,
 		onClick: React.PropTypes.func,
 		onEdit: React.PropTypes.func,
-		patterns: React.PropTypes.array
+		patterns: React.PropTypes.array,
+		serials: React.PropTypes.array
 	},
 	getInitialState: function() {
 		return {
@@ -51,12 +52,26 @@ var BigButton = React.createClass({
 		this.props.patterns.map( function(p) {
 			pattmenu.append( new MenuItem({label:p.name, click: self.doContextMenu.bind(null,null, 'setpattern', p.id)}) );
 		});
+		var serialsmenu = null;
+		if( this.props.serials && this.props.serials.length > 0 ) {
+			serialsmenu = new Menu();
+			serialsmenu.append( new MenuItem({label:'-use-default-',
+										click: self.doContextMenu.bind(null,null, 'setserial', 'default')}) );
+			this.props.serials.map( function(s) {
+				serialsmenu.append( new MenuItem({label:s,
+										click: self.doContextMenu.bind(null,null, 'setserial', s)}) );
+			});
+		}
 				// click: self.props.onEdit.bind(null, 'setcolor',self.props.idx)}));
 		menu.append(new MenuItem({ label:'Set to current color',
 				click: self.doContextMenu.bind(null,null, 'setcolor', idx)})); // fixme
 		menu.append(new MenuItem({ label:'Set to pattern',
 				submenu: pattmenu} ));
 				// click: self.doContextMenu.bind(null,null, 'setpattern', idx)})); // fixme
+		if( serialsmenu ) {
+			menu.append(new MenuItem({ label:'Assign to device',
+					submenu: serialsmenu} ));
+		}
 		menu.append(new MenuItem({ label:'Move button left',
 				click: self.doContextMenu.bind(null,null, 'moveleft', idx)})); // fixme
 		menu.append(new MenuItem({ label:'Delete button',
