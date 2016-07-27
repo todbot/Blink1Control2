@@ -5,7 +5,7 @@
     "startMinimized": false
   },
   "logger": {
-    "maxEvents": 200,
+    "maxEvents": 1000,
     "ignoredSources":[],
     "showDebug": false
   },
