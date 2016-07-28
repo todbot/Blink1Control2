@@ -33,7 +33,7 @@ var HtmlColorChart = React.createClass({
                     onMouseOver={this.handleColorMove.bind(null,color)}
                     onMouseUp={this.handleColorUp}
                     key={color}
-                    style={{width:w, height:13, background:color, border:borderCurr }}></td>
+                    style={{width:w, height:13, background:color, outline:borderCurr }}></td>
             );
         };
         var createRow = function(colorrow,i) {
@@ -41,7 +41,7 @@ var HtmlColorChart = React.createClass({
 
         };
 		return (
-            <table style={{borderCollapse:'collapse', border:'1px solid #eee', padding:0, cursor:'crosshair' }}>
+            <table style={{borderCollapse:'collapse', outine:'1px solid #eee', cursor:'crosshair' }}>
                 <tbody>
                 {htmlcolors.map(createRow,this)}
                 </tbody>
