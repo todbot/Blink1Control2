@@ -50,9 +50,19 @@ currentState.fill( currentState[0] ); // hmmmm
 // var lastState = _.clone( currentState ); // FIXME: what am I using lastState for?
 
 var Blink1Service = {
-	toyEnable: false,
-	toyTimer:null,
-	toyValue:0,
+	// toyEnable: false,
+	// toyTimer:null,
+	// toyMode:'off',
+	// toyValue:0,
+
+	// settings for toy button commands
+	toy: {
+		enable: false,
+		timer: null,
+		interval: 0,
+		mode: 'off',
+		value: 0,
+	},
 	conf: {},
 	start: function() {
 		listeners = {}; // erase previous listeners
@@ -325,7 +335,7 @@ var Blink1Service = {
 
 	off: function(blink1id) {
 		var self = this;
-		self.toyEnable = false;
+		self.toyStop();
 		if( blink1id === undefined && blink1s.length > 0 ) {
 			blink1s.map( function(serial,idx) {
 				// console.log("POOP");
@@ -335,39 +345,94 @@ var Blink1Service = {
 			self.fadeToColor(100, '#000000', 0, blink1id); // 0 = all leds
 		}
 	},
-	moodLightStart: function() {
-		this.toyEnable = true;
-		this.toyValue = 5000;
-		this.moodLightDo();
+
+	/**
+	 * Stop the toy engine
+	 * @param  {String} mode Toy mode: 'moodlight', 'colorcycle', 'strobe'
+	 */
+	toyStop: function() {
+ 		this.toy.mode = '';
+ 		this.toy.enable = false;
+ 		if( this.toy.timer ) { clearTimeout( this.toy.timer ); }
+ 	},
+	/**
+	 * Start up the toy engine
+	 * @param  {String} mode Toy mode: 'moodlight', 'colorcycle', 'strobe'
+	 */
+	toyStart: function(mode) {
+		if( mode === 'moodlight' ) {
+			this.toy.interval = 5000;
+		}
+		else if( mode === 'colorcycle' ) {
+			this.toy.interval = 100;
+			this.toy.value = Math.floor( Math.random() * 360 );
+		}
+		else if( mode === 'strobe' ) {
+			this.toy.interval = 100;
+			this.toy.value = '#FFFFFF';
+		}
+		else {
+			log.msg("Blink1Service: unknown toy mode: ",mode);
+			return;
+		}
+		this.toy.mode = mode;
+		this.toy.enable = true;
+		this.toyDo();
 	},
-	moodLightDo: function() {
-		log.msg("Blink1Service.moodLightDo");
-		if( !this.toyEnable ) { return; }
-		this.fadeToColor( this.toyValue, tinycolor.random(), 0 );
-		this.toyTimer = setTimeout(this.moodLightDo.bind(this), this.toyValue);
+	/**
+	 * Actually do the toy in question
+	 */
+	toyDo: function() {
+		if( !this.toy.enable ) { return; }
+		if( this.toy.mode === 'moodlight' ) {
+			this.fadeToColor( this.toy.interval, tinycolor.random(), 0 ); // FIXME: alternate LEDs?
+		}
+		else if( this.toy.mode === 'colorcycle' ) {
+			this.toy.value += 1;
+			this.toy.value = (this.toy.value>360) ? 0 : this.toy.value;
+			var color = tinycolor({h:this.toy.value, s:1, v:1});
+			this.fadeToColor( 100, color, 0 );
+		}
+		else if( this.toy.mode === 'strobe' ) {
+			this.toy.value = (this.toy.value==='#000000') ? '#FFFFFF' : '#000000' ;
+			this.fadeToColor( this.toy.interval, this.toy.value, 0 );
+		}
+		this.toy.timer = setTimeout(this.toyDo.bind(this), this.toy.interval);
 	},
-	moodLightStop: function() {
-		this.toyEnable = false;
-		clearTimeout( this.toyTimer );
-	},
-	colorCycleStart: function() {
-		this.toyEnable = true;
-		this.toyValue = Math.floor( Math.random() * 360 );
-		this.colorCycleDo();
-	},
-	colorCycleStop: function() {
-		this.toyEnable = false;
-		clearTimeout( this.toyTimer );
-	},
-	colorCycleDo: function() {
-		log.msg("Blink1Service.colorCycleDo",this.toyValue);
-		if( !this.toyEnable ) { return; }
-		this.toyValue += 1;
-		this.toyValue = (this.toyValue>360) ? 0 : this.toyValue;
-		var color = tinycolor({h:this.toyValue, s:1, v:1});
-		this.fadeToColor( 100, color, 0 );
-		this.toyTimer = setTimeout(this.colorCycleDo.bind(this), 100);
-	},
+	// ///
+	// moodLightStart: function() {
+	// 	this.toyEnable = true;
+	// 	this.toyValue = 5000;
+	// 	this.moodLightDo();
+	// },
+	// moodLightDo: function() {
+	// 	log.msg("Blink1Service.moodLightDo");
+	// 	if( !this.toyEnable ) { return; }
+	// 	this.fadeToColor( this.toyValue, tinycolor.random(), 0 );
+	// 	this.toyTimer = setTimeout(this.moodLightDo.bind(this), this.toyValue);
+	// },
+	// moodLightStop: function() {
+	// 	this.toyEnable = false;
+	// 	clearTimeout( this.toyTimer );
+	// },
+	// colorCycleStart: function() {
+	// 	this.toyEnable = true;
+	// 	this.toyValue = Math.floor( Math.random() * 360 );
+	// 	this.colorCycleDo();
+	// },
+	// colorCycleStop: function() {
+	// 	this.toyEnable = false;
+	// 	clearTimeout( this.toyTimer );
+	// },
+	// colorCycleDo: function() {
+	// 	log.msg("Blink1Service.colorCycleDo",this.toyValue);
+	// 	if( !this.toyEnable ) { return; }
+	// 	this.toyValue += 1;
+	// 	this.toyValue = (this.toyValue>360) ? 0 : this.toyValue;
+	// 	var color = tinycolor({h:this.toyValue, s:1, v:1});
+	// 	this.fadeToColor( 100, color, 0 );
+	// 	this.toyTimer = setTimeout(this.colorCycleDo.bind(this), 100);
+	// },
 
 	addChangeListener: function(callback, callername) {
 		listeners[callername] = callback;

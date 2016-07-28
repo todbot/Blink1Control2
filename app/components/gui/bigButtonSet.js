@@ -104,13 +104,14 @@ var BigButtonSet = React.createClass({
                 Blink1Service.off();
 			}
             else if( button.name === "Color Cycle" ) {
-                Blink1Service.colorCycleStart();
+                Blink1Service.toyStart('colorcycle');
             }
             else if( button.name === "Mood Light" ) {
-                Blink1Service.moodLightStart();
+                Blink1Service.toyStart('moodlight');
             }
             else if( button.name === "Strobe Light" ) {
-                PatternsService.playPattern( '~blink-white-0' );
+                Blink1Service.toyStart('strobe');
+                // PatternsService.playPattern( '~blink-white-0' );
             }
 		}
 		else if( buttontype === 'color' ) {
