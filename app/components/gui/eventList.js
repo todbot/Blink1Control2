@@ -4,6 +4,7 @@ var React = require('react');
 var Panel = require('react-bootstrap').Panel;
 var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
+var Button = require('react-bootstrap').Button;
 
 var BrowserWindow = require('electron').remote.BrowserWindow;
 
@@ -93,8 +94,8 @@ var EventList = React.createClass({
 		};
 		var header =
 			<h4>Recent Events
-				<button style={{float:'right',fontSize:'80%' }} bsStyle='link' onClick={this.showEventLog}>Log</button>
-				<button style={{float:'right',fontSize:'80%' }} bsStyle='link' onClick={this.clearEvents}>Clear</button>
+				<Button bsSize='xsmall' style={{float:'right' }} onClick={this.showEventLog}> Log </Button>
+				<Button bsSize='xsmall' style={{float:'right' }} onClick={this.clearEvents}>Clear</Button>
 			</h4> ;
 		return (
 			<Panel header={header} style={{ width: 280, height: 305, margin:5, padding:0}}>
