@@ -27,7 +27,7 @@ var Blink1SerialOption = React.createClass({
     handleChange: function(e) {
         var blink1Id = e.target.value;
         if( blink1Id === this.props.defaultText ) {
-            blink1Id = 0;
+            blink1Id = "0";
         }
         this.setState( {serial:blink1Id});
         this.props.onChange(blink1Id);
