@@ -46,7 +46,7 @@ var ScriptForm = React.createClass({
             actionType: rule.actionType || 'parse-color',
             actOnNew: rule.actOnNew,
             // patternId: rule.patternId,
-            blink1Id: rule.blink1Id || 0,
+            blink1Id: rule.blink1Id || "0",
             path: rule.path,
             intervalSecs: rule.intervalSecs || 10
          });
