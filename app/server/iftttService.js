@@ -98,8 +98,11 @@ var IftttService = {
 	handleResults: function(rule,event) {
 		var self = this;
 		log.msg("IftttService.handleResults: *** TRIGGERED!!! ***", event,rule);
-		self.lastEvents[rule.name] = event.eventDate;
-		PatternsService.playPatternByRule( rule );
+		self.lastEvents[event.name] = event.eventDate;
+		if( rule.enabled ) {
+			PatternsService.playPattern( rule.patternId, rule.blink1Id );
+		}
+		// PatternsService.playPatternByRule( rule );
 		// if( rule.enabled ) {
 		// 	// if( Blink1Service.rule.blink1Id ) {
 		// }
@@ -162,25 +165,34 @@ var IftttService = {
 			// var shouldSave = false;
 			if( respobj.events ) {
 				respobj.events.map( function(evt) {
-
 					// FIXME
 					// log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:'no new events' } );
 
 					evt.eventDate = new Date(parseInt(1000 * evt.date));
+					evt.name = evt.name.trim();
 					if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
-						// log.msg('IftttService.fetch: new event name:"'+ evt.name+'"');
 						log.addEvent( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:evt.source  } );
-						rules.map( function(r) {
-							log.msg('IftttService.fetch: rule:', JSON.stringify(r));
-							if( evt.name.trim() === r.name.trim()) {
-								if( !self.lastEvents[r.name] ) { self.lastEvents[r.name] = new Date(0); }
-								log.msg("IftttService.fetch: *** RULE MATCH:", evt.name, '--', evt.eventDate, '--', self.lastEvents[r.name]);
-								// this.lastEvents[r.name] = this.lastEvents[r.name] || 0;
-								if( evt.eventDate > self.lastEvents[r.name] ) {
-									self.handleResults( r, evt );
-								}
+ 						// special meta-pattern, FIXME?
+ 						if( evt.name.startsWith('~') ) {
+							if( !self.lastEvents[evt.name] ) { self.lastEvents[evt.name] = new Date(0); }
+							log.msg("IftttService.fetch: *** META RULE MATCH:", evt.name, '--', evt.eventDate, '--');
+							if( evt.eventDate > self.lastEvents[evt.name] ) {
+								self.handleResults( {enabled:true, patternId:evt.name}, evt );
 							}
-						});
+						}
+						else {
+							rules.map( function(r) {
+								log.msg('IftttService.fetch: rule:', JSON.stringify(r));
+								if( evt.name === r.name ) {
+									if( !self.lastEvents[r.name] ) { self.lastEvents[r.name] = new Date(0); }
+									log.msg("IftttService.fetch: *** RULE MATCH:", evt.name, '--', evt.eventDate, '--', self.lastEvents[r.name]);
+									// this.lastEvents[r.name] = this.lastEvents[r.name] || 0;
+									if( evt.eventDate > self.lastEvents[r.name] ) {
+										self.handleResults( r, evt );
+									}
+								}
+							});
+						}
 					}
 				});
 				self.lastTime = new Date(); // == now
