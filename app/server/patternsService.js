@@ -93,6 +93,15 @@ var _parsePatternStr = function(patternstr) {
     return {colors: colorlist, repeats: repeats};
 };
 
+var _makePattern = function( template ) {
+	var patt = _parsePatternStr(template.patternstr);
+	// patt.name = pattid.substring(1); //'temp-'+utils.cheapUid(4); // if parsing failed, use temp name
+	patt.name = template.name;
+	patt.id   = template.id;
+	patt.temp = template.temp; // FIXME: hmmm
+	return patt;
+};
+
 var _generatePatternStr = function(pattern) {
 	if( !pattern || !pattern.repeats || !pattern.colors ) { return ''; }
 	var pattstr = pattern.repeats;
@@ -279,18 +288,20 @@ var PatternsService = {
 	 * @param  {Rule} rule Event rule: {patternId:"", blink1Id:""}
 	 * @return {pattid} id of pattern, or false if pattern doesn't exist
 	 */
-	playPatternByRule: function(rule) {
-		var allowMultiBlink1 = conf.readSettings('blink1Service:allowMulti') || false;
-		log.msg("PatternsService.playPatternByRule: ",rule, ", multi:",allowMultiBlink1);
-		if( rule.enabled ) {
-			if( allowMultiBlink1 && rule.blink1Id ) {
-				return this.playPattern(rule.patternId, rule.blink1Id);
-			} else {
-				return this.playPattern(rule.patternId);
-			}
-		}
-		return false;
-	},
+
+	// FIXME: This is only used by iftttService.  Don't think we need it.
+	// playPatternByRule: function(rule) {
+	// 	var allowMultiBlink1 = conf.readSettings('blink1Service:allowMulti') || false;
+	// 	log.msg("PatternsService.playPatternByRule: ",rule, ", multi:",allowMultiBlink1);
+	// 	if( rule.enabled ) {
+	// 		if( allowMultiBlink1 && rule.blink1Id ) {
+	// 			return this.playPattern(rule.patternId, rule.blink1Id);
+	// 		} else {
+	// 			return this.playPattern(rule.patternId);
+	// 		}
+	// 	}
+	// 	return false;
+	// },
 
     /**
      * Play a pattern. Returns false if pattern doesn't exist. Notifies change listeners.
@@ -307,6 +318,7 @@ var PatternsService = {
 		var blinkre = /~blink-(#*\w+)-(\d+)(-(.+))?/;  // blink-color-cnt-time
 		// first, is the pattern actually a hex color?
 		if( pattid.startsWith('#') ) { // color
+			// count + ',' + c.toHexString() + ','+secs+
 			Blink1Service.fadeToColor(100, pattid, 0, blink1id ); // 0 == all LEDs
 			return pattid;
 		}
@@ -323,18 +335,18 @@ var PatternsService = {
 			else if( blinkre.test( pattid ) ) { // "~blink-#ff00ff-5"
 				var match = blinkre.exec( pattid );
 				var colorstr = match[1];
-				var count = match[2];
-				var secstr = match[4];
+				var count    = match[2];
+				var secstr   = match[4]; // why is this 4? because of how the regex is structured
 				var secs = (secstr===undefined && secstr>0) ? 0.3 : Number.parseFloat(secstr);
 				var c = tinycolor(colorstr);  // FIXME: how does tinycolor fail?
-				// log.msg("matcher:", colorstr, count, c );
-				// patternstr = count + ',' + c.toHexString() + ',0.5,0,#000000,0.5,0';
+
 				patternstr = count + ',' + c.toHexString() + ','+secs+',0,#000000,'+secs+',0';
-				patt = _parsePatternStr(patternstr);
-				patt.name = pattid;
-				// patt.name = pattid.substring(1); //'temp-'+utils.cheapUid(4); // if parsing failed, use temp name
-				patt.id = patt.name;
-				patt.temp = true; // FIXME: hmmm
+				// patt = _parsePatternStr(patternstr);
+				// // patt.name = pattid.substring(1); //'temp-'+utils.cheapUid(4); // if parsing failed, use temp name
+				// patt.name = pattid;
+				// patt.id = patt.name;
+				// patt.temp = true; // FIXME: hmmm
+				patt = _makePattern( {name:pattid, id:pattid, patternstr:patternstr, temp:true });
 				patternsTemp.push( patt ); // save temp pattern
 				pattid = patt.id;
 			}
