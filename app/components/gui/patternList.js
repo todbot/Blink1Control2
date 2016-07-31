@@ -78,7 +78,7 @@ var PatternList = React.createClass({
 			return (
 				<tr key={patt.id + idx + patt.playing} style={{height:25}}>
 					<td style={{ margin: 0, padding: 0}}>
-						<PatternView 
+						<PatternView
 							pattern={patt}
 							onPatternUpdated={this.onPatternUpdated}
 							onCopyPattern={this.copyPattern}
@@ -94,7 +94,7 @@ var PatternList = React.createClass({
 					<Button onClick={this.onStopAllPatterns} bsSize="xsmall" ><i className="fa fa-stop"></i> stop all</Button>
 					<Button onClick={this.onAddPattern} bsSize="xsmall"  style={{float:'right'}}><i className="fa fa-plus"></i> new pattern</Button>
 				</ButtonToolbar>
-				<Table hover style={{display:'block', height:280, overflow:'auto'}} >
+				<Table hover style={{display:'block', height:280, overflow:'scroll'}} >
 					<tbody >
 						{this.state.patterns.map( createPatternRow, this )}
 					</tbody>
