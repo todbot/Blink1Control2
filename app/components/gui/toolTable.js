@@ -102,6 +102,9 @@ var ToolTable = React.createClass({
 		if( rulenew.password ) {
 			rulenew.password = sc.encrypt( rulenew.password );
 		}
+		if( rulenew.name ) {
+			rulenew.name = rulenew.name.trim();
+		}
         if( this.state.workingIndex === -1 ) { // new rule
             rules.unshift( rulenew );
         }
