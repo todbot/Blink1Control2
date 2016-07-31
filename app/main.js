@@ -173,7 +173,7 @@ var makeMenus = function() {
 			}
 		},
 		{	label: 'Quit',
-			accelerator: 'CommandOrControl+Q',
+			// accelerator: 'CommandOrControl+Q',
 			// selector: 'terminate:',
 			click: function() { quit(); }
 		}
@@ -234,7 +234,7 @@ var makeMenus = function() {
 					{ label: 'Preferences', accelerator: "CommandOrControl+.", click: function() { openPreferences(); } },
 					{ label: 'Close Window', accelerator: "CommandOrControl+W", role:'close' },
 					{ type: "separator" },
-					{ label: "Quit", accelerator: "CommandOrControl+Q", role: 'quit' } //click: function() { quit(); }}
+					{ label: "Quit", accelerator: "CommandOrControl+Q", click: function() { quit(); }}
 				]
 			},
 			{	label: "Edit",
@@ -257,9 +257,14 @@ var makeMenus = function() {
 
 
 app.on('ready', function () {
-
-	var splash = openAboutWindow();
-	setTimeout( function() { splash.close(); }, 2000 );
+	var startMinimized = config.readSettings('startup:startMinimized');
+	if( !startMinimized ) {
+		var splash = openAboutWindow();
+		setTimeout( function() {
+			splash.close();
+			mainWindow.show();
+		}, 2000 );
+	}
 
 	// var globalShortcut = electron.globalShortcut;
 
@@ -326,14 +331,14 @@ app.on('ready', function () {
 		mainWindow.show();
 	});
 
-	if( config.readSettings('startup:startMinimized') ) {
-		mainWindow.hide();
-	} else  {
-		mainWindow.focus();
-	}
+	mainWindow.hide();
 
 	makeMenus();
 
+
+	//
+	// FIXME: surely there's a better place to put this
+	//
 	ipcMain.on('openHelpWindow', function() {
 		openHelpWindow();
 	});
