@@ -47,11 +47,12 @@ var BigButton = React.createClass({
 		var idx = self.props.idx;
 		var menu = new Menu();
 
+		// Make pattern menu
 		var pattmenu = new Menu();
-		// log.msg("BigButton.makeMenu: type:",this.props.type,",patterns:",this.props.patterns);
 		this.props.patterns.map( function(p) {
-			pattmenu.append( new MenuItem({label:p.name, click: self.doContextMenu.bind(null,null, 'setpattern', p.id)}) );
+			pattmenu.append( new MenuItem({label:p.name, click	: self.doContextMenu.bind(null,null, 'setpattern', p.id)}) );
 		});
+		// Make serials menu
 		var serialsmenu = null;
 		if( this.props.serials && this.props.serials.length > 0 ) {
 			serialsmenu = new Menu();
@@ -62,7 +63,6 @@ var BigButton = React.createClass({
 										click: self.doContextMenu.bind(null,null, 'setserial', s)}) );
 			});
 		}
-				// click: self.props.onEdit.bind(null, 'setcolor',self.props.idx)}));
 		menu.append(new MenuItem({ label:'Set to current color',
 				click: self.doContextMenu.bind(null,null, 'setcolor', idx)})); // fixme
 		menu.append(new MenuItem({ label:'Set to pattern',
@@ -70,7 +70,7 @@ var BigButton = React.createClass({
 				// click: self.doContextMenu.bind(null,null, 'setpattern', idx)})); // fixme
 		if( serialsmenu ) {
 			menu.append(new MenuItem({ label:'Assign to device',
-					submenu: serialsmenu} ));
+				submenu: serialsmenu} ));
 		}
 		menu.append(new MenuItem({ label:'Move button left',
 				click: self.doContextMenu.bind(null,null, 'moveleft', idx)})); // fixme
@@ -97,7 +97,7 @@ var BigButton = React.createClass({
 	 	this.menu.popup(currentWindow);
 	},
 	doContextMenu: function(event, eventKey, arg) {
-		log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx, "key:",this.props.key  );
+		log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx);
 		this.props.onEdit(eventKey, this.props.idx, arg);
 	},
 	render: function() {

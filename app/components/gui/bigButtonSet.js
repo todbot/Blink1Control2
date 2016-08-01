@@ -39,6 +39,7 @@ var BigButtonSet = React.createClass({
     },
     saveButtons: function(buttonsUser) {
         this.setState( {buttonsUser: buttonsUser });
+        log.msg("buttonsUser:", JSON.stringify(buttonsUser));
         config.saveSettings("bigButtons", buttonsUser);
     },
     addBigButton: function() { // FIXME: this is hacky
@@ -48,38 +49,45 @@ var BigButtonSet = React.createClass({
             color: Blink1Service.getCurrentColor().toHexString(),
             ledn: Blink1Service.getCurrentLedN()
         };
-        this.state.buttonsUser.push( newbut );
-        this.saveButtons( this.state.buttonsUser );
+        var newbuttons = this.state.buttonsUser.concat( newbut );
+        // this.state.buttonsUser.push( newbut );
+        this.saveButtons( newbuttons );
     },
     onEdit: function(cmd, idx, arg) {
-        // console.log('onEdit:', cmd, idx, arg);
+        var mybuttons = this.state.buttonsUser.concat(); // clone;
+        // var editbutt = mybuttons[idx];
         if( cmd === 'delete' ) {
-            delete this.state.buttonsUser[ idx ];
+            // delete this.state.buttonsUser[ idx ];
+            delete mybuttons[ idx ];
         }
         else if( cmd === 'moveleft') {
             if( idx > 0 ) {
-                var tmpbutton = this.state.buttonsUser[idx-1];
-                this.state.buttonsUser[idx-1] = this.state.buttonsUser[idx];
-                this.state.buttonsUser[idx] = tmpbutton;
+                var tmpbutton = mybuttons[idx-1];
+                mybuttons[idx-1] = mybuttons[idx];
+                mybuttons[idx] = tmpbutton;
             }
         }
         else if( cmd === 'setcolor') {
-            this.state.buttonsUser[idx].type = 'color';
-            this.state.buttonsUser[idx].color = Blink1Service.getCurrentColor().toHexString();
-            this.state.buttonsUser[idx].ledn = Blink1Service.getCurrentLedN();
+            mybuttons[idx] = { name: mybuttons[idx].name, 
+                type:'color',
+                color: Blink1Service.getCurrentColor().toHexString(),
+                ledn: Blink1Service.getCurrentLedN(),
+                bloop: 'johnty'
+            };
         }
         else if( cmd === 'setpattern') {
-            this.state.buttonsUser[idx].type = 'pattern';
-            this.state.buttonsUser[idx].color = 'grey';
-            this.state.buttonsUser[idx].patternId = arg; // PatternsService.getPlayingPatternId();
-            // if( this.state.buttonsUser[idx].name === 'Big Button' ) {
-            //     this.state.buttonsUser[idx].name = pattern.name;
-            // }
+            mybuttons[idx] = { name: mybuttons[idx].name,
+                type:'pattern',
+                color: 'grey',
+                patternId: arg,
+                bloodddop: 'johntyadsfadf'
+            };
         }
         else if( cmd === 'rename' ) {
-            this.state.buttonsUser[idx].name = arg;
+            // this.state.buttonsUser[idx].name = arg;
+            mybuttons[idx].name = arg;
         }
-        this.saveButtons( this.state.buttonsUser );
+        this.saveButtons( mybuttons );
     },
     // internal function used by differnt kinds of buttons
     setBlink1Color: function(color, ledn) {
