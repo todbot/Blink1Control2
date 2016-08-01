@@ -23,7 +23,8 @@ $ npm run start
 
 ```
 $ npm install
-$ npm build-osx
+$ npm run pack
+$ npm run pkg:mac
 
 ```
 
@@ -31,5 +32,6 @@ $ npm build-osx
 
 ```
 $ npm install
-$ npm build-win
+$ npm run pack
+$ npm run pkg:win
 ```
