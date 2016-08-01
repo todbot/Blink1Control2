@@ -11,9 +11,9 @@ See [NOTES.md](NOTES.md) for more info.
 
 ```
 $ npm install
-$ ./node_modules/.bin/electron-rebuild
+$ npm run postinstall
 $ npm run watch &
-$ npm run start
+$ npm run startdev
 ```
 
 ### Build steps (for production)
@@ -23,6 +23,7 @@ $ npm run start
 
 ```
 $ npm install
+$ npm run postinstall
 $ npm run pack
 $ npm run pkg:mac
 
