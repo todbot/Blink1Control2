@@ -313,8 +313,8 @@ var Blink1Service = {
 		var blink1Idx = this.idToBlink1Index(blink1_id);
 
 		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		log.msg('Blink1Service.fadeToColor: idx:',blink1Idx,' msec:',millis,' ledn:',ledn,
-			' c:',color.toHexString(), " -- currentState:",currentState);
+		// log.msg('Blink1Service.fadeToColor: idx:',blink1Idx,' msec:',millis,' ledn:',ledn,
+		// 	' c:',color.toHexString(), " -- currentState:",currentState);
 
 		// var colors = _.clone(currentState[blink1Idx].colors);
 		var colors = currentState[blink1Idx].colors;
