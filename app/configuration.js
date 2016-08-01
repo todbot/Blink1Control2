@@ -44,8 +44,10 @@ var Config = {
     readSettings: function(settingKey) {
         nconf.load();
         return nconf.get(settingKey);
+    },
+    getFilepath: function() {
+        return nconf.stores.file.file;  //FIXME: seems weird
     }
-
     // getUserDataHome: function() {
     //     var userDataHome = app.getPath('userData');
     //     return userDataHome;
