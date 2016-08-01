@@ -25,12 +25,12 @@ var Blink1TabViews = React.createClass({
 				<div style={{width:705}}>
 					<div style={{float:'right'}}><Button bsStyle="link" onClick={this.openHelpWindow}>Help</Button></div>
 					<Tabs defaultActiveKey={1} animation={false} id='blink1tabview'  >
-						<Tab eventKey={1} title={<i className="fa fa-long-arrow-right"> <b>Buttons</b></i>}>
+						<Tab eventKey={1} title={<span><i className="fa fa-long-arrow-right"></i> Buttons</span>}>
 							<div style={{height: 215, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								<BigButtonSet />
 							</div>
 						</Tab>
-						<Tab eventKey={2} title={<i className="fa fa-plug"> Event Sources</i>}>
+						<Tab eventKey={2} title={<span><i className="fa fa-plug"></i> Event Sources</span>}>
 							<div style={{height: 215, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"}}>
 								<ToolTable />
 							</div>
