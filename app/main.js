@@ -291,7 +291,7 @@ app.on('ready', function () {
     else {
 	  mainWindow = new BrowserWindow({
 		  width: 1040,
-		  height: 700,
+		  height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
 		  // useContentSize: true,
 		  // center: true
 		  resizable: false
