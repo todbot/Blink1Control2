@@ -8,9 +8,7 @@ var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
-//var FormControls = require('react-bootstrap').FormControls;
-// var ButtonGroup = require('react-bootstrap').ButtonGroup;
-// var FormControls = require('react-bootstrap').FormControls;
+
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
 
 var Switch = require('react-bootstrap-switch');
@@ -18,7 +16,7 @@ var Switch = require('react-bootstrap-switch');
 var dialog = require('electron').remote.dialog;
 
 var Blink1SerialOption = require('./blink1SerialOption');
-var Blink1Service = require('../../server/blink1Service'); // FIXME: shouldn't need this dep
+// var Blink1Service = require('../../server/blink1Service'); // FIXME: shouldn't need this dep
 
 
 var ScriptForm = React.createClass({

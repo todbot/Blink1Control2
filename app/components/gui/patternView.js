@@ -102,8 +102,8 @@ var PatternView = React.createClass({
 	},
     // callback for Blink1Service
 	onColorChanged: function() {
-		log.msg("PatternView.onColorChanged, editing:",this.state.editing,"activeSwatch:",this.state.activeSwatch,
-				"color:", Blink1Service.getCurrentColor().toHexString());
+		// log.msg("PatternView.onColorChanged, editing:",this.state.editing,"activeSwatch:",this.state.activeSwatch,
+		// 		"color:", Blink1Service.getCurrentColor().toHexString());
 		if( this.state.editing ) {
 			// var color = pattern.colors[this.state.activeSwatch];
 			var newcolor = {

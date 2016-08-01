@@ -35,7 +35,7 @@ var VirtualBlink1 = React.createClass({
 	},
 	// callback to Blink1Service
 	// fetchBlink1Color: function(lastColor, newcolors /*, ledn */) { // FIXME: where's millis?
-	fetchBlink1Color: function(/* lastColor,  newcolors, ledn */ ) { // FIXME: where's millis?
+	fetchBlink1Color: function() {
 		this.lastColors = this.state.colors;
 		this.nextColors = Blink1Service.getCurrentColors( Blink1Service.getCurrentBlink1Id() );
 		this.blink1Idx = Blink1Service.getCurrentBlink1Id();

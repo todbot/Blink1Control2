@@ -313,10 +313,11 @@ var Blink1Service = {
 		var blink1Idx = this.idToBlink1Index(blink1_id);
 
 		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		log.msg('Blink1Service.fadeToColor: idx:'+blink1Idx+' msec:'+millis+' ledn:'+ledn+
-			' c:'+color.toHexString()+ " -- currentState:",currentState);
+		log.msg('Blink1Service.fadeToColor: idx:',blink1Idx,' msec:',millis,' ledn:',ledn,
+			' c:',color.toHexString(), " -- currentState:",currentState);
 
-		var colors = _.clone(currentState[blink1Idx].colors);
+		// var colors = _.clone(currentState[blink1Idx].colors);
+		var colors = currentState[blink1Idx].colors;
 		// handle special meaning: ledn=0 -> all LEDs
 		if( ledn === 0 ) { colors.fill( color );
 		} else {           colors[ledn-1] = color;	}
@@ -449,10 +450,12 @@ var Blink1Service = {
 		});
 	},
 	notifyChange: function() {
+		// log.msg("blink1service: listeners:",listeners);
 		_.forIn( listeners, function(callback) {
 			// currentColor and currentColors are tinycolor objects
 			// callback( Blink1Service.getCurrentColor(), currentColors, currentLedN, currentMillis);
-            callback( Blink1Service.getCurrentColor(), currentState[0].colors, currentState[0].ledn, currentState[0].millis );
+            // callback( Blink1Service.getCurrentColor(), currentState[0].colors, currentState[0].ledn, currentState[0].millis );
+			callback();
 		});
 	},
 
