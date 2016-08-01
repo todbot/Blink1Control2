@@ -68,19 +68,17 @@ var BigButtonSet = React.createClass({
             }
         }
         else if( cmd === 'setcolor') {
-            mybuttons[idx] = { name: mybuttons[idx].name, 
+            mybuttons[idx] = { name: mybuttons[idx].name,
                 type:'color',
                 color: Blink1Service.getCurrentColor().toHexString(),
-                ledn: Blink1Service.getCurrentLedN(),
-                bloop: 'johnty'
+                ledn: Blink1Service.getCurrentLedN()
             };
         }
         else if( cmd === 'setpattern') {
             mybuttons[idx] = { name: mybuttons[idx].name,
                 type:'pattern',
                 color: 'grey',
-                patternId: arg,
-                bloodddop: 'johntyadsfadf'
+                patternId: arg
             };
         }
         else if( cmd === 'rename' ) {
