@@ -4,9 +4,11 @@ var electron = require('electron');
 var app = electron.app;
 var ipcMain = electron.ipcMain;
 
-var BrowserWindow = require('browser-window');
-var Tray = require('tray');
-var Menu = require('menu');
+var BrowserWindow = electron.BrowserWindow;
+var Tray = electron.Tray;
+var Menu = electron.Menu;
+var crashReporter = electron.crashReporter;
+
 var path = require('path');
 
 // var nativeImage = electron.nativeImage;
@@ -19,7 +21,7 @@ var pkg = require('./package.json');
 
 var config = require('./configuration');
 
-require('crash-reporter').start({
+crashReporter.start({
 	productName: pkg.productName,
 	companyName: pkg.companyName,
 	submitURL: 'http://thingm.com/blink1/blink1control2-crash-reporter', // FIXME:
@@ -66,10 +68,11 @@ app.on('window-all-closed', function () {
 var openAboutWindow = function () {
 	// DEV: aboutWindow will be garbage collection automatically
 	var aboutWindow = new BrowserWindow({
+		title: "About Blink1Control2",
 		alwaysOnTop: true,
 		autoHideMenuBar: true,
-		height: 300,
-		width: 400
+		height: 350,
+		width: 500
 		// icon: assets['icon-32'],
 	});
 	aboutWindow.webContents.on('new-window', function(e, url) {
@@ -90,8 +93,10 @@ var openPreferences = function() {
 // called via ipcMain below
 var openHelpWindow = function() {
 	var helpWindow = new BrowserWindow({
-			alwaysOnTop: true,
+			title: "Blink1Control2 Help",
+			// alwaysOnTop: true,
 			autoHideMenuBar: true,
+			center: true,
 			height: 700,
 			width: 800
 			// icon: assets['icon-32'],
@@ -280,7 +285,9 @@ app.on('ready', function () {
 
 	if( process.env.NODE_ENV === 'development' ) {
 		mainWindow = new BrowserWindow({
+			title: "Blink1Control2",
 			// closable: false,
+// backgroundThrottling Boolean - Whether to throttle animations and timers when the page becomes background. Defaults to true.
 			maximizable: false,
 			width: 1040,
 			height: 900
@@ -290,6 +297,7 @@ app.on('ready', function () {
     }
     else {
 	  mainWindow = new BrowserWindow({
+		  title: "Blink1Control2",
 		  width: 1040,
 		  height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
 		  // useContentSize: true,
