@@ -17,7 +17,7 @@ var Blink1Status = React.createClass({
 	getStatusString: function() {
 		//return Blink1Service.isConnected() ? "connected" : "not connected",
 		var cnt = Blink1Service.isConnected();
-		return (cnt>1) ? cnt + " devices connected" : (cnt) ? "device connected" : "device not connected";
+		return (cnt>1) ? cnt + " devices connected" : (cnt) ? "device connected" : "no device connected";
 	},
 	getInitialState: function() {
 		return {
