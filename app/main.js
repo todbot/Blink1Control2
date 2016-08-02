@@ -188,9 +188,6 @@ var makeMenus = function() {
 		{	label: 'Reload',
 			click: function() {  mainWindow.reload(); }
 		},
-		{	label: 'Show/Hide',
-			click: function() {	if( mainWindow.isVisible() ) { mainWindow.hide(); } else { mainWindow.show(); } }
-		},
 		{	label: 'Toggle DevTools',
 			accelerator: 'Alt+Command+I',
 			click: function() {
@@ -244,9 +241,9 @@ var makeMenus = function() {
 			},
 			{	label: "Edit",
 				submenu: [
-					{ label: "Undo", accelerator: "CmdOrCtrl+Z", role: "undo" },
-					{ label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", role: "redo" },
-					{ type: "separator" },
+					// { label: "Undo", accelerator: "CmdOrCtrl+Z", role: "undo" },
+					// { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", role: "redo" },
+					// { type: "separator" },
 					{ label: "Cut", accelerator: "CmdOrCtrl+X", role: "cut" },
 					{ label: "Copy", accelerator: "CmdOrCtrl+C", role: "copy" },
 					{ label: "Paste", accelerator: "CmdOrCtrl+V", role: "paste" },
