@@ -130,10 +130,10 @@ var makeMenus = function() {
 	});
 
 	var contextMenuTemplate = [
-		{	label: 'About ' + pkg.productName,
-			click: function() { openAboutWindow(); }
-		},
-		{	type: "separator" },
+		// {	label: 'About ' + pkg.productName,
+		// 	click: function() { openAboutWindow(); }
+		// },
+		// {	type: "separator" },
 		{	label: 'Start minimized',
 			type: 'checkbox',
 			checked: config.readSettings('startup:startMinimized'),
@@ -336,10 +336,11 @@ app.on('ready', function () {
 		mainWindow.show();
 	});
 
-	mainWindow.hide();
+    if( process.env.NODE_ENV !== 'development' ) {
+	    mainWindow.hide();
+    }
 
 	makeMenus();
-
 
 	//
 	// FIXME: surely there's a better place to put this
