@@ -74,9 +74,12 @@ var BigButtonSet = React.createClass({
             };
         }
         else if( cmd === 'setpattern') {
-            mybuttons[idx] = { name: mybuttons[idx].name,
+            var patt = PatternsService.getPatternById(arg);
+            var name = patt.name;
+            // log.msg("setpattern:",patt.colors[0].rgb);
+            mybuttons[idx] = { name: name,
                 type:'pattern',
-                color: 'grey',
+                color: patt.colors[0].rgb,
                 patternId: arg
             };
         }

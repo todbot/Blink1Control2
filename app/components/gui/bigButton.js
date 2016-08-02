@@ -102,11 +102,11 @@ var BigButton = React.createClass({
 		this.props.onEdit(eventKey, this.props.idx, arg);
 	},
 	render: function() {
-		var buttonStyle = { width: 64, height: 64, padding: 3, margin: 5 };
+		var buttonStyle = { width: 64, height: 64, padding: 3, margin: 5, textShadow:'none'  };
 		// var tstyle = { height: 28, border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal'  };
 		// var tstyle = { height: 24, display:'flex',justifyContent:'center',alignItems:'center',border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal', verticalAlign:'middle' };
-		var tstyle = { height: 24, display:'flex',justifyContent:'center', alignItems:'flex-end',
-			fontWeight: '400', fontSize: "0.9em",
+		var namestyle = { height: 24, display:'flex',justifyContent:'center', alignItems:'flex-end',
+			fontWeight: 400, fontSize: "0.9em",
 			wordWrap:'break-word', whiteSpace:'normal', lineHeight:'85%' };
 
 		var iconContent;
@@ -118,9 +118,16 @@ var BigButton = React.createClass({
 			iconContent = <i className="fa fa-lightbulb-o fa-2x"></i>;
 		}
 		else if( this.props.type === 'pattern' ) {
-			buttonStyle.background = this.props.color; // FIXME: pattern color summary
-			buttonStyle.color = 'white';
-			iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
+			buttonStyle.background = this.props.color; // FIXME: pattern color summary, see below
+			buttonStyle.color = '#000';
+            iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
+
+            // FIXME: idea for doing pattern color summary
+            // var patternColors =  ['#ff00ff', '#000000', '#0ff000'];
+        	// iconContent = <span style={{display:'flex', alignItems:'flex-start'}}>
+            //     <i className="fa fa-play-circle-o fa-2x"></i> {patternColors.map(function(c,idx) {
+            //         return <span key={idx} style={{flex:'0 0 auto', width:6,height:4, backgroundColor:c}}></span>;
+            //     })} </span>;
 		}
 		else if( this.props.type === "sys") {  // FIXME: seems hacky, must be better way surely
 			if( this.props.name === "White") {
@@ -147,7 +154,7 @@ var BigButton = React.createClass({
 					onContextMenu={this.showContextMenu}
 					onClick={this.props.onClick} >
 					{iconContent}
-					<div style={tstyle}>{this.props.name}</div>
+					<div style={namestyle}>{this.props.name}</div>
 				</Button>
 
 				<Modal show={this.state.showEditMenu} onHide={this.hideEditMenu} bsSize="small" >
