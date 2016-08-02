@@ -15,6 +15,13 @@ $ npm run postinstall
 $ npm run watch &
 $ npm run startdev
 ```
+Or to emulate a production run:
+```
+$ npm install
+$ npm run postinstall
+$ npm run pack
+$ npm run start
+```
 
 ### Build steps (for production)
 
