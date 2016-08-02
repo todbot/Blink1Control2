@@ -5,12 +5,17 @@ var Panel = require('react-bootstrap').Panel;
 var Well = require('react-bootstrap').Well;
 
 var ipcRenderer = require('electron').ipcRenderer;
+var remote = require('electron').remote;
+var Menu = remote.Menu;
+var MenuItem = remote.MenuItem;
+var currentWindow = remote.getCurrentWindow();
 
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
 var VirtualBlink1 = require('./virtualBlink1');
 
 var PreferencesModal = require('./PreferencesModal');
+var log = require('../../logger');
 
 var Blink1Status = React.createClass({
 
@@ -37,6 +42,7 @@ var Blink1Status = React.createClass({
 		ipcRenderer.on('showPreferences', function( /*event,arg*/ ) {
 			self.setState({showForm: true});
 		});
+		this.makeMenu();
 	},
 	// updateState: function(colors) { // FIXME: this called mostly for color, don't need other parts?
 	updateColorState: function(currentColor /*, colors,ledn */) {
@@ -53,18 +59,32 @@ var Blink1Status = React.createClass({
 	},
 
 	onIftttKeyClick: function() {
-		console.log("ifttKey click!");
+		log.msg("Blink1Status.onIfttKeyClick!");
 	},
 	onPrefsClick: function() {
 		this.setState({showForm: true});
 	},
-	saveForm: function(data) {
+	saveForm: function(/*data*/) {
 		this.setState({ showForm: false });
 	},
 	cancelForm: function() {
 		this.setState({ showForm: false });
 	},
-
+	showIfttContextMenu: function(event) {
+		log.msg("Blink1Status.showIfttContextMenu: ",event);
+        var menu = this.makeMenu();
+		menu.popup(currentWindow);
+	},
+	// doContextMenu: function(event, eventKey, arg) {
+	// 	log.msg("Blink1Status.doContextMenu: eventKey:",eventKey, "arg:",arg);
+	// 	//this.props.onEdit(eventKey, this.props.idx, arg);
+	// },
+	makeMenu: function() {
+		var mymenu = new Menu();
+		// mymenu.append( new MenuItem({label:'copy', click: self.doContextMenu.bind(null,null, 'copyiftttkey', null)}) );
+		mymenu.append( new MenuItem({label:'Copy IFTTT Key', role:'copy'} ));
+		return mymenu;
+	},
 	render: function() {
 		// console.log("blink1Status.render: ", this.state.blink1Color);
 		var currentPattern = this.state.currentPattern;
@@ -72,6 +92,7 @@ var Blink1Status = React.createClass({
 		var labelStyle = {width: 80, display: "inline-block"};
 		var serialNums = "serials:\n";
 		this.state.blink1Serials.forEach(function(s){ serialNums+= "blink1:"+s+"\n"; });
+		var onlineStatus = (navigator.onLine ? 'network online' : 'network offline');
 
 		// <VirtualBlink1 blink1Color={this.state.blink1Color} /> // FIXME
 		var header = <h4>Device <button style={{float:'right' }} bsStyle='link' onClick={this.onPrefsClick}><i className="fa fa-gear"></i></button></h4>;
@@ -86,7 +107,7 @@ var Blink1Status = React.createClass({
 				<Well bsSize="small" style={{margin: 0}}>
 					<div>
 						<span style={labelStyle}>Status:</span>
-						<span><b>{this.state.statusStr}</b></span>
+						<span><b title={onlineStatus}>{this.state.statusStr}</b></span>
 					</div>
 					<div>
 						<span style={labelStyle} title={serialNums}>Serial num:</span>
@@ -96,7 +117,7 @@ var Blink1Status = React.createClass({
 					</div>
 					<div>
 						<span style={labelStyle}>IFTTT Key:</span>
-						<code style={{WebkitUserSelect: "text"}} onContextMenu={this.onIftttKeyClick}>
+						<code style={{WebkitUserSelect: "text"}} onContextMenu={this.showIfttContextMenu}>
 							{this.state.iftttKey}
 						</code>
 					</div>
