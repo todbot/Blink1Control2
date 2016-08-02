@@ -54,10 +54,10 @@ var PreferencesModal = React.createClass({
             patternId: 'whiteflashes'
         };
     },
-    // FIXME: why am I doing this?
-    // componentWillReceiveProps: function(nextProps) {
-	// 	// this.setState({ name: nextProps.rule.name, patternId: nextProps.rule.patternId }); // FIXME: why
-	// },
+    // doing this so we get guaranteed fresh config
+    componentWillReceiveProps: function(/*nextProps*/) {
+        this.setState( this.getInitialState() );
+	},
     saveSettings: function() {
         conf.saveSettings('startup:startMinimized', this.state.startMinimized);
         conf.saveSettings('startup:startAtLogin', this.state.startAtLogin);
