@@ -38,8 +38,8 @@ var BigButtonSet = React.createClass({
         };
     },
     saveButtons: function(buttonsUser) {
+        // log.msg("BigButtonSet.saveButtons: buttonsUser:", JSON.stringify(buttonsUser));
         this.setState( {buttonsUser: buttonsUser });
-        log.msg("buttonsUser:", JSON.stringify(buttonsUser));
         config.saveSettings("bigButtons", buttonsUser);
     },
     addBigButton: function() { // FIXME: this is hacky
@@ -50,7 +50,6 @@ var BigButtonSet = React.createClass({
             ledn: Blink1Service.getCurrentLedN()
         };
         var newbuttons = this.state.buttonsUser.concat( newbut );
-        // this.state.buttonsUser.push( newbut );
         this.saveButtons( newbuttons );
     },
     onEdit: function(cmd, idx, arg) {
@@ -154,7 +153,7 @@ var BigButtonSet = React.createClass({
                 <div style={{padding: 10, overflowX: 'auto', overflowY:'hidden'}}>
                     <ButtonToolbar style={{width:1500}} ref="btbar">
                         {this.state.buttonsUser.map(createBigButtonUser, this)}
-                        <BigButton key="add" name="add button" type="sys" onClick={this.addBigButton}  />
+                        <BigButton key="add" name="add button" type="sys" onClick={this.addBigButton} />
                     </ButtonToolbar>
                 </div>
             </div>

@@ -38,9 +38,8 @@ var BigButton = React.createClass({
 	},
 	componentDidMount: function() {
 		// log.msg("BigButton.componentDidMount type:",this.props.type);
-		if( this.props.type !== 'sys' ) { this.makeMenu(); }
+		// if( this.props.type !== 'sys' ) { this.menu = this.makeMenu(); }
 	},
-	menu: null,
 	makeMenu: function() {
 		// log.msg("BigButton.makeMenu: props:",this.props);
 		var self = this;
@@ -50,7 +49,7 @@ var BigButton = React.createClass({
 		// Make pattern menu
 		var pattmenu = new Menu();
 		this.props.patterns.map( function(p) {
-			pattmenu.append( new MenuItem({label:p.name, click	: self.doContextMenu.bind(null,null, 'setpattern', p.id)}) );
+			pattmenu.append( new MenuItem({label:p.name, click: self.doContextMenu.bind(null,null, 'setpattern', p.id)}) );
 		});
 		// Make serials menu
 		var serialsmenu = null;
@@ -78,7 +77,7 @@ var BigButton = React.createClass({
 				click: self.doContextMenu.bind(null,null, 'delete', idx)})); // fixme
 		menu.append(new MenuItem({ label:'Rename Button',
 				click: self.showEditMenu }));
-		this.menu = menu;
+		return menu;
 	},
 	showEditMenu: function() {
 		this.setState({showEditMenu:true});
@@ -93,8 +92,10 @@ var BigButton = React.createClass({
 		this.hideEditMenu();
 	},
 	showContextMenu: function() {
-		if( this.props.type === 'sys') { return; } // no context for sys buttons
-	 	this.menu.popup(currentWindow);
+		// log.msg("BigButton:showContextMenu2: menu:",a,"b:",b,"c:",c);
+		if( this.props.type === 'sys' ) { return; } // no context for sys buttons
+		var menu = this.makeMenu();
+		menu.popup(currentWindow);
 	},
 	doContextMenu: function(event, eventKey, arg) {
 		log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx);
@@ -114,14 +115,11 @@ var BigButton = React.createClass({
 			if( tinycolor(buttonStyle.background).isDark() ) {
 				buttonStyle.color = '#eee';
 			}
-			// buttonStyle.color = 'white';
-			//iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
 			iconContent = <i className="fa fa-lightbulb-o fa-2x"></i>;
 		}
 		else if( this.props.type === 'pattern' ) {
 			buttonStyle.background = this.props.color; // FIXME: pattern color summary
 			buttonStyle.color = 'white';
-			//iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
 			iconContent = <i className="fa fa-play-circle-o fa-2x"></i>;
 		}
 		else if( this.props.type === "sys") {  // FIXME: seems hacky, must be better way surely
@@ -145,7 +143,8 @@ var BigButton = React.createClass({
 
 		return (
 			<div>
-				<Button style={buttonStyle} onContextMenu={this.showContextMenu}
+				<Button style={buttonStyle} title="right-click to edit button"
+					onContextMenu={this.showContextMenu}
 					onClick={this.props.onClick} >
 					{iconContent}
 					<div style={tstyle}>{this.props.name}</div>
