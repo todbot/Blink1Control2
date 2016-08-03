@@ -40,7 +40,7 @@ var IftttForm = React.createClass({
             name: rule.name,
             actionType: 'play-pattern',
             patternId: rule.patternId || nextProps.patterns[0].id,
-            blink1Id: rule.blink1Id
+            blink1Id: rule.blink1Id || "0"
          }); // FIXME: why
 	},
     handleClose: function() {

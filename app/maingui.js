@@ -32,7 +32,6 @@ Blink1Service.start();
 ApiServer.start();
 PatternsService.initialize();
 
-
 log.msg("---- before render");
 // Perf.start();
 

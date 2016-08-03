@@ -414,7 +414,7 @@ var PatternsService = {
 	 * @return no return value
 	 */
 	_playPatternInternal: function(id, blink1id, callback) {
-		log.msg("_playPatternInternal:",id);
+		// log.msg("_playPatternInternal:",id);
 		playingPatternId = id;
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		if( !pattern ) { // look for id in temp pattern list

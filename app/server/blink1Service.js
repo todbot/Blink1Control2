@@ -400,40 +400,6 @@ var Blink1Service = {
 		}
 		this.toy.timer = setTimeout(this.toyDo.bind(this), this.toy.interval);
 	},
-	// ///
-	// moodLightStart: function() {
-	// 	this.toyEnable = true;
-	// 	this.toyValue = 5000;
-	// 	this.moodLightDo();
-	// },
-	// moodLightDo: function() {
-	// 	log.msg("Blink1Service.moodLightDo");
-	// 	if( !this.toyEnable ) { return; }
-	// 	this.fadeToColor( this.toyValue, tinycolor.random(), 0 );
-	// 	this.toyTimer = setTimeout(this.moodLightDo.bind(this), this.toyValue);
-	// },
-	// moodLightStop: function() {
-	// 	this.toyEnable = false;
-	// 	clearTimeout( this.toyTimer );
-	// },
-	// colorCycleStart: function() {
-	// 	this.toyEnable = true;
-	// 	this.toyValue = Math.floor( Math.random() * 360 );
-	// 	this.colorCycleDo();
-	// },
-	// colorCycleStop: function() {
-	// 	this.toyEnable = false;
-	// 	clearTimeout( this.toyTimer );
-	// },
-	// colorCycleDo: function() {
-	// 	log.msg("Blink1Service.colorCycleDo",this.toyValue);
-	// 	if( !this.toyEnable ) { return; }
-	// 	this.toyValue += 1;
-	// 	this.toyValue = (this.toyValue>360) ? 0 : this.toyValue;
-	// 	var color = tinycolor({h:this.toyValue, s:1, v:1});
-	// 	this.fadeToColor( 100, color, 0 );
-	// 	this.toyTimer = setTimeout(this.colorCycleDo.bind(this), 100);
-	// },
 
 	addChangeListener: function(callback, callername) {
 		listeners[callername] = callback;
