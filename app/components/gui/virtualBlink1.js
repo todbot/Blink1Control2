@@ -62,6 +62,7 @@ var VirtualBlink1 = React.createClass({
 		clearTimeout(this.timer);
 		this.faderMillis = 0;  // goes from 0 to currentMillis
 		this.currentMillis = Blink1Service.getCurrentMillis() || this.stepMillis; // FIXME: HACK
+        this.currentMillis /= 2; // FIXME: to match what blink1service does
 		this._colorFader();
 		// console.log("---start:",new Date().getTime() );
 	},
@@ -98,26 +99,22 @@ var VirtualBlink1 = React.createClass({
 	},
 
 	render: function() {
-		var topgradient = (this.state.colors[0] === '#000000') ? 'url()' :
-		"radial-gradient(160px 90px at 150px 50px," + this.state.colors[0].toHexString() + " 0%, rgba(255,255,255,0.6) 45% )";
-		// "radial-gradient(160px 90px at 150px 50px," + 'rgba(0,255,0,1.0)' + " 0%, rgba(255,255,255,0.6) 45% )";
-		var botgradient = (this.state.colors[1] === '#000000') ? 'url()' :
-		"radial-gradient(160px 90px at 150px 110px," + this.state.colors[1].toHexString() + " 0%, rgba(255,255,255,0.6) 45% )";
-		// "radial-gradient(160px 90px at 150px 110px," + 'rgba(0,255,0,1.0)' + " 0%, rgba(255,255,255,0.6) 45% )";
+        console.log("VirtualBlink1: color0:",this.state.colors[0].toRgbString());
+        var topgradient = (this.state.colors[0].toHexString() === '#000000') ? 'url()' :
+		"radial-gradient(160px 90px at 150px 50px," + this.state.colors[0].toRgbString() + " 0%, rgba(255,255,255,0.2) 55% )";
+		var botgradient = (this.state.colors[1].toHexString() === '#000000') ? 'url()' :
+		"radial-gradient(160px 90px at 150px 110px," + this.state.colors[1].toRgbString() + " 0%, rgba(255,255,255,0.2) 55% )";
 
 		// linear-gradient(to bottom, rgba(30,87,153,1) 0%,rgba(66,124,183,0) 38%,rgba(125,185,232,0) 100%);
 		var img0style = { width: 240, height: 150, margin: 0, padding: 0, marginTop:-15, // FIXME why do I need marginTop-15?
 			border: '0px solid grey',
 			//background: this.props.blink1Color
 			backgroundImage: [
-				topgradient,
+    			topgradient,
+                "url(images/device-light-bg.png)",
 				// topgradient,
-				//'radial-gradient( rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.5} 0%, rgba(255,255,255,0.1) 65%)',
 				"url(images/device-light-mask.png)",
 				// "url(images/device-preview.png)",
-				// "radial-gradient(120px at 160px 50px," + this.state.color + " 0%, rgba(255,255,255,0.1) 55%" + ")",
-				// "radial-gradient(this.state.color + " 0%, rgba(255,255,255,0.1) 55%" + ")",
-				//"url(images/device-light-bg.png)",
 				"url(images/device-light-bg-bottom.png)",
 				"url(images/device-light-bg-top.png)",
 				botgradient,
