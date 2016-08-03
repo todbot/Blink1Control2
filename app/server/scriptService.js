@@ -211,8 +211,9 @@ var ScriptService = {
         }
         else { // parse-color
             matches = colorre.exec(str);
+            log.msg("matches:",matches);
             if( matches ) {
-                var colormatch = matches[2];
+                var colormatch = matches[1];
                 var color = tinycolor( colormatch );
                 if( color.isValid() ) {
                     log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:colormatch});
@@ -223,7 +224,7 @@ var ScriptService = {
                 }
             }
             else {
-                log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+str});
+                log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no color found in:'+str});
             }
         }
     }
