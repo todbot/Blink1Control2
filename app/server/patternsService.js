@@ -51,7 +51,8 @@ var systemPatterns = require('./systemPatterns').patterns;
 var patternsSystem;  // The system patterns this service knows about
 var patternsUser; // The user generated patterns
 var patternsTemp = [];
-var playingStack = [];
+var playingQueue = [];
+var playingSerialize = false;
 
 var playingPatternId = '';
 // var lastPatternId = ''; // last pattern that was recently played, or none
@@ -277,8 +278,18 @@ var PatternsService = {
 		if( pattern ) {
 			pattern.playing = false;
 			clearTimeout( pattern.timer );
-			if( playingPatternId === pattern.id ) { playingPatternId = ''; }  // FIXME
-			this.notifyChange();
+			if( playingPatternId === pattern.id ) {
+                playingPatternId = '';
+                if( playingQueue.length > 0 ) {
+                    var nextPattern = playingQueue.shift();
+                    log.msg("PatternsService.stopPattern: next off playingQueue:",nextPattern);
+                    this.playPattern( nextPattern.patternId, nextPattern.blink1id );
+                } else {
+                    this.notifyChange();  // FIXME: reduce notifys
+                }
+            } else {
+                this.notifyChange();
+            }
 			return pattern.id;
 		}
 		return false;
@@ -313,6 +324,16 @@ var PatternsService = {
      */
 	playPattern: function(pattid, blink1id) {
 		log.msg("PatternsService.playPattern: id:",pattid, ", blink1id:",blink1id, "patternsTemp:",patternsTemp);
+
+        if( playingSerialize ) {
+            if( playingPatternId !== '' ) { // pattern playing
+                log.msg("PatternsService.playPattern: queue up:",pattid, "was:", playingPatternId);
+                // queue up
+                playingQueue.push( {patternId:pattid, blink1Id:blink1id});
+                return;
+            }
+        }
+
 		var patternstr;
 		var patt;
 		var blinkre = /~blink-(#*\w+)-(\d+)(-(.+))?/;  // blink-color-cnt-time
