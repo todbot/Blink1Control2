@@ -38,7 +38,9 @@ var SkypeService = {
 		log.msg("SkypeService.start. rules=", self.rules);
 
         var rule = self.rules[0]; // FIXME:
-
+        if( !rule ) {
+            return;
+        }
 		if( !rule.enabled ) {
 			return;
 		}
