@@ -53,6 +53,7 @@ var Blink1ColorPicker = React.createClass({
 		var crgb = colr.toRgb();
 		this.setState( {
 			color: colr.toHexString(),
+            colorHex: colr.toHexString(),
 			ledn: ledn,
 			r: crgb.r, g: crgb.g, b: crgb.b,
 			secs:secs,
@@ -61,7 +62,8 @@ var Blink1ColorPicker = React.createClass({
 	},
 	// called by HtmlColorChart  why are there two?
 	setColorHex: function(color) {
-		Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn, this.state.blink1Idx ); // FIXME: time
+        this.setColor( tinycolor(color) );
+		// Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn, this.state.blink1Idx ); // FIXME: time
 	},
 	// called by colorpicker & handleChange{R,G,B}
 	setColor: function(color) {
@@ -103,7 +105,12 @@ var Blink1ColorPicker = React.createClass({
 		this.setColor( tc );
 	},
 	handleHexChange: function(event) {
-		console.log("handleHexChange!",event.target.value);  //FIXME: this does nothing
+        var colorHex = event.target.value;
+        var c = tinycolor(colorHex);
+        if( c.isValid() ) {
+            this.setColor( c );
+        }
+        this.setState({colorHex: colorHex});
 	},
 	handleBlink1IdxChange: function(evt) {
 		var idx = evt.target.value;
@@ -150,7 +157,7 @@ var Blink1ColorPicker = React.createClass({
 		  						    value={this.state.b} onChange={this.handleChangeB}/></td></tr>
 							<tr><td style={{textAlign:'right'}}>hex:</td><td>
 							  	<input type="text" size={7} className="input" style={{fontFamily:'monospace'}}
-								  value={this.state.color} onChange={this.handleHexChange}/></td></tr>
+								  value={this.state.colorHex} onChange={this.handleHexChange}/></td></tr>
 						  	</tbody>
 					  	</table>
 					  	<div className="col-sm-4">
