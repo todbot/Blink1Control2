@@ -210,7 +210,7 @@ var ToolTable = React.createClass({
 		   	return pattstr;
 		};
 		var makeBlink1IdStr = function(rule) {
-			if( rule.blink1Id ) {
+			if( rule.blink1Id && rule.blink1Id !== "0" ) {
 				return "\nblink1:"+rule.blink1Id ;
 			}
 			return '';
