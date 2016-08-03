@@ -186,7 +186,8 @@ var PatternView = React.createClass({
 		var style_lockbutton={ width:20 };
 		var style_editoptions= { width:20 };
 
-		var nameIsh = (isEditing) ? <input type="text" name="name" value={pattern.name} onChange={this.onNameChange} /> : pattern.name;
+		var nameIsh = (isEditing) ? <input type="text" name="name" value={pattern.name} onChange={this.onNameChange} /> :
+                                    pattern.name;
 		var pidstr = "pattId:"+pid;
 
 		var addSwatchButton = (isEditing) ? <Button onClick={this.onAddSwatch} key={99}

@@ -136,7 +136,7 @@ var IftttService = {
 		// }
 		// log.msg("iftttService.fetch: opts:",opts);
 
-		// log.msg("IftttService.fetch:", url, self.lastTime, "defaultId:",defaultId);
+		log.msg("IftttService.fetch:", url, self.lastTime, "defaultId:",defaultId);
         // request(baseUrl + this.iftttKey, function(error, response, body) {
 		needle.get( url, opts, function(error, response) {
 			var msg = '';

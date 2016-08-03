@@ -83,6 +83,7 @@ var Blink1Status = React.createClass({
 		var mymenu = new Menu();
 		// mymenu.append( new MenuItem({label:'copy', click: self.doContextMenu.bind(null,null, 'copyiftttkey', null)}) );
 		mymenu.append( new MenuItem({label:'Copy IFTTT Key', role:'copy'} ));
+        // mymenu.append( new MenuItem({label:'Edit Host Id', click: this.doEditHostId} ));
 		return mymenu;
 	},
 	render: function() {
