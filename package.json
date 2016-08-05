@@ -19,7 +19,7 @@
     "dist:mac": "build --mac",
     "clean": "rimraf app/node_modules node_modules",
     "env": "env",
-    "postinstall": "install-app-deps && electron-rebuild --pre-gyp-fix --force --module-dir app"
+    "postinstall": "install-app-deps && electron-rebuild --force --force --module-dir app --pre-gyp-fix"
   },
   "build": {
     "appId": "com.thingm.blink1control2",

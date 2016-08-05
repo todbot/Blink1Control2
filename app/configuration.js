@@ -22,12 +22,14 @@ else {
     app = require('electron').app;
 }
 
-var conf_file = app.getPath('userData') + '/blink1control2-config.json';
+var conf_dir = app.getPath('userData');
+var conf_file = conf_dir + '/blink1control2-config.json';
 console.log("config file:"+conf_file);
 
 // if no conf file, put in a default one
 if( ! fs.existsSync(conf_file) ) {
     console.log("config: no conf file at "+conf_file+", writing defaults");
+    fs.mkdirSync( conf_dir ); // for Windows
     fs.writeFileSync( conf_file, JSON.stringify(confdefaults,null, 2) );
 }
 nconf.file({file: conf_file});
@@ -46,7 +48,8 @@ var Config = {
         return nconf.get(settingKey);
     },
     getFilepath: function() {
-        return nconf.stores.file.file;  //FIXME: seems weird
+        return conf_file;
+        // return nconf.stores.file.file;  //FIXME: seems weird
     }
     // getUserDataHome: function() {
     //     var userDataHome = app.getPath('userData');
