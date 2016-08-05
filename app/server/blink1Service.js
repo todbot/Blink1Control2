@@ -43,7 +43,7 @@ currentState[0] =
 	{
 		colors: new Array(18), // replaces "currentColor", 18 element array, one per LED
 		millis: 100, // replaces "currentMillis"
-		ledn:0 // replaces curerntLedN   FIXME: ***** this is confusing & maybe a remnant at this point ****
+		ledn:0 // replaces curerntLedN, 0 == both LEDs, 1 = top, 2 = bottom
 	};
 currentState[0].colors.fill( tinycolor('#000000'));
 currentState.fill( currentState[0] ); // hmmmm
@@ -249,9 +249,8 @@ var Blink1Service = {
 	},
 	getCurrentColor: function(blink1idx) { // FIXME
 		blink1idx = blink1idx || 0;
-		// var ledn = (currentLedN>0) ? currentLedN-1 : currentLedN;
 		var curledn = currentState[blink1idx].ledn;
-		curledn = (curledn>0) ? curledn-1 : curledn; // 0 = all LEDs in a blink1
+		curledn = (curledn>0) ? curledn-1 : curledn; // 0 = all LEDs in a blink1, so shift or use 0th element as rep
 		return currentState[blink1idx].colors[ curledn ];
 	},
 	getCurrentColors: function(blink1idx) {
@@ -320,7 +319,7 @@ var Blink1Service = {
 		var colors = currentState[blink1Idx].colors;
 		// handle special meaning: ledn=0 -> all LEDs
 		if( ledn === 0 ) { colors.fill( color );
-		} else {           colors[ledn-1] = color;	}
+		} else {       colors[ledn-1] = color; }
 
 		// FIXME: do we need these states and the blink1s struct?
 		// lastState[blink1idx] = currentState[blink1idx];

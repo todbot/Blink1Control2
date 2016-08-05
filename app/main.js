@@ -233,7 +233,8 @@ var makeMenus = function() {
 					{ label: 'Hide Others', accelerator: 'Command+Shift+H', role: 'hideothers' },
 					{ label: 'Show All', role: 'unhide' },
 					{ type: "separator" },
-					{ label: 'Preferences', accelerator: "CommandOrControl+.", click: function() { openPreferences(); } },
+					{ label: 'Preferences...', accelerator: "CommandOrControl+,", click: function() { openPreferences(); } },
+                    { type: "separator" },
 					{ label: 'Close Window', accelerator: "CommandOrControl+W", role:'close' },
 					{ type: "separator" },
 					{ label: "Quit", accelerator: "CommandOrControl+Q", click: function() { quit(); }}
