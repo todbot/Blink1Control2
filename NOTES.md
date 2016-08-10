@@ -5,14 +5,15 @@ Random notes / documentation while developing the app
 
 
 ### App capability changes / To-do's
-- TODO: Add "go back to last pattern" or "return to previous state" color pattern
+- DONE: Add "go back to last pattern" or "return to previous state" color pattern
+- TODO: put 'patternSerial' in config & preferences
     - (maybe via a "pattern stack" and new patterns like "red always")
 - DONE: Special patterns like '~off' and '~stop:patternname'  (check: work in ApiServer?)
-- TODO: IFTTT rule_name can be matching rule or specific patternname or special patternname
+- DONE: IFTTT rule_name can be matching rule or specific patternname or special patternname
 -  (maybe restructure app to not need IFTTT "rules"?)
 - TODO: Patterns should allow multiple LEDs to change per step (take array of {color,ledn,time})
 - DONE: TODO: Add 'enable' flag to each rule in Mail & Tools
-- TODO: partition code into client & server so webpack doesn't bundle server code
+- NANA: partition code into client & server so webpack doesn't bundle server code
 - DONE : TODO: what about 'parametric patterns', e.g. "blink 5 times, fill in color & on/off time"
 - TODO: Number() vs parseInt() in `PatternsService._parsePatternStr()`?
 - TODO: global shortcut, see: https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md
@@ -37,9 +38,9 @@ Random notes / documentation while developing the app
 - Event Source --> Color Pattern --> blink(1) changes color
 - The user creates an "event source" to fetch events from outside of Blink1Control2 (say, IFTTT, IMAP, a URL,  etc).  
   - Each event source runs async from the others. Some sources may periodically poll their source for changes.
-- An event source triggers a "color pattern" to play.  
+- Event source triggers a "color pattern" to play.  
   - This color pattern is normally a pre-defined color pattern in the color patterns list.
-- Multiple event sources are active concurrently
+- Multiple event sources can be active concurrently
 - Multiple color patterns can play concurrently (* note: maybe add priorities or stack option)
 
 ### Color Patterns
@@ -109,9 +110,10 @@ Random notes / documentation while developing the app
     - was (is) also index into device list
 - QUESTION: what about resetting of IFTTT Key on device change?
 
+
 #### General architecture
 
-- `remote.require()` is based off of project root dir, but `require()` is based of cwd
+- `remote.require()` is based off of project root dir, but `require()` is based of CWD
 - `remote.require()` vs `require()` in renderer process
 
 - There exist singleton services like: Blink1Service, PatternsService, IftttService, MailService
@@ -122,14 +124,16 @@ Random notes / documentation while developing the app
 
 
 ### Packaging & Releasing
-- Currently using `electron-package`.
-- TODO: look into using `electron-builder`
+- Currently using `electron-builder`
+- but `electron-packager` also still supported a little
+- On Windows set env var `DEBUG=electron-windows-installer`
+    to discover weird XML parsing errors when '&' is in description
 
 #### Prepping node-hid
--  do `npm run postinstall` (done automatically on `npm install`)
+-  do `npm run postinstall` (should be done automatically on `npm install`, but sometimes seems not to)
 
 #### Building on Windows
-- Can't use my standard MinGW rxvt shell
+- Can't use my standard MinGW rxvt shell?
 - Instead, open up Node's "Node Command Prompt" from Start menu
 - May need to install webpack & webpack-dev-server globally: `npm install -g webpack` ??
 - 'webpack --display-error-details' to help debug
@@ -141,7 +145,7 @@ Random notes / documentation while developing the app
 
 #### node-hid or usb-detection causing app hanging?
 - needed to do `usb-detection.stopMonitoring()`
-- for now, disable use of "usb-detection" and use polling (which can be turned off in config)
+- Disable use of `usb-detection` for now and use polling (which can be turned off in config)
 
 
 
