@@ -36,6 +36,7 @@ var mainWindow = null;
 var tray = null;
 
 // Someone tried to run a second instance, we should focus our window.
+// Really only applicable on Windows, maybe Linux
 var shouldQuitMultiInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     if(mainWindow) {
         if (mainWindow.isMinimized()) { mainWindow.restore(); }
@@ -68,8 +69,6 @@ var quit = function() {
 	isQuitting = true;
 	app.quit();
 };
-
-
 
 app.on('window-all-closed', function () {
 	console.log("app.window-all-closed");
@@ -197,22 +196,22 @@ var makeMenus = function() {
 			click: function() { quit(); }
 		}
 	];
-	var devMenuTemplate = [
-		{	type: "separator" },
-		{	label: 'Reload',
-			click: function() {  mainWindow.reload(); }
-		},
-		{	label: 'Toggle DevTools',
-			accelerator: 'Alt+Command+I',
-			click: function() {
-				mainWindow.show();
-				mainWindow.toggleDevTools();
-			}
-		}
-	];
+	// var devMenuTemplate = [
+	// 	{	type: "separator" },
+	// 	// {	label: 'Reload',
+	// 	// 	click: function() {  mainWindow.reload(); }
+	// 	// },
+	// 	{	label: 'Open DevTools',
+	// 		accelerator: 'Alt+Command+I',
+	// 		click: function() {
+	// 			mainWindow.show();
+    //             mainWindow.webContents.openDevTools({mode:'bottom'});
+	// 		}
+	// 	}
+	// ];
 
 	// if( process.env.NODE_ENV === 'development' ) {
-	contextMenuTemplate = contextMenuTemplate.concat( devMenuTemplate );
+	// contextMenuTemplate = contextMenuTemplate.concat( devMenuTemplate );
 	// }
 	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
 
@@ -248,6 +247,10 @@ var makeMenus = function() {
 					{ label: 'Show All', role: 'unhide' },
 					{ type: "separator" },
 					{ label: 'Preferences...', accelerator: "CommandOrControl+,", click: function() { openPreferences(); } },
+                    { type: "separator" },
+                    { label: 'Open DevTools', accelerator: 'Alt+Command+I', click: function() {
+            				mainWindow.show(); mainWindow.webContents.openDevTools({mode:'bottom'}); }
+            		},
                     { type: "separator" },
 					{ label: 'Close Window', accelerator: "CommandOrControl+W", role:'close' },
 					{ type: "separator" },
@@ -298,24 +301,26 @@ app.on('ready', function () {
 	if( process.env.NODE_ENV === 'development' ) {
 		mainWindow = new BrowserWindow({
 			title: "Blink1Control2",
-			// closable: false,
-// backgroundThrottling Boolean - Whether to throttle animations and timers when the page becomes background. Defaults to true.
 			maximizable: false,
 			width: 1040,
-			height: 900
+			height: 900,
+            resizable: true,
+            show: true,
 		});
 		mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
-        mainWindow.webContents.openDevTools();
+        mainWindow.webContents.openDevTools({mode:'bottom'});
     }
     else {
 	  mainWindow = new BrowserWindow({
 		  title: "Blink1Control2",
 		  width: 1040,
 		  height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
-		  // useContentSize: true,
+		  resizable: false,
+          show: false  // show later based on config value
+          // closable: false,
+          // useContentSize: true,
 		  // center: true
-		  resizable: false
-		  // see https://github.com/atom/electron/blob/master/docs/api/browser-window.md
+          // backgroundThrottling Boolean - Whether to throttle animations and timers when the page becomes background. Defaults to true.
 	  });
 	  mainWindow.loadURL('file://' + __dirname + '/index-prod.html');
     }
@@ -350,10 +355,6 @@ app.on('ready', function () {
 	app.on('activate', function() {
 		mainWindow.show();
 	});
-
-    if( process.env.NODE_ENV !== 'development' ) {
-	    mainWindow.hide();
-    }
 
 	makeMenus();
 
