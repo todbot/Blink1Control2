@@ -2,7 +2,7 @@
   "name": "blink1control2",
   "version": "2.0.0-pre1",
   "author": "ThingM",
-  "description": "Blink1Control implemented in ElectronJs, NodeJs, & ReactJs",
+  "description": "Blink1Control2 GUI app for controlling blink(1) devices",
   "productName": "Blink1Control2",
   "companyName": "ThingM",
   "bugs": "http://github.com/todbot/blink1control2/issues",
@@ -12,11 +12,12 @@
     "start": "electron app",
     "watch": "NODE_ENV=development webpack-dev-server --hot --inline",
     "watch:win": "set NODE_ENV=development&& webpack-dev-server --hot --inline",
-    "pack": "webpack -p ",
+    "webpack": "webpack -p ",
     "pkg:mac": "electron-packager app Blink1Control2 --overwrite --out=dist --prune --asar --platform=darwin --arch=x64 --icon=app/images/icons/blink1mk2-icon2-128px.icns --ignore='^/dist$'",
     "pkg:win": "electron-packager app Blink1Control2 --overwrite --out=dist --prune --asar --platform=win32 --arch=x64 --icon=app/images/icons/blink1mk2-icon2-128px.ico --ignore='^/dist$'",
     "dist:test": "build --dir",
     "dist:mac": "build --mac",
+    "dist:win": "build --win",
     "clean": "rimraf app/node_modules node_modules",
     "env": "env",
     "postinstall": "install-app-deps && electron-rebuild --force --force --module-dir app --pre-gyp-fix"
@@ -25,11 +26,20 @@
     "appId": "com.thingm.blink1control2",
     "app-category-type": "public.app-category.utilities",
     "iconUrl": "http://eatodo.s3.amazonaws.com/icon.ico",
-    "asar": false,
+    "asar": true,
+    "npmRebuild": false,
+    "options": {
+        "prune": true,
+        "overwrite": true,
+        "outzz": "dist"
+    },
+    "win": {
+        "icon": "app/images/icons/blink1mk2-icon2-128px.ico"
+    },
     "mac": {
       "title": "Blink1Control2",
       "background": "pkg/background.png",
-      "icon": "pkg/icon.icns",
+      "icon": "app/images/icons/blink1mk2-icon2-128px.icns",
       "icon-size": 128,
       "contents": [
         {

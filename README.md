@@ -19,7 +19,7 @@ Or to emulate a production run:
 ```
 $ npm install
 $ npm run postinstall
-$ npm run pack
+$ npm run webpack
 $ npm run start
 ```
 
@@ -31,7 +31,7 @@ $ npm run start
 ```
 $ npm install
 $ npm run postinstall
-$ npm run pack
+$ npm run webpack
 $ npm run pkg:mac
 
 ```
@@ -40,6 +40,6 @@ $ npm run pkg:mac
 
 ```
 $ npm install
-$ npm run pack
+$ npm run webpack
 $ npm run pkg:win
 ```
