@@ -1,5 +1,10 @@
 "use strict";
 
+// var squirrel_startup = require('electron-squirrel-startup');
+// if( squirrel_startup ) {  return false;  }
+if( require('electron-squirrel-startup') ) { return; }
+
+
 var electron = require('electron');
 var app = electron.app;
 var ipcMain = electron.ipcMain;
@@ -11,14 +16,13 @@ var crashReporter = electron.crashReporter;
 
 var path = require('path');
 
-// var nativeImage = electron.nativeImage;
-
 var AutoLaunch = require('auto-launch');
 
+// var nativeImage = electron.nativeImage;
 // var runtime = require('./src/core/runtime');
 // var appMenu = require('./src/core/app-menu');
-var pkg = require('./package.json');
 
+var pkg = require('./package.json');
 var config = require('./configuration');
 
 crashReporter.start({
@@ -27,7 +31,6 @@ crashReporter.start({
 	submitURL: 'http://thingm.com/blink1/blink1control2-crash-reporter', // FIXME:
 	autoSubmit: true
 });
-
 
 var mainWindow = null;
 var tray = null;
