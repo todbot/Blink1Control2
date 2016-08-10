@@ -35,6 +35,17 @@ crashReporter.start({
 var mainWindow = null;
 var tray = null;
 
+// Someone tried to run a second instance, we should focus our window.
+var shouldQuitMultiInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
+    if(mainWindow) {
+        if (mainWindow.isMinimized()) { mainWindow.restore(); }
+        mainWindow.focus()
+    }
+});
+if(shouldQuitMultiInstance) {
+    app.quit()
+}
+
 // var menu = null;
 // var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
 // var appIcon = null;
