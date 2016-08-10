@@ -11,6 +11,7 @@
     "dependencies": {
         "auto-launch": "^2.0.1",
         "debug": "^2.2.0",
+        "electron-squirrel-startup": "^1.0.0",
         "express": "^4.13.4",
         "imap": "^0.8.16",
         "is-electron-renderer": "^2.0.0",
