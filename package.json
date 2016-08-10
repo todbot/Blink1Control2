@@ -33,30 +33,31 @@
         "outzz": "dist"
     },
     "win": {
-        "icon": "pkg/icon.ico",
-        "iconUrl": "https://github.com/todbot/Blink1Control2/blob/master/pkg/icon.ico?raw=true"
+        "remoteReleases": true,
+        "icon": "build/icon.ico",
+        "iconUrl": "https://github.com/todbot/Blink1Control2/blob/master/build/icon.ico?raw=true"
     },
     "dmg": {
         "title": "Blink1Control2 Install",
-        "icon": "pkg/icon.icns",
-        "background": "pkg/background.png"
+        "icon": "build/icon.icns",
+        "background": "build/background.png",
+        "contents": [
+          {
+            "x": 355,
+            "y": 140,
+            "type": "link",
+            "path": "/Applications"
+          },
+          {
+            "x": 155,
+            "y": 140,
+            "type": "file"
+          }
+      ]
     },
     "mac": {
       "title": "Blink1Control2",
-      "icon": "pkg/icon.icns",
-      "contents": [
-        {
-          "x": 355,
-          "y": 75,
-          "type": "link",
-          "path": "/Applications"
-        },
-        {
-          "x": 155,
-          "y": 75,
-          "type": "file"
-        }
-      ]
+      "icon": "build/icon.icns"
     }
   },
   "devDependencies": {
