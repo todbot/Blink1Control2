@@ -34,12 +34,12 @@
         "outzz": "dist"
     },
     "win": {
-        "icon": "app/images/icons/blink1mk2-icon2-128px.ico"
+        "icon": "app/images/icons/blink1-iconB.icns"
     },
     "mac": {
       "title": "Blink1Control2",
       "background": "pkg/background.png",
-      "icon": "app/images/icons/blink1mk2-icon2-128px.icns",
+      "icon": "app/images/icons/blink1-iconB.icns",
       "icon-size": 128,
       "contents": [
         {
