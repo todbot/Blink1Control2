@@ -1,5 +1,5 @@
 {
-  "name": "blink1control2",
+  "name": "Blink1Control2",
   "version": "2.0.0-pre1",
   "author": "ThingM",
   "description": "Blink1Control2 GUI app for controlling blink(1) devices",
@@ -25,7 +25,6 @@
   "build": {
     "appId": "com.thingm.blink1control2",
     "app-category-type": "public.app-category.utilities",
-    "iconUrl": "http://eatodo.s3.amazonaws.com/icon.ico",
     "asar": true,
     "npmRebuild": false,
     "options": {
@@ -34,23 +33,27 @@
         "outzz": "dist"
     },
     "win": {
-        "icon": "app/images/icons/blink1-iconB.ico"
+        "icon": "pkg/icon.ico",
+        "iconUrl": "https://github.com/todbot/Blink1Control2/blob/master/pkg/icon.ico?raw=true"
+    },
+    "dmg": {
+        "title": "Blink1Control2 Install",
+        "icon": "pkg/icon.icns",
+        "background": "pkg/background.png"
     },
     "mac": {
       "title": "Blink1Control2",
-      "background": "pkg/background.png",
-      "icon": "app/images/icons/blink1-iconB.icns",
-      "icon-size": 128,
+      "icon": "pkg/icon.icns",
       "contents": [
         {
           "x": 355,
-          "y": 125,
+          "y": 75,
           "type": "link",
           "path": "/Applications"
         },
         {
           "x": 155,
-          "y": 125,
+          "y": 75,
           "type": "file"
         }
       ]
