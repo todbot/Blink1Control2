@@ -48,6 +48,7 @@ var PreferencesModal = React.createClass({
             proxyPort:        conf.readSettings('proxy:port') || 8080,
             proxyUser:        conf.readSettings('proxy:username') || '',
             proxyPass:        conf.readSettings('proxy:password') || '',
+            playingSerialize: conf.readSettings('patternsService:playingSerialize') || false,
             patterns: PatternsService.getAllPatterns(),
             // blink1Serials: Blink1Service.getAllSerials(),
             // blink1Serials: ['12345678','abcdabcd'], // FIXME: make a prop
@@ -72,9 +73,11 @@ var PreferencesModal = React.createClass({
         conf.saveSettings('proxy:port', this.state.proxyPort);
         conf.saveSettings('proxy:username', this.state.proxyUser);
         conf.saveSettings('proxy:password', this.state.proxyPass);
+        conf.saveSettings('patternsService:playingSerialize', this.state.playingSerialize);
 
         Blink1Service.reloadConfig();
         ApiServer.reloadConfig();
+        PatternsService.reloadConfig();
 
         // FIXME: a hack to get ToolTable to refetch allowMulti pref
         log.addEvent({type:'info', source:'preferences', text:'settings updated'});
@@ -145,8 +148,10 @@ var PreferencesModal = React.createClass({
                                     type="checkbox" label="Start minimized" checkedLink={this.linkState('startMinimized')} />
                                 <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
                                     type="checkbox" label="Start at login" checkedLink={this.linkState('startAtLogin')} />
+                                <Input labelClassName="col-xs-9" wrapperClassName="col-xs-12" bsSize="small"
+                                    type="checkbox" label="LED gamma-correction" checkedLink={this.linkState('enableGamma')} />
                                 <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
-                                    type="checkbox" label="Enable gamma correction" checkedLink={this.linkState('enableGamma')} />
+                                    type="checkbox" label="Pattern play serialize" checkedLink={this.linkState('playingSerialize')} />
                                 </form>
                             </div>
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>

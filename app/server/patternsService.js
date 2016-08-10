@@ -52,7 +52,13 @@ var patternsSystem;  // The system patterns this service knows about
 var patternsUser; // The user generated patterns
 var patternsTemp = [];
 var playingQueue = [];
-var playingSerialize = false;
+
+/**
+ * Determines whether or not patterns play concurrently or one-after-the-other
+ * FIXME: should be in a config
+ * @type {Boolean}
+ */
+// var playingSerialize = false;
 
 var playingPatternId = '';
 // var lastPatternId = ''; // last pattern that was recently played, or none
@@ -130,7 +136,14 @@ var _systemFixup = function(pattern) {
  *
  */
 var PatternsService = {
+    config: {
+        playingSerialize: false
+    },
+    reloadConfig: function() {
+        this.config = conf.readSettings('patternsService') || {};
+    },
 	initialize: function() {
+        this.reloadConfig();
 		listeners = [];
 		patternsSystem = systemPatterns.map( _systemFixup );
 		//patternsUser = [];
@@ -325,7 +338,7 @@ var PatternsService = {
 	playPattern: function(pattid, blink1id) {
 		log.msg("PatternsService.playPattern: id:",pattid, ", blink1id:",blink1id, "patternsTemp:",patternsTemp);
 
-        if( playingSerialize ) {
+        if( this.config.playingSerialize ) {
             if( playingPatternId !== '' ) { // pattern playing
                 log.msg("PatternsService.playPattern: queue up:",pattid, "was:", playingPatternId);
                 // queue up
