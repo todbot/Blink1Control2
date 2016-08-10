@@ -34,7 +34,7 @@
         "outzz": "dist"
     },
     "win": {
-        "icon": "app/images/icons/blink1-iconB.icns"
+        "icon": "app/images/icons/blink1-iconB.ico"
     },
     "mac": {
       "title": "Blink1Control2",
