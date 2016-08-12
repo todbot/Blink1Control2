@@ -101,6 +101,7 @@ var BigButtonSet = React.createClass({
 
 	playBigButton: function(buttontype, buttonindex) {
 		// console.log("playBigButton:", buttontype, buttonindex);
+        PatternsService.stopAllPatterns();
         var button = this.state.buttonsUser[buttonindex];
 		if( buttontype === 'sys' ) {
 			button = this.state.buttonsSys[buttonindex];
@@ -108,7 +109,7 @@ var BigButtonSet = React.createClass({
 				this.setBlink1Color( "#FFFFFF" );
 			}
 			else if( button.name === "Off" ) {
-                PatternsService.stopAllPatterns();
+                // PatternsService.stopAllPatterns();
                 Blink1Service.off();
 			}
             else if( button.name === "Color Cycle" ) {
@@ -150,10 +151,10 @@ var BigButtonSet = React.createClass({
         };
         return (
             <div>
-                <ButtonToolbar style={{padding: 10}}>
+                <ButtonToolbar style={{padding: 5}}>
                     {this.state.buttonsSys.map(createBigButtonSys, this)}
                 </ButtonToolbar>
-                <div style={{padding: 10, overflowX:'auto', overflowY:'hidden'}}>
+                <div style={{padding: 5, overflowX:'scroll', overflowY:'hidden'}}>
                     <ButtonToolbar style={{width:1500}} ref="btbar">
                         {this.state.buttonsUser.map(createBigButtonUser, this)}
                         <BigButton key="add" name="add button" type="sys" onClick={this.addBigButton} />
