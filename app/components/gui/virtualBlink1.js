@@ -99,10 +99,12 @@ var VirtualBlink1 = React.createClass({
 	},
 
 	render: function() {
-        var topLum = this.state.colors[0].getLuminance();
-        var botLum = this.state.colors[1].getLuminance();
-        var topColor = tinycolor(this.state.colors[0]).setAlpha(Math.pow(topLum,0.5));
-        var botColor = tinycolor(this.state.colors[1]).setAlpha(Math.pow(botLum,0.5));
+        var topLum = this.state.colors[0].toHsl().l; //was .getLuminance();
+        var botLum = this.state.colors[1].toHsl().l;
+        var topColor = tinycolor(this.state.colors[0]).setAlpha(topLum);
+        var botColor = tinycolor(this.state.colors[1]).setAlpha(botLum); // was (Math.pow(botLum,0.5));
+        // var topColor = tinycolor(this.state.colors[0]).setAlpha(Math.pow(topLum,0.5));
+        // var botColor = tinycolor(this.state.colors[1]).setAlpha(Math.pow(botLum,0.5));
         var colorDesc = "A:"+this.state.colors[0] + "\nB:"+ this.state.colors[1];
 
         // console.log("VirtualBlink1: color0:",topColor.toRgbString());
