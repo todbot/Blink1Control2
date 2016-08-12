@@ -19,8 +19,9 @@ var PatternsService = require('./server/patternsService');
 
 var blink1ControlAutoLauncher = new AutoLaunch({ name: pkg.productName});
 
-var tray = null;
 var mainWindow = BrowserWindow.getAllWindows()[0];
+
+var tray = null;
 
 var pressBigButton = function( event,arg ) {
     var bigButtonsConfig = config.readSettings('bigButtons');
@@ -158,11 +159,11 @@ var trayMaker = {
         if (process.platform === 'darwin') {
             app.dock.setMenu( contextMenu ); // Make Dock have same context menu
         }
-
-        app.on('before-quit', function() {
+        // delete tray object to eliminate duplicates on reload
+        window.onbeforeunload = function(/*e*/) {
             console.log("killing tray");
-            if(tray) { tray.destroy(); }
-        });
+            if(tray) { tray.destroy(); tray = null; }
+        };
 
     }
 
