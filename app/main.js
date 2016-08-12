@@ -1,22 +1,18 @@
 "use strict";
 
-// var squirrel_startup = require('electron-squirrel-startup');
-// if( squirrel_startup ) {  return false;  }
+// FIXME: how to make JSHint not say "illegal return statement"
 if( require('electron-squirrel-startup') ) { return; }
-
 
 var electron = require('electron');
 var app = electron.app;
 var ipcMain = electron.ipcMain;
 
 var BrowserWindow = electron.BrowserWindow;
-var Tray = electron.Tray;
 var Menu = electron.Menu;
 var crashReporter = electron.crashReporter;
 
 var path = require('path');
 
-var AutoLaunch = require('auto-launch');
 
 // var nativeImage = electron.nativeImage;
 // var runtime = require('./src/core/runtime');
@@ -33,7 +29,6 @@ crashReporter.start({
 });
 
 var mainWindow = null;
-var tray = null;
 
 // Someone tried to run a second instance, we should focus our window.
 // Really only applicable on Windows, maybe Linux
@@ -130,111 +125,7 @@ var makeMenus = function() {
 	// }
 	// var swatchIcon = nativeImage.createFromBuffer( swatchIconBuffer );
 
-	var bigButtonsConfig = config.readSettings('bigButtons') || [];
-	var statusButtons = bigButtonsConfig.map( function(bb,idx) {
-		return {
-			label: bb.name,
-			// icon: swatchIcon,
-			click: function(/*item*/) {
-				// console.log("click item",item);
-				mainWindow.webContents.send('pressBigButton', idx);
-			}
-		};
-	});
 
-	var contextMenuTemplate = [
-		// {	label: 'About ' + pkg.productName,
-		// 	click: function() { openAboutWindow(); }
-		// },
-		// {	type: "separator" },
-		{	label: 'Start minimized',
-			type: 'checkbox',
-			checked: config.readSettings('startup:startMinimized'),
-			click: function(menuItem) {
-				config.saveSettings('startup:startMinimized', menuItem.checked);
-			},
-		},
-		{	label: 'Start at login',
-			type: 'checkbox',
-			checked: config.readSettings('startup:startAtLogin'),
-			click: function(menuItem) {
-				config.saveSettings('startup:startAtLogin', menuItem.checked);
-				// test on Mac with:  osascript -e 'tell application "System Events" to get the name of every login item'
-				var blink1ControlAutoLauncher = new AutoLaunch({ name: pkg.productName});
-				if( menuItem.checked ) {
-					blink1ControlAutoLauncher.enable();
-				} else {
-					blink1ControlAutoLauncher.disable();
-				}
-			}
-		},
-		{	label: 'Enable API server',
-			type: 'checkbox',
-			checked: config.readSettings('apiServer:enabled'),
-			click: function(menuItem) {
-				config.saveSettings('apiServer:enabled', menuItem.checked);
-				mainWindow.webContents.send('reloadConfig', 'apiServer');
-			}
-		},
-		{	type: "separator" },
-		{ 	label: 'Set Status...',
-			submenu: statusButtons
-		},
-		{	type: "separator" },
-		{	label: 'Open Settings...',
-			click: function() { mainWindow.show(); }
-		},
-		{	label: 'Off / Reset Alerts',  // Note: only works when DevTools is hiddden, else Cmd-r reloads
-			accelerator: 'CommandOrControl+R',	// accelerator: 'CmdOrCtrl+R',
-			click: function() {
-				mainWindow.webContents.send('resetAlerts', 'woot');
-			}
-		},
-		{	label: 'Quit',
-			// accelerator: 'CommandOrControl+Q',
-			// selector: 'terminate:',
-			click: function() { quit(); }
-		}
-	];
-	// var devMenuTemplate = [
-	// 	{	type: "separator" },
-	// 	// {	label: 'Reload',
-	// 	// 	click: function() {  mainWindow.reload(); }
-	// 	// },
-	// 	{	label: 'Open DevTools',
-	// 		accelerator: 'Alt+Command+I',
-	// 		click: function() {
-	// 			mainWindow.show();
-    //             mainWindow.webContents.openDevTools({mode:'bottom'});
-	// 		}
-	// 	}
-	// ];
-
-	// if( process.env.NODE_ENV === 'development' ) {
-	// contextMenuTemplate = contextMenuTemplate.concat( devMenuTemplate );
-	// }
-	var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
-
-	if( process.platform === 'win32' ) {  // FIXME: make this icon better for Windows
-		tray = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon2-128px.ico') );
-	}
-	else {
-		tray = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px.png') );
-	}
-	tray.on('click', function() {
-		console.log("tray CLICK!");
-		tray.popUpContextMenu();
-	});
-	tray.on('double-click', function() {
-		console.log("tray DOUBLE-CLICK!");
-		mainWindow.show();
-	});
-	tray.setToolTip( pkg.productName + ' is running...');
-	tray.setContextMenu(contextMenu);
-
-	if (process.platform === 'darwin') {
-		app.dock.setMenu( contextMenu ); // Make Dock have same context menu
-	}
 		// Mac-specific menu  (hide, unhide, etc. enables Command-Q )
 		var template = [
 			{	label: pkg.productName,
@@ -267,13 +158,14 @@ var makeMenus = function() {
 					{ label: "Paste", accelerator: "CmdOrCtrl+V", role: "paste" },
 					{ label: "Select All", accelerator: "CmdOrCtrl+A", role: "selectall" }
 				]
-			},
-			{ label: "View",
-				submenu: contextMenuTemplate
 			}
+            // ,
+			// { label: "View",
+			// 	submenu: contextMenuTemplate
+			// }
 		];
 		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-};
+}; // makeMenus
 
 
 app.on('ready', function () {
@@ -364,6 +256,9 @@ app.on('ready', function () {
 	ipcMain.on('openHelpWindow', function() {
 		openHelpWindow();
 	});
+    ipcMain.on('quitnow', function() {
+        quit();
+    });
 
 });
 

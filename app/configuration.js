@@ -40,6 +40,7 @@ var Config = {
     //     // log.setConfig( logconfig );
     // },
     saveSettings: function(settingKey, settingValue) {
+        console.log("saving key:",settingKey);
         nconf.set(settingKey, settingValue);
         nconf.save();
     },
