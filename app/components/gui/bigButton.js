@@ -147,12 +147,13 @@ var BigButton = React.createClass({
 		else if( this.props.type === "add" ) {
 			iconContent = <i className="fa fa-plus fa-2x"></i>;
 		}
+        var titlestr = (this.props.type !== 'sys') ? "right-click to edit button":"";
 
 		return (
 			<div>
-				<Button style={buttonStyle} title="right-click to edit button"
+				<Button style={buttonStyle} title={titlestr}
 					onContextMenu={this.showContextMenu}
-					onClick={this.props.onClick} >
+					onMouseDown={this.props.onClick} >
 					{iconContent}
 					<div style={namestyle}>{this.props.name}</div>
 				</Button>

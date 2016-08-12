@@ -100,7 +100,7 @@ var BigButtonSet = React.createClass({
     },
 
 	playBigButton: function(buttontype, buttonindex) {
-		// console.log("playBigButton:", buttontype, buttonindex);
+		// log.msg("bigButtonSet.playBigButton:", buttontype, buttonindex);
         PatternsService.stopAllPatterns();
         var button = this.state.buttonsUser[buttonindex];
 		if( buttontype === 'sys' ) {
