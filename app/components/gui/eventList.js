@@ -87,7 +87,7 @@ var EventList = React.createClass({
 			var source = event.source;
 			var text   = event.text;
 			var id     = event.id;
-			var msg = <span><b>{source}</b> {text} - {id}</span>;
+			var msg = <span><b>{source}</b> {text}<br/>: {id}</span>;
 			return (
 				<ListGroupItem key={index} style={{lineHeight:"100%", fontSize: "0.85em", textIndent:-10}}><i style={{fontSize:'90%'}}>{humantime}:</i> {msg} </ListGroupItem>
 			);

@@ -3,6 +3,7 @@ var pkg = require('./package.json');
 var conf = require('./configuration');
 var conffile = conf.getFilepath();
 
+
 </script>
 
 <html>
@@ -13,6 +14,10 @@ var conffile = conf.getFilepath();
     <h3><a target="_blank" href="http://blink1.thingm.com/">blink1.thingm.com</a></h3>
     <p>
       Version:   <script>document.write(pkg.version)</script> <br/>
+    </p>
+    <p>
+      For latest version: <a href="<script>document.write(pkg.homepage)</script>"><script>document.write(pkg.homepage)</script></a><br/>
+      To report issues/bugs: <a href="<script>document.write(pkg.bugs)"><script>document.write(pkg.bugs)</script></a>
     </p>
     <p>
       Config file: <script>document.write(conffile)</script>

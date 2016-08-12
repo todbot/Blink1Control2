@@ -9,9 +9,7 @@ var Button = require('react-bootstrap').Button;
 var BigButtonSet = require('./bigButtonSet');
 var ToolTable = require('./toolTable');
 
-// var BrowserWindow = require('electron').remote.BrowserWindow;
 var ipcRenderer = require('electron').ipcRenderer;
-
 
 
 var Blink1TabViews = React.createClass({

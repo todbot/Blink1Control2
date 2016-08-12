@@ -15,6 +15,9 @@
     "allowMulti": true,
     "blink1ToUse": 0
   },
+  "patternsService": {
+    "playingSerialize": false
+  },
   "patterns": [
     {
       "name": "new pattern 0",
