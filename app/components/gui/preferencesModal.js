@@ -27,6 +27,7 @@ var Blink1SerialOption = require('./blink1SerialOption');
 var PreferencesModal = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
+        show: React.PropTypes.bool,
 		// rule: React.PropTypes.object.isRequired
         // patternId: React.PropTypes.string.isRequired,
         // onPatternUpdated: React.PropTypes.func.isRequired
@@ -37,7 +38,7 @@ var PreferencesModal = React.createClass({
             startMinimized:   conf.readSettings('startup:startMinimized') || false,
             startAtLogin:     conf.readSettings('startup:startAtLogin') || false,
             startupPattern:   conf.readSettings('startup:startupPattern') || "",
-            enableGamma:      conf.readSettings('blink1Service:enableGamma') || true,
+            enableGamma:      conf.readSettings('blink1Service:enableGamma') || false, // NOTE this fails if flop default to true
             blink1ToUse:      conf.readSettings('blink1Service:blink1ToUse') || "0", // 0 == use first avail
             allowMultiBlink1: conf.readSettings('blink1Service:allowMulti') || false,
             apiServerEnable:  conf.readSettings('apiServer:enabled') || false,
@@ -57,7 +58,9 @@ var PreferencesModal = React.createClass({
     },
     // doing this so we get guaranteed fresh config
     componentWillReceiveProps: function(/*nextProps*/) {
-        this.setState( this.getInitialState() );
+        if( !this.props.show ) {
+            this.setState( this.getInitialState() );
+        }
 	},
     saveSettings: function() {
         conf.saveSettings('startup:startMinimized', this.state.startMinimized);
@@ -144,14 +147,18 @@ var PreferencesModal = React.createClass({
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>
                                 <h5><u> General </u></h5>
                                 <form className="form-horizontal">
-                                <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
-                                    type="checkbox" label="Start minimized" checkedLink={this.linkState('startMinimized')} />
-                                <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
-                                    type="checkbox" label="Start at login" checkedLink={this.linkState('startAtLogin')} />
-                                <Input labelClassName="col-xs-9" wrapperClassName="col-xs-12" bsSize="small"
-                                    type="checkbox" label="LED gamma-correction" checkedLink={this.linkState('enableGamma')} />
-                                <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
-                                    type="checkbox" label="Pattern play serialize" checkedLink={this.linkState('playingSerialize')} />
+                                <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
+                                    type="checkbox" label="Start minimized"
+                                    checkedLink={this.linkState('startMinimized')} />
+                                <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
+                                    type="checkbox" label="Start at login"
+                                    checkedLink={this.linkState('startAtLogin')} />
+                                <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
+                                    type="checkbox" label="LED gamma-correction"
+                                    checkedLink={this.linkState('enableGamma')} />
+                                <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
+                                    type="checkbox" label="Pattern play serialize"
+                                    checkedLink={this.linkState('playingSerialize')} />
                                 </form>
                             </div>
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>
