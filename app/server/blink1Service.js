@@ -364,7 +364,7 @@ var Blink1Service = {
 			this.toy.interval = 5000;
 		}
 		else if( mode === 'colorcycle' ) {
-			this.toy.interval = 100;
+			this.toy.interval = 30;
 			this.toy.value = Math.floor( Math.random() * 360 );
 		}
 		else if( mode === 'strobe' ) {
