@@ -48,7 +48,7 @@ var Blink1ColorPicker = React.createClass({
         // log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",colr.toHexString(), "ledn:",ledn, "blink1Id:",blink1Id);
 		this.setState( {
 			color: colr.toHexString(),
-            colorHex: colr.toHexString(),
+            colorHex: colr.toHexString().toUpperCase(),
 			ledn: ledn,
 			r: crgb.r, g: crgb.g, b: crgb.b,
 			secs:secs,
@@ -105,7 +105,7 @@ var Blink1ColorPicker = React.createClass({
         if( c.isValid() ) {
             this.setColor( c );
         }
-        this.setState({colorHex: colorHex});
+        this.setState({colorHex: colorHex.toUpperCase()});
 	},
 	handleBlink1IdxChange: function(evt) {
 		var idx = evt.target.value;
