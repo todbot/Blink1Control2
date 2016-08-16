@@ -142,13 +142,13 @@ var VirtualBlink1 = React.createClass({
             var colrB = colrs[1];
 			if( colrA.getBrightness() === 0 ) { colrA = '#888'; }
 			if( colrB.getBrightness() === 0 ) { colrB = '#888'; }
-			var titlestr = 'serial:'+serial +' A:'+colrs[0].toHexString()+'/B:'+colrs[1].toHexString();
+			var titlestr = 'serial:'+serial +' A/B:'+colrs[0].toHexString().toUpperCase()+'/'+colrs[1].toHexString().toUpperCase();
 			var borderStyle = (idx===this.blink1Idx) ? '2px solid #aaa' : '2px solid #eee';
 			return (<div key={idx} onClick={this.handleBlink1IdxChange.bind(null,idx)} value={idx}
 						style={{border:borderStyle, borderRadius:5, padding:0, margin:3 }}>
-					<div style={{width:16, height:7, margin:0,padding:0,background:colrA, borderRadius:'3px 3px 0 0'}}
+					<div style={{width:20, height:7, margin:0,padding:0,background:colrA, borderRadius:'3px 3px 0 0'}}
 						title={titlestr} ></div>
-					<div style={{width:16, height:7, margin:0,padding:0,background:colrB, borderRadius:'0 0 3px 3px'}}
+                    <div style={{width:20, height:7, margin:0,padding:0,background:colrB, borderRadius:'0 0 3px 3px'}}
 						title={titlestr} ></div>
 					</div>
 			);
