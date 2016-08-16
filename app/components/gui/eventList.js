@@ -85,11 +85,12 @@ var EventList = React.createClass({
 		var createEventLine = function(event,index) {
 			var humantime = moment(event.date).format('LTS');
 			var source = event.source;
+            var id     = event.id;
 			var text   = event.text;
-			var id     = event.id;
-			var msg = <span><b>{source}</b> {text}<br/>: {id}</span>;
+            if( text === id ) { text = ''; }  // don't repeat ourselves
+			var msg = <span><b>{source}</b> {id} <br/> {text}</span>;
 			return (
-				<ListGroupItem key={index} style={{lineHeight:"100%", fontSize: "0.85em", textIndent:-10}}><i style={{fontSize:'90%'}}>{humantime}:</i> {msg} </ListGroupItem>
+				<ListGroupItem key={index} style={{lineHeight:"110%", fontSize: "0.85em", textIndent:-10}}><i style={{fontSize:'90%'}}>{humantime}:</i> {msg} </ListGroupItem>
 			);
 		};
 		var header =
