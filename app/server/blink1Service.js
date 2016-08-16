@@ -95,7 +95,7 @@ var Blink1Service = {
 			Blink1Service._addDevice(s);
 		});
 
-		log.msg("Blink1Service.scanForDevices: done. serials:", serials);
+		// log.msg("Blink1Service.scanForDevices: done. serials:", serials);
 		if( serials.length === 0 ) { // no blink1s, look for insertion events
 			if( this.conf.deviceRescan ) {
 				setTimeout( this.scanForDevices.bind(this), 5000);  // look again in 5 secs
@@ -339,8 +339,8 @@ var Blink1Service = {
 		var blink1Idx = this.idToBlink1Index(blink1_id);
 
 		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		log.msg('Blink1Service.fadeToColor: blink1_idx:',blink1Idx,' msec:',millis,' ledn:',ledn,
-			' c:',color.toHexString(), " -- currentState:", this.dumpCurrentState()); // JSON.stringify(currentState,null,2));
+		// log.msg('Blink1Service.fadeToColor: blink1_idx:',blink1Idx,' msec:',millis,' ledn:',ledn,
+		// 	' c:',color.toHexString(), " -- currentState:", this.dumpCurrentState()); // JSON.stringify(currentState,null,2));
 
 		// var colors = _.clone(currentState[blink1Idx].colors);
 		var colors = currentState[blink1Idx].colors;
