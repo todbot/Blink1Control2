@@ -36,21 +36,16 @@ var Blink1ColorPicker = React.createClass({
 	componentDidMount: function() {
 		log.msg("Blink1ColorPicker.componentDidMount",this.state.color);
 		Blink1Service.addChangeListener( this.updateCurrentColor, "blink1ColorPicker" );
-		// Blink1Service.fadeToColor(200, this.state.color);
 	},
 	/**  Callback for Blink1Service notifyChange */
 	updateCurrentColor: function(/*currentColor0, colors, ledn0*/) {
-		// currentColor and colors are tinycolor objects
-		// var rgb = currentColor.toRgb();
-		// var secs = Blink1Service.getCurrentMillis()/1000; // FIXME: hack
-		// log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",currentColor.toHexString(), "ledn:",ledn, "rgb:",rgb);
-
 		// FIXME: the Blink1Service callback is crusty now
-		var colr = Blink1Service.getCurrentColor( this.state.blink1Idx );
-		var secs = Blink1Service.getCurrentMillis( this.state.blink1Idx ) / 1000;
-		var ledn = Blink1Service.getCurrentLedN( this.state.blink1Idx );
-		var blink1Id = Blink1Service.getCurrentBlink1Id();
+        var blink1Id = Blink1Service.getCurrentBlink1Id();
+		var colr = Blink1Service.getCurrentColor( blink1Id );
+		var secs = Blink1Service.getCurrentMillis( blink1Id ) / 1000;
+		var ledn = Blink1Service.getCurrentLedN( blink1Id );
 		var crgb = colr.toRgb();
+        // log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",colr.toHexString(), "ledn:",ledn, "blink1Id:",blink1Id);
 		this.setState( {
 			color: colr.toHexString(),
             colorHex: colr.toHexString(),
