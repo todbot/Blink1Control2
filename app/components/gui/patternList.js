@@ -94,7 +94,7 @@ var PatternList = React.createClass({
 					<Button onClick={this.onStopAllPatterns} bsSize="xsmall" ><i className="fa fa-stop"></i> stop all</Button>
 					<Button onClick={this.onAddPattern} bsSize="xsmall"  style={{float:'right'}}><i className="fa fa-plus"></i> new pattern</Button>
 				</ButtonToolbar>
-				<Table hover style={{display:'block', height:280, overflow:'scroll'}} >
+				<Table hover style={{display:'block', height:280, overflowY:'scroll'}} >
 					<tbody >
 						{this.state.patterns.map( createPatternRow, this )}
 					</tbody>
