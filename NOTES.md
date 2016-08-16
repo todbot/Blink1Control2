@@ -5,7 +5,10 @@ Random notes / documentation while developing the app
 
 
 ### App capability changes / To-do's
-- DONE: Add "go back to last pattern" or "return to previous state" color pattern
+- IDEA: How to set patterns to LEDA / LEDB?
+- MAYBE: "Set pattern to LEDA / LEDB"
+- DONE-ish: Add "go back to last pattern" or "return to previous state" color pattern
+-- Still need to "return to original state"
 - TODO: put 'patternSerial' in config & preferences
     - (maybe via a "pattern stack" and new patterns like "red always")
 - DONE: Special patterns like '~off' and '~stop:patternname'  (check: work in ApiServer?)

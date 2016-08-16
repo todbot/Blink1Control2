@@ -130,6 +130,10 @@ var contextMenuTemplate = [
 // ];
 
 var trayMaker = {
+    
+    updateTrayMenu: function() {
+
+    },
 
     setupTrayMenu: function() {
         // if( process.env.NODE_ENV === 'development' ) {

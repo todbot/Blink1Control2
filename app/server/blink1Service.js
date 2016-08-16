@@ -15,8 +15,18 @@ var config = require('../configuration');
 var log = require('../logger');
 var util = require('../utils');
 
-// globals because we are a singleton
-var listeners = {};
+// some globals because we are a singleton
+
+/**
+ * Maximum support blink(1) devices for this service. GUI supports up to 8 I think
+ */
+var maxBlink1s = 4;
+/**
+ * Number of individual LEDs allowed in a blink(1) device.  Max is 18, 2 for dev
+ */
+var maxLEDsPerBlink1 = 2; // 18
+
+var listeners = {};  // callback listeners
 
 /**
  * blink1 devices currently opened.
@@ -38,16 +48,17 @@ var currentBlink1Id = 0; // current blink1 (as set by colorpicker)
  *  Supports 8 blink1s currently.
  * @type Array
  */
-var currentState = new Array(8);  // 8 is max number of blink1s allowed
-currentState[0] =
-	{
-		colors: new Array(18), // replaces "currentColor", 18 element array, one per LED
-		millis: 100, // replaces "currentMillis"
-		ledn:0 // replaces curerntLedN, 0 == both LEDs, 1 = top, 2 = bottom
-	};
-currentState[0].colors.fill( tinycolor('#000000'));
-currentState.fill( currentState[0] ); // hmmmm
-// var lastState = _.clone( currentState ); // FIXME: what am I using lastState for?
+var currentState = [];
+for( var i=0; i< maxBlink1s; i++ ) {
+    var cs = new Array( maxLEDsPerBlink1);
+    cs.fill( tinycolor('#10100'+i));
+    currentState.push( {
+            colors: cs,
+            millis: 100,
+            ledn:0
+        }
+    );
+}
 
 var Blink1Service = {
 	// toyEnable: false,
@@ -130,6 +141,10 @@ var Blink1Service = {
                 b1.device = null;
             }
         });
+        // if( currentBlink1Id === serialnumber ) {
+        //     log.msg("FORGETTING OLD BLINK1!!!!");
+        //     currentBlink1Id = 0;
+        // }
         setTimeout( this.scanForDevices.bind(this), 5000);
     },
 	_removeAllDevices: function() {
@@ -164,6 +179,7 @@ var Blink1Service = {
 			} catch(err) {
 				log.error('Blink1Service._fadeToRGB: error', err);
 				this._removeDevice( blink1s[blink1idx].serial );
+                currentBlink1Id = 0;  // FIXME: is this the correct response to this error?
 			}
         }
     },
@@ -222,6 +238,7 @@ var Blink1Service = {
 	},
 
 	setCurrentBlink1Id(id) {
+        log.msg("setCurrentBlink1Id: ",id);
 		currentBlink1Id = id;
 		this.notifyChange();
 	},
@@ -253,6 +270,7 @@ var Blink1Service = {
 		curledn = (curledn>0) ? curledn-1 : curledn; // 0 = all LEDs in a blink1, so shift or use 0th element as rep
 		return currentState[blink1idx].colors[ curledn ];
 	},
+    // FIXME: this is confusing
 	getCurrentColors: function(blink1idx) {
 		blink1idx = blink1idx || 0;
 		return currentState[blink1idx].colors;
@@ -288,7 +306,15 @@ var Blink1Service = {
 		});
 		return blink1idx;
 	},
-
+    // debug only
+    dumpCurrentState: function() {
+        var str = '';
+        currentState.map( function(s, i) {
+            var colorsstr = s.colors.reduce( function(prev,curr) { return prev +','+ curr.toHexString(); });
+            str += i+ ': ledn:'+s.ledn+ ',millis:'+s.millis+ ',colors:'+colorsstr + '; ';
+        });
+        return str;
+    },
     /**
 	 * Main entry point for this service, sets currentColor & currentLedN
 	 * 'color' arg is a tinycolor() color or hextring ('#ff00ff')
@@ -312,8 +338,8 @@ var Blink1Service = {
 		var blink1Idx = this.idToBlink1Index(blink1_id);
 
 		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		// log.msg('Blink1Service.fadeToColor: idx:',blink1Idx,' msec:',millis,' ledn:',ledn,
-		// 	' c:',color.toHexString(), " -- currentState:",currentState);
+		log.msg('Blink1Service.fadeToColor: blink1_idx:',blink1Idx,' msec:',millis,' ledn:',ledn,
+			' c:',color.toHexString(), " -- currentState:", this.dumpCurrentState()); // JSON.stringify(currentState,null,2));
 
 		// var colors = _.clone(currentState[blink1Idx].colors);
 		var colors = currentState[blink1Idx].colors;
@@ -323,7 +349,7 @@ var Blink1Service = {
 
 		// FIXME: do we need these states and the blink1s struct?
 		// lastState[blink1idx] = currentState[blink1idx];
-		currentState[blink1Idx] = {ledn: ledn, millis: millis, colors: colors };
+		currentState[blink1Idx] = { ledn: ledn, millis: millis, colors: colors };
 
 		// divide currentMillis by two to make it appear more responsive
 		// by having blink1 be at destination color for half the time
@@ -333,6 +359,12 @@ var Blink1Service = {
 		this.notifyChange();
 	},
 
+    /**
+     * turn off everything, or for just a specific blink1
+     * @method function
+     * @param  {String} blink1id blink1 serial number or id or nothing
+     * @return {[type]}          [description]
+     */
 	off: function(blink1id) {
 		var self = this;
 		self.toyStop();
