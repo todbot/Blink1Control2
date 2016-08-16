@@ -90,6 +90,7 @@ var Blink1Service = {
 		// initial population of any already-plugged in devices
 		var serials = Blink1.devices();
         serials.sort();
+        serials.reverse(); // newest blink1s first
 		serials.map( function(s) {
 			Blink1Service._addDevice(s);
 		});
