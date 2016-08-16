@@ -85,9 +85,9 @@ var IftttService = {
 	start: function() {
 		this.reloadConfig();
 		log.msg("IftttService.start: rules", this.rules);
-		if( ! this.config.intervalSecs ) { this.config.intervalSecs = 15; }
-		this.lastTime = Date.now();
-		if( !this.config.enabled ) { return; }
+        if( !this.config.enabled ) { return; }
+		if( !this.config.intervalSecs ) { this.config.intervalSecs = 15; }
+        this.lastTime = Date.now();
 		this.fetch();
 		this.intervalTimer = setInterval(this.fetch.bind(this), this.config.intervalSecs * 1000);
 	},
@@ -167,11 +167,11 @@ var IftttService = {
 				respobj.events.map( function(evt) {
 					// FIXME
 					// log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:'no new events' } );
-
+                    // log.msg("IftttService.fetch: event:", JSON.stringify(evt));
 					evt.eventDate = new Date(parseInt(1000 * evt.date));
 					evt.name = evt.name.trim();
 					if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
-						log.addEvent( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:evt.source  } );
+						log.addEvent( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:'' }); //evt.source  } );
  						// special meta-pattern, FIXME?
  						if( evt.name.startsWith('~') ) {
 							if( !self.lastEvents[evt.name] ) { self.lastEvents[evt.name] = new Date(0); }
