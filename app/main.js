@@ -198,6 +198,11 @@ app.on('ready', function () {
 			height: 900,
             resizable: true,
             show: true,
+            webPreferences: {
+                zoomFactor: 1.0,
+                backgroundThrottling: false,
+                webgl: false
+            }
 		});
 		mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
         mainWindow.webContents.openDevTools({mode:'bottom'});
@@ -208,11 +213,15 @@ app.on('ready', function () {
 		  width: 1040,
 		  height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
 		  resizable: false,
-          show: false  // show later based on config value
+          show: false,  // show later based on config value
+          webPreferences: {
+              zoomFactor: 1.0,
+              backgroundThrottling: false,
+              webgl: false
+          }
           // closable: false,
           // useContentSize: true,
 		  // center: true
-          // backgroundThrottling Boolean - Whether to throttle animations and timers when the page becomes background. Defaults to true.
 	  });
 	  mainWindow.loadURL('file://' + __dirname + '/index-prod.html');
     }
