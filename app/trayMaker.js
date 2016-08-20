@@ -9,7 +9,6 @@ var ipcRenderer = require('electron').ipcRenderer;
 
 var AutoLaunch = remote.require('auto-launch');
 
-
 var pkg = require('./package.json');
 var config = require('./configuration');
 var log = require('./logger');
@@ -39,21 +38,6 @@ var pressBigButton = function( event,arg ) {
     }
 };
 
-
-// var devMenuTemplate = [
-// 	{	type: "separator" },
-// 	// {	label: 'Reload',
-// 	// 	click: function() {  mainWindow.reload(); }
-// 	// },
-// 	{	label: 'Open DevTools',
-// 		accelerator: 'Alt+Command+I',
-// 		click: function() {
-// 			mainWindow.show();
-//             mainWindow.webContents.openDevTools({mode:'bottom'});
-// 		}
-// 	}
-// ];
-
 var trayMaker = {
 
     updateTrayMenu: function() {
@@ -74,6 +58,7 @@ var trayMaker = {
         var contextMenuTemplate = [
             { label: 'Blink1Control2 is running', enabled: false
             },
+
             // {	label: 'About ' + pkg.productName,
             // 	click: function() { openAboutWindow(); }
             // },
@@ -144,16 +129,12 @@ var trayMaker = {
 
     setupTrayMenu: function() {
         var self = this;
-        // if( process.env.NODE_ENV === 'development' ) {
-        // contextMenuTemplate = contextMenuTemplate.concat( devMenuTemplate );
-        // }
+        console.log("resourcesPath:",process.resourcesPath, "appPath:",app.getAppPath());
         if( process.platform === 'win32' ) {  // FIXME: make this icon better for Windows
-            // tray = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon2-128px.ico') );
-            tray = new Tray('./app/images/icons/blink1mk2-icon2-128px.ico' );
+            tray = new Tray( app.getAppPath() + '/images/icons/blink1mk2-icon2-128px.ico' );
         }
         else {
-            // tray = new Tray( path.join(__dirname, './images/icons/blink1mk2-icon-16px.png') );
-            tray = new Tray('./app/images/icons/blink1mk2-icon-16px.png' );
+            tray = new Tray( app.getAppPath() + '/images/icons/blink1mk2-icon-16px.png' );
         }
         tray.on('click', function() {
             console.log("TRAY MENU CLICK!");
