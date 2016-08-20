@@ -32,7 +32,7 @@ $ npm run start
 $ npm install
 $ npm run postinstall
 $ npm run webpack
-$ npm run pkg:mac
+$ npm run dist:mac
 
 ```
 
@@ -41,5 +41,5 @@ $ npm run pkg:mac
 ```
 $ npm install
 $ npm run webpack
-$ npm run pkg:win
+$ npm run dist:win
 ```
