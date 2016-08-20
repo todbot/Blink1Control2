@@ -57,7 +57,7 @@ if(shouldQuitMultiInstance) {
 var isQuitting = false;
 
 var quit = function() {
-	console.log("quit. quitting...",isQuitting);
+	console.log("Blink1Control2: quit. quitting...",isQuitting);
 	if( !isQuitting ) {
 		mainWindow.webContents.send('quitting', 'blink1control2');
 	}
@@ -66,7 +66,7 @@ var quit = function() {
 };
 
 app.on('window-all-closed', function () {
-	console.log("app.window-all-closed");
+	console.log("Blink1Control2: app.window-all-closed");
 	if (process.platform !== 'darwin') {
 		quit();
 	}
@@ -228,7 +228,7 @@ app.on('ready', function () {
 
 	// mainWindow.setMenu(null);  // remove default menu
 	mainWindow.on('close', function (e) {
-		console.log("mainWindow.close");
+		console.log("Blink1Control2: mainWindow.close");
 		if( !isQuitting ) {
 			mainWindow.hide();
 			return e.preventDefault();
@@ -236,22 +236,22 @@ app.on('ready', function () {
 	});
 
 	mainWindow.on('closed', function () {
-		console.log("mainWindow.closed");
+		console.log("Blink1Control2: mainWindow.closed");
 		quit();
 		mainWindow = null;
 	});
 	mainWindow.on('minimize', function() {
-		console.log("mainWindow.minimize");
+		console.log("Blink1Control2: mainWindow.minimize");
 		mainWindow.hide();
 	});
 	mainWindow.webContents.on('new-window', function(e, url) {
-		console.log("mainWindow.new-window: HEY THERE EVERYONE");
+		console.log("Blink1Control2: mainWindow.new-window");
 		e.preventDefault();
 	  	require('shell').openExternal(url);
 	});
 
 	app.on('will-quit', function() {
-		console.log("app will-quit");
+		console.log("Blink1Control2: app will-quit");
 	});
 	app.on('activate', function() {
 		mainWindow.show();
