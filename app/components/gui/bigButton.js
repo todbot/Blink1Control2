@@ -24,6 +24,7 @@ var BigButton = React.createClass({
 	propTypes: {
 		name: React.PropTypes.string.isRequired,
 		type: React.PropTypes.string.isRequired,
+        iconClass: React.PropTypes.string,
 		color: React.PropTypes.string,
 		onClick: React.PropTypes.func,
 		onEdit: React.PropTypes.func,
@@ -91,16 +92,23 @@ var BigButton = React.createClass({
 		this.props.onEdit('rename', this.props.idx, this.state.name); // FIXME: seems really hacky
 		this.hideEditMenu();
 	},
-	showContextMenu: function() {
+	showContextMenu: function(evt) {
 		// log.msg("BigButton:showContextMenu2: menu:",a,"b:",b,"c:",c);
+        evt.preventDefault();
 		if( this.props.type === 'sys' ) { return; } // no context for sys buttons
 		var menu = this.makeMenu();
 		menu.popup(currentWindow);
 	},
 	doContextMenu: function(event, eventKey, arg) {
-		log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx);
+    	log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx);
 		this.props.onEdit(eventKey, this.props.idx, arg);
 	},
+    handleMouseDown: function(evt) {
+        // log.msg("BigButton.handleMouseDown:", evt, "buttons:",evt.buttons, evt.button, 'ctrl:',evt.ctrlKey );
+        if( evt.button === 2 || evt.ctrlKey) {
+            // log.msg("CONTEXT MENU!");
+        }
+    },
 	render: function() {
 		var buttonStyle = { width: 72, height: 72, padding: 3, margin: 5, textShadow:'none'  };
 		// var tstyle = { height: 28, border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal'  };
@@ -130,19 +138,7 @@ var BigButton = React.createClass({
             //     })} </span>;
 		}
 		else if( this.props.type === "sys") {  // FIXME: seems hacky, must be better way surely
-			if( this.props.name === "White") {
-				iconContent = <i className="fa fa-sun-o fa-2x"></i>;
-			} else if( this.props.name === "Strobe Light" ) {
-				iconContent = <i className="fa fa-bullseye fa-2x"></i>;
-			} else if( this.props.name === "Color Cycle") {
-				iconContent = <i className="fa fa-spinner fa-2x"></i>;
-			} else if( this.props.name === "Mood Light") {
-				iconContent = <i className="fa fa-asterisk fa-2x"></i>;
-			} else if( this.props.name === "Off") {
-				iconContent = <i className="fa fa-power-off fa-2x"></i>;
-			} else {
-				iconContent = <i className="fa fa-eyedropper fa-2x"></i>;
-			}
+            iconContent = <i className={this.props.iconClass} />;
 		}
 		else if( this.props.type === "add" ) {
 			iconContent = <i className="fa fa-plus fa-2x"></i>;
@@ -153,7 +149,8 @@ var BigButton = React.createClass({
 			<div>
 				<Button style={buttonStyle} title={titlestr}
 					onContextMenu={this.showContextMenu}
-					onMouseDown={this.props.onClick} >
+                    onMouseDown={this.handleMouseDown}
+                    onClick={this.props.onClick}>
 					{iconContent}
 					<div style={namestyle}>{this.props.name}</div>
 				</Button>

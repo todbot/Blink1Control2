@@ -28,11 +28,12 @@ var BigButtonSet = React.createClass({
         }
         return {
             buttonsSys: [
-                { name: "Color Cycle", type: "sys" },
-                { name: "Mood Light", type: "sys" },
-                { name: "Strobe Light", type: "sys" },
-                { name: "White", type: "sys" },
-                { name: "Off", type: "sys" }
+                { name: "Color Cycle",  type: "sys", iconClass:"fa fa-spinner fa-2x" },
+                { name: "Mood Light",   type: "sys", iconClass:"fa fa-asterisk fa-2x" },
+                { name: "Strobe Light", type: "sys", iconClass:"fa fa-bullseye fa-2x" },
+                { name: "White",        type: "sys", iconClass:"fa fa-sun-o fa-2x" },
+                { name: "Reset",        type: "sys", iconClass:"fa fa-undo fa-2x" },
+                { name: "Off",          type: "sys", iconClass:"fa fa-power-off fa-2x" }
             ],
             buttonsUser: buttonsUser
         };
@@ -100,7 +101,7 @@ var BigButtonSet = React.createClass({
     },
 
 	playBigButton: function(buttontype, buttonindex) {
-		// log.msg("bigButtonSet.playBigButton:", buttontype, buttonindex);
+		log.msg("bigButtonSet.playBigButton:", buttontype, buttonindex);
         PatternsService.stopAllPatterns();
         var button = this.state.buttonsUser[buttonindex];
 		if( buttontype === 'sys' ) {
@@ -108,8 +109,10 @@ var BigButtonSet = React.createClass({
 			if( button.name === "White" ) {
 				this.setBlink1Color( "#FFFFFF" );
 			}
+            else if( button.name === "Reset" ) {
+                Blink1Service.off();  // FIXME: what is reset?
+			}
 			else if( button.name === "Off" ) {
-                // PatternsService.stopAllPatterns();
                 Blink1Service.off();
 			}
             else if( button.name === "Color Cycle" ) {
@@ -137,7 +140,7 @@ var BigButtonSet = React.createClass({
         var serials = Blink1Service.getAllSerials();
         var createBigButtonSys = function(button, index) { // FIXME: understand bind()
             return (
-                <BigButton key={index} name={button.name} type='sys'
+                <BigButton key={index} name={button.name} type='sys'  iconClass={button.iconClass}
                     onClick={this.playBigButton.bind(null, 'sys', index)} idx={index} />
             );
         };
@@ -157,7 +160,7 @@ var BigButtonSet = React.createClass({
                 <div style={{padding: 5, overflowX:'scroll', overflowY:'hidden'}}>
                     <ButtonToolbar style={{width:1500}} ref="btbar">
                         {this.state.buttonsUser.map(createBigButtonUser, this)}
-                        <BigButton key="add" name="add button" type="sys" onClick={this.addBigButton} />
+                        <BigButton key="add" name="add button" type="sys" onClick={this.addBigButton} iconClass="fa fa-eyedropper fa-2x" />
                     </ButtonToolbar>
                 </div>
             </div>
