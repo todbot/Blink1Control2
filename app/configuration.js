@@ -29,6 +29,7 @@ console.log("Blink1Control2: config file:"+conf_file);
 // if no conf file, put in a default one
 if( ! fs.existsSync(conf_file) ) {
     if( !fs.existsSync(conf_dir) ) {
+        console.log("Blink1Control2: no config dir, creating it");
         fs.mkdirSync( conf_dir ); // for Windows
     }
     console.log("Blink1Control2: config: no conf file at "+conf_file+", writing defaults");
