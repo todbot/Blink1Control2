@@ -13,13 +13,6 @@ var crashReporter = electron.crashReporter;
 
 var path = require('path');
 
-crashReporter.start({
-	productName: pkg.productName,
-	companyName: pkg.companyName,
-	submitURL: 'http://thingm.com/blink1/blink1control2-crash-reporter', // FIXME:
-	autoSubmit: true
-});
-
 var mainWindow = null;
 
 // Someone tried to run a second instance, we should focus our window.
@@ -39,6 +32,13 @@ if(shouldQuitMultiInstance) {
 
 var pkg = require('./package.json');
 var config = require('./configuration');
+
+crashReporter.start({
+	productName: pkg.productName,
+	companyName: pkg.companyName,
+	submitURL: 'http://thingm.com/blink1/blink1control2-crash-reporter', // FIXME:
+	autoSubmit: true
+});
 
 // var menu = null;
 // var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
