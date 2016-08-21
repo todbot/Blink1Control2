@@ -14,7 +14,7 @@ var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
 var VirtualBlink1 = require('./virtualBlink1');
 
-var PreferencesModal = require('./PreferencesModal');
+var PreferencesModal = require('./preferencesModal');
 var log = require('../../logger');
 
 var Blink1Status = React.createClass({
