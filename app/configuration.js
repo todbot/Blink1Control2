@@ -24,12 +24,14 @@ else {
 
 var conf_dir = app.getPath('userData');
 var conf_file = conf_dir + '/blink1control2-config.json';
-console.log("config file:"+conf_file);
+console.log("Blink1Control2: config file:"+conf_file);
 
 // if no conf file, put in a default one
 if( ! fs.existsSync(conf_file) ) {
-    console.log("config: no conf file at "+conf_file+", writing defaults");
-    fs.mkdirSync( conf_dir ); // for Windows
+    if( !fs.existsSync(conf_dir) ) {
+        fs.mkdirSync( conf_dir ); // for Windows
+    }
+    console.log("Blink1Control2: config: no conf file at "+conf_file+", writing defaults");
     fs.writeFileSync( conf_file, JSON.stringify(confdefaults,null, 2) );
 }
 nconf.file({file: conf_file});
