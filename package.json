@@ -35,7 +35,11 @@
       "overwrite": true,
       "outzz": "dist"
     },
+    "mac": {
+      "target": ["dmg","zip"]
+    },
     "win": {
+      "target": ["squirrel","zip"],
       "remoteReleases": true,
       "icon": "build/icon.ico",
       "iconUrl": "https://github.com/todbot/Blink1Control2/blob/master/build/icon.ico?raw=true"
