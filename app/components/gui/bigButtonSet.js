@@ -132,7 +132,7 @@ var BigButtonSet = React.createClass({
         else if( buttontype === 'pattern' ) {
             this.playPattern( button.patternId );
         }
-        log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
+        // log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
 	},
 
     render: function() {

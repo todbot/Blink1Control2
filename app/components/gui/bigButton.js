@@ -149,7 +149,6 @@ var BigButton = React.createClass({
 			<div>
 				<Button style={buttonStyle} title={titlestr}
 					onContextMenu={this.showContextMenu}
-                    onMouseDown={this.handleMouseDown}
                     onClick={this.props.onClick}>
 					{iconContent}
 					<div style={namestyle}>{this.props.name}</div>

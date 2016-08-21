@@ -352,12 +352,13 @@ var Blink1Service = {
 		// lastState[blink1idx] = currentState[blink1idx];
 		currentState[blink1Idx] = { ledn: ledn, millis: millis, colors: colors };
 
+        this.notifyChange();
+        
 		// divide currentMillis by two to make it appear more responsive
 		// by having blink1 be at destination color for half the time
 		// color, ledn, & blink1idx is known-good at this point
 		this._fadeToRGB( millis/2, color, ledn, blink1Idx);
 
-		this.notifyChange();
 	},
 
     /**
