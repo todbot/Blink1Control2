@@ -6,7 +6,9 @@
   "productName": "Blink1Control2",
   "companyName": "ThingM",
   "homepage": "http://github.com/todbot/blink1control2",
+  "repository": "http://github.com/todbot/blink1control2",
   "bugs": "http://github.com/todbot/blink1control2/issues",
+  "license": "ISC",
   "scripts": {
     "startdev": "NODE_ENV=development npm run start",
     "startdev:win": "set NODE_ENV=development&& npm run start",

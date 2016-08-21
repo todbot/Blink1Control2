@@ -6,7 +6,9 @@
     "productName": "Blink1Control2",
     "companyName": "ThingM",
     "homepage": "http://github.com/todbot/blink1control2",
+    "repository": "http://github.com/todbot/blink1control2",
     "bugs": "http://github.com/todbot/blink1control2/issues",
+    "license": "ISC",
     "main": "main.js",
     "dependencies": {
         "auto-launch": "^2.0.1",
