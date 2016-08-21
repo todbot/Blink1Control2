@@ -13,14 +13,6 @@ var crashReporter = electron.crashReporter;
 
 var path = require('path');
 
-
-// var nativeImage = electron.nativeImage;
-// var runtime = require('./src/core/runtime');
-// var appMenu = require('./src/core/app-menu');
-
-var pkg = require('./package.json');
-var config = require('./configuration');
-
 crashReporter.start({
 	productName: pkg.productName,
 	companyName: pkg.companyName,
@@ -34,13 +26,19 @@ var mainWindow = null;
 // Really only applicable on Windows, maybe Linux
 var shouldQuitMultiInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     if(mainWindow) {
-        if (mainWindow.isMinimized()) { mainWindow.restore(); }
-        mainWindow.focus()
+        if(mainWindow.isMinimized()) {
+            mainWindow.restore();
+        }
+        mainWindow.show();
+        mainWindow.focus();
     }
 });
 if(shouldQuitMultiInstance) {
     app.quit()
 }
+
+var pkg = require('./package.json');
+var config = require('./configuration');
 
 // var menu = null;
 // var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
