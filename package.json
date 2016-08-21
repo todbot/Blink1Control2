@@ -36,10 +36,14 @@
       "outzz": "dist"
     },
     "mac": {
-      "target": ["dmg","zip"]
+      "title": "Blink1Control2",
+      "icon": "build/icon.icns"
     },
     "win": {
-      "target": ["squirrel","zip"],
+      "target": [
+        "squirrel",
+        "zip"
+      ],
       "remoteReleases": true,
       "icon": "build/icon.ico",
       "iconUrl": "https://github.com/todbot/Blink1Control2/blob/master/build/icon.ico?raw=true"
@@ -61,10 +65,6 @@
           "type": "file"
         }
       ]
-    },
-    "mac": {
-      "title": "Blink1Control2",
-      "icon": "build/icon.icns"
     }
   },
   "devDependencies": {
