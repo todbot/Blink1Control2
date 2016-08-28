@@ -16,7 +16,7 @@
     "blink1ToUse": 0
   },
   "patternsService": {
-    "playingSerialize": false
+    "playingSerialize": true
   },
   "patterns": [
     {

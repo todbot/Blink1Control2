@@ -54,6 +54,7 @@ var patternsTemp = [];
 var playingQueue = [];
 
 var playingPatternId = '';
+var playingBlink1Id = '';
 // var lastPatternId = ''; // last pattern that was recently played, or none
 
 var listeners = {};
@@ -337,11 +338,13 @@ var PatternsService = {
 		log.msg("PatternsService.playPattern: id:",pattid, ", blink1id:",blink1id, "patternsTemp:",patternsTemp);
 
         if( this.config.playingSerialize ) {
-            if( playingPatternId !== '' ) { // pattern playing
+            if( playingPatternId !== '' ) { // pattern playing, so interrupt it and save it
                 log.msg("PatternsService.playPattern: queue up:",pattid, "was:", playingPatternId);
                 // queue up
-                playingQueue.push( {patternId:pattid, blink1Id:blink1id});
-                return;
+                // playingQueue.push( {patternId:pattid, blink1Id:blink1id});
+                // return;
+                // or, queue current playing one, and play this one
+                playingQueue.push( { patternId: playingPatternId, blink1Id: playingBlink1Id});
             }
         }
 
@@ -432,6 +435,7 @@ var PatternsService = {
 		pattern.playcount = 0;
 		pattern.playing = true;
 		playingPatternId = pattid;
+        playingBlink1Id = blink1id;
 		// playingStack.push( id ); // FIXME: idea for pattern stack
 		this._playPatternInternal(pattern.id, blink1id, null);
 		return pattid;
@@ -448,6 +452,7 @@ var PatternsService = {
 	_playPatternInternal: function(id, blink1id, callback) {
 		// log.msg("_playPatternInternal:",id);
 		playingPatternId = id;
+        playingBlink1Id = blink1id;
 		var pattern = _.find(this.getAllPatterns(), {id: id});
 		if( !pattern ) { // look for id in temp pattern list
 			pattern = _.find( patternsTemp, {id:id});
@@ -456,7 +461,7 @@ var PatternsService = {
 		var rgb = color.rgb;
 		var millis = color.time * 1000;
 		var ledn = color.ledn;
-		// console.log("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
+		log.msg("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb );
 
 		Blink1Service.fadeToColor( millis, rgb, ledn, blink1id );
 
