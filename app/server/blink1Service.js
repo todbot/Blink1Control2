@@ -15,6 +15,8 @@ var config = require('../configuration');
 var log = require('../logger');
 var util = require('../utils');
 
+var Eventer = require('../eventer');
+
 // some globals because we are a singleton
 
 /**
@@ -116,7 +118,7 @@ var Blink1Service = {
         }
         // set up all devices at once
         // we wait 500msec because it was failing without it
-        setTimeout( Blink1Service._setupFoundDevices, 500);
+        setTimeout( Blink1Service._setupFoundDevices, 500);  // FIXME: an issue?
     },
     _setupFoundDevices: function() {
         log.msg("Blink1Service._setupFoundDevices", blink1s);
@@ -126,6 +128,10 @@ var Blink1Service = {
                 b1.device = new Blink1(b1.serial);
             }
         });
+
+        // TrayMaker.updateTrayMenu();
+        Eventer.emit('deviceUpdated');
+
         Blink1Service.notifyChange();
     },
 	/**
@@ -207,6 +213,11 @@ var Blink1Service = {
         });
         return cnt;
 	},
+    getStatusString: function() {
+        //return Blink1Service.isConnected() ? "connected" : "not connected",
+        var cnt = this.isConnected();
+        return (cnt>1) ? cnt + " devices connected" : (cnt) ? "device connected" : "no device connected";
+    },
     // FIXME: support multiple blink1s
 	serialNumber: function() {
 		if( this.isConnected() ) {
@@ -353,7 +364,7 @@ var Blink1Service = {
 		currentState[blink1Idx] = { ledn: ledn, millis: millis, colors: colors };
 
         this.notifyChange();
-        
+
 		// divide currentMillis by two to make it appear more responsive
 		// by having blink1 be at destination color for half the time
 		// color, ledn, & blink1idx is known-good at this point
