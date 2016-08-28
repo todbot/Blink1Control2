@@ -19,15 +19,10 @@ var log = require('../../logger');
 
 var Blink1Status = React.createClass({
 
-	getStatusString: function() {
-		//return Blink1Service.isConnected() ? "connected" : "not connected",
-		var cnt = Blink1Service.isConnected();
-		return (cnt>1) ? cnt + " devices connected" : (cnt) ? "device connected" : "no device connected";
-	},
 	getInitialState: function() {
 		return {
 			blink1Color: Blink1Service.getCurrentColor(),
-			statusStr: this.getStatusString(),
+			statusStr: Blink1Service.getStatusString(),
 			serialNumber: Blink1Service.serialNumberForDisplay(),
 			blink1Serials: Blink1Service.getAllSerials(),
 			iftttKey: Blink1Service.iftttKey(),
@@ -48,7 +43,7 @@ var Blink1Status = React.createClass({
 	updateColorState: function(currentColor /*, colors,ledn */) {
 		this.setState({
 						blink1ColorLast: currentColor,
-						statusStr: this.getStatusString(),
+						statusStr: Blink1Service.getStatusString(),
 						serialNumber: Blink1Service.serialNumberForDisplay(),
 						blink1Serials: Blink1Service.getAllSerials(),
 						iftttKey: Blink1Service.iftttKey()
