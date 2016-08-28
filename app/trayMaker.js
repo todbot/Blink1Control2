@@ -54,11 +54,11 @@ var TrayMaker = {
                     Eventer.emit('playBigButtonSys', 'Off');
                 }
             },
-            {	label: 'Reset Alerts',
-                click: function() {
-                    // FIXME: TBD
-                }
-            },
+            // {	label: 'Reset Alerts',
+            //     click: function() {
+            //         // FIXME: TBD
+            //     }
+            // },
             {	type: "separator" },
             {	label: 'Open Settings...',
                 click: function() {

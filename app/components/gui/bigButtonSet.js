@@ -19,7 +19,8 @@ var buttonsUserDefault = [
     { name: "Available", type: "color", color: "#00FF00", ledn: 0 },
     { name: "Busy", type: "color", color: "#ffFF00", ledn: 0},
     { name: "Away", type: "color", color: "#ff0000", ledn: 0 },
-    { name: "Meeting", type: "color", color: "#00000ff", ledn: 0 }
+    { name: "Meeting", type: "color", color: "#0000ff", ledn: 0 },
+    { name: "Out of Office", type: "color", color: "#FFBF00", ledn: 0 }
 ];
 
 var BigButtonSet = React.createClass({
@@ -38,7 +39,7 @@ var BigButtonSet = React.createClass({
                 { name: "Mood Light",   type: "sys", iconClass:"fa fa-asterisk fa-2x" },
                 { name: "Strobe Light", type: "sys", iconClass:"fa fa-bullseye fa-2x" },
                 { name: "White",        type: "sys", iconClass:"fa fa-sun-o fa-2x" },
-                { name: "Reset",        type: "sys", iconClass:"fa fa-undo fa-2x" },
+                // { name: "Reset",        type: "sys", iconClass:"fa fa-undo fa-2x" },
                 { name: "Off",          type: "sys", iconClass:"fa fa-power-off fa-2x" }
             ],
             buttonsUser: buttonsUser
