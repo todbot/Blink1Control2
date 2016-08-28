@@ -64,12 +64,20 @@ var quit = function() {
 };
 
 app.on('window-all-closed', function () {
-	console.log("Blink1Control2: app.window-all-closed");
+	console.log("Blink1Control2:  app.window-all-closed");
 	if (process.platform !== 'darwin') {
 		quit();
 	}
 });
 
+var handleUrl = function(e,url) {
+    console.log("event:",e);
+    // console.log("handleUrl: ",url);
+    if(url != mainWindow.webContents.getURL()) {
+        e.preventDefault();
+        electron.shell.openExternal(url);
+    }
+}
 // stolen from https://github.com/twolfson/google-music-electron/blob/master/lib/google-music-electron.js
 var openAboutWindow = function () {
 	// DEV: aboutWindow will be garbage collection automatically
@@ -77,14 +85,12 @@ var openAboutWindow = function () {
 		title: "About Blink1Control2",
 		alwaysOnTop: true,
 		autoHideMenuBar: true,
-		height: 350,
+		height: 375,
 		width: 500
 		// icon: assets['icon-32'],
 	});
-	aboutWindow.webContents.on('new-window', function(e, url) {
-		e.preventDefault();
-		require('shell').openExternal(url);
-	});
+    aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
+    aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
 
 	// aboutWindow.loadURL('data:text/html,' + info);
 	aboutWindow.loadURL( 'file://' + __dirname + '/about.html' );
@@ -245,7 +251,7 @@ app.on('ready', function () {
 	mainWindow.webContents.on('new-window', function(e, url) {
 		console.log("Blink1Control2: mainWindow.new-window");
 		e.preventDefault();
-	  	require('shell').openExternal(url);
+	  	electron.shell.openExternal(url);
 	});
 
 	app.on('will-quit', function() {
