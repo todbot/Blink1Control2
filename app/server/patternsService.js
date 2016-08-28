@@ -53,13 +53,6 @@ var patternsUser; // The user generated patterns
 var patternsTemp = [];
 var playingQueue = [];
 
-/**
- * Determines whether or not patterns play concurrently or one-after-the-other
- * FIXME: should be in a config
- * @type {Boolean}
- */
-// var playingSerialize = false;
-
 var playingPatternId = '';
 // var lastPatternId = ''; // last pattern that was recently played, or none
 
@@ -137,6 +130,11 @@ var _systemFixup = function(pattern) {
  */
 var PatternsService = {
     config: {
+        /**
+         * Determines whether or not patterns play concurrently or one-after-the-other
+         * FIXME: need concept of 'priority' so patterns can jump the queue
+         * @type {Boolean}
+         */
         playingSerialize: false
     },
     reloadConfig: function() {
