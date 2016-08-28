@@ -97,26 +97,12 @@ ipcRenderer.on('reloadConfig', function( event,arg ) {
         ApiServer.reloadConfig();
     }
 });
-// ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {
-//     PatternsService.stopAllPatterns();
-//     Blink1Service.off();
-// });
-// ipcRenderer.on('pressBigButton', function( event,arg ) {
-//     var bigButtonsConfig = conf.readSettings('bigButtons');
-//     var bigButton = bigButtonsConfig[ arg ];
-//     if( bigButton ) {
-//         // FIXME: this is duplicating code in BigButton
-//         if( bigButton.type === 'color' ) {
-//             console.log("buttontype color", bigButton);
-//             log.addEvent({type:'trigger', source:'button', id:bigButton.name} );
-//             Blink1Service.fadeToColor( 100, bigButton.color, bigButton.ledn || 0 );  // 0=all leds
-//         }
-//         else if( bigButton.type === 'pattern' ) {
-//             console.log("buttontype pattern");
-//             PatternsService.playPattern( bigButton.patternId );
-//         }
-//     }
-// });
+
+// FIXME: is this used?
+ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {
+    PatternsService.stopAllPatterns();
+    Blink1Service.off();
+});
 
 
 // run startup script, if any, after a bit so system is init'd
