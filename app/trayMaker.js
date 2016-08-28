@@ -10,63 +10,30 @@ var ipcRenderer = require('electron').ipcRenderer;
 var pkg = require('./package.json');
 var config = require('./configuration');
 var log = require('./logger');
+var Eventer = require('./eventer');
 
 var Blink1Service = require('./server/blink1Service');
-var PatternsService = require('./server/patternsService');
 
 var mainWindow = BrowserWindow.getAllWindows()[0];
 
 var tray = null;
 
-// FIXME: this is duplicating (badly) code in BigButtonSet
-var pressBigButton = function( event,arg ) {
-    var bigButtonsConfig = config.readSettings('bigButtons');
-    var button = bigButtonsConfig[ arg ];
-    if( button ) {
-        PatternsService.stopAllPatterns();
-        log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
-        if( button.type === 'color' ) {
-            Blink1Service.fadeToColor( 100, button.color, button.ledn || 0 );  // 0=all leds
-            // IDEA: this is related to github issue #4
-            //         cnt color, time, ledn, color, time, ledn
-            // ~pattern:3,#ff00ff,0.5,0,#00ff00,1.3,0
-            // var patternstr = '~pattern:'+ button.name +'0,' + button.color +',0.1,'+ (button.ledn||0);
-            // log.msg("patternstr",patternstr);
-            // PatternsService.playPattern( patternstr );
-        }
-        else if( button.type === 'pattern' ) {
-            PatternsService.playPattern( button.patternId );
-        }
-    }
-};
 
-var trayMaker = {
+var TrayMaker = {
+    bip: function() {
 
+    },
+    // showTrayMenu: function() {
     updateTrayMenu: function() {
-
-        // console.log("TRAY MENU UPDATE...");
-
+        log.msg("TrayMaker.updateTrayMenu");
         var bigButtonsConfig = config.readSettings('bigButtons') || [];
-        // var statusButtons = bigButtonsConfig.map( function(bb,idx) {
-        //     return {
-        //         label: bb.name,
-        //         // icon: swatchIcon,
-        //         click: function(/*item*/) {
-        //             // console.log("click item",item);
-        //             pressBigButton(null,idx);
-        //             // mainWindow.webContents.send('pressBigButton', idx);
-        //         }
-        //     };
-        // });
-        var statusButtonsNew = bigButtonsConfig.map( function(bb,idx) {
+        var statusButtons = bigButtonsConfig.map( function(bb,idx) {
             return {
                 label: "Set: " + bb.name,
-                accelerator: "CommandOrControl+" + (idx+1),
+                // accelerator: "CommandOrControl+" + (idx+1),
                 // icon: swatchIcon,
                 click: function(/*item*/) {
-                    // console.log("click item",item);
-                    pressBigButton(null,idx);
-                    // mainWindow.webContents.send('pressBigButton', idx);
+                    Eventer.emit('playBigButtonUser', idx);
                 }
             };
 
@@ -78,19 +45,18 @@ var trayMaker = {
             {  type:  'separator' }
         ];
 
-        Array.prototype.push.apply( contextMenuTemplate, statusButtonsNew );
+        Array.prototype.push.apply( contextMenuTemplate, statusButtons );
 
         var contextMenuTemplateB = [
             {  type: "separator" },
             {  label: 'Off',
                 click: function() {
-                    PatternsService.stopAllPatterns();
-                    Blink1Service.off();
+                    Eventer.emit('playBigButtonSys', 'Off');
                 }
             },
             {	label: 'Reset Alerts',
                 click: function() {
-                    // TBD
+                    // FIXME: TBD
                 }
             },
             {	type: "separator" },
@@ -172,7 +138,9 @@ var trayMaker = {
         ];*/
 
         var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
-        tray.setContextMenu(contextMenu);
+        // tray.popUpContextMenu(contextMenu);
+        tray.setContextMenu( contextMenu );
+
         if (process.platform === 'darwin') {
             app.dock.setMenu( contextMenu ); // Make Dock have same context menu
         }
@@ -180,7 +148,7 @@ var trayMaker = {
     },
 
     setupTrayMenu: function() {
-        var self = this;
+        // var self = this;
         console.log("resourcesPath:",process.resourcesPath, "appPath:",app.getAppPath());
         if( process.platform === 'win32' ) {  // FIXME: make this icon better for Windows
             tray = new Tray( app.getAppPath() + '/images/icons/blink1mk2-icon2-128px.ico' );
@@ -188,21 +156,6 @@ var trayMaker = {
         else {
             tray = new Tray( app.getAppPath() + '/images/icons/blink1mk2-icon-16px.png' );
         }
-        tray.on('right-click', function() {
-            console.log("tray right click");
-        });
-        tray.on('double-click', function() {
-            console.log("tray double click");
-        });
-        tray.on('click', function() {
-            console.log("tray CLICK!");
-            // self.updateTrayMenu();
-            // tray.popUpContextMenu();
-        });
-        tray.on('double-click', function() {
-            console.log("tray DOUBLE-CLICK!");
-            // mainWindow.show();
-        });
         tray.setToolTip( pkg.productName + ' is running...');
 
         // delete tray object to eliminate duplicates on reload
@@ -211,11 +164,21 @@ var trayMaker = {
             if(tray) { tray.destroy(); tray = null; }
         };
 
-        self.updateTrayMenu();
-        // this.updateTrayMenu();
-        // setInterval( this.updateTrayMenu, 1000 ); // FIXME: super big ugly hack
+        this.updateTrayMenu();
+
+        Eventer.on('deviceUpdated', this.updateTrayMenu);
+        Eventer.on('bigButtonsUpdated', this.updateTrayMenu);
+
+        // tray.on('click', function() {
+        //     self.showTrayMenu();
+        // });
+        // tray.on('right-click', function() {
+        //     self.showTrayMenu();
+        // });
+        // tray.on('double-click', function() {
+        // });
     }
 
 };
 
-module.exports = trayMaker;
+module.exports = TrayMaker;

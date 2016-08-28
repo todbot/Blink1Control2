@@ -4,6 +4,8 @@ var React = require('react');
 
 var config = require('../../configuration');
 var log = require('../../logger');
+var Eventer = require('../../eventer');
+
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
 
@@ -22,10 +24,14 @@ var buttonsUserDefault = [
 
 var BigButtonSet = React.createClass({
     getInitialState: function() {
+        // var self = this;
         var buttonsUser = config.readSettings('bigButtons');
         if( !buttonsUser ) {
             buttonsUser = buttonsUserDefault;
         }
+        Eventer.on('playBigButtonUser', this.playBigButtonUser );
+        Eventer.on('playBigButtonSys', this.playBigButtonSys );
+
         return {
             buttonsSys: [
                 { name: "Color Cycle",  type: "sys", iconClass:"fa fa-spinner fa-2x" },
@@ -39,9 +45,9 @@ var BigButtonSet = React.createClass({
         };
     },
     saveButtons: function(buttonsUser) {
-        // log.msg("BigButtonSet.saveButtons: buttonsUser:", JSON.stringify(buttonsUser));
         this.setState( {buttonsUser: buttonsUser });
         config.saveSettings("bigButtons", buttonsUser);
+        Eventer.emit('bigButtonsUpdated');
     },
     addBigButton: function() { // FIXME: this is hacky
         var newbut = {
@@ -55,10 +61,8 @@ var BigButtonSet = React.createClass({
     },
     onEdit: function(cmd, idx, arg) {
         var mybuttons = this.state.buttonsUser.concat(); // clone;
-        // var editbutt = mybuttons[idx];
         if( cmd === 'delete' ) {
-            // delete this.state.buttonsUser[ idx ];
-            delete mybuttons[ idx ];
+            mybuttons.splice( idx,1 );
         }
         else if( cmd === 'moveleft') {
             if( idx > 0 ) {
@@ -99,14 +103,27 @@ var BigButtonSet = React.createClass({
     playPattern: function(patternid) {
         PatternsService.playPattern( patternid );
     },
-
-	playBigButton: function(buttontype, buttonindex) {
-		log.msg("bigButtonSet.playBigButton:", buttontype, buttonindex);
-        PatternsService.stopAllPatterns();
+    // can be called outside of this class
+    playBigButtonUser: function(buttonindex) {
+        log.msg("bigButtonSet.playBigButtonUser:", buttonindex);
         var button = this.state.buttonsUser[buttonindex];
-		if( buttontype === 'sys' ) {
-			button = this.state.buttonsSys[buttonindex];
-			if( button.name === "White" ) {
+        if( button ) {
+            if( button.type === 'color' ) {
+                this.setBlink1Color( button.color, button.ledn );
+            }
+            else if( button.type === 'pattern' ) {
+                this.playPattern( button.patternId );
+            }
+            log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
+        }
+        else {
+            log.msg("bigButtonSet.playBigButtonUser: no button ", buttonindex);
+        }
+    },
+    playBigButtonSys: function(buttonname) {
+        var button = this.state.buttonsSys.find( function(b) { return b.name === buttonname; });
+        if( button ) {
+            if( button.name === "White" ) {
 				this.setBlink1Color( "#FFFFFF" );
 			}
             else if( button.name === "Reset" ) {
@@ -123,17 +140,24 @@ var BigButtonSet = React.createClass({
             }
             else if( button.name === "Strobe Light" ) {
                 Blink1Service.toyStart('strobe');
-                // PatternsService.playPattern( '~blink-white-0' );
             }
-		}
-		else if( buttontype === 'color' ) {
-			this.setBlink1Color( button.color, button.ledn );
-		}
-        else if( buttontype === 'pattern' ) {
-            this.playPattern( button.patternId );
+            log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
         }
-        // log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
-	},
+        else {
+            log.msg("bigButtonSet.playBigButtonSys: no button ", buttonname);
+        }
+    },
+	// playBigButton: function(buttontype, buttonindex) {
+	// 	log.msg("bigButtonSet.playBigButton:", buttontype, buttonindex);
+    //     PatternsService.stopAllPatterns();
+    //     var button = this.state.buttonsUser[buttonindex];
+	// 	if( buttontype === 'sys' ) {
+	// 		button = this.state.buttonsSys[buttonindex];
+	// 	}
+    //     else {
+    //         this.playBigButtonUser( buttonindex );
+    //     }
+	// },
 
     render: function() {
         var patterns = PatternsService.getAllPatterns();
@@ -141,14 +165,14 @@ var BigButtonSet = React.createClass({
         var createBigButtonSys = function(button, index) { // FIXME: understand bind()
             return (
                 <BigButton key={index} name={button.name} type='sys'  iconClass={button.iconClass}
-                    onClick={this.playBigButton.bind(null, 'sys', index)} idx={index} />
+                    onClick={this.playBigButtonSys.bind(null, button.name)} idx={index} />
             );
         };
         var createBigButtonUser = function(button, index) { // FIXME: understand bind()
             return (
                 <BigButton key={index} idx={index} name={button.name} type={button.type}
                     color={button.color} patterns={patterns} serials={serials}
-                    onClick={this.playBigButton.bind(null, button.type, index)}
+                    onClick={this.playBigButtonUser.bind(null, index)}
                     onEdit={this.onEdit} />
             );
         };
