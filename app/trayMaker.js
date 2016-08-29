@@ -49,7 +49,8 @@ var TrayMaker = {
 
         var contextMenuTemplateB = [
             {  type: "separator" },
-            {  label: 'Off',
+            {  label: 'Off / Reset Alerts',
+                accelerator: 'CommandOrControl+R',
                 click: function() {
                     Eventer.emit('playBigButtonSys', 'Off');
                 }
