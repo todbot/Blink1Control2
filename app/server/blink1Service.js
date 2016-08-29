@@ -326,7 +326,7 @@ var Blink1Service = {
         var str = '';
         currentState.map( function(s, i) {
             var colorsstr = s.colors.reduce( function(prev,curr) { return prev +','+ curr.toHexString(); });
-            str += i+ ': ledn:'+s.ledn+ ',millis:'+s.millis+ ',colors:'+colorsstr + '; ';
+            str += 'blink1Idx:'+i+ ': ledn:'+s.ledn+ ', millis:'+s.millis+ ', colors:'+colorsstr + ';\n';
         });
         return str;
     },
@@ -409,12 +409,16 @@ var Blink1Service = {
 	 * @param  {String} mode Toy mode: 'moodlight', 'colorcycle', 'strobe'
 	 */
 	toyStart: function(mode) {
-		if( mode === 'moodlight' ) {
+		if(      mode === 'moodlight' ) {
 			this.toy.interval = 5000;
 		}
 		else if( mode === 'colorcycle' ) {
 			this.toy.interval = 30;
 			this.toy.value = Math.floor( Math.random() * 360 );
+		}
+        else if( mode === 'party' ) {
+			this.toy.interval = 100;
+			// this.toy.value = '#FFFFFF';
 		}
 		else if( mode === 'strobe' ) {
 			this.toy.interval = 100;
@@ -432,15 +436,23 @@ var Blink1Service = {
 	 * Actually do the toy in question
 	 */
 	toyDo: function() {
+        var rledn = Math.floor( Math.random() * 2 ) + 1;
+        var rhue = Math.floor( Math.random() * 360 );
+        var rcolor;
 		if( !this.toy.enable ) { return; }
 		if( this.toy.mode === 'moodlight' ) {
-			this.fadeToColor( this.toy.interval, tinycolor.random(), 0 ); // FIXME: alternate LEDs?
+            rcolor = tinycolor( {h:rhue, s:1, v:0.75} );
+			this.fadeToColor( this.toy.interval*2, rcolor, rledn );
 		}
 		else if( this.toy.mode === 'colorcycle' ) {
 			this.toy.value += 2;
 			this.toy.value = (this.toy.value>360) ? 0 : this.toy.value;
 			var color = tinycolor({h:this.toy.value, s:1, v:1});
 			this.fadeToColor( 100, color, 0 );
+		}
+        else if( this.toy.mode === 'party' ) {
+            rcolor = tinycolor({h:rhue, s:1, v:1});
+			this.fadeToColor( this.toy.interval, rcolor, rledn);
 		}
 		else if( this.toy.mode === 'strobe' ) {
 			this.toy.value = (this.toy.value==='#000000') ? '#FFFFFF' : '#000000' ;
