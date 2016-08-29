@@ -37,6 +37,7 @@ var BigButtonSet = React.createClass({
             buttonsSys: [
                 { name: "Color Cycle",  type: "sys", iconClass:"fa fa-spinner fa-2x" },
                 { name: "Mood Light",   type: "sys", iconClass:"fa fa-asterisk fa-2x" },
+                { name: "Party",        type: "sys", iconClass:"fa fa-bullhorn fa-2x" },
                 { name: "Strobe Light", type: "sys", iconClass:"fa fa-bullseye fa-2x" },
                 { name: "White",        type: "sys", iconClass:"fa fa-sun-o fa-2x" },
                 // { name: "Reset",        type: "sys", iconClass:"fa fa-undo fa-2x" },
@@ -85,10 +86,9 @@ var BigButtonSet = React.createClass({
             };
         }
         else if( cmd === 'setserial' ) {
-            log.msg("SET SERIAL",arg);
             var button = mybuttons[idx];
             // why do I have to re-create the object?
-            // Why can't
+            // Why can't I just "mybuttons[idx].blink1Id = arg"
             mybuttons[idx] = {
                 name: button.name,
                 type: button.type,
@@ -97,12 +97,6 @@ var BigButtonSet = React.createClass({
                 ledn: button.ledn,
                 blink1Id: arg
             };
-            // button.blink1Id = arg;
-            // mybuttons[idx] = button;
-            // mybuttons[idx] = {
-            //
-            // }
-            console.log("buttons:",mybuttons);
         }
         else if( cmd === 'setpattern') {
             var patt = PatternsService.getPatternById(arg);
@@ -164,6 +158,9 @@ var BigButtonSet = React.createClass({
             }
             else if( button.name === "Mood Light" ) {
                 Blink1Service.toyStart('moodlight');
+            }
+            else if( button.name === "Party" ) {
+                Blink1Service.toyStart('party');
             }
             else if( button.name === "Strobe Light" ) {
                 Blink1Service.toyStart('strobe');
