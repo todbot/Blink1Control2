@@ -51,11 +51,10 @@ var systemPatterns = require('./systemPatterns').patterns;
 var patternsSystem; // The system patterns this service knows about
 var patternsUser; // The user generated patterns
 var patternsTemp = [];
-var playingQueue = [];
+var playingQueue = [];  // [{patternId:'bloop', blink1Id:'2121ABAB'}]
 
-var playingPatternId = '';
+var playingPattern = {};
 var playingBlink1Id = '';
-// var lastPatternId = ''; // last pattern that was recently played, or none
 
 var listeners = {};
 
@@ -88,12 +87,8 @@ var _parsePatternStr = function(patternstr) {
             ledn: Number(pattparts[i + 2])
         };
         // FIXME: validate rgb
-        if (isNaN(color.time)) {
-            color.time = 0.1;
-        }
-        if (isNaN(color.ledn)) {
-            color.ledn = 0;
-        }
+        if (isNaN(color.time)) { color.time = 0.1; }
+        if (isNaN(color.ledn)) { color.ledn = 0; }
         colorlist.push(color);
     }
     return {
@@ -162,7 +157,7 @@ var PatternsService = {
             if (patt.pattern && patt.pattern !== '') {
                 var ppatt = _parsePatternStr(patt.pattern);
                 if (ppatt.colors) {
-                    patt.colors = ppatt.colors;
+                    patt.colors = ppatt.colors; // wat
                 } else {
                     patt.colors = [{
                         rgb: '#000000',
@@ -199,43 +194,32 @@ var PatternsService = {
         if (name.startsWith('~')) {
             return name;
         } // assume special names map to ids
-        var pattern = _.find(this.getAllPatterns(), {
-            name: name
-        });
+        var pattern = _.find(this.getAllPatterns(), { name: name });
         if (!pattern) {
             return "";
         }
         return pattern.id;
     },
     getNameForId: function(id) {
-        var pattern = _.find(this.getAllPatterns(), {
-            id: id
-        });
-        if (!pattern) {
-            return "";
-        }
+        var pattern = _.find(this.getAllPatterns(), { id: id });
+        if (!pattern) { return ""; }
         return pattern.name;
     },
     getPatternByName: function(name) {
-        var pattern = _.find(this.getAllPatterns(), {
-            name: name
-        });
+        var pattern = _.find(this.getAllPatterns(), { name: name });
         return _.clone(pattern);
     },
     getPatternById: function(id) {
-        var pattern = _.find(this.getAllPatterns(), {
-            id: id
-        });
-        // console.log("getPatternById:", pattern);
+        var pattern = _.find(this.getAllPatterns(), { id: id });
         return _.clone(pattern);
     },
+    // for apiServer
     formatPatternForOutput: function(patt) {
-        if (!patt) {
-            return null;
-        }
+        if (!patt) { return null; }
         patt.pattern = _generatePatternStr(patt);
         return _.pick(patt, 'name', 'id', 'pattern');
     },
+    // for apiServer
     formatPatternsForOutput: function(patts) {
         var self = this;
         var patternsOut = patts.map(function(patt) {
@@ -243,6 +227,7 @@ var PatternsService = {
         });
         return patternsOut;
     },
+    // for apiServer
     getAllPatternsForOutput: function() {
         return this.formatPatternsForOutput(this.getAllPatterns());
     },
@@ -281,15 +266,8 @@ var PatternsService = {
         var pattern = {
             name: name,
             repeats: 3,
-            colors: [{
-                rgb: color,
-                time: 0.2,
-                ledn: 0
-            }, {
-                rgb: color2,
-                time: 0.2,
-                ledn: 0
-            }], // FIXME
+            colors: [{ rgb: color, time: 0.2, ledn: 0 },
+                    { rgb: color2, time: 0.2, ledn: 0 }], // FIXME
             playing: false
         };
         pattern.id = _generateId(pattern);
@@ -297,9 +275,7 @@ var PatternsService = {
     },
     /** Create a pattern object from a pattern str.  Does not insert into pattern list */
     newPatternFromString: function(name, patternstr) {
-        if (!patternstr) {
-            return null;
-        }
+        if (!patternstr) { return null; }
         var pattern = _parsePatternStr(patternstr);
         pattern.name = name;
         pattern.id = _generateId(pattern);
@@ -308,24 +284,19 @@ var PatternsService = {
     },
     /** Deletes pattern and notifyChange listeners */
     deletePattern: function(id) {
-        _.remove(patternsUser, {
-            id: id
-        });
+        _.remove(patternsUser, { id: id });
         this.savePatterns();
     },
     /** Stops all patterns playing. Notifies change listeners */
     stopAllPatterns: function() {
-        // log.msg('PatternsService.stopAllPatterns',JSON.stringify(this.getAllPatterns()));
-        // var self = this;
         _.forEach(this.getAllPatterns(), function(pattern) {
             if (pattern.playing) {
                 // console.log("    stopping ",pattern.name);
-                // self.stopPattern(pattern.id);
                 pattern.playing = false;
                 clearTimeout(pattern.timer);
-                if (playingPatternId === pattern.id) {
-                    playingPatternId = '';
-                } // FIXME
+                if (playingPattern.id === pattern.id) {
+                    playingPattern = {};
+                }
             }
         });
         patternsTemp = [];
@@ -333,19 +304,17 @@ var PatternsService = {
     },
     /** Stop a playing pattern.  Notifies change listeners */
     stopPattern: function(id) {
-        log.msg('PatternsService.stopPattern', id, playingPatternId);
-        var pattern = _.find(this.getAllPatterns(), {
-            id: id
-        });
+        log.msg('PatternsService.stopPattern', id, playingPattern.id);
+        var pattern = _.find(this.getAllPatterns(), { id: id });
         if (pattern) {
             pattern.playing = false;
             clearTimeout(pattern.timer);
-            if (playingPatternId === pattern.id) {
-                playingPatternId = '';
+            if (playingPattern.id === pattern.id) {
+                playingPattern = {};
                 if (playingQueue.length > 0) {
-                    var nextPattern = playingQueue.shift();
-                    log.msg("PatternsService.stopPattern: next off playingQueue:", nextPattern);
-                    this.playPattern(nextPattern.patternId, nextPattern.blink1id);
+                    var queueInfo = playingQueue.shift();
+                    log.msg("PatternsService.stopPattern: next off playingQueue:", queueInfo.pattern.id);
+                    this._playPatternInternal(queueInfo.pattern, queueInfo.blink1id);
                 } else {
                     this.notifyChange(); // FIXME: reduce notifys
                 }
@@ -356,25 +325,6 @@ var PatternsService = {
         }
         return false;
     },
-    /**
-     * Play pattern from an event source rule
-     * @param  {Rule} rule Event rule: {patternId:"", blink1Id:""}
-     * @return {pattid} id of pattern, or false if pattern doesn't exist
-     */
-
-    // FIXME: This is only used by iftttService.  Don't think we need it.
-    // playPatternByRule: function(rule) {
-    // 	var allowMultiBlink1 = conf.readSettings('blink1Service:allowMulti') || false;
-    // 	log.msg("PatternsService.playPatternByRule: ",rule, ", multi:",allowMultiBlink1);
-    // 	if( rule.enabled ) {
-    // 		if( allowMultiBlink1 && rule.blink1Id ) {
-    // 			return this.playPattern(rule.patternId, rule.blink1Id);
-    // 		} else {
-    // 			return this.playPattern(rule.patternId);
-    // 		}
-    // 	}
-    // 	return false;
-    // },
 
     /**
      * Play a pattern. Returns false if pattern doesn't exist. Notifies change listeners.
@@ -388,16 +338,13 @@ var PatternsService = {
         log.msg("PatternsService.playPattern: id:", pattid, ", blink1id:", blink1id, "patternsTemp:", patternsTemp);
 
         if (this.config.playingSerialize) {
-            if (playingPatternId !== '') { // pattern playing, so interrupt it and save it
-                log.msg("PatternsService.playPattern: queue up:", pattid, "was:", playingPatternId);
-                // queue up
-                // playingQueue.push( {patternId:pattid, blink1Id:blink1id});
-                // return;
-                // or, queue current playing one, and play this one
+            if (playingPattern.id ) { // pattern playing, so interrupt it and save it
+                log.msg("PatternsService.playPattern: interrupting", playingPattern.id);
                 playingQueue.push({
-                    patternId: playingPatternId,
+                    pattern: playingPattern,
                     blink1Id: playingBlink1Id
                 });
+                clearTimeout( playingPattern.timer );
             }
         }
 
@@ -468,26 +415,19 @@ var PatternsService = {
 
         // FIXME: this function is doing too many things
 
-        var pattern = _.find(this.getAllPatterns(), {
-            name: pattid
-        });
-        if (!pattern) {
-            // finally, look for the pattern as an id
-            pattern = _.find(this.getAllPatterns(), {
-                id: pattid
-            });
+        var pattern = _.find(this.getAllPatterns(), { name: pattid });
+        if (!pattern) { // finally, look for the pattern as an id
+            pattern = _.find(this.getAllPatterns(), { id: pattid });
         }
         if (!pattern) { // check for special built-in patterns
-            pattern = _.find(patternsTemp, {
-                id: pattid
-            });
+            pattern = _.find(patternsTemp, { id: pattid });
             if (!pattern) {
                 log.msg("PatternsService: no pattern with id:", pattid);
                 return false; // FIXME: return error?
             }
         }
         log.msg("PatternsService.playPattern: okay got pattern", pattern);
-        // otherwise, treat 'id' as a pattern object
+        // NOT IMPLEMENTED: otherwise, treat 'id' as a pattern object
 
         if (pattern.playing) {
             clearTimeout(pattern.timer);
@@ -495,38 +435,35 @@ var PatternsService = {
         pattern.playpos = 0;
         pattern.playcount = 0;
         pattern.playing = true;
-        playingPatternId = pattid;
+
+        playingPattern = pattern;
         playingBlink1Id = blink1id;
-        // playingStack.push( id ); // FIXME: idea for pattern stack
-        this._playPatternInternal(pattern.id, blink1id, null);
+
+        this._playPatternInternal(pattern, blink1id);
         return pattid;
     },
 
     /**
      * Internal function for playing a pattern by id
      * @method function
-     * @param  {String}   id       id of pattern
+     * @param  {String}   pattern       pattern object to play
      * @param  {String}   blink1id serial of blink1 to play on, or 0 or undef
-     * @param  {Function} callback unused now?
      * @return no return value
      */
-    _playPatternInternal: function(id, blink1id, callback) {
-        // log.msg("_playPatternInternal:",id);
-        playingPatternId = id;
+    _playPatternInternal: function(pattern, blink1id) {
+        // log.msg("_playPatternInternal:",pattern.id);
+        if( !pattern ) { return; } // should never happen
+        // var pattern = _.find(this.getAllPatterns(), { id: id });
+        // if (!pattern) { // look for id in temp pattern list
+        //     pattern = _.find(patternsTemp, { id: id });
+        // }
+        playingPattern = pattern;
         playingBlink1Id = blink1id;
-        var pattern = _.find(this.getAllPatterns(), {
-            id: id
-        });
-        if (!pattern) { // look for id in temp pattern list
-            pattern = _.find(patternsTemp, {
-                id: id
-            });
-        }
         var color = pattern.colors[pattern.playpos];
         var rgb = color.rgb;
         var millis = color.time * 1000;
         var ledn = color.ledn;
-        // log.msg("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb, millis, ledn );
+        log.msg("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb, millis, ledn );
 
         Blink1Service.fadeToColor(millis, rgb, ledn, blink1id);
 
@@ -538,9 +475,7 @@ var PatternsService = {
             if (pattern.playcount === pattern.repeats) {
                 this.stopPattern(pattern.id); // notifies change listeners
                 if (pattern.temp) { // remove temp pattern after its done
-                    _.remove(patternsTemp, {
-                        id: pattern.id
-                    });
+                    _.remove(patternsTemp, { id: pattern.id });
                     this.notifyChange();
                 }
                 return;
@@ -549,15 +484,15 @@ var PatternsService = {
 
         this.notifyChange();
         pattern.timer = setTimeout(function() {
-            PatternsService._playPatternInternal(id, blink1id, callback);
+            PatternsService._playPatternInternal(pattern, blink1id);
         }, millis);
     },
 
     getPlayingPatternId: function() {
-        return playingPatternId;
+        return playingPattern.id;
     },
     getPlayingPatternName: function() {
-        var patt = this.getPatternById(playingPatternId);
+        var patt = this.getPatternById(playingPattern.id);
         return (patt) ? patt.name : '';
     },
 
@@ -580,5 +515,25 @@ var PatternsService = {
     }
 
 };
+
+/**
+ * Play pattern from an event source rule
+ * @param  {Rule} rule Event rule: {patternId:"", blink1Id:""}
+ * @return {pattid} id of pattern, or false if pattern doesn't exist
+ */
+
+// FIXME: This is only used by iftttService.  Don't think we need it.
+// playPatternByRule: function(rule) {
+// 	var allowMultiBlink1 = conf.readSettings('blink1Service:allowMulti') || false;
+// 	log.msg("PatternsService.playPatternByRule: ",rule, ", multi:",allowMultiBlink1);
+// 	if( rule.enabled ) {
+// 		if( allowMultiBlink1 && rule.blink1Id ) {
+// 			return this.playPattern(rule.patternId, rule.blink1Id);
+// 		} else {
+// 			return this.playPattern(rule.patternId);
+// 		}
+// 	}
+// 	return false;
+// },
 
 module.exports = PatternsService;
