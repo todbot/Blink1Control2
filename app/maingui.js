@@ -23,8 +23,7 @@ var conf = require('./configuration');
 var log = require('./logger');
 
 var TrayMaker = require('./trayMaker');
-
-TrayMaker.setupTrayMenu();
+var Eventer = require('./eventer');
 
 // maybe these go in another file?
 var Blink1Service = require('./server/blink1Service');
@@ -32,6 +31,8 @@ var ApiServer = require('./server/apiServer');
 var PatternsService = require('./server/patternsService');
 
 // log.msg("---- before service start");
+
+TrayMaker.setupTrayMenu();
 
 Blink1Service.start();
 ApiServer.start();
@@ -98,10 +99,12 @@ ipcRenderer.on('reloadConfig', function( event,arg ) {
     }
 });
 
-// FIXME: is this used?
+// used by Main because menus are there
+// (can these be in renderer process? why not)
 ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {
-    PatternsService.stopAllPatterns();
-    Blink1Service.off();
+    log.msg("resetAlerts");
+    Eventer.emit('playBigButtonSys', 'Off');
+
 });
 
 

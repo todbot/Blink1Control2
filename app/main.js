@@ -141,10 +141,14 @@ var makeMenus = function() {
 					{ label: 'Hide Others', accelerator: 'Command+Shift+H', role: 'hideothers' },
 					{ label: 'Show All', role: 'unhide' },
 					{ type: "separator" },
+                    { label: 'Reset Alerts', accelerator: "CommandOrControl+R", click: function() {
+                        mainWindow.webContents.send('resetAlerts');
+                    }},
+                    { type: "separator" },
 					{ label: 'Preferences...', accelerator: "CommandOrControl+,", click: function() { openPreferences(); } },
                     { type: "separator" },
                     { label: 'Open DevTools', accelerator: 'Alt+Command+I', click: function() {
-            				mainWindow.show(); mainWindow.webContents.openDevTools({mode:'bottom'}); }
+        				mainWindow.show(); mainWindow.webContents.openDevTools({mode:'bottom'}); }
             		},
                     { type: "separator" },
 					{ label: 'Close Window', accelerator: "CommandOrControl+W", role:'close' },
