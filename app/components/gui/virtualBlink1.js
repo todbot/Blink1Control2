@@ -143,9 +143,12 @@ var VirtualBlink1 = React.createClass({
 			var colrs = Blink1Service.getCurrentColors(serial);
 			var colrA = colrs[0];
             var colrB = colrs[1];
-			if( colrA.getBrightness() === 0 ) { colrA = '#888'; }
-			if( colrB.getBrightness() === 0 ) { colrB = '#888'; }
+            // log.msg(idx+":"+serial+": ", colrA.toHexString(),colrB.toHexString());
+			if( colrA.getBrightness() === 0 ) { colrA = tinycolor('#888'); }
+			if( colrB.getBrightness() === 0 ) { colrB = tinycolor('#888'); }
 			var titlestr = 'serial:'+serial +' A/B:'+colrs[0].toHexString().toUpperCase()+'/'+colrs[1].toHexString().toUpperCase();
+            colrA = colrA.toHexString();
+            colrB = colrB.toHexString();
 			var borderStyle = (serial===this.blink1Id) ? '2px solid #aaa' : '2px solid #eee';
 			return (<div key={idx} onClick={this.handleBlink1IdChange.bind(null,serial)} value={serial}
 						style={{border:borderStyle, borderRadius:5, padding:0, margin:3 }}>
@@ -161,7 +164,7 @@ var VirtualBlink1 = React.createClass({
 		var miniBlink1s = (serials.length > 1 ) ? serials.map(makeMiniBlink1, this) : null;
 		return (
 			<div style={{position:'relative', border:'0px solid green'}}>
-				<div style={img0style} title={colorDesc} onClick={function(){log.msg(Blink1Service.dumpCurrentState());}}></div>
+				<div style={img0style} title={colorDesc} onClick={function(){log.msg("\n"+Blink1Service.dumpCurrentState());}}></div>
 				<div style={{position:'absolute', top:5, left:0, padding:0, marginLeft:0}}>
 					{miniBlink1s}
 				</div>
