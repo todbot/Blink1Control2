@@ -62,7 +62,8 @@ Random notes / documentation while developing the app
 - These special meta-patterns can take the form:
   - `#<hexcolor>` -- Set a specific color on all LEDs e.g. "#FF00FF", "#000000", or "#ccaabb"
   - `~off` -- Turn blink(1) off completely (stop patterns, set to dark)
-  - `~blink-color-count` -- blink color-dark-color-dark, count times. e.g. `~blink-white-3`, `~blink-#ff0000-5`
+  - `~blink:color-count` -- blink color-dark-color-dark, count times. e.g. `~blink:white-3`, `~blink:#ff0000-5`
+  - `~blink:color-count-time` -- blink color-dark-color-dark, count times, blink time in secs e.g. `~blink:white-3-1.3`, `~blink:#ff0000-5-0.1`
   - `~pattern:<patternstr>` -- Play a pattern in string form. e.g. `~pattern:3,#ff00ff,0.5,0,#00ff00,1.3,0`
 
 ### URL / Script / Tool color & pattern matching
