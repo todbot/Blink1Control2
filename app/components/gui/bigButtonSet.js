@@ -151,6 +151,7 @@ var BigButtonSet = React.createClass({
                 Blink1Service.off();  // FIXME: what is reset?
 			}
 			else if( button.name === "Off" ) {
+                PatternsService.stopAllPatterns();
                 Blink1Service.off();
 			}
             else if( button.name === "Color Cycle" ) {

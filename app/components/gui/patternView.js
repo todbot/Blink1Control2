@@ -67,7 +67,6 @@ var PatternView = React.createClass({
 		this.setState({pattern: pattern, editing: false});
 		log.msg("PatternView.onPlayStopPattern", pattern.id, pattern.playing);
 		if( pattern.playing ) {
-			log.msg("PLAYING");
 			PatternsService.playPattern(pattern.id);
 		}
 		else {

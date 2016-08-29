@@ -312,7 +312,7 @@ var PatternsService = {
             if (playingPattern.id === pattern.id) {
                 playingPattern = {};
                 if (playingQueue.length > 0) {
-                    var queueInfo = playingQueue.shift();
+                    var queueInfo = playingQueue.pop();
                     log.msg("PatternsService.stopPattern: next off playingQueue:", queueInfo.pattern.id);
                     this._playPatternInternal(queueInfo.pattern, queueInfo.blink1id);
                 } else {
