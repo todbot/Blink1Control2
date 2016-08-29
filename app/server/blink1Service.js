@@ -353,14 +353,14 @@ var Blink1Service = {
 		var blink1Idx = this.idToBlink1Index(blink1_id);
 
 		// FIXME: how to make sure 'color' is a tinycolor object? color.isValid?
-		// log.msg('Blink1Service.fadeToColor: blink1_idx:',blink1Idx,' msec:',millis,' ledn:',ledn,
-		// 	' c:',color.toHexString(), " -- currentState:", this.dumpCurrentState()); // JSON.stringify(currentState,null,2));
+		// log.msg('Blink1Service.fadeToColor: blink1Idx:',blink1Idx,' msec:',millis,' ledn:',ledn,
+		// 	' c:',color.toHexString(), "currentState:\n"+ this.dumpCurrentState()); // JSON.stringify(currentState,null,2));
 
 		// var colors = _.clone(currentState[blink1Idx].colors);
 		var colors = currentState[blink1Idx].colors;
 		// handle special meaning: ledn=0 -> all LEDs
-		if( ledn === 0 ) { colors.fill( color );
-		} else {       colors[ledn-1] = color; }
+		if( ledn === 0 ) { colors = colors.fill( color ); }
+		else {             colors[ledn-1] = color; }
 
 		// FIXME: do we need these states and the blink1s struct?
 		// lastState[blink1idx] = currentState[blink1idx];
