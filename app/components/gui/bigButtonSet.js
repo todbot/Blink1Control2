@@ -45,18 +45,21 @@ var BigButtonSet = React.createClass({
             buttonsUser: buttonsUser
         };
     },
-    saveButtons: function(buttonsUser) {
-        this.setState( {buttonsUser: buttonsUser });
-        config.saveSettings("bigButtons", buttonsUser);
+    saveButtons: function(buttonsUserNew) {
+        this.setState( {buttonsUser: buttonsUserNew });
+        config.saveSettings("bigButtons", buttonsUserNew);
         Eventer.emit('bigButtonsUpdated');
     },
     addBigButton: function() { // FIXME: this is hacky
+        var blink1id = Blink1Service.getCurrentBlink1Id();
         var newbut = {
             name: "Big Button "+this.state.buttonsUser.length,
             type: "color",
-            color: Blink1Service.getCurrentColor().toHexString(),
-            ledn: Blink1Service.getCurrentLedN()
+            color: Blink1Service.getCurrentColor(blink1id).toHexString(),
+            ledn: Blink1Service.getCurrentLedN(blink1id),
+            blink1Id: blink1id
         };
+        log.msg("addBigButton: ", newbut);
         var newbuttons = this.state.buttonsUser.concat( newbut );
         this.saveButtons( newbuttons );
     },
@@ -73,17 +76,40 @@ var BigButtonSet = React.createClass({
             }
         }
         else if( cmd === 'setcolor') {
-            mybuttons[idx] = { name: mybuttons[idx].name,
+            mybuttons[idx] = {
+                name: mybuttons[idx].name,
                 type:'color',
                 color: Blink1Service.getCurrentColor().toHexString(),
-                ledn: Blink1Service.getCurrentLedN()
+                ledn: Blink1Service.getCurrentLedN(),
+                blink1Id: Blink1Service.getCurrentBlink1Id()
             };
+        }
+        else if( cmd === 'setserial' ) {
+            log.msg("SET SERIAL",arg);
+            var button = mybuttons[idx];
+            // why do I have to re-create the object?
+            // Why can't
+            mybuttons[idx] = {
+                name: button.name,
+                type: button.type,
+                color: button.color,
+                patternId: button.patternId,
+                ledn: button.ledn,
+                blink1Id: arg
+            };
+            // button.blink1Id = arg;
+            // mybuttons[idx] = button;
+            // mybuttons[idx] = {
+            //
+            // }
+            console.log("buttons:",mybuttons);
         }
         else if( cmd === 'setpattern') {
             var patt = PatternsService.getPatternById(arg);
             var name = patt.name;
             // log.msg("setpattern:",patt.colors[0].rgb);
-            mybuttons[idx] = { name: name,
+            mybuttons[idx] = {
+                name: name,
                 type:'pattern',
                 color: patt.colors[0].rgb,
                 patternId: arg
@@ -96,24 +122,24 @@ var BigButtonSet = React.createClass({
         this.saveButtons( mybuttons );
     },
     // internal function used by differnt kinds of buttons
-    setBlink1Color: function(color, ledn) {
+    setBlink1Color: function(color, ledn, blink1id) {
         // console.log("BigButtonSet.setBlink1Color:",color);
         ledn = ledn || 0; // 0 means all
-        Blink1Service.fadeToColor( 100, color, ledn );  // FIXME: millis
+        Blink1Service.fadeToColor( 100, color, ledn, blink1id );  // FIXME: millis
     },
     playPattern: function(patternid) {
         PatternsService.playPattern( patternid );
     },
     // can be called outside of this class
     playBigButtonUser: function(buttonindex) {
-        log.msg("bigButtonSet.playBigButtonUser:", buttonindex);
         var button = this.state.buttonsUser[buttonindex];
         if( button ) {
+            log.msg("bigButtonSet.playBigButtonUser:", buttonindex, button.name, button.blink1Id, button.ledn);
             if( button.type === 'color' ) {
-                this.setBlink1Color( button.color, button.ledn );
+                this.setBlink1Color( button.color, button.ledn, button.blink1Id ); // FIXME: what about blink1id
             }
             else if( button.type === 'pattern' ) {
-                this.playPattern( button.patternId );
+                this.playPattern( button.patternId, button.blink1Id );
             }
             log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
         }
@@ -172,7 +198,7 @@ var BigButtonSet = React.createClass({
         var createBigButtonUser = function(button, index) { // FIXME: understand bind()
             return (
                 <BigButton key={index} idx={index} name={button.name} type={button.type}
-                    color={button.color} patterns={patterns} serials={serials}
+                    color={button.color} patterns={patterns} serials={serials} serial={button.blink1Id}
                     onClick={this.playBigButtonUser.bind(null, index)}
                     onEdit={this.onEdit} />
             );

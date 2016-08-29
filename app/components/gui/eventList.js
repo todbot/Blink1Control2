@@ -68,6 +68,7 @@ var EventList = React.createClass({
 			logWindow.show();
 		} else {
 			logWindow = new BrowserWindow({
+                    title: 'Blink1Control2 Event List',
 					alwaysOnTop: true,
 					autoHideMenuBar: true,
 					height: 300,

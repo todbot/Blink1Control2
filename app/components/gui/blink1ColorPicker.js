@@ -30,7 +30,7 @@ var Blink1ColorPicker = React.createClass({
 			r: 0, // FIXME: should use color but easier & cleaner this way
 			g: 1,
 			b: 2,
-			blink1Idx: 0,
+			blink1Id: "0",
 		};
 	},
 	componentDidMount: function() {
@@ -38,7 +38,7 @@ var Blink1ColorPicker = React.createClass({
 		Blink1Service.addChangeListener( this.updateCurrentColor, "blink1ColorPicker" );
 	},
 	/**  Callback for Blink1Service notifyChange */
-	updateCurrentColor: function(/*currentColor0, colors, ledn0*/) {
+	updateCurrentColor: function() {
 		// FIXME: the Blink1Service callback is crusty now
         var blink1Id = Blink1Service.getCurrentBlink1Id();
 		var colr = Blink1Service.getCurrentColor( blink1Id );
@@ -52,7 +52,7 @@ var Blink1ColorPicker = React.createClass({
 			ledn: ledn,
 			r: crgb.r, g: crgb.g, b: crgb.b,
 			secs:secs,
-		 	blink1Idx: blink1Id
+		 	blink1Id: blink1Id
 		});
 	},
 	// called by HtmlColorChart  why are there two?
@@ -63,7 +63,7 @@ var Blink1ColorPicker = React.createClass({
 	// called by colorpicker & handleChange{R,G,B}
 	setColor: function(color) {
 		// console.log("colorpicker.setColor",color.hex, this.state.ledn, this.state.blink1Idx);
-		Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn, this.state.blink1Idx ); // FIXME: time
+		Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn, this.state.blink1Id ); // FIXME: time
 		// and the above will call 'fetchBlink1Color' anyway
 		// there must be a better way to do this
 	},
@@ -107,20 +107,20 @@ var Blink1ColorPicker = React.createClass({
         }
         this.setState({colorHex: colorHex.toUpperCase()});
 	},
-	handleBlink1IdxChange: function(evt) {
-		var idx = evt.target.value;
-		Blink1Service.setCurrentBlink1Id(idx);
-		this.setState( {blink1Idx: idx});
+	handleBlink1IdChange: function(evt) {
+		var id = evt.target.value;
+		Blink1Service.setCurrentBlink1Id(id);
+		this.setState( {blink1Id: id});
 	},
 	render: function() {
 		var serials = Blink1Service.getAllSerials();
-		var makeBlink1Option = function(serial,idx) {
-			return <option value={idx} key={idx}>{serial}</option>;
+		var makeBlink1IdOption = function(serial,idx) {
+			return <option value={serial} key={idx}>{serial}</option>;
 		};
 		var deviceCombo = (serials.length <= 1) ? null :
 			<div> device:
-				<select style={{fontSize:'80%'}} onChange={this.handleBlink1IdxChange} value={this.state.blink1Idx}>
-					{serials.map( makeBlink1Option )}
+				<select style={{fontSize:'80%'}} onChange={this.handleBlink1IdChange} value={this.state.blink1Id}>
+					{serials.map( makeBlink1IdOption )}
 				</select>
 			</div>;
 

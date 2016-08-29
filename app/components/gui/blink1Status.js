@@ -39,10 +39,9 @@ var Blink1Status = React.createClass({
 		});
 		this.makeMenu();
 	},
-	// updateState: function(colors) { // FIXME: this called mostly for color, don't need other parts?
-	updateColorState: function(currentColor /*, colors,ledn */) {
+	updateColorState: function(/*currentColor,  colors,ledn */) {
 		this.setState({
-						blink1ColorLast: currentColor,
+						blink1ColorLast: Blink1Service.getCurrentColor(),//currentColor,
 						statusStr: Blink1Service.getStatusString(),
 						serialNumber: Blink1Service.serialNumberForDisplay(),
 						blink1Serials: Blink1Service.getAllSerials(),

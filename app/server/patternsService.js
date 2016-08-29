@@ -526,7 +526,7 @@ var PatternsService = {
         var rgb = color.rgb;
         var millis = color.time * 1000;
         var ledn = color.ledn;
-        log.msg("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb, millis, ledn );
+        // log.msg("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb, millis, ledn );
 
         Blink1Service.fadeToColor(millis, rgb, ledn, blink1id);
 

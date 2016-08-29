@@ -22,6 +22,7 @@ var BigButton = React.createClass({
 	mixins: [LinkedStateMixin],
 
 	propTypes: {
+        idx: React.PropTypes.number,
 		name: React.PropTypes.string.isRequired,
 		type: React.PropTypes.string.isRequired,
         iconClass: React.PropTypes.string,
@@ -29,7 +30,8 @@ var BigButton = React.createClass({
 		onClick: React.PropTypes.func,
 		onEdit: React.PropTypes.func,
 		patterns: React.PropTypes.array,
-		serials: React.PropTypes.array
+		serials: React.PropTypes.array,
+        serial: React.PropTypes.string
 	},
 	getInitialState: function() {
 		return {
@@ -59,8 +61,9 @@ var BigButton = React.createClass({
 			serialsmenu.append( new MenuItem({label:'-use-default-',
 										click: self.doContextMenu.bind(null,null, 'setserial', 'default')}) );
 			this.props.serials.map( function(s) {
-				serialsmenu.append( new MenuItem({label:s,
-										click: self.doContextMenu.bind(null,null, 'setserial', s)}) );
+				serialsmenu.append( new MenuItem({label:s, type: 'radio',
+										click: self.doContextMenu.bind(null,null, 'setserial', s),
+                                        checked: (self.props.serial === s) }) );
 			});
 		}
 		menu.append(new MenuItem({ label:'Set to current color',

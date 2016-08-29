@@ -263,8 +263,9 @@ var Blink1Service = {
 		this.notifyChange();
 	},
     // FIXME: support multiple blink1s
-	getCurrentLedN: function(blink1idx) {
-		blink1idx = blink1idx || 0;
+	getCurrentLedN: function(blink1id) {
+        var blink1idx = this.idToBlink1Index(blink1id);
+		// blink1idx = blink1idx || 0;
 		return currentState[blink1idx].ledn;
 	},
     // FIXME: support multiple blink1s
@@ -272,19 +273,21 @@ var Blink1Service = {
 		currentState[0].millis = m;
 		this.notifyChange();
 	},
-	getCurrentMillis: function(blink1idx) {
-		blink1idx = blink1idx || 0;
+	getCurrentMillis: function(blink1id) {
+		var blink1idx = this.idToBlink1Index(blink1id);
 		return currentState[blink1idx].millis;
 	},
-	getCurrentColor: function(blink1idx) { // FIXME
-		blink1idx = blink1idx || 0;
+	getCurrentColor: function(blink1id) { // FIXME
+        var blink1idx = this.idToBlink1Index(blink1id);
+		// blink1idx = blink1idx || this.idToBlink1Index(currentBlink1Id);
 		var curledn = currentState[blink1idx].ledn;
 		curledn = (curledn>0) ? curledn-1 : curledn; // 0 = all LEDs in a blink1, so shift or use 0th element as rep
 		return currentState[blink1idx].colors[ curledn ];
 	},
     // FIXME: this is confusing
-	getCurrentColors: function(blink1idx) {
-		blink1idx = blink1idx || 0;
+	getCurrentColors: function(blink1id) {
+        var blink1idx = this.idToBlink1Index(blink1id);
+		// blink1idx = blink1idx || 0;
 		return currentState[blink1idx].colors;
 	},
 	/**
@@ -293,7 +296,7 @@ var Blink1Service = {
 	 *  FIXME: Should use conf.blink1Service.blink1ToUse
 	 *  FIXME: should convert serial to index
 	 * @param  {number|String} blink1id array id (0-maxblink1s) or 8-digit blink1serial
-	 * @return {number}        index into blink1s array or 0
+	 * @return {number}        known-good index into blink1s array or 0
 	 */
 	idToBlink1Index: function(blink1id) {
 		if( blink1id === undefined ) {
@@ -301,7 +304,7 @@ var Blink1Service = {
 				blink1id = this.conf.blink1ToUse;
 			}
 			else {
-				return currentBlink1Id;
+				blink1id = currentBlink1Id;
 			}
 		}
  		// it's an array index
@@ -367,8 +370,9 @@ var Blink1Service = {
 
 		// divide currentMillis by two to make it appear more responsive
 		// by having blink1 be at destination color for half the time
+		millis = millis/2;
 		// color, ledn, & blink1idx is known-good at this point
-		this._fadeToRGB( millis/2, color, ledn, blink1Idx);
+		this._fadeToRGB( millis, color, ledn, blink1Idx);
 
 	},
 
@@ -433,7 +437,7 @@ var Blink1Service = {
 			this.fadeToColor( this.toy.interval, tinycolor.random(), 0 ); // FIXME: alternate LEDs?
 		}
 		else if( this.toy.mode === 'colorcycle' ) {
-			this.toy.value += 1;
+			this.toy.value += 2;
 			this.toy.value = (this.toy.value>360) ? 0 : this.toy.value;
 			var color = tinycolor({h:this.toy.value, s:1, v:1});
 			this.fadeToColor( 100, color, 0 );

@@ -39,15 +39,15 @@ var VirtualBlink1 = React.createClass({
 	fetchBlink1Color: function() {
         // console.log("virtualBlink1.fetchBlink1Color");
 		this.lastColors = this.state.colors;
-        this.blink1Idx = Blink1Service.getCurrentBlink1Id();
-		this.nextColors = Blink1Service.getCurrentColors( this.blink1Idx );
+        this.blink1Id = Blink1Service.getCurrentBlink1Id();
+		this.nextColors = Blink1Service.getCurrentColors( this.blink1Id );
 		this._colorFaderStart();
 	},
-	handleBlink1IdxChange: function(idx) {
-		Blink1Service.setCurrentBlink1Id(idx);
+	handleBlink1IdChange: function(id) {
+		Blink1Service.setCurrentBlink1Id(id);
 	},
 
-	blink1Idx: 0,
+	blink1Id: 0,
 	ledn: 0,
 	nextColors: new Array(2).fill(tinycolor('#ff00ff')), // ledn colors
 	lastColors: new Array(2).fill(tinycolor('#ff00ff')), // last ledn colors
@@ -141,14 +141,14 @@ var VirtualBlink1 = React.createClass({
 			// var img3style = { width: 240, height: 192, position: "relative", top: 0 };
 
 		var makeMiniBlink1 = function(serial,idx) {
-			var colrs = Blink1Service.getCurrentColors(idx);
+			var colrs = Blink1Service.getCurrentColors(serial);
 			var colrA = colrs[0];
             var colrB = colrs[1];
 			if( colrA.getBrightness() === 0 ) { colrA = '#888'; }
 			if( colrB.getBrightness() === 0 ) { colrB = '#888'; }
 			var titlestr = 'serial:'+serial +' A/B:'+colrs[0].toHexString().toUpperCase()+'/'+colrs[1].toHexString().toUpperCase();
-			var borderStyle = (idx===this.blink1Idx) ? '2px solid #aaa' : '2px solid #eee';
-			return (<div key={idx} onClick={this.handleBlink1IdxChange.bind(null,idx)} value={idx}
+			var borderStyle = (serial===this.blink1Id) ? '2px solid #aaa' : '2px solid #eee';
+			return (<div key={idx} onClick={this.handleBlink1IdChange.bind(null,serial)} value={serial}
 						style={{border:borderStyle, borderRadius:5, padding:0, margin:3 }}>
 					<div style={{width:20, height:7, margin:0,padding:0,background:colrA, borderRadius:'3px 3px 0 0'}}
 						title={titlestr} ></div>
