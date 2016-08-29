@@ -13,6 +13,7 @@
 
 var React = require('react');
 
+var log = require('../../logger');
 var Blink1Service = require('../../server/blink1Service');
 
 var tinycolor = require('tinycolor2');
@@ -35,10 +36,10 @@ var VirtualBlink1 = React.createClass({
 		Blink1Service.addChangeListener( this.fetchBlink1Color, "virtualBlink1" );
 	},
 	// callback to Blink1Service
-	// fetchBlink1Color: function(lastColor, newcolors /*, ledn */) { // FIXME: where's millis?
 	fetchBlink1Color: function() {
-        // console.log("virtualBlink1.fetchBlink1Color");
+        // log.msg("virtualBlink1.fetchBlink1Color");
 		this.lastColors = this.state.colors;
+        // this.ledn = Blink1Service.getCurrentLedN();  // FIXME: need this??
         this.blink1Id = Blink1Service.getCurrentBlink1Id();
 		this.nextColors = Blink1Service.getCurrentColors( this.blink1Id );
 		this._colorFaderStart();
@@ -48,7 +49,6 @@ var VirtualBlink1 = React.createClass({
 	},
 
 	blink1Id: 0,
-	ledn: 0,
 	nextColors: new Array(2).fill(tinycolor('#ff00ff')), // ledn colors
 	lastColors: new Array(2).fill(tinycolor('#ff00ff')), // last ledn colors
 	timer: null,
@@ -56,6 +56,9 @@ var VirtualBlink1 = React.createClass({
 	currentMillis: 0,
 	stepMillis: 25,
 
+    //
+    // FIXME FIXME FIXME:  this whole file is confused in its thinking
+    //
 	_colorFaderStart: function() {
 		// if( this.timer ) { clearTimeout(this.timer); }
 		// if( this.timer ) { this.timer.stop(); }
@@ -72,7 +75,7 @@ var VirtualBlink1 = React.createClass({
             this.faderMillis = this.currentMillis; // no fading, go to color immediately
         }
         this.lastNow = now;
-        // console.log("--- START:",nowDelta, "currentMillis:", this.currentMillis, "stepMillis:",this.stepMillis );
+        // log.msg("--- START:",nowDelta, "currentMillis:", this.currentMillis, "stepMillis:",this.stepMillis, "next:",this.nextColors );
 		this._colorFader();
 	},
 
@@ -80,15 +83,11 @@ var VirtualBlink1 = React.createClass({
         var self = this;
 		var p = (this.faderMillis / this.currentMillis);  // "percentage done", ranges from 0.0 to 1.0 -ish
         if( p > 1.0 ) { p = 1.0; } // guard against going over 100%
-        // console.log("--- fader:", "faderMillis:", this.faderMillis, "p:",p);
+        // log.msg("--- fader:", "faderMillis:", this.faderMillis, "p:",p, "colors:", this.state.colors);
         self.faderMillis += self.stepMillis;
 
-        var ledn = self.state.ledn;
-		var ledst = ledn-1;
-		var ledend = ledn;
-		var colors = self.state.colors; //_.clone(this.state.colors);
-		if( ledn===0 ) { ledst = 0; ledend = colors.length-1; }
-		colors.slice(ledst, ledend).map( function(c,i) {
+		var colors = self.state.colors;
+		colors.slice().map( function(c,i) { // copy and modify in place? FIXME:????
 			var oldc = self.lastColors[i].toRgb();
 			var newc = self.nextColors[i].toRgb();
 			var r = (1-p) * (oldc.r) + (p * newc.r);
@@ -162,7 +161,7 @@ var VirtualBlink1 = React.createClass({
 		var miniBlink1s = (serials.length > 1 ) ? serials.map(makeMiniBlink1, this) : null;
 		return (
 			<div style={{position:'relative', border:'0px solid green'}}>
-				<div style={img0style} title={colorDesc}></div>
+				<div style={img0style} title={colorDesc} onClick={function(){log.msg(Blink1Service.dumpCurrentState());}}></div>
 				<div style={{position:'absolute', top:5, left:0, padding:0, marginLeft:0}}>
 					{miniBlink1s}
 				</div>
