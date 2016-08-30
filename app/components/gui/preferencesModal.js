@@ -105,7 +105,7 @@ var PreferencesModal = React.createClass({
     handleBlink1SerialChange: function(serial) {
         log.msg("handleBlink1NonComputerChange: ",serial);
         // if( serial )
-        PatternsService.playPattern( '~blink-#888888-3', serial);
+        PatternsService.playPattern( '~blink:#888888-3', serial);
         this.setState({blink1ToUse: serial});
     },
     handleBlink1NonComputerChoice: function(e) {

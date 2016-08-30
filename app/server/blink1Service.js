@@ -163,7 +163,7 @@ var Blink1Service = {
         });
         blink1s = [ ]; //{serial: '', device: null } ]; // startup state
 		log.msg("Blink1Service._removeAllDevices: done");
-        // FIXME: notify?
+        // FIXME: notify? nah, because scanForDevices always called after
 	},
 
 	/**
@@ -256,20 +256,22 @@ var Blink1Service = {
 	getCurrentBlink1Id() {
 		return currentBlink1Id;
 	},
-    // FIXME: support multiple blink1s
-	setCurrentLedN: function(n) {
-		currentState[0].ledn = n;
+
+	setCurrentLedN: function(n,blink1id) {
+        var blink1idx = this.idToBlink1Index(blink1id);
+		currentState[blink1idx].ledn = n;
 		this.notifyChange();
 	},
-    // FIXME: support multiple blink1s
+
 	getCurrentLedN: function(blink1id) {
         var blink1idx = this.idToBlink1Index(blink1id);
 		// blink1idx = blink1idx || 0;
 		return currentState[blink1idx].ledn;
 	},
-    // FIXME: support multiple blink1s
-	setCurrentMillis: function(m) {
-		currentState[0].millis = m;
+
+	setCurrentMillis: function(m,blink1id) {
+        var blink1idx = this.idToBlink1Index(blink1id);
+		currentState[blink1idx].millis = m;
 		this.notifyChange();
 	},
 	getCurrentMillis: function(blink1id) {
@@ -290,7 +292,7 @@ var Blink1Service = {
 		return currentState[blink1idx].colors;
 	},
 	/**
-	 * Lookup blink1id and map to an index in blink1s array
+	 * Lookup blink1id (blink1 serial number) and map to an index in blink1s array
 	 *  If 'blink1ToUse' is set, and blink1id is undefined or 0, use blink1ToUse
 	 *  FIXME: Should use conf.blink1Service.blink1ToUse
 	 *  FIXME: should convert serial to index
@@ -301,12 +303,11 @@ var Blink1Service = {
 		if( blink1id === undefined || blink1id === '' ) {
 			if( this.conf.blink1ToUse ) {
 				blink1id = this.conf.blink1ToUse;
-			}
-			else {
+			} else {
 				blink1id = currentBlink1Id;
 			}
 		}
- 		// it's an array index
+ 		// it's an array index  (NOTE: SHOULD NEVER HIT THIS, BUT JUST IN CASE)
  		if( blink1id >= 0 && blink1id < blink1s.length ) {
 			return blink1id;
 		}
@@ -323,9 +324,9 @@ var Blink1Service = {
     // debug only
     dumpCurrentState: function() {
         var str = '';
-        currentState.map( function(s, i) {
-            var colorsstr = s.colors.reduce( function(prev,curr) { return prev +','+ curr.toHexString(); });
-            str += 'blink1Idx:'+i+ ': ledn:'+s.ledn+ ', millis:'+s.millis+ ', colors:'+colorsstr + ';\n';
+        currentState.map( function(b1state, i) {
+            var colorsstr = b1state.colors.reduce( function(prev,curr) { return prev +','+ curr.toHexString(); });
+            str += 'blink1Idx:'+i+ ': ledn:'+b1state.ledn+ ', millis:'+b1state.millis+ ', colors:'+colorsstr + ';\n';
         });
         return str;
     },

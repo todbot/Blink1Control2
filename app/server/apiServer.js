@@ -35,6 +35,13 @@ app.get('/blink1/off', function(req,res) {
         status: "blink1 off"
     });
 });
+app.get('/blink1/on', function(req,res) {
+    PatternsService.stopAllPatterns();
+    Blink1Service.fadeToColor(0.1, '#ffffff'); // turn off everyone
+    res.json({
+        status: "blink1 on"
+    });
+});
 app.get('/blink1/fadeToRGB', function(req, res) {
     var color = tinycolor(req.query.rgb);
     var secs = Number(req.query.time) || 0.1;

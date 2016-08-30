@@ -172,17 +172,6 @@ var BigButtonSet = React.createClass({
             log.msg("bigButtonSet.playBigButtonSys: no button ", buttonname);
         }
     },
-	// playBigButton: function(buttontype, buttonindex) {
-	// 	log.msg("bigButtonSet.playBigButton:", buttontype, buttonindex);
-    //     PatternsService.stopAllPatterns();
-    //     var button = this.state.buttonsUser[buttonindex];
-	// 	if( buttontype === 'sys' ) {
-	// 		button = this.state.buttonsSys[buttonindex];
-	// 	}
-    //     else {
-    //         this.playBigButtonUser( buttonindex );
-    //     }
-	// },
 
     render: function() {
         var patterns = PatternsService.getAllPatterns();
