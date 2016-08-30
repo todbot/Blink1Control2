@@ -198,7 +198,7 @@ var PreferencesModal = React.createClass({
                                             type="checkbox" label="Use multi blink(1) devices in rules" checkedLink={this.linkState('allowMultiBlink1')}  />
                                     </form>
                             </div>
-                            <div style={{border:'1px solid #ddd', paddingLeft:15}}>
+                            <div style={{border:'1px solid #ddd', paddingLeft:15,      opacity:0.5 }} >
                                 <h5><u> blink(1) nightlight mode </u></h5>
 
                                     <form className="form-horizontal">
@@ -217,7 +217,7 @@ var PreferencesModal = React.createClass({
                                             checked={this.state.blink1NonComputer==='pattern'}
                                             onChange={this.handleBlink1NonComputerChoice} />
                                     </Col><Col xs={8}>
-                                        <Input labelClassName="col-xs-1" wrapperClassName="col-xs-8" bsSize="small"
+                                        <Input labelClassName="col-xs-1" wrapperClassName="col-xs-10" bsSize="small"
                                             type="select" label=""
                                             valueLink={this.linkState('patternId')} >
                                             {this.state.patterns.map( createPatternOption, this )}
@@ -234,7 +234,7 @@ var PreferencesModal = React.createClass({
                             </div>
                         </Col>
                         <Col md={4}>
-                            <div style={{border:'1px solid #ddd', paddingLeft:15}} enabled={false}>
+                            <div style={{border:'1px solid #ddd', paddingLeft:15, opacity:0.5 }}>
                                 <h5><u> Proxy configuration </u></h5>
                                 <form className="form-horizontal">
                                     <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"

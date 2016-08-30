@@ -179,14 +179,13 @@ var MailForm = React.createClass({
                             </Input>
 
                             <Input labelClassName="col-xs-10" wrapperClassName="col-xs-offset-3 col-xs-8" bsSize="small"
-                                type="checkbox" label="Turn blink(1) off when done"
+                                type="checkbox" label="Turn blink(1) off when no match"
                                 checkedLink={this.linkState('triggerOff')} />
 
                                 {!this.props.allowMultiBlink1 ? null :
                                     <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
-                                        labelClassName="col-xs-3 col-xs-offset-3" wrapperClassName="col-xs-4"
+                                        labelClassName="col-xs-3 col-xs-offset-2" wrapperClassName="col-xs-5"
                                         serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
-
                         </Col>
                         </Row>
                     </form>
