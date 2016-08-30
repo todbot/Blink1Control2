@@ -55,6 +55,11 @@ var patternsTemp = [];
 var playingQueue = [];  // [{patternId:'bloop', blink1Id:'2121ABAB'}]
 
 // FIXME: playingQueue needs to be indexed by blink1id
+// var playingQueue = {
+//     // looks like:
+//     // 'blink1id1': [],
+//     // 'blink1id2': []
+// };
 
 var playingPattern = {};
 var playingBlink1Id = '';
@@ -306,8 +311,8 @@ var PatternsService = {
         this.notifyChange();
     },
     /** Stop a playing pattern.  Notifies change listeners */
-    stopPattern: function(id) {
-        log.msg('PatternsService.stopPattern', id, playingPattern.id);
+    stopPattern: function(id) { // }, blink1id) {
+        log.msg('PatternsService.stopPattern', id, playingPattern.id); //, blink1id);
         var pattern = _.find(this.getAllPatterns(), { id: id });
         if (pattern) {
             pattern.playing = false;
@@ -339,15 +344,17 @@ var PatternsService = {
      */
     playPattern: function(pattid, blink1id) {
         log.msg("PatternsService.playPattern: id:", pattid, ", blink1id:", blink1id, "patternsTemp:", patternsTemp);
+        blink1id = ( blink1id === undefined ) ? '' : blink1id; // set default for playingQueue
 
         if (this.config.playingSerialize) {
             if (playingPattern.id ) { // pattern playing, so interrupt it and save it
-                log.msg("PatternsService.playPattern: interrupting", playingPattern.id);
+                log.msg("PatternsService.playPattern: interrupting", playingPattern.id, "playingQueue: ", playingQueue);
                 playingQueue.push({
                     pattern: playingPattern,
                     blink1Id: playingBlink1Id
                 });
-                clearTimeout( playingPattern.timer );
+                playingPattern.timer.stop();
+                // clearTimeout( playingPattern.timer );
             }
         }
 

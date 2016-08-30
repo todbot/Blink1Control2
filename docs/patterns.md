@@ -1,15 +1,20 @@
 
 
 
-Allowed patterns to play/stop:
-* - {existing patternname}
-* - ~off
-* - ~blink:{color}-{count}
-* - ~blink:{color}-{count}-{on/off time}
-* - ~blink:white-3
-* - ~blink:#ff00ff-5
-* - ~blink:green-3-0.5
-* - ~pattern:bob:3,#ff00ff,0.5,0,#00ff00,1.3,0
-* - ~pattern:good to go:1,#00f300,0.5,0,#000000,0.5,0
-* - ~pattern-stop:pattname
-* - #hexcolor
+Allowed patterns & meta-patterns for PatternsService:
+
+* `{existing patternname}`
+    * e.g. `policecar`
+* `#hexcolor`
+    * e.g. `#ff0033`
+* `~off`
+* `~blink:{color}-{count}`
+    * e.g. `~blink:red-3`
+    * e.g. `~blink:#ff00ff-5`
+* `~blink:{color}-{count}-{on/off time}`
+    * e.g. `~blink:white-3-0.2`
+* `~pattern:{name}:{patternstring}`
+    * e.g. `~pattern:bob:3,#ff00ff,0.5,0,#00ff00,1.3,0`
+    * e.g. `~pattern:good to go:1,#00f300,0.5,0,#000000,0.5,0`
+* `~pattern-stop:{patternname}`
+    * e.g. `~pattern-stop:policecar`
