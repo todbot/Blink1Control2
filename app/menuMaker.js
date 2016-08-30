@@ -19,18 +19,19 @@ var mainWindow = BrowserWindow.getAllWindows()[0];
 var tray = null;
 
 
-var TrayMaker = {
-    bip: function() {
+var MenuMaker = {
 
-    },
-    // showTrayMenu: function() {
-    updateTrayMenu: function() {
-        log.msg("TrayMaker.updateTrayMenu");
+    /**
+     * Return an array of MenuItem templates
+     * @method createBigButtonMenu
+     * @return {Array}         MenuItem templates
+     */
+    createBigButtonMenu: function(withAccelerators) {
         var bigButtonsConfig = config.readSettings('bigButtons') || [];
         var statusButtons = bigButtonsConfig.map( function(bb,idx) {
             return {
                 label: "Set: " + bb.name,
-                // accelerator: "CommandOrControl+" + (idx+1),
+                accelerator: (withAccelerators) ? "CommandOrControl+" + (idx+1): null,
                 // icon: swatchIcon,
                 click: function(/*item*/) {
                     Eventer.emit('playBigButtonUser', idx);
@@ -38,19 +39,25 @@ var TrayMaker = {
             };
 
         });
+        return statusButtons;
+    },
+
+    updateTrayMenu: function() {
+        log.msg("MenuMaker.updateTrayMenu");
 
         var contextMenuTemplate = [
             {  label: 'Blink1Control2 is running', enabled: false},
             {  label: 'status: '+ Blink1Service.getStatusString(), enabled: false },
             {  type:  'separator' }
         ];
-
-        Array.prototype.push.apply( contextMenuTemplate, statusButtons );
+        var bigButtonMenu = MenuMaker.createBigButtonMenu();
+        // Array.prototype.push.apply( contextMenuTemplate, bigButtonMenu );
+        contextMenuTemplate = contextMenuTemplate.concat( bigButtonMenu );
 
         var contextMenuTemplateB = [
             {  type: "separator" },
             {  label: 'Off / Reset Alerts',
-                accelerator: 'CommandOrControl+R',
+                // accelerator: 'CommandOrControl+R',
                 click: function() {
                     Eventer.emit('playBigButtonSys', 'Off');
                 }
@@ -72,7 +79,8 @@ var TrayMaker = {
                 }
             }
         ];
-        Array.prototype.push.apply( contextMenuTemplate, contextMenuTemplateB );
+        contextMenuTemplate = contextMenuTemplate.concat( contextMenuTemplateB );
+        // Array.prototype.push.apply( contextMenuTemplate, contextMenuTemplateB );
 
             // {	label: 'About ' + pkg.productName,
             // 	click: function() { openAboutWindow(); }
@@ -145,7 +153,6 @@ var TrayMaker = {
         if (process.platform === 'darwin') {
             app.dock.setMenu( contextMenu ); // Make Dock have same context menu
         }
-
     },
 
     setupTrayMenu: function() {
@@ -178,8 +185,82 @@ var TrayMaker = {
         // });
         // tray.on('double-click', function() {
         // });
+    },
+
+    setupMainMenu: function() {
+        // var swatchIconImg = new Jimp(32, 32, 0xFF0000FF, function (err, image) {
+        // };
+        // var swatchIconBuffer = new Buffer( 32 * 32 * 4 );
+        // for( var i = 0; i < swatchIconBuffer.length; i=i+4) {
+        // 	swatchIconBuffer.writeUInt32BE( 0xFF0000FF, i );
+        // }
+        // var swatchIcon = nativeImage.createFromBuffer( swatchIconBuffer );
+
+        var bigButtonMenu = MenuMaker.createBigButtonMenu(true);
+
+        var controlMenuTemplate = [
+            { label: 'Off / Reset Alerts', accelerator: "CommandOrControl+R", click: function() {
+                mainWindow.webContents.send('resetAlerts');
+            }},
+            { type: "separator" }
+        ];
+        
+        controlMenuTemplate = controlMenuTemplate.concat( bigButtonMenu );
+
+        // Mac-specific menu  (hide, unhide, etc. enables Command-Q )
+        var templateMac = [
+            {	label: pkg.productName,
+                submenu: [
+                    // { label: "About Blink1Control", selector: "orderFrontStandardAboutPanel:" },
+                    { label: "About Blink1Control2",
+                        click: function() {
+                            ipcRenderer.send('openAboutWindow');
+                        }
+                    },
+                    // FIXME: make appropriate OS-specific version of Windows
+                    { type: 'separator' },
+                    { label: 'Hide Blink1Control2', accelerator: "CommandOrControl+H", role: 'hide' },
+                    { label: 'Hide Others', accelerator: 'Command+Shift+H', role: 'hideothers' },
+                    { label: 'Show All', role: 'unhide' },
+                    { type: "separator" },
+                    { label: 'Preferences...', accelerator: "CommandOrControl+,",
+                        click: function() {
+                            mainWindow.webContents.send('openPreferences');
+                        }
+                    },
+                    { type: "separator" },
+                    { label: 'Open DevTools', accelerator: 'Alt+Command+I', click: function() {
+                        mainWindow.show(); mainWindow.webContents.openDevTools({mode:'bottom'}); }
+                    },
+                    { type: "separator" },
+                    { label: 'Close Window', accelerator: "CommandOrControl+W", role:'close' },
+                    { type: "separator" },
+                    { label: "Quit", accelerator: "CommandOrControl+Q",
+                        click: function() {
+                             ipcRenderer.send('quitnow');
+                        }
+                    }
+                ]
+            },
+            {	label: "Edit",
+                submenu: [
+                    // { label: "Undo", accelerator: "CmdOrCtrl+Z", role: "undo" },
+                    // { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", role: "redo" },
+                    // { type: "separator" },
+                    { label: "Cut", accelerator: "CmdOrCtrl+X", role: "cut" },
+                    { label: "Copy", accelerator: "CmdOrCtrl+C", role: "copy" },
+                    { label: "Paste", accelerator: "CmdOrCtrl+V", role: "paste" },
+                    { label: "Select All", accelerator: "CmdOrCtrl+A", role: "selectall" }
+                ]
+            },
+            { label: "Control",
+                submenu: controlMenuTemplate
+            }
+        ];
+        Menu.setApplicationMenu(Menu.buildFromTemplate(templateMac));
+
     }
 
 };
 
-module.exports = TrayMaker;
+module.exports = MenuMaker;

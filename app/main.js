@@ -40,10 +40,8 @@ crashReporter.start({
 	autoSubmit: true
 });
 
-// var menu = null;
-// var trayIconPath = path.join(__dirname, './dist/images/blink1-icon0-bw16.png');
-// var appIcon = null;
-//
+
+// global shortcut idea (see below also)
 // var configInit = function() {
 // 	// if (!configuration.readSettings('shortcutKeys')) {
 // 	 //	 configuration.saveSettings('shortcutKeys', ['ctrl', 'shift']);
@@ -78,6 +76,7 @@ var handleUrl = function(e,url) {
         electron.shell.openExternal(url);
     }
 }
+
 // stolen from https://github.com/twolfson/google-music-electron/blob/master/lib/google-music-electron.js
 var openAboutWindow = function () {
 	// DEV: aboutWindow will be garbage collection automatically
@@ -99,7 +98,7 @@ var openAboutWindow = function () {
 
 var openPreferences = function() {
 	mainWindow.show();
-	mainWindow.webContents.send('showPreferences');
+	mainWindow.webContents.send('openPreferences');
 };
 
 // called via ipcMain below
@@ -119,63 +118,9 @@ var openHelpWindow = function() {
 	helpWindow.loadURL( 'file://' + __dirname + '/help/index.html' );
 };
 
-var makeMenus = function() {
-
-	// var swatchIconImg = new Jimp(32, 32, 0xFF0000FF, function (err, image) {
-	// };
-	// var swatchIconBuffer = new Buffer( 32 * 32 * 4 );
-	// for( var i = 0; i < swatchIconBuffer.length; i=i+4) {
-	// 	swatchIconBuffer.writeUInt32BE( 0xFF0000FF, i );
-	// }
-	// var swatchIcon = nativeImage.createFromBuffer( swatchIconBuffer );
-
-
-		// Mac-specific menu  (hide, unhide, etc. enables Command-Q )
-		var template = [
-			{	label: pkg.productName,
-				submenu: [
-					// { label: "About Blink1Control", selector: "orderFrontStandardAboutPanel:" },
-					{ label: "About "+ pkg.productName, click: function() { openAboutWindow(); } },
-					{ type: 'separator' },
-					{ label: 'Hide '+pkg.productName, accelerator: "CommandOrControl+H", role: 'hide' },
-					{ label: 'Hide Others', accelerator: 'Command+Shift+H', role: 'hideothers' },
-					{ label: 'Show All', role: 'unhide' },
-					{ type: "separator" },
-                    { label: 'Reset Alerts', accelerator: "CommandOrControl+R", click: function() {
-                        mainWindow.webContents.send('resetAlerts');
-                    }},
-                    { type: "separator" },
-					{ label: 'Preferences...', accelerator: "CommandOrControl+,", click: function() { openPreferences(); } },
-                    { type: "separator" },
-                    { label: 'Open DevTools', accelerator: 'Alt+Command+I', click: function() {
-        				mainWindow.show(); mainWindow.webContents.openDevTools({mode:'bottom'}); }
-            		},
-                    { type: "separator" },
-					{ label: 'Close Window', accelerator: "CommandOrControl+W", role:'close' },
-					{ type: "separator" },
-					{ label: "Quit", accelerator: "CommandOrControl+Q", click: function() { quit(); }}
-				]
-			},
-			{	label: "Edit",
-				submenu: [
-					// { label: "Undo", accelerator: "CmdOrCtrl+Z", role: "undo" },
-					// { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", role: "redo" },
-					// { type: "separator" },
-					{ label: "Cut", accelerator: "CmdOrCtrl+X", role: "cut" },
-					{ label: "Copy", accelerator: "CmdOrCtrl+C", role: "copy" },
-					{ label: "Paste", accelerator: "CmdOrCtrl+V", role: "paste" },
-					{ label: "Select All", accelerator: "CmdOrCtrl+A", role: "selectall" }
-				]
-			}
-            // ,
-			// { label: "View",
-			// 	submenu: contextMenuTemplate
-			// }
-		];
-		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-}; // makeMenus
-
-
+//
+// the main deal
+//
 app.on('ready', function () {
 	var startMinimized = config.readSettings('startup:startMinimized');
 	if( !startMinimized ) {
@@ -187,16 +132,13 @@ app.on('ready', function () {
 	}
 
 	// var globalShortcut = electron.globalShortcut;
-
-	// Register a 'ctrl+x' shortcut listener.
-    // var ret = globalShortcut.register('ctrl+x', function() {
-    //   console.log('ctrl+x is pressed');
+	// // Register a 'ctrl+x' shortcut listener.
+    // var ret = globalShortcut.register('Command+R', function() {
+    //   console.log('command+r is pressed');
     // });
-	//
-    // if (!ret) { console.log('registration failed');  }
-	//
+    // if (!ret) { console.log('globalShortcut registration failed');  }
     // // Check whether a shortcut is registered.
-    // console.log(globalShortcut.isRegistered('ctrl+x'));
+    // console.log(globalShortcut.isRegistered('Command+R'));
 
 	if( process.env.NODE_ENV === 'development' ) {
 		mainWindow = new BrowserWindow({
@@ -265,11 +207,10 @@ app.on('ready', function () {
 		mainWindow.show();
 	});
 
-	makeMenus();
 
-	//
-	// FIXME: surely there's a better place to put this
-	//
+    ipcMain.on('openAboutWindow', function() {
+		openAboutWindow();
+	});
 	ipcMain.on('openHelpWindow', function() {
 		openHelpWindow();
 	});
@@ -278,102 +219,3 @@ app.on('ready', function () {
     });
 
 });
-
-
-
-/*
-	appIcon = new Tray(trayIconPath);
-	var contextMenu = Menu.buildFromTemplate([
-	{
-		label: 'Item1',
-		type: 'radio',
-		icon: trayIconPath,
-		click: function() {
-			mainWindow.reload();
-		}
-		//accelerator: 'Command+Z'
-	},
-	{
-	label: 'Item2',
-		submenu: [
-		{ label: 'submenu1' },
-		{ label: 'submenu2' }]
-	},
-	{
-		label: 'Item3',
-		type: 'radio',
-		checked: true
-	},
-	{
-		label: 'Toggle DevTools',
-		accelerator: 'Alt+Command+I',
-		click: function() {
-			mainWindow.show();
-			mainWindow.toggleDevTools();
-		}
-	},
-	{
-		label: 'Quit',
-		accelerator: 'Command+Q',
-		//selector: 'terminate:',
-		click: function() { quit(); }
-	}
-	]);
-	appIcon.setToolTip('This is my application.');
-	appIcon.setContextMenu(contextMenu);
-	//mainWindow.setMenu( contextMenu );
-
-	// ---
-	var template = [{
-		label: "Application",
-		submenu: [
-			{ label: "About Blink1Control", selector: "orderFrontStandardAboutPanel:" },
-			{ type: "separator" },
-			{ label: "Quit", accelerator: "Command+Q", click: function() { quit(); }}
-		]}, {
-		label: "Edit",
-			submenu: [
-			{ label: "ZZUndo", accelerator: "Command+Z", selector: "undo:" },
-			{ label: "Redo", accelerator: "Shift+Command+Z", selector: "redo:" },
-			{ type: "separator" },
-			{ label: "Cut", accelerator: "Command+X", selector: "cut:" },
-			{ label: "Copy", accelerator: "Command+C", selector: "copy:" },
-			{ label: "Paste", accelerator: "Command+V", selector: "paste:" },
-			{ label: "Select All", accelerator: "Command+A", selector: "selectAll:" }
-		]}
-	];
-	Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-	*/
-
-	// runtime.emit(runtime.events.INIT_ROUTES, appMenu);
-	// initialize runtime reference to main window
-	// runtime.windowId = mainWindow.id;
-
-
-	// electron-connect to server process
-	// client.create(mainWindow);
-
-	/*
-	// Dock Menu (Mac)
-	if (process.platform === 'darwin') {
-		var dockMenu = Menu.buildFromTemplate([
-		{ label: 'New Window', click: function() { console.log('New Window'); } },
-		{ label: 'New Window with Settings', submenu: [
-		{ label: 'Basic' },
-		{ label: 'Pro'},
-		]},
-		{ label: 'New Command...'},
-		]);
-		app.dock.setMenu(dockMenu);
-	}
-	// Application Menu
-	runtime.emit(runtime.events.INIT_APP_MENU, appMenu);
-
-	var template = appMenu.template;
-	menu = Menu.buildFromTemplate(template);
-
-	if (process.platform === 'darwin') {
-		Menu.setApplicationMenu(menu);
-	} else {
-		mainWindow.setMenu(menu);
-	}*/

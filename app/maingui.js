@@ -22,7 +22,7 @@ var ipcRenderer = require('electron').ipcRenderer;
 var conf = require('./configuration');
 var log = require('./logger');
 
-var TrayMaker = require('./trayMaker');
+var MenuMaker = require('./menuMaker');
 var Eventer = require('./eventer');
 
 // maybe these go in another file?
@@ -32,7 +32,8 @@ var PatternsService = require('./server/patternsService');
 
 // log.msg("---- before service start");
 
-TrayMaker.setupTrayMenu();
+MenuMaker.setupMainMenu();
+MenuMaker.setupTrayMenu();
 
 Blink1Service.start();
 ApiServer.start();

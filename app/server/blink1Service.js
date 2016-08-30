@@ -129,7 +129,6 @@ var Blink1Service = {
             }
         });
 
-        // TrayMaker.updateTrayMenu();
         Eventer.emit('deviceUpdated');
 
         Blink1Service.notifyChange();
