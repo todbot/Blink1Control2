@@ -41,7 +41,7 @@ var listeners = {};  // callback listeners
  * @type {Array}
  */
 var blink1s = []; // collection of opened blink1s
-var currentBlink1Id = 0; // current blink1 (as set by colorpicker)
+var currentBlink1Id = ''; // current blink1 (as set by colorpicker)
 
 /**
  * Current color state of all blink1s and their last used millis & ledns,
@@ -298,7 +298,7 @@ var Blink1Service = {
 	 * @return {number}        known-good index into blink1s array or 0
 	 */
 	idToBlink1Index: function(blink1id) {
-		if( blink1id === undefined ) {
+		if( blink1id === undefined || blink1id === '' ) {
 			if( this.conf.blink1ToUse ) {
 				blink1id = this.conf.blink1ToUse;
 			}
