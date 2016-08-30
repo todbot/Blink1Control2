@@ -50,7 +50,8 @@ var Logger = {
 			if( ignore ) { return; }
 
 			var args = Array.prototype.slice.call(arguments);
-			args.unshift( Math.floor(new Date().getTime()/1000) + ':');
+			// args.unshift( Math.floor(new Date().getTime()/1000) + ':');
+			args.unshift( new Date().getTime() + ':');
             console.log.apply(console, args );
         }
         else {
