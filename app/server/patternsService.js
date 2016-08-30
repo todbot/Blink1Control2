@@ -37,6 +37,7 @@
 
 var _ = require('lodash');
 var tinycolor = require('tinycolor2');
+var d3 = require('d3-timer');
 
 var conf = require('../configuration');
 var log = require('../logger');
@@ -52,6 +53,8 @@ var patternsSystem; // The system patterns this service knows about
 var patternsUser; // The user generated patterns
 var patternsTemp = [];
 var playingQueue = [];  // [{patternId:'bloop', blink1Id:'2121ABAB'}]
+
+// FIXME: playingQueue needs to be indexed by blink1id
 
 var playingPattern = {};
 var playingBlink1Id = '';
@@ -366,8 +369,7 @@ var PatternsService = {
                 return pattid;
             }
             // FIXME: make this clause its own function?
-            // FIXME: allow specing of time, e.g. "~blink-#ff0ff-5-0.2"
-            else if (blinkre.test(pattid)) { // "~blink-#ff00ff-5"
+            else if (blinkre.test(pattid)) { // "~blink:#ff00ff-5"
                 var match = blinkre.exec(pattid);
                 var colorstr = match[1];
                 var count = match[2];
@@ -393,11 +395,18 @@ var PatternsService = {
                 patternstr = pattid.substring(pattid.lastIndexOf(':') + 1);
                 return PatternsService.stopPattern(patternstr);
             } else if (pattid.startsWith('~pattern:')) { // FIXME: use regex yo
-                patternstr = pattid.substring(pattid.lastIndexOf(':') + 1);
+                var pattparts = pattid.split(':');
+                if( pattparts.length !== 3 ) { // not a proper pattern
+                    return false;
+                }
+                var pattname = pattparts[1];
+                patternstr = pattparts[2];
+                // patternstr = pattid.substring(pattid.lastIndexOf(':') + 1);
                 // pattname = id.substring(id.indexOf(':')+1,id.lastIndexOf(':'));
                 // if( pattname===':' ) { pattname = 'temp-'+utils.cheapUid(4);} // if parsing failed, use temp name
                 patt = _parsePatternStr(patternstr);
-                patt.name = pattid.substring(9); // 'temp-'+utils.cheapUid(4);  // FIXME:
+                // patt.name = pattid.substring(9); // 'temp-'+utils.cheapUid(4);  // FIXME:
+                patt.name = pattname;
                 patt.id = patt.name;
                 patt.temp = true; // FIXME: hmmm
                 patternsTemp.push(patt); // save temp pattern
@@ -483,7 +492,10 @@ var PatternsService = {
         }
 
         this.notifyChange();
-        pattern.timer = setTimeout(function() {
+        // pattern.timer = setTimeout(function() {
+        //     PatternsService._playPatternInternal(pattern, blink1id);
+        // }, millis);
+        pattern.timer = d3.timeout( function() {
             PatternsService._playPatternInternal(pattern, blink1id);
         }, millis);
     },
