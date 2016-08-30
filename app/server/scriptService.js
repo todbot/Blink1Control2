@@ -79,20 +79,27 @@ var ScriptService = {
         log.msg("ScriptService.runScript:",rule,"timers:",self.ruleTimers);
         if( rule.type === 'script' ) {
             var spawn = require('child_process').spawn;
-            var script = spawn( rule.path );
-            script.stdout.on('data', function(data) {
-                var str = data.toString();
-                log.msg("ScriptService.runScript: str:",str,"last:",self.lastEvents[rule.name]);
-                // self.handleEvent(rule,str);
-                self.parse(rule,str);
-            });
-            script.stderr.on('data', function(data) {
-                log.msg("ScriptService.runScript stderr data",data);
-                log.addEvent( {type:'error', source:'script', id:rule.name, text:'stderr:'+data });
-            });
-            script.on('close', function(code) {
-                log.msg("ScriptService.runScript close",code);
-            });
+            try {
+                var script = spawn( rule.path );
+                script.on('error', function(error) {
+                    log.addEvent( {type:'error', source:rule.type, id:rule.name, text:error.message});
+                });
+                script.stdout.on('data', function(data) {
+                    var str = data.toString();
+                    log.msg("ScriptService.runScript: str:",str,"last:",self.lastEvents[rule.name]);
+                    // self.handleEvent(rule,str);
+                    self.parse(rule,str);
+                });
+                script.stderr.on('data', function(data) {
+                    log.msg("ScriptService.runScript stderr data",data);
+                    log.addEvent( {type:'error', source:'script', id:rule.name, text:'stderr:'+data });
+                });
+                script.on('close', function(code) {
+                    log.msg("ScriptService.runScript close",code);
+                });
+            } catch(error) {
+                log.addEvent( {type:'error', source:rule.type, id:rule.name, text:error.message});
+            }
         }
         else if( rule.type === 'file' ) {
             fs.readFile( rule.path, 'utf8', function(err,data) {

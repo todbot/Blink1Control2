@@ -46,12 +46,13 @@ var ScriptForm = React.createClass({
             // patternId: rule.patternId,
             blink1Id: rule.blink1Id || "0",
             path: rule.path,
-            intervalSecs: rule.intervalSecs || 10
+            intervalSecs: rule.intervalSecs || 10,
+            errormsg: ''
          });
 	},
     handleClose: function() {
         if( !this.state.path ) {
-            this.setState({errormsg: 'Must choose a path'});
+            this.setState({errormsg: 'Must choose a '+this.state.type});
             return;
         }
         this.props.onSave(this.state);
