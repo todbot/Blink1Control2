@@ -112,6 +112,8 @@ var openHelpWindow = function() {
 			width: 800
 			// icon: assets['icon-32'],
 		});
+    helpWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
+    helpWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
 	helpWindow.on("closed", function() {
 		// helpWindow = null;
 	});
