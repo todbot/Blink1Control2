@@ -1,8 +1,8 @@
 {
-  "name": "blink1control2",
-  "version": "2.0.0-pre1",
+  "name": "Blink1Control2",
+  "version": "2.0.0-beta3",
   "author": "ThingM",
-  "description": "Blink1Control2 GUI app for controlling blink(1) devices",
+  "description": "Blink1Control2 GUI app for blink(1) devices",
   "productName": "Blink1Control2",
   "companyName": "ThingM",
   "homepage": "http://github.com/todbot/blink1control2",
