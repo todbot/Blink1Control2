@@ -27,15 +27,18 @@ $ npm run start
 
 #### Mac OS X:
 
-
 ```
 $ npm install
 $ npm run postinstall
 $ npm run webpack
 $ npm run dist:mac
-
 ```
 
+Packaging deltas from standard electron-builder
+```
+$ mv dist/mac/Blink2Control2-{version}.dmg dist/mac/Blink2Control2-{version}-mac.dmg
+
+```
 #### Windows:
 
 ```
@@ -43,3 +46,21 @@ $ npm install
 $ npm run webpack
 $ npm run dist:win
 ```
+
+Packaging deltas from standard electron-builder
+```
+ mv dist/Blink1Control2-win32-x64.zip  dist/win/Blink1Control2-{version}-win32-x64.zip
+```
+
+### Publishing
+
+Steps:
+- Create tag in git repository
+- Make release on github
+- Copy files from dev boxes to github release page
+    - dist/mac/Blink1Control2-{version}-mac.dmg
+    - dist/mac/Blink1Control2-{version}-mac.zip
+    - dist/win/Blink1Control2-{version}-win32-x64.exe
+    - dist/Blink1Control2-{version}-win32-x64.zip
+- Write release notes (changelog)
+- Publish release
