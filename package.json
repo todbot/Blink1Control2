@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.0.0-pre1",
+  "version": "2.0.0-beta3",
   "author": "ThingM",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "productName": "Blink1Control2",
@@ -27,7 +27,7 @@
   },
   "build": {
     "appId": "com.thingm.blink1control2",
-    "app-category-type": "public.app-category.utilities",
+    "category": "public.app-category.utilities",
     "asar": true,
     "npmRebuild": false,
     "options": {
