@@ -21,6 +21,7 @@ var MailForm = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
         rule: React.PropTypes.object.isRequired,
+        allowMultiBlink1: React.PropTypes.bool,
         patterns: React.PropTypes.array,
         onSave: React.PropTypes.func,
         onCancel: React.PropTypes.func,
@@ -121,7 +122,6 @@ var MailForm = React.createClass({
                                 onChange={this.onMailTypeClick} >
                                 <option value="IMAP">IMAP</option>
                                 <option value="GMAIL">Gmail</option>
-                                <option value="POP">POP</option>
                             </Input>
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                                 type="text" label="Mail server" placeholder="mail.example.com"
@@ -178,7 +178,7 @@ var MailForm = React.createClass({
                                 {patterns.map( createPatternOption, this )}
                             </Input>
 
-                            <Input labelClassName="col-xs-10" wrapperClassName="col-xs-offset-3 col-xs-8" bsSize="small"
+                            <Input labelClassName="col-xs-10" wrapperClassName="col-xs-offset-3 col-xs-9" bsSize="small"
                                 type="checkbox" label="Turn blink(1) off when no match"
                                 checkedLink={this.linkState('triggerOff')} />
 

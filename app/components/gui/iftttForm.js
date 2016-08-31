@@ -18,8 +18,8 @@ var IftttForm = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
 		rule: React.PropTypes.object.isRequired,
-        patterns: React.PropTypes.array,
         allowMultiBlink1: React.PropTypes.bool,
+        patterns: React.PropTypes.array,
         onSave: React.PropTypes.func,
         onCancel: React.PropTypes.func,
         onDelete: React.PropTypes.func,

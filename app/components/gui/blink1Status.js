@@ -34,9 +34,11 @@ var Blink1Status = React.createClass({
 		var self = this;
 		Blink1Service.addChangeListener( this.updateColorState, "blink1Status" );
 		PatternsService.addChangeListener( this.updatePatternState, "blink1Status" );
+
 		ipcRenderer.on('openPreferences', function( /*event,arg*/ ) {
 			self.setState({showForm: true});
 		});
+
 		this.makeMenu();
 	},
 	updateColorState: function(/*currentColor,  colors,ledn */) {

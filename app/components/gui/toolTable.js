@@ -16,6 +16,7 @@ var conf = require('../../configuration');
 var log = require('../../logger');
 var util = require('../../utils');
 
+var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
 var IftttService = require('../../server/iftttService');
 var MailService = require('../../server/mailService');
@@ -27,7 +28,7 @@ var MailForm = require('./mailForm');
 var ScriptForm = require('./scriptForm');
 var SkypeForm = require('./skypeForm');
 
-
+// not used any more, can delete
 var example_rules = [
 ];
 
@@ -65,7 +66,11 @@ var ToolTable = React.createClass({
 
 		if( !this.state.showForm ) {  //i.e. don't change when we're in edit mode
         	this.setState({events: events});
-			this.setState({'allowMultiBlink1': conf.readSettings("blink1Service:allowMulti") });
+            // hmm is there a better way to do the following
+            // allowMulti if set and number of blink1s > 1
+            var allowMulti = conf.readSettings("blink1Service:allowMulti") && (Blink1Service.isConnected() > 1);
+
+			this.setState({'allowMultiBlink1': allowMulti });
 		}
     },
     saveRules: function(rules) {
