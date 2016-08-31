@@ -278,9 +278,10 @@ var Blink1Service = {
 		var blink1idx = this.idToBlink1Index(blink1id);
 		return currentState[blink1idx].millis;
 	},
+    // FIXME: this seems overly complex
 	getCurrentColor: function(blink1id) { // FIXME
         var blink1idx = this.idToBlink1Index(blink1id);
-		// blink1idx = blink1idx || this.idToBlink1Index(currentBlink1Id);
+        // log.msg("getCurrentColor: idx", blink1idx, "currentState:", currentState);
 		var curledn = currentState[blink1idx].ledn;
 		curledn = (curledn>0) ? curledn-1 : curledn; // 0 = all LEDs in a blink1, so shift or use 0th element as rep
 		return currentState[blink1idx].colors[ curledn ];
@@ -300,19 +301,19 @@ var Blink1Service = {
 	 * @return {number}        known-good index into blink1s array or 0
 	 */
 	idToBlink1Index: function(blink1id) {
+        var blink1idx = 0; // default to first blink1
 		if( blink1id === undefined || blink1id === '' ) {
 			if( this.conf.blink1ToUse ) {
 				blink1id = this.conf.blink1ToUse;
 			} else {
-				blink1id = currentBlink1Id;
+				blink1id = (currentBlink1Id) ? currentBlink1Id : 0; // 0 = common case
 			}
 		}
- 		// it's an array index  (NOTE: SHOULD NEVER HIT THIS, BUT JUST IN CASE)
- 		if( blink1id >= 0 && blink1id < blink1s.length ) {
-			return blink1id;
+        // it's an array index (also early-exist for common 0 case)
+        if( blink1id >= 0 && blink1id < blink1s.length ) {
+        	return blink1id;
 		}
 		// otherwise it's a blink1 serialnumber, so search for it
-		var blink1idx = 0; // default to first blink1
 		blink1id = blink1id.toString().toUpperCase();
 		blink1s.map( function(b,idx) {
 			if( blink1id === b.serial ) {
