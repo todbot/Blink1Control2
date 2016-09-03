@@ -2,17 +2,12 @@
 
 var React = require('react');
 
-// var Grid = require('react-bootstrap').Grid;
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
-// var Well = require('react-bootstrap').Well;
-// var Panel = require('react-bootstrap').Panel;
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var ButtonInput = require('react-bootstrap').ButtonInput;
 var Button = require('react-bootstrap').Button;
-// var ButtonGroup = require('react-bootstrap').ButtonGroup;
-// var FormControls = require('react-bootstrap').FormControls;
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
 
 var PatternsService = require('../../server/patternsService');
@@ -23,6 +18,9 @@ var conf = require('../../configuration');
 var log = require('../../logger');
 
 var Blink1SerialOption = require('./blink1SerialOption');
+
+var AutoLaunch = require('electron').remote.require('auto-launch');
+var blink1ControlAutoLauncher = new AutoLaunch({ name: 'Blink1Control2'}); // FIXME: pkg.productName
 
 var PreferencesModal = React.createClass({
     mixins: [LinkedStateMixin],
@@ -81,6 +79,13 @@ var PreferencesModal = React.createClass({
         Blink1Service.reloadConfig();
         ApiServer.reloadConfig();
         PatternsService.reloadConfig();
+
+        // the startAtLogin option isn't covered by any reloadConfig() call
+        if( this.state.startAtLogin ) { 
+            blink1ControlAutoLauncher.enable();
+        } else {
+            blink1ControlAutoLauncher.disable();
+        }
 
         // FIXME: a hack to get ToolTable to refetch allowMulti pref
         log.addEvent({type:'info', source:'preferences', text:'settings updated'});
