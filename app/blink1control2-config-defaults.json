@@ -40,11 +40,16 @@
       "name": "Away",
       "type": "color",
       "color": "#FFFF00"
-  },
+    },
     {
       "name": "Meeting",
       "type": "color",
       "color": "#0000FF"
+    },
+    {
+      "name": "Off Work",
+      "type": "color",
+      "color": "#FACC2E"
     }
   ],
   "hostId": null,
