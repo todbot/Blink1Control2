@@ -301,7 +301,8 @@ var PatternsService = {
             if (pattern.playing) {
                 // console.log("    stopping ",pattern.name);
                 pattern.playing = false;
-                clearTimeout(pattern.timer);
+                if(pattern.timer) { pattern.timer.stop(); }
+                // clearTimeout(pattern.timer);
                 if (playingPattern.id === pattern.id) {
                     playingPattern = {};
                 }
@@ -316,7 +317,9 @@ var PatternsService = {
         var pattern = _.find(this.getAllPatterns(), { id: id });
         if (pattern) {
             pattern.playing = false;
-            clearTimeout(pattern.timer);
+
+            if( pattern.timer ) { pattern.timer.stop(); }
+            // clearTimeout(pattern.timer);
             if (playingPattern.id === pattern.id) {
                 playingPattern = {};
                 if (playingQueue.length > 0) {
@@ -353,7 +356,7 @@ var PatternsService = {
                     pattern: playingPattern,
                     blink1Id: playingBlink1Id
                 });
-                playingPattern.timer.stop();
+                if( playingPattern.timer ) { playingPattern.timer.stop(); }
                 // clearTimeout( playingPattern.timer );
             }
         }
@@ -446,7 +449,8 @@ var PatternsService = {
         // NOT IMPLEMENTED: otherwise, treat 'id' as a pattern object
 
         if (pattern.playing) {
-            clearTimeout(pattern.timer);
+            if( pattern.timer ) { pattern.timer.stop(); }
+            // clearTimeout(pattern.timer);
         }
         pattern.playpos = 0;
         pattern.playcount = 0;
