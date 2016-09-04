@@ -11,7 +11,7 @@
   "license": "ISC",
   "main": "main.js",
   "dependencies": {
-    "auto-launch": "^2.0.1",
+    "auto-launch": "^4.0.0",
     "d3-timer": "^1.0.2",
     "debug": "^2.2.0",
     "electron-squirrel-startup": "^1.0.0",
