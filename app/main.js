@@ -152,8 +152,8 @@ app.on('ready', function () {
             show: true,
             webPreferences: {
                 zoomFactor: 1.0,
-                backgroundThrottling: false,
-                webgl: false
+                backgroundThrottling: false
+                // webgl: false
             }
 		});
 		mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
@@ -168,8 +168,8 @@ app.on('ready', function () {
           show: false,  // show later based on config value
           webPreferences: {
               zoomFactor: 1.0,
-              backgroundThrottling: false,
-              webgl: false
+              backgroundThrottling: false
+            //   webgl: false
           }
           // closable: false,
           // useContentSize: true,
