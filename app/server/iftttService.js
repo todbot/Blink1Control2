@@ -46,7 +46,7 @@ var conf = require('../configuration');
 var log = require('../logger');
 
 var PatternsService = require('./patternsService');
-var Blink1Service = require('./blink1Service');
+var Blink1Service = require('./blink1Service'); // FIXME: for iftttKey only
 
 
 var IftttService = {

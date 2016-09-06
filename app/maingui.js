@@ -74,6 +74,7 @@ var IftttService = require('./server/iftttService');
 var MailService = require('./server/mailService');
 var SkypeService = require('./server/skypeService');
 var ScriptService = require('./server/scriptService');
+var TimeService = require('./server/timeService');
 
 // FIXME:
 // Need to start these after a bit, so blink1s can be registerd
@@ -83,6 +84,7 @@ setTimeout( function() {
     MailService.start();
     SkypeService.start();
     ScriptService.start();
+    TimeService.start();
 }, 3000);
 
 // events from the main process, from menu actions
