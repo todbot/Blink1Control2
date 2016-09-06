@@ -7,17 +7,19 @@ var _ = require('lodash');
 
 var conf = require('./configuration');
 
-var isDevel = false;
-if( process.browser === true ) { // is in renderer process
-	var remote = window.require('remote');
-	var processserver = remote.require('process');
-	isDevel = (processserver.env.NODE_ENV === 'development');
-	console.log("process.env.NODE_ENV",processserver.env.NODE_ENV);
-}
-else {
-	isDevel = (process.env.NODE_ENV === 'development');
-}
+// 'isDevel' not used anymore I think
+// var isDevel = false;
+// if( process.browser === true ) { // is in renderer process
+// 	var remote = window.require('remote');
+// 	var processserver = remote.require('process');
+// 	isDevel = (processserver.env.NODE_ENV === 'development');
+// 	console.log("process.env.NODE_ENV",processserver.env.NODE_ENV);
+// }
+// else {
+// 	isDevel = (process.env.NODE_ENV === 'development');
+// }
 
+// example of ignoredSources
 // var ignoredSources = [
 //    // /IftttService/i,
 //    // /PatternView/i,

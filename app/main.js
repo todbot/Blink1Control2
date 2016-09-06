@@ -132,6 +132,7 @@ app.on('ready', function () {
 			mainWindow.show();
 		}, 2000 );
 	}
+    var showDebug = config.readSettings('logger.showDebug') || false;
 
 	// var globalShortcut = electron.globalShortcut;
 	// // Register a 'ctrl+x' shortcut listener.
@@ -164,7 +165,7 @@ app.on('ready', function () {
 		  title: "Blink1Control2",
 		  width: 1040,
 		  height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
-		  resizable: false,
+		  resizable: showDebug, // allow resize when in debug mode
           show: false,  // show later based on config value
           webPreferences: {
               zoomFactor: 1.0,
