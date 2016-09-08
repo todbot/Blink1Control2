@@ -19,8 +19,19 @@ var log = require('../../logger');
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
+var app = require('electron').remote.app;
+var path = require('path');
 var AutoLaunch = require('electron').remote.require('auto-launch');
-var blink1ControlAutoLauncher = new AutoLaunch({ name: 'Blink1Control2'}); // FIXME: pkg.productName
+var appPath = app.getAppPath();
+if( process.platform === 'darwin' ) {
+    appPath = path.resolve( appPath, '../../..');
+}
+console.log("appPath:",appPath);
+var blink1ControlAutoLauncher = new AutoLaunch({
+    name: 'Blink1Control2',
+    path: appPath
+
+}); // FIXME: pkg.productName
 
 var PreferencesModal = React.createClass({
     mixins: [LinkedStateMixin],
@@ -81,7 +92,7 @@ var PreferencesModal = React.createClass({
         PatternsService.reloadConfig();
 
         // the startAtLogin option isn't covered by any reloadConfig() call
-        if( this.state.startAtLogin ) { 
+        if( this.state.startAtLogin ) {
             blink1ControlAutoLauncher.enable();
         } else {
             blink1ControlAutoLauncher.disable();
