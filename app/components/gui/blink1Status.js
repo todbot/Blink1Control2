@@ -25,7 +25,7 @@ var Blink1Status = React.createClass({
 			statusStr: Blink1Service.getStatusString(),
 			serialNumber: Blink1Service.serialNumberForDisplay(),
 			blink1Serials: Blink1Service.getAllSerials(),
-			iftttKey: Blink1Service.iftttKey(),
+			iftttKey: Blink1Service.getIftttKey(),
 			currentPattern: '-',
 			showForm: false
 		};
@@ -47,7 +47,7 @@ var Blink1Status = React.createClass({
 						statusStr: Blink1Service.getStatusString(),
 						serialNumber: Blink1Service.serialNumberForDisplay(),
 						blink1Serials: Blink1Service.getAllSerials(),
-						iftttKey: Blink1Service.iftttKey()
+						iftttKey: Blink1Service.getIftttKey()
 					});
 	},
 	updatePatternState: function() {

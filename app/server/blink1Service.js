@@ -229,13 +229,13 @@ var Blink1Service = {
 		return (this.isConnected()) ? this.serialNumber() : '-';
 	},
 	// FIXME: fix and call this blink1Id or something
-	iftttKey: function() {  // FIXME:
+	getIftttKey: function() {  // FIXME:
 		// console.log("IFTTT KEY:",this.serialNumber());
 		var s = this.serialNumber() || '00000000';
-		var k = this.hostId() + s;
+		var k = this.getHostId() + s;
 		return k;
 	},
-	hostId: function() {
+	getHostId: function() {
 		var id = config.readSettings('hostId');
 		if( !id ) {
 			id = util.generateRandomHostId();
@@ -245,7 +245,7 @@ var Blink1Service = {
 	},
 	setHostId: function(id) {
 		config.saveSettings( 'hostId', id);
-		// this.notifyChange();
+		this.notifyChange();
 	},
 
 	setCurrentBlink1Id(id) {

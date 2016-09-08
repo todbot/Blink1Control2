@@ -75,7 +75,7 @@ var IftttService = {
 		}
 		var allrules = conf.readSettings('eventRules') || [];
 		this.rules = allrules.filter( function(r){return r.type === 'ifttt';} );
-		this.iftttKey = Blink1Service.iftttKey();
+		this.iftttKey = Blink1Service.getIftttKey();
 		log.msg("IftttService.reloadConfig. rules=", this.rules);
 	},
 	// getRules: function() {

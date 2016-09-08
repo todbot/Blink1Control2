@@ -48,6 +48,7 @@ var PreferencesModal = React.createClass({
             startAtLogin:     conf.readSettings('startup:startAtLogin') || false,
             startupPattern:   conf.readSettings('startup:startupPattern') || "",
             enableGamma:      conf.readSettings('blink1Service:enableGamma') || false, // NOTE this fails if flop default to true
+            hostId:           Blink1Service.getHostId(),
             blink1ToUse:      conf.readSettings('blink1Service:blink1ToUse') || "0", // 0 == use first avail
             allowMultiBlink1: conf.readSettings('blink1Service:allowMulti') || false,
             apiServerEnable:  conf.readSettings('apiServer:enabled') || false,
@@ -86,6 +87,8 @@ var PreferencesModal = React.createClass({
         conf.saveSettings('proxy:username', this.state.proxyUser);
         conf.saveSettings('proxy:password', this.state.proxyPass);
         conf.saveSettings('patternsService:playingSerialize', this.state.playingSerialize);
+
+        Blink1Service.setHostId( this.state.hostId );
 
         Blink1Service.reloadConfig();
         ApiServer.reloadConfig();
@@ -207,6 +210,9 @@ var PreferencesModal = React.createClass({
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>
                                 <h5><u> blink(1) device use </u></h5>
                                     <form className="form-horizontal">
+                                        <Input labelClassName="col-xs-6" wrapperClassName="col-xs-5" bsSize="small"
+                                          type="text" label="HostId" placeholder=""
+                                          valueLink={this.linkState('hostId')} />
                                         <Blink1SerialOption labelClassName="col-xs-6" wrapperClassName="col-xs-5"
                                             label="preferred device" defaultText="- use first -"
                                             serial={this.state.blink1ToUse} onChange={this.handleBlink1SerialChange}/>
