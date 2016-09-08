@@ -40,6 +40,9 @@ crashReporter.start({
 	autoSubmit: true
 });
 
+//
+app.commandLine.appendSwitch('ignore-gpu-blacklist');
+app.commandLine.appendSwitch('disable-renderer-backgrounding');
 
 // global shortcut idea (see below also)
 // var configInit = function() {
@@ -69,9 +72,12 @@ app.on('window-all-closed', function () {
 });
 
 var handleUrl = function(e,url) {
-    console.log("event:",e);
+    // console.log("event:",e);
     // console.log("handleUrl: ",url);
-    if(url != mainWindow.webContents.getURL()) {
+    if( url.startsWith("chrome://") ) {
+        return;
+    }
+    else if(url != mainWindow.webContents.getURL()) {
         e.preventDefault();
         electron.shell.openExternal(url);
     }
