@@ -35,7 +35,7 @@ var BigButton = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			name: this.props.name
+			// tempname: this.props.name // just for
 		};
 		// return {name: this.props.name, editName:false};
 	},
@@ -84,6 +84,7 @@ var BigButton = React.createClass({
 		return menu;
 	},
 	showEditMenu: function() {
+        this.setState({tempname: this.props.name});
 		this.setState({showEditMenu:true});
 	},
 	hideEditMenu: function() {
@@ -92,7 +93,7 @@ var BigButton = React.createClass({
 	handleEditClose: function(e) {
 		e.preventDefault();
 		log.msg("BigButton.handleEditClose");
-		this.props.onEdit('rename', this.props.idx, this.state.name); // FIXME: seems really hacky
+		this.props.onEdit('rename', this.props.idx, this.state.tempname); // FIXME: seems really hacky
 		this.hideEditMenu();
 	},
 	showContextMenu: function(evt) {
@@ -106,12 +107,12 @@ var BigButton = React.createClass({
     	log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx);
 		this.props.onEdit(eventKey, this.props.idx, arg);
 	},
-    handleMouseDown: function(evt) {
-        // log.msg("BigButton.handleMouseDown:", evt, "buttons:",evt.buttons, evt.button, 'ctrl:',evt.ctrlKey );
-        if( evt.button === 2 || evt.ctrlKey) {
-            // log.msg("CONTEXT MENU!");
-        }
-    },
+    // handleMouseDown: function(evt) {
+    //     // log.msg("BigButton.handleMouseDown:", evt, "buttons:",evt.buttons, evt.button, 'ctrl:',evt.ctrlKey );
+    //     if( evt.button === 2 || evt.ctrlKey) {
+    //         // log.msg("CONTEXT MENU!");
+    //     }
+    // },
 	render: function() {
 		var buttonStyle = { width: 72, height: 72, padding: 3, margin: 5, textShadow:'none'  };
 		// var tstyle = { height: 28, border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal'  };
@@ -164,7 +165,7 @@ var BigButton = React.createClass({
 				  <Modal.Body>
 					  <form className="form-horizontal" onSubmit={this.handleEditClose} >
 						  <Input labelClassName="col-xs-5" wrapperClassName="col-xs-7" bsSize="small"
-							  type="text" label="Button Name" valueLink={this.linkState('name')} />
+							  type="text" label="Button Name" valueLink={this.linkState('tempname')} />
 					  </form>
 				  </Modal.Body>
 				  <Modal.Footer>
