@@ -1,6 +1,6 @@
 # Blink1Control2
 
-Blink1Control written in ElectronJs, ReactJs and NodeJs.
+Blink1Control written in Electron, Node.js, and React.
 
 <img src="./docs/blink1control2-screenshot1.png" width="425">
 <img src="./docs/blink1control2-screenshot2.png" width="425">
