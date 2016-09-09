@@ -95,7 +95,7 @@ var SkypeService = {
                     if( message.resource.messagetype === 'Text' ) {
                         log.msg("SkypeService: INCOMING TEXT FROM",cname);
                         log.addEvent( {type:'trigger', source:'skype', id:rule.name, text:'text: '+cname});
-                        PatternsService.playPattern( rule.patternId );
+                        PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                     }
                 }
                 if( rule.triggerType === 'call' || rule.triggerType === 'any' ) {
@@ -104,7 +104,7 @@ var SkypeService = {
                         log.msg("SkypeService: INCOMING CALL FROM",cname);
 						log.addEvent( {type:'trigger', source:'skype', id:rule.name, text:'call: '+cname});
                         // log.addEvent( 'Skype call: '+cname);
-                        PatternsService.playPattern( rule.patternId );
+                        PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                     }
                 }
                 // also: message.resource.messagetype == 'Text'
