@@ -51,7 +51,7 @@ var Blink1Status = React.createClass({
 					});
 	},
 	updatePatternState: function() {
-		this.setState({currentPattern: PatternsService.getPlayingPatternName()});
+		this.setState({currentPattern: PatternsService.getPlayingInfo()});
 	},
 
 	onIftttKeyClick: function() {
@@ -119,8 +119,8 @@ var Blink1Status = React.createClass({
 						</code>
 					</div>
 					<div>
-						<span style={labelStyle}>Pattern:</span>
-						<span><b> {currentPattern}</b></span>
+						<span style={labelStyle}>Source/Patt:</span>
+						<span><b>{currentPattern}</b></span>
 					</div>
 				</Well>
 			</Panel>

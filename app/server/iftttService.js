@@ -100,12 +100,8 @@ var IftttService = {
 		log.msg("IftttService.handleResults: *** TRIGGERED!!! ***", event,rule);
 		self.lastEvents[event.name] = event.eventDate;
 		if( rule.enabled ) {
-			PatternsService.playPattern( rule.patternId, rule.blink1Id );
+			PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
 		}
-		// PatternsService.playPatternByRule( rule );
-		// if( rule.enabled ) {
-		// 	// if( Blink1Service.rule.blink1Id ) {
-		// }
 	},
 	makeProxyUrl: function() {
 		var proxy = conf.readSettings('proxy');
@@ -177,7 +173,7 @@ var IftttService = {
 							if( !self.lastEvents[evt.name] ) { self.lastEvents[evt.name] = new Date(0); }
 							log.msg("IftttService.fetch: *** META RULE MATCH:", evt.name, '--', evt.eventDate, '--');
 							if( evt.eventDate > self.lastEvents[evt.name] ) {
-								self.handleResults( {enabled:true, patternId:evt.name}, evt );
+								self.handleResults( {enabled:true, name:evt.name, patternId:evt.name}, evt );
 							}
 						}
 						else {

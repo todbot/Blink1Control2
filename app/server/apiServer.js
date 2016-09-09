@@ -24,7 +24,7 @@ app.get('/', function (req, res) {
 app.get('/blink1(/id)?', function(req,res) {
 	res.json({
         blink1_serialnums: Blink1Service.getAllSerials(),
-		blink1_id: Blink1Service.iftttKey(),
+		blink1_id: Blink1Service.getIftttKey(),
 		status: "blink1 id"
     });
 });
@@ -89,7 +89,7 @@ app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
 	if( req.params.type === 'play' ) {
         if( patt_name ) {
             // returns true on found pattern // FIXME: go back to using 'findPattern'
-    		if( PatternsService.playPattern( patt_name, blink1id ) ) {
+    		if( PatternsService.playPatternFrom( 'api', patt_name, blink1id ) ) {
     			status = 'playing pattern ' +patt_name;
     		}
         }

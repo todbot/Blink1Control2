@@ -117,7 +117,7 @@ var startupfunc = function() {
     var startupPattern = conf.readSettings('startup:startupPattern');
     if( startupPattern ) {
         console.log("starting up with:", startupPattern);
-        PatternsService.playPattern( startupPattern );
+        PatternsService.playPatternFrom( 'startup', startupPattern );
     }
 };
 setTimeout( startupfunc, 1000 );

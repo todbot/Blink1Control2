@@ -62,6 +62,7 @@ var playingQueue = [];  // [{patternId:'bloop', blink1Id:'2121ABAB'}]
 // };
 
 var playingPattern = {};
+var playingPatternSource = '';
 var playingBlink1Id = '';
 
 var listeners = {};
@@ -323,9 +324,9 @@ var PatternsService = {
             if (playingPattern.id === pattern.id) {
                 playingPattern = {};
                 if (playingQueue.length > 0) {
-                    var queueInfo = playingQueue.pop();
-                    log.msg("PatternsService.stopPattern: next off playingQueue:", queueInfo.pattern.id);
-                    this._playPatternInternal(queueInfo.pattern, queueInfo.blink1id);
+                    var qInfo = playingQueue.pop();
+                    log.msg("PatternsService.stopPattern: next off playingQueue:", qInfo.source, qInfo.pattern.id);
+                    this._playPatternInternalFrom(qInfo.source, qInfo.pattern, qInfo.blink1id);
                 } else {
                     this.notifyChange(); // FIXME: reduce notifys
                 }
@@ -342,17 +343,20 @@ var PatternsService = {
      *
      *
      * @param  {String} pattid   Id of pattern to play, or
+     * @param  {String} pattid   Id of pattern to play, or
      * @param  {[type]} blink1id blink(1) serial number to use, or undef
      * @return {pattid} id of pattern playing, or false if pattern doesn't exist
      */
-    playPattern: function(pattid, blink1id) {
-        log.msg("PatternsService.playPattern: id:", pattid, ", blink1id:", blink1id, "patternsTemp:", patternsTemp);
+    playPatternFrom: function(source, pattid, blink1id) {
+    // playPattern: function(pattid, blink1id) {
+        log.msg("PatternsService.playPatternFrom: src:",source,"id:", pattid, ", blink1id:", blink1id, "patternsTemp:", patternsTemp);
         blink1id = ( blink1id === undefined ) ? '' : blink1id; // set default for playingQueue
 
         if (this.config.playingSerialize) {
             if (playingPattern.id ) { // pattern playing, so interrupt it and save it
                 log.msg("PatternsService.playPattern: interrupting", playingPattern.id, "playingQueue: ", playingQueue);
                 playingQueue.push({
+                    source: playingPatternSource,
                     pattern: playingPattern,
                     blink1Id: playingBlink1Id
                 });
@@ -458,8 +462,9 @@ var PatternsService = {
 
         playingPattern = pattern;
         playingBlink1Id = blink1id;
+        playingPatternSource = source;
 
-        this._playPatternInternal(pattern, blink1id);
+        this._playPatternInternalFrom(source, pattern, blink1id);
         return pattid;
     },
 
@@ -470,7 +475,8 @@ var PatternsService = {
      * @param  {String}   blink1id serial of blink1 to play on, or 0 or undef
      * @return no return value
      */
-    _playPatternInternal: function(pattern, blink1id) {
+    _playPatternInternalFrom: function(source, pattern, blink1id) {
+    // _playPatternInternal: function(pattern, blink1id) {
         // log.msg("_playPatternInternal:",pattern.id);
         if( !pattern ) { return; } // should never happen
         // var pattern = _.find(this.getAllPatterns(), { id: id });
@@ -479,11 +485,12 @@ var PatternsService = {
         // }
         playingPattern = pattern;
         playingBlink1Id = blink1id;
+        playingPatternSource = source;
         var color = pattern.colors[pattern.playpos];
         var rgb = color.rgb;
         var millis = color.time * 1000;
         var ledn = color.ledn;
-        log.msg("_playPatternInternal:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb, millis, ledn );
+        log.msg("_playPatternInternalFrom:" + pattern.id, pattern.playpos, pattern.playcount, pattern.colors[pattern.playpos].rgb, millis, ledn );
 
         Blink1Service.fadeToColor(millis, rgb, ledn, blink1id);
 
@@ -507,7 +514,7 @@ var PatternsService = {
         //     PatternsService._playPatternInternal(pattern, blink1id);
         // }, millis);
         pattern.timer = d3.timeout( function() {
-            PatternsService._playPatternInternal(pattern, blink1id);
+            PatternsService._playPatternInternalFrom(source, pattern, blink1id);
         }, millis);
     },
 
@@ -515,8 +522,13 @@ var PatternsService = {
         return playingPattern.id;
     },
     getPlayingPatternName: function() {
-        var patt = this.getPatternById(playingPattern.id);
-        return (patt) ? patt.name : '';
+        // var patt = this.getPatternById(playingPattern.id);
+        var patt = playingPattern;
+        return (patt && patt.name) ? patt.name : '';
+    },
+    getPlayingInfo: function() {
+        var patt = playingPattern;
+        return (patt && patt.name) ? playingPatternSource +':'+patt.name : '';
     },
 
     addChangeListener: function(callback, callername) {

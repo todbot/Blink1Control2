@@ -137,7 +137,7 @@ var ScriptService = {
     },
 
     playPattern: function(pattid,ruleid) {
-        if( PatternsService.playPattern( pattid ) ) {
+        if( PatternsService.playPatternFrom( ruleid, pattid ) ) {
             this.lastPatterns[ruleid] = pattid;
             return pattid;
         }

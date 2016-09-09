@@ -70,7 +70,7 @@ ImapSearcher.prototype.searchMailDo = function() {
         if( res.length > 0 || (res.length >= self.triggerVal) ) {
             if( !self.triggered ) {  //  we've yet been triggered
                 self.triggered = true;
-                PatternsService.playPattern( self.patternId );
+                PatternsService.playPatternFrom( self.id, self.patternId );
             }
             log.addEvent( {type:'trigger', source:'mail', id:self.id, text:''+res.length+' msgs match'} );
         }
@@ -79,7 +79,7 @@ ImapSearcher.prototype.searchMailDo = function() {
                 self.triggered = false;
                 log.addEvent( {type:'triggerOff', source:'mail', text:'off', id:self.id} ); // type mail
                 // PatternsService.stopPattern( self.patternId );
-                PatternsService.playPattern("~off");
+                PatternsService.playPatternFrom( self.id, "~off");
             }
             // even if we didn't trigger, log new results of search
             log.addEvent( {type:'info', source:'mail', id:self.id, text:''+res.length+' msgs match'} );
