@@ -66,6 +66,7 @@ var BigButtonSet = React.createClass({
     },
     onEdit: function(cmd, idx, arg) {
         var mybuttons = this.state.buttonsUser.concat(); // clone;
+        // var mybuttons = Object.assign({}, this.state.buttonsUser );
         if( cmd === 'delete' ) {
             mybuttons.splice( idx,1 );
         }
@@ -121,9 +122,9 @@ var BigButtonSet = React.createClass({
         ledn = ledn || 0; // 0 means all
         Blink1Service.fadeToColor( 100, color, ledn, blink1id );  // FIXME: millis
     },
-    playPattern: function(patternid) {
-        PatternsService.playPattern( patternid );
-    },
+    // playPattern: function(patternid) {
+    //     PatternsService.playPatternFrom( patternid );
+    // },
     // can be called outside of this class
     playBigButtonUser: function(buttonindex) {
         var button = this.state.buttonsUser[buttonindex];
@@ -133,7 +134,7 @@ var BigButtonSet = React.createClass({
                 this.setBlink1Color( button.color, button.ledn, button.blink1Id ); // FIXME: what about blink1id
             }
             else if( button.type === 'pattern' ) {
-                this.playPattern( button.patternId, button.blink1Id );
+                PatternsService.playPatternFrom( button.name, button.patternId, button.blink1Id );
             }
             log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
         }
