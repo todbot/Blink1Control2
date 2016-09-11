@@ -81,7 +81,7 @@ var TimeService = {
                     now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
                     log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'' });
-                    PatternsService.playPattern( rule.patternId, rule.blink1Id );
+                    PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                 }
             }
             else if( rule.alarmType === 'exact' ) {
