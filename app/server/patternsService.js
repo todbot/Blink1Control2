@@ -37,7 +37,7 @@
 
 var _ = require('lodash');
 var tinycolor = require('tinycolor2');
-var d3 = require('d3-timer');
+// var d3 = require('d3-timer');
 
 var conf = require('../configuration');
 var log = require('../logger');
@@ -302,8 +302,10 @@ var PatternsService = {
             if (pattern.playing) {
                 // console.log("    stopping ",pattern.name);
                 pattern.playing = false;
-                if(pattern.timer) { pattern.timer.stop(); }
-                // clearTimeout(pattern.timer);
+                if(pattern.timer) {
+                    //pattern.timer.stop();
+                    clearTimeout(pattern.timer);
+                }
                 if (playingPattern.id === pattern.id) {
                     playingPattern = {};
                 }
@@ -319,8 +321,10 @@ var PatternsService = {
         if (pattern) {
             pattern.playing = false;
 
-            if( pattern.timer ) { pattern.timer.stop(); }
-            // clearTimeout(pattern.timer);
+            if( pattern.timer ) {
+                // pattern.timer.stop();
+                clearTimeout(pattern.timer);
+            }
             if (playingPattern.id === pattern.id) {
                 playingPattern = {};
                 if (playingQueue.length > 0) {
@@ -360,8 +364,10 @@ var PatternsService = {
                     pattern: playingPattern,
                     blink1Id: playingBlink1Id
                 });
-                if( playingPattern.timer ) { playingPattern.timer.stop(); }
-                // clearTimeout( playingPattern.timer );
+                if( playingPattern.timer ) {
+                    // playingPattern.timer.stop();
+                    clearTimeout( playingPattern.timer );
+                }
             }
         }
 
@@ -453,8 +459,10 @@ var PatternsService = {
         // NOT IMPLEMENTED: otherwise, treat 'id' as a pattern object
 
         if (pattern.playing) {
-            if( pattern.timer ) { pattern.timer.stop(); }
-            // clearTimeout(pattern.timer);
+            if( pattern.timer ) {
+                // pattern.timer.stop();
+                clearTimeout(pattern.timer);
+            }
         }
         pattern.playpos = 0;
         pattern.playcount = 0;
@@ -510,12 +518,12 @@ var PatternsService = {
         }
 
         this.notifyChange();
-        // pattern.timer = setTimeout(function() {
-        //     PatternsService._playPatternInternal(pattern, blink1id);
-        // }, millis);
-        pattern.timer = d3.timeout( function() {
-            PatternsService._playPatternInternalFrom(source, pattern, blink1id);
+        pattern.timer = setTimeout(function() {
+            PatternsService._playPatternInternalFrom( source, pattern, blink1id);
         }, millis);
+        // pattern.timer = d3.timeout( function() {
+        //     PatternsService._playPatternInternalFrom(source, pattern, blink1id);
+        // }, millis);
     },
 
     getPlayingPatternId: function() {
@@ -526,9 +534,9 @@ var PatternsService = {
         var patt = playingPattern;
         return (patt && patt.name) ? patt.name : '';
     },
-    getPlayingInfo: function() {
+    getPlayingPatternSource: function() {
         var patt = playingPattern;
-        return (patt && patt.name) ? playingPatternSource +':'+patt.name : '';
+        return (patt && patt.name) ? playingPatternSource : '';
     },
 
     addChangeListener: function(callback, callername) {
