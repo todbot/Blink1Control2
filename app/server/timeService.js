@@ -45,6 +45,7 @@ var TimeService = {
 	rules: {},
     timer: null,
     reloadConfig: function() {
+        log.msg("TimeService.reloadConfig");
 		this.config = conf.readSettings('eventServices:timeService');
 		if( !this.config ) {
 			log.msg("TimeService.reloadConfig: NO CONFIG");
@@ -70,11 +71,19 @@ var TimeService = {
     checkTime: function() {
         var now = new Date();
         this.rules.map( function(rule) {
+            if( !rule.enabled ) { return; }
             // log.msg("TimeService.checkTime: rule=",rule);
-            if( rule.alarmType === 'periodic' ) {
-                var rHour = parseInt(rule.alarmHours);
-                var rMin = parseInt( rule.alarmMinutes ) || 0;
-                var rSec = parseInt( rule.alarmSeconds ) || 0;
+            var rHour = parseInt(rule.alarmHours);
+            var rMin = parseInt( rule.alarmMinutes ) || 0;
+            var rSec = parseInt( rule.alarmSeconds ) || 0;
+            if( rule.alarmType === 'hourly' ) {
+                if( now.getMinutes() === rMin &&
+                    now.getSeconds() === rSec ) {
+                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'' });
+                    PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
+                }
+            }
+            else if( rule.alarmType === 'daily' ) {
                 // log.msg("TimeService.checkTime: periodic:", rHour,rMin,rSec,
                 //     " - ", now.getHours(),now.getMinutes(),now.getSeconds());
                 if( now.getHours() === rHour &&
@@ -83,9 +92,6 @@ var TimeService = {
                     log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'' });
                     PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                 }
-            }
-            else if( rule.alarmType === 'exact' ) {
-                // log.msg("TimeService.checkTime: exact: no logic yet for this case");
             }
         });
     }
