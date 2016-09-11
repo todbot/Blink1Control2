@@ -42,7 +42,7 @@ crashReporter.start({
 
 //
 app.commandLine.appendSwitch('ignore-gpu-blacklist');
-app.commandLine.appendSwitch('disable-renderer-backgrounding');
+// app.commandLine.appendSwitch('disable-renderer-backgrounding');
 
 // global shortcut idea (see below also)
 // var configInit = function() {
@@ -157,11 +157,12 @@ app.on('ready', function () {
 			height: 900,
             resizable: true,
             show: true,
-            webPreferences: {
-                zoomFactor: 1.0,
-                backgroundThrottling: false
-                // webgl: false
-            }
+            webPreferences: {backgroundThrottling: false}
+            // webPreferences: {
+            //     zoomFactor: 1.0,
+            //     backgroundThrottling: false
+            //     // webgl: false
+            // }
 		});
 		mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
         mainWindow.webContents.openDevTools({mode:'bottom'});
@@ -173,11 +174,7 @@ app.on('ready', function () {
 		  height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
 		  resizable: showDebug, // allow resize when in debug mode
           show: false,  // show later based on config value
-          webPreferences: {
-              zoomFactor: 1.0,
-              backgroundThrottling: false
-            //   webgl: false
-          }
+          webPreferences: {backgroundThrottling: false}
           // closable: false,
           // useContentSize: true,
 		  // center: true
