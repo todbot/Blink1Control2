@@ -51,7 +51,9 @@ var Blink1Status = React.createClass({
 					});
 	},
 	updatePatternState: function() {
-		this.setState({currentPattern: PatternsService.getPlayingInfo()});
+		this.setState( {
+            currentPattern: PatternsService.getPlayingPatternName(),
+            currentSource: PatternsService.getPlayingPatternSource() });
 	},
 
 	onIftttKeyClick: function() {
@@ -86,7 +88,10 @@ var Blink1Status = React.createClass({
 		// console.log("blink1Status.render: ", this.state.blink1Color);
 		var currentPattern = this.state.currentPattern;
 		if( !currentPattern ) { currentPattern = '-'; }
-		var labelStyle = {width: 80, display: "inline-block"};
+        var currentSource = this.state.currentSource;
+        if( !currentSource ) { currentSource = '-'; }
+
+		var labelStyle = {width: 80, display: "inline-block", textAlign:'right', paddingRight:5};
 		var serialNums = "serials:\n";
 		this.state.blink1Serials.forEach(function(s){ serialNums+= "blink1:"+s+"\n"; });
 		var onlineStatus = (navigator.onLine ? 'network online' : 'network offline');
@@ -119,8 +124,11 @@ var Blink1Status = React.createClass({
 						</code>
 					</div>
 					<div>
-						<span style={labelStyle}>Source/Patt:</span>
-						<span><b>{currentPattern}</b></span>
+                        <span style={labelStyle}>Source:</span>
+                        <span><b>{currentSource}</b></span>
+                    <div></div>
+						<span style={labelStyle}>Pattern:</span>
+                        <span><b>{currentPattern}</b></span>
 					</div>
 				</Well>
 			</Panel>
