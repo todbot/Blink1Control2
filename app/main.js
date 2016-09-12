@@ -15,6 +15,14 @@ var path = require('path');
 
 var mainWindow = null;
 
+var powerSaveBlocker= require('electron').powerSaveBlocker;
+var id = powerSaveBlocker.start('prevent-app-suspension');
+console.log("powerSaveBlocker:",id);
+
+//
+app.commandLine.appendSwitch('ignore-gpu-blacklist');
+// app.commandLine.appendSwitch('disable-renderer-backgrounding');
+
 // Someone tried to run a second instance, we should focus our window.
 // Really only applicable on Windows, maybe Linux
 var shouldQuitMultiInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
@@ -40,9 +48,6 @@ crashReporter.start({
 	autoSubmit: true
 });
 
-//
-app.commandLine.appendSwitch('ignore-gpu-blacklist');
-// app.commandLine.appendSwitch('disable-renderer-backgrounding');
 
 // global shortcut idea (see below also)
 // var configInit = function() {
