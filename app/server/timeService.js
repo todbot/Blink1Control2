@@ -77,6 +77,8 @@ var TimeService = {
             var rMin = parseInt( rule.alarmMinutes ) || 0;
             var rSec = parseInt( rule.alarmSeconds ) || 0;
             if( rule.alarmType === 'hourly' ) {
+                log.msg("TimeService.checkTime: periodic:", rHour,rMin,rSec,
+                    " - ", now.getHours(),now.getMinutes(),now.getSeconds());
                 if( now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
                     log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'' });
@@ -85,6 +87,16 @@ var TimeService = {
             }
             else if( rule.alarmType === 'daily' ) {
                 // log.msg("TimeService.checkTime: periodic:", rHour,rMin,rSec,
+                //     " - ", now.getHours(),now.getMinutes(),now.getSeconds());
+                if( now.getHours() === rHour &&
+                    now.getMinutes() === rMin &&
+                    now.getSeconds() === rSec ) {
+                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'' });
+                    PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
+                }
+            }
+            else if( rule.alarmType === 'countdown' ) {
+                // log.msg("TimeService.checkTime: countdown:", rHour,rMin,rSec,
                 //     " - ", now.getHours(),now.getMinutes(),now.getSeconds());
                 if( now.getHours() === rHour &&
                     now.getMinutes() === rMin &&

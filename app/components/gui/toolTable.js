@@ -138,9 +138,12 @@ var ToolTable = React.createClass({
 	handleDeleteRule: function() {
 		var idx = this.state.workingIndex;
 		if( idx !== -1 ) {
+            var ruleold = this.state.rules[idx];
 			var rules = this.state.rules.filter( function(r,i) { return i!==idx; });
+            log.msg("ToolTable.handleDeleteRule", ruleold.type, ruleold.name, idx,rules.length);
 			this.saveRules(rules);
 			this.setState( {workingIndex: -1} );
+            this.updateService(ruleold);
 		}
 		this.setState({ showForm: false });
 	},
@@ -202,7 +205,14 @@ var ToolTable = React.createClass({
 				desc = rule.username + ':' + rule.triggerType;
 			}
             else if( rule.type === 'time' ) {
-                desc = rule.alarmType + '@' + rule.alarmHours + ':' + rule.alarmMinutes;
+                if( rule.alarmType === 'countdown' ) {
+                    desc = 'countdown to ' + rule.alarmHours +':'+ rule.alarmMinutes;
+                }
+                else if( rule.alarmType === 'hourly' ) {
+                    desc = rule.alarmType + ' @ ' + rule.alarmMinutes + ' minutes';
+                } else {
+                    desc = rule.alarmType + ' @ ' + rule.alarmHours + ':' + rule.alarmMinutes;
+                }
             }
             return desc;
         };

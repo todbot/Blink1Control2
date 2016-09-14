@@ -1,10 +1,11 @@
 "use strict";
 
-var _ = require('lodash');
+// var _ = require('lodash');
+var moment = require('moment');
 
 var React = require('react');
 
-var Grid = require('react-bootstrap').Grid;
+// var Grid = require('react-bootstrap').Grid;
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
@@ -50,23 +51,40 @@ var TimeForm = React.createClass({
          });
 	},
     handleClose: function() {
-        this.props.onSave(this.state);
+        var state = this.state;
+        if( state.alarmType === 'countdown' ) {
+            var newTime = moment();
+            // newTime = newTime.add(state.alarmHours,'hours');
+            newTime = newTime.add(state.alarmMinutes,'minutes');
+            state.alarmHours = newTime.hours();
+            state.alarmMinutes = newTime.minutes();
+        }
+        this.props.onSave(state);
     },
     handleBlink1SerialChange: function(blink1Id) {
         this.setState({blink1Id: blink1Id});
     },
     handleChangeHours: function(event) {
-		var number = parseInt(event.target.value);
-        if(isNaN(number)) { console.log("not a number"); return; }
-		number = ( number < 0 ) ? 0 : (number>23) ? 23 : number;
+		var number = parseInt(event.target.value) || 0;
+		// number = ( number < 0 ) ? 23 : (number>23) ? 0 : number;
         this.setState({alarmHours: number});
     },
     handleChangeMinutes: function(event) {
-		var number = parseInt(event.target.value);
-        if(isNaN(number)) { console.log("not a number"); return; }
-		number = ( number < 0 ) ? 0 : (number>59) ? 59 : number;
+		var number = parseInt(event.target.value) || 0;
+        // console.log("mins: ", event.target.value, number);
+		// number = ( number < 0 ) ? 59 : (number>59) ? 0 : number;
         this.setState({alarmMinutes: number});
     },
+    setHourly: function() {
+        this.setState({alarmType:'hourly'});
+    },
+    setDaily: function() {
+        this.setState({alarmType:'daily'});
+    },
+    setCountdown: function() {
+        this.setState({alarmType:'countdown'});
+    },
+
 
     render: function() {
         var self = this;
@@ -74,21 +92,15 @@ var TimeForm = React.createClass({
         var createPatternOption = function(item, idx) {
           return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
-        // var createNumberOption = function(item, idx) {
-        //     return ( <option key={idx} value={item}>{item}</option> );
-        // };
-        //
-        // var hoursList = _.range(0,23);
-        // var minutesList = _.range(0,59);
 
         // convert number to string with leading zero if necessary
+        // sure wish we had printf("%02d")
         var hrs = parseInt(this.state.alarmHours);
-        hrs = (hrs < 9) ? '0'+hrs : hrs;
+        hrs = (hrs < 10) ? '0'+hrs : hrs;
         var mins = parseInt(this.state.alarmMinutes);
-        mins = (mins < 9) ? '0'+mins : mins;
+        mins = (mins < 10) ? '0'+mins : mins;
 
-        // var everyHourInput = <input type="number" min={0} max={59} step={1} size={2}
-        //     value={mins} onChange={this.handleChangeMinutes} />
+        var altype = this.state.alarmType;
 
         return (
             <div>
@@ -112,35 +124,44 @@ var TimeForm = React.createClass({
                             </Col>
                             <Col xs={9}>
                                 <Input>
-                                <div className="form-inline" >
-                                    <div className="radio-inline">
-                                        <input type="radio" name="hourly" value="hourly"
-                                            checked={this.state.alarmType==='hourly'}
-                                            onChange={function(){self.setState({alarmType:'hourly'});}} />
-                                        every hour at:
+                                    <div className="form-inline" onClick={this.setHourly}>
+                                        <div className="radio-inline">
+                                            <input type="radio" name="hourly" value="hourly"
+                                                checked={altype==='hourly'} onChange={this.setHourly} />
+                                            every hour at:
+                                        </div>
+                                        <input type="number" min={0} max={59} step={1} size={2}
+                                            value={altype==='hourly'?mins:''} onChange={this.handleChangeMinutes} />
+                                        minutes
                                     </div>
-                                    <input type="number" min={0} max={59} step={1} size={2}
-                                        value={mins} onChange={this.handleChangeMinutes} />
-                                    minutes
-                                </div>
-                            </Input>
-                            <Input>
-                                <div className="form-inline" >
-                                    <div className="radio-inline">
-                                        <input type="radio" name="daily" value="daily"
-                                            checked={this.state.alarmType==='daily'}
-                                            onChange={function(){self.setState({alarmType:'daily'});}}/>
-                                        every day at:
+                                </Input>
+                                <Input>
+                                    <div className="form-inline" onClick={this.setDaily}>
+                                        <div className="radio-inline" >
+                                            <input type="radio" name="daily" value="daily"
+                                                checked={altype==='daily'} onChange={this.setDaily} />
+                                            every day at:
+                                        </div>
+                                        <input type="number" min={0} max={23} step={1} size={2}
+                                            style={{textAlign:'right'}}
+                                            value={altype==='daily'?hrs:''} onChange={this.handleChangeHours}/> :
+                                        <input type="number" min={0} max={59} step={1} size={2}
+                                            style={{textAlign:'right'}}
+                                            value={altype==='daily'?mins:''} onChange={this.handleChangeMinutes}/>
                                     </div>
-                                    <input type="number" min={0} max={23} step={1} size={2}
-                                        style={{textAlign:'right'}}
-                                        value={hrs} onChange={this.handleChangeHours}/> :
-                                    <input type="number" min={0} max={59} step={1} size={2}
-                                        style={{textAlign:'right'}}
-                                        value={mins} onChange={this.handleChangeMinutes}/>
-                                </div>
-                            </Input>
-
+                                </Input>
+                                <Input>
+                                    <div className="form-inline" onClick={this.setCountdown}>
+                                        <div className="radio-inline" >
+                                            <input type="radio" name="countdown" value="countdown"
+                                                checked={altype==='countdown'} onChange={this.setCountdown} />
+                                            elapsed time :
+                                        </div>
+                                        <input type="number" min={0} max={59} step={1} size={2}
+                                            value={altype==='countdown'?mins:''} onChange={this.handleChangeMinutes} />
+                                        minutes (one-time, non-repeating)
+                                    </div>
+                                </Input>
                             </Col>
                         </Row>
                         <Row>
