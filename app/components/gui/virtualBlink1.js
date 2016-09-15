@@ -47,6 +47,9 @@ var VirtualBlink1 = React.createClass({
 	handleBlink1IdChange: function(id) {
 		Blink1Service.setCurrentBlink1Id(id);
 	},
+    handleClick: function() {
+        Blink1Service.reloadConfig();
+    },
 
 	blink1Id: 0,
 	nextColors: new Array(2).fill(tinycolor('#ff00ff')), // ledn colors
@@ -119,7 +122,8 @@ var VirtualBlink1 = React.createClass({
         // "radial-gradient(160px 90px at 150px 110px," + this.state.colors[1].toRgbString() + " 0%, rgba(255,255,255,0.2) 55% )";
 		// linear-gradient(to bottom, rgba(30,87,153,1) 0%,rgba(66,124,183,0) 38%,rgba(125,185,232,0) 100%);
 
-		var img0style = { width: 240, height: 150, margin: 0, padding: 0, marginTop:-15, // FIXME why do I need marginTop-15?
+		var virtBlink1style = { width: 240, height: 150,
+            margin: 0, padding: 0, marginTop:-15, // FIXME why do I need marginTop-15?
 			border: '0px solid grey',
 			//background: this.props.blink1Color
 			backgroundImage: [
@@ -164,7 +168,7 @@ var VirtualBlink1 = React.createClass({
 		var miniBlink1s = (serials.length > 1 ) ? serials.map(makeMiniBlink1, this) : null;
 		return (
 			<div style={{position:'relative', border:'0px solid green'}}>
-				<div style={img0style} title={colorDesc} onClick={function(){log.msg("\n"+Blink1Service.dumpCurrentState());}}></div>
+				<div style={virtBlink1style} title={colorDesc} onClick={this.handleClick}></div>
 				<div style={{position:'absolute', top:5, left:0, padding:0, marginLeft:0}}>
 					{miniBlink1s}
 				</div>

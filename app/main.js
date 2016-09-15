@@ -15,11 +15,11 @@ var path = require('path');
 
 var mainWindow = null;
 
+// turn off 'app-suspension' because it was causing bad timing in renderer
 var powerSaveBlocker= require('electron').powerSaveBlocker;
 var id = powerSaveBlocker.start('prevent-app-suspension');
-console.log("powerSaveBlocker:",id);
 
-//
+// ignore-gpu-blacklist o maybe fix bad performance issue in Mac Sierra beta
 app.commandLine.appendSwitch('ignore-gpu-blacklist');
 // app.commandLine.appendSwitch('disable-renderer-backgrounding');
 
