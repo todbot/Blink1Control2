@@ -220,7 +220,7 @@ var PatternsService = {
     },
     getPatternById: function(id) {
         var pattern = _.find(this.getAllPatterns(), { id: id });
-        return _.clone(pattern);
+        return _.cloneDeep(pattern);
     },
     // for apiServer
     formatPatternForOutput: function(patt) {
@@ -346,7 +346,7 @@ var PatternsService = {
      * Play a pattern. Returns false if pattern doesn't exist. Notifies change listeners.
      *
      *
-     * @param  {String} pattid   Id of pattern to play, or
+     * @param  {String} source   source of who wants to play a pattern
      * @param  {String} pattid   Id of pattern to play, or
      * @param  {[type]} blink1id blink(1) serial number to use, or undef
      * @return {pattid} id of pattern playing, or false if pattern doesn't exist
