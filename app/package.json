@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.0.0-beta3",
+  "version": "2.0.0-beta4",
   "author": "ThingM",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "productName": "Blink1Control2",
@@ -11,21 +11,21 @@
   "license": "ISC",
   "main": "main.js",
   "dependencies": {
-    "auto-launch": "^4.0.0",
+    "auto-launch": "^5.0.1",
     "d3-timer": "^1.0.2",
     "debug": "^2.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.13.4",
-    "imap": "^0.8.16",
+    "imap": "^0.8.19",
     "is-electron-renderer": "^2.0.0",
-    "lodash": "^4.2.1",
-    "moment": "^2.11.2",
+    "lodash": "^4.16.6",
+    "moment": "^2.17.1",
     "nconf": "^0.8.4",
-    "needle": "^1.0.0",
+    "needle": "^1.4.2",
     "node-blink1": "^0.2.2",
-    "node-hid": "^0.5.1",
+    "node-hid": "^0.5.4",
     "simplecrypt": "^0.1.0",
-    "skyweb": "Leoperd87/skyweb",
+    "skyweb": "^0.1.2",
     "tinycolor2": "^1.3.0"
   }
 }
