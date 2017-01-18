@@ -183,7 +183,7 @@ var ScriptService = {
                 json = JSON.parse(str);
                 if( json.pattern ) {
                     // returns true on found pattern // FIXME: go back to using 'findPattern'
-                    if( this.playPattern( json.pattern, rule.name ) ) {
+                    if( this.playPattern( json.pattern, rule.name, rule.blink1id ) ) {
                         log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:json.pattern});
                     }
                     else {
@@ -194,7 +194,7 @@ var ScriptService = {
                     var c = tinycolor(json.color);
                     if( c.isValid() ) {
                         log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:json.color});
-                        this.playPattern( c.toHexString(), rule.name );
+                        this.playPattern( c.toHexString(), rule.name, rule.blink1id );
                     } else {
                         log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+json.color});
                     }
