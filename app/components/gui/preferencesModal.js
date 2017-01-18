@@ -63,7 +63,8 @@ var PreferencesModal = React.createClass({
             patterns: PatternsService.getAllPatterns(),
             // blink1Serials: Blink1Service.getAllSerials(),
             // blink1Serials: ['12345678','abcdabcd'], // FIXME: make a prop
-            patternId: 'whiteflashes'
+            patternId: 'whiteflashes',
+            errormsg: ''
         };
     },
     // doing this so we get guaranteed fresh config
@@ -73,6 +74,12 @@ var PreferencesModal = React.createClass({
         }
 	},
     saveSettings: function() {
+
+        if( ! Blink1Service.setHostId( this.state.hostId ) ) {
+            this.setState({errormsg: 'HostId must be 8-digit hexadecimal'});
+            return false;
+        }
+
         conf.saveSettings('startup:startMinimized', this.state.startMinimized);
         conf.saveSettings('startup:startAtLogin', this.state.startAtLogin);
         conf.saveSettings('blink1Service:enableGamma', this.state.enableGamma);
@@ -88,8 +95,6 @@ var PreferencesModal = React.createClass({
         conf.saveSettings('proxy:password', this.state.proxyPass);
         conf.saveSettings('patternsService:playingSerialize', this.state.playingSerialize);
 
-        Blink1Service.setHostId( this.state.hostId );
-
         Blink1Service.reloadConfig();
         ApiServer.reloadConfig();
         PatternsService.reloadConfig();
@@ -103,10 +108,13 @@ var PreferencesModal = React.createClass({
 
         // FIXME: a hack to get ToolTable to refetch allowMulti pref
         log.addEvent({type:'info', source:'preferences', text:'settings updated'});
+
+        return true;
     },
     close: function() {
-        this.saveSettings();
-        this.props.onSave(this.state);
+        if( this.saveSettings() ) {
+            this.props.onSave(this.state);
+        }
     },
     cancel: function() {
         this.props.onCancel();
@@ -214,7 +222,7 @@ var PreferencesModal = React.createClass({
                                           type="text" label="HostId" placeholder=""
                                           valueLink={this.linkState('hostId')} />
                                         <Blink1SerialOption labelClassName="col-xs-6" wrapperClassName="col-xs-5"
-                                            label="preferred device" defaultText="- use first -"
+                                            label="Preferred device" defaultText="- use first -"
                                             serial={this.state.blink1ToUse} onChange={this.handleBlink1SerialChange}/>
                                         <Input labelClassName="col-xs-12" wrapperClassName="col-xs-12" bsSize="small"
                                             type="checkbox" label="Use multi blink(1) devices in rules" checkedLink={this.linkState('allowMultiBlink1')}  />

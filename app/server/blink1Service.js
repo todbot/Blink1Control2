@@ -243,9 +243,20 @@ var Blink1Service = {
 		}
 		return id;
 	},
+    /**
+     * Sets HostId, an 8-digit hexadecimal
+     * @method setHostId
+     * @param  {String}  id new HostId value
+     * @returns true if hostId is valid format, false if not
+     */
 	setHostId: function(id) {
-		config.saveSettings( 'hostId', id);
+        id = id.toUpperCase();
+        if( ! /^[0-9A-F]{8}$/.test(id) ) { 
+            return false;
+        }
+        config.saveSettings( 'hostId', id);
 		this.notifyChange();
+        return true;
 	},
 
 	setCurrentBlink1Id(id) {
