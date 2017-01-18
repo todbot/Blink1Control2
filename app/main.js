@@ -145,7 +145,12 @@ app.on('ready', function () {
 	}
     var showDebug = config.readSettings('logger.showDebug') || false;
 
+    // NOTE: the below works
 	// var globalShortcut = electron.globalShortcut;
+    // var ret = globalShortcut.register('CommandOrControl+3', function() {
+    //     mainWindow.webContents.send('playBigButtonUser', 3);
+    // });
+
 	// // Register a 'ctrl+x' shortcut listener.
     // var ret = globalShortcut.register('Command+R', function() {
     //   console.log('command+r is pressed');
