@@ -79,12 +79,13 @@ var SkypeService = {
 		}, 10000 );
 
 		// FIXME: is this callback required?
-        skyweb.authRequestCallback = (requests) => {
-            requests.forEach((request) => {
-                skyweb.acceptAuthRequest(request.sender);
-                skyweb.sendMessage("8:" + request.sender, "I accepted you!");
-            });
-        };
+		// No, it automatically accepts contact add requests
+        // skyweb.authRequestCallback = (requests) => {
+        //     requests.forEach((request) => {
+        //         skyweb.acceptAuthRequest(request.sender);
+        //         skyweb.sendMessage("8:" + request.sender, "I accepted you!");
+        //     });
+        // };
         skyweb.messagesCallback = (messages) => {
             messages.forEach((message)=> {
                 var convlink = message.resource.conversationLink;
