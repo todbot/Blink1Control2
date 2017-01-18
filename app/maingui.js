@@ -89,14 +89,14 @@ setTimeout( function() {
 
 // events from the main process, from menu actions
 ipcRenderer.on('quitting', function( event,arg ) {
-    console.log("QUITTING renderer... ",arg);
+    log.msg("QUITTING renderer... ",arg);
     Blink1Service.off();
     // if( arg === 'apiServer' ) {
     //     ApiServer.reloadConfig();
     // }
 });
 ipcRenderer.on('reloadConfig', function( event,arg ) {
-    console.log("RELOAD CONFIG renderer... ",arg);
+    log.msg("RELOAD CONFIG renderer... ",arg);
     if( arg === 'apiServer' ) {
         ApiServer.reloadConfig();
     }
@@ -110,6 +110,10 @@ ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {
 
 });
 
+ipcRenderer.on('playBigButtonUser', function(event,arg) {
+    log.msg("maingui ipc playBigButtonUser",arg);
+    Eventer.emit('playBigButtonUser', arg);
+});
 
 // run startup script, if any, after a bit so system is init'd
 var startupfunc = function() {
