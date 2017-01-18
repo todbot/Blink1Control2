@@ -81,7 +81,7 @@ var TimeService = {
                     " - ", now.getHours(),now.getMinutes(),now.getSeconds());
                 if( now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
-                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'' });
+                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'hourly alarm' });
                     PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                 }
             }
@@ -91,7 +91,7 @@ var TimeService = {
                 if( now.getHours() === rHour &&
                     now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
-                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'' });
+                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'daily alarm' });
                     PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                 }
             }
@@ -101,7 +101,7 @@ var TimeService = {
                 if( now.getHours() === rHour &&
                     now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
-                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'' });
+                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'countdown alarm' });
                     PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                 }
             }
