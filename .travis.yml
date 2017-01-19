@@ -1,4 +1,5 @@
 ---
+# dist: trusty
 language: cpp
 addons:
   apt:
@@ -58,7 +59,7 @@ cache:
   - $HOME/.cache
 
 before_install:
-# suppress 'shell_session_update' error
+# suppress 'shell_session_update' error https://github.com/travis-ci/travis-ci/issues/6307
 - rvm get head
 # reinstall latest nvm
 - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh
@@ -101,7 +102,6 @@ install:
 #- export V=1
 - npm install electron-builder@next # force install next version to test electron-builder
 - npm install
-#- npm prune
 - npm run postinstall
 
 script:
@@ -110,12 +110,13 @@ script:
 #- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish --release; fi;
 
 - npm run webpack
+# this builds the .dmg and .zip files
 - npm run dist
 
-- echo "*** done ***"
+- echo "*** done. debug begin ***"
 - env | sort
 - ls -al dist/mac
-- echo "*** really done ***"
+- echo "*** done. debug end ***"
 
 # cleanup
 #- node-pre-gyp clean
@@ -126,10 +127,13 @@ script:
 # after_success:
 # - bash <(curl -s https://codecov.io/bash)
 #
-# FIXME: need to parameterize file and upload .zip too
+# FIXME: need to parameterize this per OS, how?
 before_deploy:
-  - export RELEASE_FILE1=$(ls dist/mac/Blink1Control2*.dmg)
-  - export RELEASE_FILE2=$(ls dist/mac/Blink1Control2*.zip)
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then export DFILE1=$(ls dist/mac/Blink1Control2*.dmg); fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then export DFILE2=$(ls dist/mac/Blink1Control2*.zip); fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DFILE1=$(ls dist/linux/Blink1Control2*.zip); fi
+#  - export RELEASE_FILE1=$(ls dist/mac/Blink1Control2*.dmg)
+#  - export RELEASE_FILE2=$(ls dist/mac/Blink1Control2*.zip)
 
 deploy:
   skip_cleanup: true
@@ -141,3 +145,4 @@ deploy:
     - "${RELEASE_FILE2}"
   on:
     repo: todbot/Blink1Control2
+    tags: true
