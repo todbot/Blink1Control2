@@ -41,6 +41,7 @@
     "category": "public.app-category.utilities",
     "asar": true,
     "npmRebuild": false,
+    "publish": "never",
     "options": {
       "prune": true,
       "overwrite": true,
