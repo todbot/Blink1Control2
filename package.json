@@ -37,7 +37,7 @@
     "dist:win": "build --win",
     "clean": "rimraf app/node_modules node_modules",
     "env": "env",
-    "postinstall": "install-app-deps && electron-rebuild --force --module-dir app",
+    "postinstall": "install-app-deps && electron-rebuild --force --module-dir app"
   },
   "build": {
     "appId": "com.thingm.blink1control2",
