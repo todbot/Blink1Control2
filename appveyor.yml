@@ -92,10 +92,10 @@ deploy:
   prerelease: false
   on:
     branch: master                 # release from master branch only
-    appveyor_repo_tag: true        # deploy on tag push only
+#    appveyor_repo_tag: true        # deploy on tag push only
 
 matrix:
   fast_finish: true
 
 artifacts:
-- path: dist
+- path: dist/win32-x64
