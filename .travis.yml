@@ -108,7 +108,7 @@ script:
 #- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish --release; fi;
 
 - npm run webpack
-- npm run dist:mac
+- npm run dist
 
 - echo "*** done ***"
 - env | sort
