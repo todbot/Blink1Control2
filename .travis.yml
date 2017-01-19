@@ -126,7 +126,8 @@ script:
 #
 # FIXME: need to parameterize file and upload .zip too
 before_deploy:
-  - export RELEASE_FILE1={ls dist/mac/Blink1Control2*.dmg}
+  - export RELEASE_FILE1=$(ls dist/mac/Blink1Control2*.dmg)
+
 deploy:
   provider: releases
   api_key:
