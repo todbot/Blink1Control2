@@ -87,7 +87,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: VYJPed/ilAHFpd7S0zW/C2U1jVqayW5QFBitwBqralJlKlgAPW6n1L1VUIOJswiW # your encrypted token from GitHub
-  artifact: /.*\.nupkg/, /.*\.zip/, /.*\.exe/   # upload all NuGet packages to release assets
+  artifact: nupkgs, zips, exes
   draft: true
   prerelease: false
   on:
@@ -97,5 +97,17 @@ deploy:
 matrix:
   fast_finish: true
 
+artifacts:
+    - path: /.*\.nupkg/ # upload all NuGet packages to release assets
+      name: nupkgs
+    - path: /.*\.zip/
+      name: zips
+    - path: /.*\.exe/
+      name: exes
+#    - path: installer/RELEASES
+#      name: release
+#    - path: installer/ElectronTemplateSetup.exe
+#      name: setup
+#
 #artifacts:
 #- path: dist/win32-x64
