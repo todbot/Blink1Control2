@@ -34,7 +34,7 @@ env:
   # NODE_PRE_GYP_GITHUB_TOKEN for node-pre-gyp-github
   - secure: "VSd9F+3AgiRDCj1XLFTIpiMEpB8wDB5dqmjcv294+2Mqi7JM8ONsXR6KAZy9qNMjg/w0UrZFXX57qjlQ1PhOofh8nwthkcdQRv6gnKUkJyJ5OGYO74qpgHYjegZYGkYtPSZkDsF0xNCERMWP7Os+KuiqMTIIgUrjlNrRJWxQPR0="
   # GH_TOKEN for maybe electron-builder
-  - secure: "b7azXtBL5fNWKLxjzCncq67zmxA6rIvq5CSe8vEfl9VAwKbPBUxFSo6iWbh4uGxrwDQoNzrH+5d9zAIXSAWOfal1+4R9kA6+2oUpTDCOGwAxr9HIXCVgRA01ZwB0DsTUFnnz8eXFnWPPIYkFZa/ChlTvNvuyTkFnyvRwXuyaiwwF6HW9B7MFgRghgYVwuikXVhifS7jVo3/5Ayjiw0U3ht4L7VjJvjYdaWayCxaxYT+wTIYNAP3TjaCthlJ/yfUSKXQSkSLQCxJimAFvMN5m4Yp/mHcRLD8evZxRDD9fOShwnDq5i3sM8A548/5vNE60EeULeLRCbD+00dbtBBDId3Ft3s3jI/JlIDpGtLjgKAn5Hvoibog3KL/c0cQnU+a9E9HPAT9tXwB7R59OM88rbup/wa9+b+abiysVRipKMZVgNlkSmqoX2AY/w6pQQLV6Xopnj1NKwWnXs75E2Nt2YKvTQcu1uOWBvsORiw0MBYvt2Q3TT8Gq3odSAhe+iECpIaK2TTMO9+0ywvla5Y4tZYnIz6M4AGCAlm50r1dkZbm++Yjyip2H4dVOruVg+BrQpkSEjxwHSz6vP+udRz0XShhR9gY20rrFT97uWJtlM/AVzsR6MXbjalxSLGtgfLVe+NawAy7SPMTVu3bII80OOnJ0oyOPtkYGZcQ/yOEpU20="
+  #- secure: "b7azXtBL5fNWKLxjzCncq67zmxA6rIvq5CSe8vEfl9VAwKbPBUxFSo6iWbh4uGxrwDQoNzrH+5d9zAIXSAWOfal1+4R9kA6+2oUpTDCOGwAxr9HIXCVgRA01ZwB0DsTUFnnz8eXFnWPPIYkFZa/ChlTvNvuyTkFnyvRwXuyaiwwF6HW9B7MFgRghgYVwuikXVhifS7jVo3/5Ayjiw0U3ht4L7VjJvjYdaWayCxaxYT+wTIYNAP3TjaCthlJ/yfUSKXQSkSLQCxJimAFvMN5m4Yp/mHcRLD8evZxRDD9fOShwnDq5i3sM8A548/5vNE60EeULeLRCbD+00dbtBBDId3Ft3s3jI/JlIDpGtLjgKAn5Hvoibog3KL/c0cQnU+a9E9HPAT9tXwB7R59OM88rbup/wa9+b+abiysVRipKMZVgNlkSmqoX2AY/w6pQQLV6Xopnj1NKwWnXs75E2Nt2YKvTQcu1uOWBvsORiw0MBYvt2Q3TT8Gq3odSAhe+iECpIaK2TTMO9+0ywvla5Y4tZYnIz6M4AGCAlm50r1dkZbm++Yjyip2H4dVOruVg+BrQpkSEjxwHSz6vP+udRz0XShhR9gY20rrFT97uWJtlM/AVzsR6MXbjalxSLGtgfLVe+NawAy7SPMTVu3bII80OOnJ0oyOPtkYGZcQ/yOEpU20="
   matrix:
 #  - TRAVIS_NODE_VERSION="4"
 #  - TRAVIS_NODE_VERSION="6"
@@ -100,7 +100,7 @@ before_install:
 install:
 # ensure source install works
 #- export V=1
-- npm install electron-builder@next # force install next version to test electron-builder
+#- npm install electron-builder@next # force install next version to test electron-builder
 - npm install
 - npm run postinstall
 
