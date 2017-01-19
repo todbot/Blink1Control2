@@ -30,7 +30,10 @@ os:
 - osx
 env:
   global:
+  # NODE_PRE_GYP_GITHUB_TOKEN for node-pre-gyp-github
   - secure: "VSd9F+3AgiRDCj1XLFTIpiMEpB8wDB5dqmjcv294+2Mqi7JM8ONsXR6KAZy9qNMjg/w0UrZFXX57qjlQ1PhOofh8nwthkcdQRv6gnKUkJyJ5OGYO74qpgHYjegZYGkYtPSZkDsF0xNCERMWP7Os+KuiqMTIIgUrjlNrRJWxQPR0="
+  # GH_TOKEN for maybe electron-builder
+  - secure: "b7azXtBL5fNWKLxjzCncq67zmxA6rIvq5CSe8vEfl9VAwKbPBUxFSo6iWbh4uGxrwDQoNzrH+5d9zAIXSAWOfal1+4R9kA6+2oUpTDCOGwAxr9HIXCVgRA01ZwB0DsTUFnnz8eXFnWPPIYkFZa/ChlTvNvuyTkFnyvRwXuyaiwwF6HW9B7MFgRghgYVwuikXVhifS7jVo3/5Ayjiw0U3ht4L7VjJvjYdaWayCxaxYT+wTIYNAP3TjaCthlJ/yfUSKXQSkSLQCxJimAFvMN5m4Yp/mHcRLD8evZxRDD9fOShwnDq5i3sM8A548/5vNE60EeULeLRCbD+00dbtBBDId3Ft3s3jI/JlIDpGtLjgKAn5Hvoibog3KL/c0cQnU+a9E9HPAT9tXwB7R59OM88rbup/wa9+b+abiysVRipKMZVgNlkSmqoX2AY/w6pQQLV6Xopnj1NKwWnXs75E2Nt2YKvTQcu1uOWBvsORiw0MBYvt2Q3TT8Gq3odSAhe+iECpIaK2TTMO9+0ywvla5Y4tZYnIz6M4AGCAlm50r1dkZbm++Yjyip2H4dVOruVg+BrQpkSEjxwHSz6vP+udRz0XShhR9gY20rrFT97uWJtlM/AVzsR6MXbjalxSLGtgfLVe+NawAy7SPMTVu3bII80OOnJ0oyOPtkYGZcQ/yOEpU20="
   matrix:
 #  - TRAVIS_NODE_VERSION="4"
 #  - TRAVIS_NODE_VERSION="6"
@@ -94,7 +97,9 @@ before_install:
 install:
 # ensure source install works
 #- export V=1
+- npm install electron-builder@next # force install next version to test electron-builder
 - npm install
+#- npm prune
 - npm run postinstall
 
 script:
@@ -105,8 +110,12 @@ script:
 - npm run webpack
 - npm run dist:mac
 
+- echo "*** done ***"
+- env
+- echo "*** really done ***"
+
 # cleanup
-- node-pre-gyp clean
+#- node-pre-gyp clean
 
 # test binary exists
 #- if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi;
@@ -116,9 +125,9 @@ script:
 #
 # FIXME: need to parameterize file and upload .zip too
 deploy:
-  provider: releases
-  api_key:
-    secure: mg9kDnOTZdDNLrU+0ZzNeqA1hP9x3uUW5POEA8+nL1odEWQnBVL5gmFKSqV8zub52yazdEebCiDad/WpX2I7F20PmZA/LDlQO6TWdVhT5BEfgdpatOtdyvGggd6e2AG+Rv73z5Svkf+N6wCPXxNMmBl+OqU5fZigZDpib/SPijobAKvwOnHfSURL1NiBTrp5vzdpX21M7p87MrA19Pojcn7WFZ3KR0l79oXorlr6HchNY645UkdLwDHenYMGto4h5ShaLW/XYGQFulQY+RYH3RR4AVxRVxB1xsW8jvu/EQjCcAQg3pkHMw8wAbVG3siiZZLKgHfwIF3U5o7RHoYchvOxHF0FMK+NMgZdJeZBBLXm6r6UnsNXkZOHJh4QbgMRqcFxHZdLNFg6PVTNrWvLsngS/gnlMy7UxaW598vNtL2gOQ9LmtOfJmxu2exYmKfwM1tTLsMt7H5Qc2JgGQi1ZZGzRVbS7r0Xjrl25+NXAm/OylDl2Dh6zkCGm4X0d77M5RplL9+Ov+7ZEbRo8uNqyloEJGNzOVC+avCJADCNFbA2PcppAdASx7YTeshXSwm3QfNIIXpCtYjFeydKbW8V0fXy8cCX27InAD6W/IykBggaO+qUW4uBZ0eOk2s0VArLwmPQVL10yYIfGl9PTjRfbVJYjYCf3qXjSn/qWXYIu0g=
-  file: dist/mac/Blink1Control2-2.0.0-beta4.dmg
-  on:
-    repo: todbot/Blink1Control2
+ provider: releases
+ api_key:
+   secure: mg9kDnOTZdDNLrU+0ZzNeqA1hP9x3uUW5POEA8+nL1odEWQnBVL5gmFKSqV8zub52yazdEebCiDad/WpX2I7F20PmZA/LDlQO6TWdVhT5BEfgdpatOtdyvGggd6e2AG+Rv73z5Svkf+N6wCPXxNMmBl+OqU5fZigZDpib/SPijobAKvwOnHfSURL1NiBTrp5vzdpX21M7p87MrA19Pojcn7WFZ3KR0l79oXorlr6HchNY645UkdLwDHenYMGto4h5ShaLW/XYGQFulQY+RYH3RR4AVxRVxB1xsW8jvu/EQjCcAQg3pkHMw8wAbVG3siiZZLKgHfwIF3U5o7RHoYchvOxHF0FMK+NMgZdJeZBBLXm6r6UnsNXkZOHJh4QbgMRqcFxHZdLNFg6PVTNrWvLsngS/gnlMy7UxaW598vNtL2gOQ9LmtOfJmxu2exYmKfwM1tTLsMt7H5Qc2JgGQi1ZZGzRVbS7r0Xjrl25+NXAm/OylDl2Dh6zkCGm4X0d77M5RplL9+Ov+7ZEbRo8uNqyloEJGNzOVC+avCJADCNFbA2PcppAdASx7YTeshXSwm3QfNIIXpCtYjFeydKbW8V0fXy8cCX27InAD6W/IykBggaO+qUW4uBZ0eOk2s0VArLwmPQVL10yYIfGl9PTjRfbVJYjYCf3qXjSn/qWXYIu0g=
+ file: dist/mac/Blink1Control2-2.0.0-beta4.dmg
+ on:
+   repo: todbot/Blink1Control2
