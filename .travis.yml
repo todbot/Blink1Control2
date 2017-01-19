@@ -112,6 +112,7 @@ script:
 
 - echo "*** done ***"
 - env | sort
+- ls -alR dist
 - echo "*** really done ***"
 
 # cleanup
