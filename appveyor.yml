@@ -98,11 +98,11 @@ matrix:
   fast_finish: true
 
 artifacts:
-    - path: /.*\.nupkg/ # upload all NuGet packages to release assets
+    - path: 'dist\**\*.nupkg' # upload all NuGet packages to release assets
       name: nupkgs
-    - path: /.*\.zip/
+    - path: 'dist\**\*.zip'
       name: zips
-    - path: /.*\.exe/
+    - path: 'dist\**\*.exe'
       name: exes
 #    - path: installer/RELEASES
 #      name: release
