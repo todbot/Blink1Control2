@@ -111,7 +111,7 @@ script:
 - npm run dist:mac
 
 - echo "*** done ***"
-- env
+- env | sort
 - echo "*** really done ***"
 
 # cleanup
