@@ -5,9 +5,9 @@
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "productName": "Blink1Control2",
   "companyName": "ThingM",
-  "homepage": "http://github.com/todbot/blink1control2",
-  "repository": "http://github.com/todbot/blink1control2",
-  "bugs": "http://github.com/todbot/blink1control2/issues",
+  "homepage": "https://github.com/todbot/Blink1Control2",
+  "repository": "https://github.com/todbot/Blink1Control2",
+  "bugs": "https://github.com/todbot/Blink1Control2/issues",
   "license": "ISC",
   "main": "main.js",
   "dependencies": {

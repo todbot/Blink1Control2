@@ -135,6 +135,7 @@ var IftttService = {
 		log.msg("IftttService.fetch:", url, self.lastTime, "defaultId:",defaultId);
         // request(baseUrl + this.iftttKey, function(error, response, body) {
 		needle.get( url, opts, function(error, response) {
+		// needle.get( url, function(error, response) {
 			var msg = '';
 			// FIXME: do error handling like: net error, bad response, etc.
 			if( error ) {
@@ -151,23 +152,25 @@ var IftttService = {
 			if( response.statusCode !== 200 ) {
 				msg = response.statusMessage;
 				if( response.statusCode === 404 ) {
-					msg = 'no IFTTT events';
+					msg = 'no IFTTT events yet';
 				}
 				log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:msg} );
 				return;
 			}
 			// otherwise continue as normal
 			var respobj = response.body; //JSON.parse(response.body);
+				// log.msg("needle response body json: ", respobj);
 			// var shouldSave = false;
 			if( respobj.events ) {
 				respobj.events.map( function(evt) {
 					// FIXME
 					// log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:'no new events' } );
-                    // log.msg("IftttService.fetch: event:", JSON.stringify(evt));
 					evt.eventDate = new Date(parseInt(1000 * evt.date));
 					evt.name = evt.name.trim();
+					log.msg("IftttService.fetch:", evt.eventDate > self.lastTime, ":",  self.lastTime, evt.eventDate );
 					if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
-						log.addEvent( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:'' }); //evt.source  } );
+						log.addEvent( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:'src:'+evt.source}); //evt.source  } );
+
  						// special meta-pattern, FIXME?
  						if( evt.name.startsWith('~') ) {
 							if( !self.lastEvents[evt.name] ) { self.lastEvents[evt.name] = new Date(0); }

@@ -181,6 +181,7 @@ var ToolTable = React.createClass({
 				log.msg("toolTable: error decrypting passwd: ",err);
 			}
 		}
+		// FIXME: ToolTable should ask the service? to format these descriptions
         var makeDesc = function(rule) {
             if( rule.description ) { return rule.description; }
             var desc = '';
@@ -211,7 +212,7 @@ var ToolTable = React.createClass({
                 else if( rule.alarmType === 'hourly' ) {
                     desc = rule.alarmType + ' @ ' + rule.alarmMinutes + ' minutes';
                 } else {
-                    desc = rule.alarmType + ' @ ' + rule.alarmHours + ':' + rule.alarmMinutes;
+                    desc = rule.alarmType + ' @ ' + rule.alarmHours + ':' + rule.alarmMinutes + ' ' + rule.alarmTimeMode;
                 }
             }
             return desc;

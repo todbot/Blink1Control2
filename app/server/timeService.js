@@ -36,6 +36,8 @@
 var conf = require('../configuration');
 var log = require('../logger');
 
+var moment = require('moment');
+
 var PatternsService = require('./patternsService');
 
 var intervalSecs = 1;
@@ -59,6 +61,16 @@ var TimeService = {
 		// var allrules = conf.readSettings('eventRules') || [];
         var allrules = conf.readSettings('eventRules') || [];
 		this.rules = allrules.filter( function(r){return r.type === 'time';} );
+
+		// this.rules.map( function(rule) {
+		// 	if( rule.alarmType === 'countdown' ) {
+	    //         var newTime = moment();
+	    //         // newTime = newTime.add(state.alarmHours,'hours');
+	    //         newTime = newTime.add(rule.alarmMinutes,'minutes');
+	    //         rule.alarmHours = newTime.hours();
+	    //         rule.alarmMinutes = newTime.minutes();
+	    //     }
+		// });
     },
     start: function() {
         this.reloadConfig();
@@ -76,9 +88,17 @@ var TimeService = {
             var rHour = parseInt(rule.alarmHours);
             var rMin = parseInt( rule.alarmMinutes ) || 0;
             var rSec = parseInt( rule.alarmSeconds ) || 0;
+			var rMode = rule.alarmTimeMode || '24';
+
+			// convert am/pm to 0-24, am: 1-12 -> 1-12, pm: 1-11,12 -> 13-23,0
+			if( rMode === 'am' ) {
+				rHour = (rHour !== 12) ? rHour : 23;
+			} else if( rMode === 'pm' ) {
+				rHour = (rHour !== 12) ? rHour + 12 : 0;
+			} // else 24 hour mode
+
             if( rule.alarmType === 'hourly' ) {
-                log.msg("TimeService.checkTime: periodic:", rHour,rMin,rSec,
-                    " - ", now.getHours(),now.getMinutes(),now.getSeconds());
+                log.msg("TimeService.checkTime: hourly:", rHour,rMin,rSec, " - ", now.getHours(),now.getMinutes(),now.getSeconds());
                 if( now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
                     log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'hourly alarm' });
@@ -86,8 +106,7 @@ var TimeService = {
                 }
             }
             else if( rule.alarmType === 'daily' ) {
-                // log.msg("TimeService.checkTime: periodic:", rHour,rMin,rSec,
-                //     " - ", now.getHours(),now.getMinutes(),now.getSeconds());
+                // log.msg("TimeService.checkTime: daily:", rHour,rMin,rSec, " - ", now.getHours(),now.getMinutes(),now.getSeconds());
                 if( now.getHours() === rHour &&
                     now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
@@ -96,8 +115,7 @@ var TimeService = {
                 }
             }
             else if( rule.alarmType === 'countdown' ) {
-                // log.msg("TimeService.checkTime: countdown:", rHour,rMin,rSec,
-                //     " - ", now.getHours(),now.getMinutes(),now.getSeconds());
+                log.msg("TimeService.checkTime: countdown:", rHour,rMin,rSec, " - ", now.getHours(),now.getMinutes(),now.getSeconds());
                 if( now.getHours() === rHour &&
                     now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {

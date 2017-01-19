@@ -43,8 +43,9 @@ var TimeForm = React.createClass({
             enabled: rule.enabled,
             name: rule.name,
             alarmType: rule.alarmType || 'hourly',
-            alarmHours: rule.alarmHours || 0,
-            alarmMinutes: rule.alarmMinutes || 0,
+            alarmHours: rule.alarmHours || 8,
+            alarmMinutes: rule.alarmMinutes || 15,
+            alarmTimeMode: rule.alarmTimeMode || 'am', // 'pm' or '24'
             actionType: 'play-pattern',
             patternId: rule.patternId || nextProps.patterns[0].id,
             blink1Id: rule.blink1Id || "0"
@@ -52,9 +53,9 @@ var TimeForm = React.createClass({
 	},
     handleClose: function() {
         var state = this.state;
+        // adjust countdown time to be proper time in the future
         if( state.alarmType === 'countdown' ) {
-            var newTime = moment();
-            // newTime = newTime.add(state.alarmHours,'hours');
+            var newTime = moment(); // now
             newTime = newTime.add(state.alarmMinutes,'minutes');
             state.alarmHours = newTime.hours();
             state.alarmMinutes = newTime.minutes();
@@ -84,7 +85,12 @@ var TimeForm = React.createClass({
     setCountdown: function() {
         this.setState({alarmType:'countdown'});
     },
-
+    setAlarmTimeMode: function(d) {
+        // console.log('setAlarmTimeMode:',d);
+        // console.log("setAlarmTimeMode:",d.target.value);
+        var val = d.target.value;
+        this.setState({alarmTimeMode: val});
+    },
 
     render: function() {
         var self = this;
@@ -96,11 +102,13 @@ var TimeForm = React.createClass({
         // convert number to string with leading zero if necessary
         // sure wish we had printf("%02d")
         var hrs = parseInt(this.state.alarmHours);
-        hrs = (hrs < 10) ? '0'+hrs : hrs;
+        // hrs = (hrs < 10) ? '0'+hrs : hrs;
         var mins = parseInt(this.state.alarmMinutes);
         mins = (mins < 10) ? '0'+mins : mins;
 
         var altype = this.state.alarmType;
+        var almode = this.state.alarmTimeMode;
+        var numStyle = {marginLeft:5, marginRight:5, textAlign:'right'};
 
         return (
             <div>
@@ -128,11 +136,11 @@ var TimeForm = React.createClass({
                                         <div className="radio-inline">
                                             <input type="radio" name="hourly" value="hourly"
                                                 checked={altype==='hourly'} onChange={this.setHourly} />
-                                            every hour at:
+                                            every hour at the:
                                         </div>
-                                        <input type="number" min={0} max={59} step={1} size={2}
-                                            value={altype==='hourly'?mins:''} onChange={this.handleChangeMinutes} />
-                                        minutes
+                                        <input type="number" min={0} max={59} step={1} size={2} style={numStyle}
+                                                value={altype==='hourly'?mins:''} onChange={this.handleChangeMinutes} />
+                                        minute mark
                                     </div>
                                 </Input>
                                 <Input>
@@ -142,12 +150,20 @@ var TimeForm = React.createClass({
                                                 checked={altype==='daily'} onChange={this.setDaily} />
                                             every day at:
                                         </div>
-                                        <input type="number" min={0} max={23} step={1} size={2}
+                                        <input type="number" min={1} max={12} step={1} size={2}
                                             style={{textAlign:'right'}}
-                                            value={altype==='daily'?hrs:''} onChange={this.handleChangeHours}/> :
+                                            value={altype==='daily' ? hrs : ''} onChange={this.handleChangeHours}/> :
                                         <input type="number" min={0} max={59} step={1} size={2}
-                                            style={{textAlign:'right'}}
+                                            style={{textAlign:'right', marginRight:10}}
                                             value={altype==='daily'?mins:''} onChange={this.handleChangeMinutes}/>
+                                        <div className="radio-inline" >
+                                            <input type="radio" name="am" value="am"
+                                                checked={almode==='am'} onChange={this.setAlarmTimeMode}/> am
+                                        </div>
+                                        <div className="radio-inline" >
+                                            <input type="radio" name="pm" value="pm"
+                                                checked={almode==='pm'} onChange={this.setAlarmTimeMode}/> pm
+                                        </div>
                                     </div>
                                 </Input>
                                 <Input>
