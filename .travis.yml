@@ -145,4 +145,4 @@ deploy:
     - "${RELEASE_FILE2}"
   on:
     repo: todbot/Blink1Control2
-    tags: true
+#    tags: true

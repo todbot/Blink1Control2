@@ -98,11 +98,11 @@ matrix:
   fast_finish: true
 
 artifacts:
-    - path: 'dist\**\*.nupkg' # upload all NuGet packages to release assets
-      name: nupkgs
-    - path: 'dist\**\*.zip'
+#    - path: 'dist\**\*.nupkg' # upload all NuGet packages to release assets
+#      name: nupkgs
+    - path: 'dist\**\Blink1Control2-*.zip'
       name: zips
-    - path: 'dist\**\*.exe'
+    - path: 'dist\**\Blink1Control2 *.exe'
       name: exes
 #    - path: installer/RELEASES
 #      name: release
