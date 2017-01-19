@@ -112,7 +112,7 @@ script:
 
 - echo "*** done ***"
 - env | sort
-- ls -alR dist
+- ls -al dist/mac
 - echo "*** really done ***"
 
 # cleanup
@@ -125,10 +125,13 @@ script:
 # - bash <(curl -s https://codecov.io/bash)
 #
 # FIXME: need to parameterize file and upload .zip too
+before_deploy:
+  - export RELEASE_FILE1={ls dist/mac/Blink1Control2*.dmg}
 deploy:
- provider: releases
- api_key:
-   secure: mg9kDnOTZdDNLrU+0ZzNeqA1hP9x3uUW5POEA8+nL1odEWQnBVL5gmFKSqV8zub52yazdEebCiDad/WpX2I7F20PmZA/LDlQO6TWdVhT5BEfgdpatOtdyvGggd6e2AG+Rv73z5Svkf+N6wCPXxNMmBl+OqU5fZigZDpib/SPijobAKvwOnHfSURL1NiBTrp5vzdpX21M7p87MrA19Pojcn7WFZ3KR0l79oXorlr6HchNY645UkdLwDHenYMGto4h5ShaLW/XYGQFulQY+RYH3RR4AVxRVxB1xsW8jvu/EQjCcAQg3pkHMw8wAbVG3siiZZLKgHfwIF3U5o7RHoYchvOxHF0FMK+NMgZdJeZBBLXm6r6UnsNXkZOHJh4QbgMRqcFxHZdLNFg6PVTNrWvLsngS/gnlMy7UxaW598vNtL2gOQ9LmtOfJmxu2exYmKfwM1tTLsMt7H5Qc2JgGQi1ZZGzRVbS7r0Xjrl25+NXAm/OylDl2Dh6zkCGm4X0d77M5RplL9+Ov+7ZEbRo8uNqyloEJGNzOVC+avCJADCNFbA2PcppAdASx7YTeshXSwm3QfNIIXpCtYjFeydKbW8V0fXy8cCX27InAD6W/IykBggaO+qUW4uBZ0eOk2s0VArLwmPQVL10yYIfGl9PTjRfbVJYjYCf3qXjSn/qWXYIu0g=
- file: ./dist/mac/Blink1Control2-2.0.0-beta4.dmg
- on:
-   repo: todbot/Blink1Control2
+  provider: releases
+  api_key:
+  secure: mg9kDnOTZdDNLrU+0ZzNeqA1hP9x3uUW5POEA8+nL1odEWQnBVL5gmFKSqV8zub52yazdEebCiDad/WpX2I7F20PmZA/LDlQO6TWdVhT5BEfgdpatOtdyvGggd6e2AG+Rv73z5Svkf+N6wCPXxNMmBl+OqU5fZigZDpib/SPijobAKvwOnHfSURL1NiBTrp5vzdpX21M7p87MrA19Pojcn7WFZ3KR0l79oXorlr6HchNY645UkdLwDHenYMGto4h5ShaLW/XYGQFulQY+RYH3RR4AVxRVxB1xsW8jvu/EQjCcAQg3pkHMw8wAbVG3siiZZLKgHfwIF3U5o7RHoYchvOxHF0FMK+NMgZdJeZBBLXm6r6UnsNXkZOHJh4QbgMRqcFxHZdLNFg6PVTNrWvLsngS/gnlMy7UxaW598vNtL2gOQ9LmtOfJmxu2exYmKfwM1tTLsMt7H5Qc2JgGQi1ZZGzRVbS7r0Xjrl25+NXAm/OylDl2Dh6zkCGm4X0d77M5RplL9+Ov+7ZEbRo8uNqyloEJGNzOVC+avCJADCNFbA2PcppAdASx7YTeshXSwm3QfNIIXpCtYjFeydKbW8V0fXy8cCX27InAD6W/IykBggaO+qUW4uBZ0eOk2s0VArLwmPQVL10yYIfGl9PTjRfbVJYjYCf3qXjSn/qWXYIu0g=
+  file:
+    - "${RELEASE_FILE1}"
+  on:
+    repo: todbot/Blink1Control2
