@@ -19,10 +19,7 @@
   "productName": "Blink1Control2",
   "companyName": "ThingM",
   "homepage": "https://github.com/todbot/Blink1Control2",
-  "repository": {
-      "type": "git",
-      "url": "https://github.com/todbot/Blink1Control2"
-  },
+  "repository": "https://github.com/todbot/Blink1Control2",
   "bugs": "https://github.com/todbot/Blink1Control2/issues",
   "license": "ISC",
   "scripts": {
@@ -36,7 +33,8 @@
     "dist": "build",
     "clean": "rimraf app/node_modules node_modules",
     "env": "env",
-    "postinstall": "install-app-deps && electron-rebuild --force --module-dir app"
+    "postinstall": "install-app-deps && electron-rebuild --force --module-dir app",
+    "test": "echo \"tested\""
   },
   "build": {
     "appId": "com.thingm.blink1control2",
@@ -89,8 +87,9 @@
     "bootstrap": "^3.3.6",
     "css-loader": "^0.24.0",
     "devtron": "^1.3.0",
-    "electron-builder": "^11.4.3",
     "electron": "^1.4.14",
+    "electron-builder": "^11.4.3",
+    "electron-builder-squirrel-windows": "^11.4.0",
     "electron-rebuild": "^1.4.0",
     "file-loader": "^0.9.0",
     "font-awesome": "^4.5.0",

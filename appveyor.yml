@@ -69,7 +69,7 @@ build_script:
 - npm install
 - npm run postinstall
 - npm run webpack
-- npm run dist:win
+- npm run dist
 
 test_script:
 #- ps: npm run test
@@ -80,7 +80,19 @@ test_script:
 #- IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
 #- IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
 
-deploy: OFF
+#deploy: OFF
+deploy:
+  release: myproduct-v$(appveyor_build_version)
+  description: 'Release description'
+  provider: GitHub
+  auth_token:
+    secure: VYJPed/ilAHFpd7S0zW/C2U1jVqayW5QFBitwBqralJlKlgAPW6n1L1VUIOJswiW # your encrypted token from GitHub
+  artifact: /.*\.nupkg/            # upload all NuGet packages to release assets
+  draft: true
+  prerelease: false
+  on:
+    branch: master                 # release from master branch only
+    appveyor_repo_tag: true        # deploy on tag push only
 
 matrix:
   fast_finish: true
