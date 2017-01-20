@@ -1,7 +1,7 @@
 os: unstable
 environment:
-  NODE_PRE_GYP_GITHUB_TOKEN:
-    secure: VYJPed/ilAHFpd7S0zW/C2U1jVqayW5QFBitwBqralJlKlgAPW6n1L1VUIOJswiW
+#  NODE_PRE_GYP_GITHUB_TOKEN:
+#    secure: VYJPed/ilAHFpd7S0zW/C2U1jVqayW5QFBitwBqralJlKlgAPW6n1L1VUIOJswiW
 
   matrix:
 #  - nodejs_version: "4"
@@ -25,6 +25,8 @@ install:
       "APPVEYOR_REPO_COMMIT_MESSAGE" = $env:APPVEYOR_REPO_COMMIT_MESSAGE
       "git latest tag" = "$(git describe --tags --always HEAD)"
       "appveyor_repo_tag" = $env:appveyor_repo_tag
+      "appveyor_build_version" = $env:appveyor_build_version
+      "appveyor_pull_request_title" = $env:appveyor_pull_request_title
       "electron_version" = $env:electron_version
       "PRE_GYP_GITHUB_TOKEN" = $env:NODE_PRE_GYP_GITHUB_TOKEN
     } | Out-String | Write-Host;
@@ -82,13 +84,13 @@ test_script:
 
 #deploy: OFF
 deploy:
-  release: Blink1Control2-v$(appveyor_build_version)
-  description: 'Tod put Release description here'
+  release: Blink1Control2-v$(appveyor_repo_tag)
+  description: 'Tod put Release description here; $(appveyor_pull_request_title)'
   provider: GitHub
   auth_token:
     secure: VYJPed/ilAHFpd7S0zW/C2U1jVqayW5QFBitwBqralJlKlgAPW6n1L1VUIOJswiW # your encrypted token from GitHub
   artifact: nupkgs, zips, exes
-  draft: true
+  draft: false
   prerelease: false
   on:
     branch: master                 # release from master branch only
@@ -100,14 +102,11 @@ matrix:
 artifacts:
 #    - path: 'dist\**\*.nupkg' # upload all NuGet packages to release assets
 #      name: nupkgs
-    - path: 'dist\**\Blink1Control2-*.zip'
+    - path: 'dist\Blink1Control2*.zip'
       name: zips
-    - path: 'dist\**\Blink1Control2 *.exe'
+    - path: 'dist\Blink1Control2*.exe'
       name: exes
 #    - path: installer/RELEASES
 #      name: release
 #    - path: installer/ElectronTemplateSetup.exe
 #      name: setup
-#
-#artifacts:
-#- path: dist/win32-x64
