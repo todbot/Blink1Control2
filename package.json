@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.0.0-beta3",
+  "version": "2.0.0-beta4",
   "author": "ThingM",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "keywords": [

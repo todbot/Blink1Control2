@@ -72,6 +72,8 @@ build_script:
 - npm run postinstall
 - npm run webpack
 - npm run dist
+# show outputs
+- dir dist
 
 test_script:
 #- ps: npm run test
@@ -102,9 +104,9 @@ matrix:
 artifacts:
 #    - path: 'dist\**\*.nupkg' # upload all NuGet packages to release assets
 #      name: nupkgs
-    - path: 'dist\Blink1Control2*.zip'
+    - path: 'dist\*.zip'
       name: zips
-    - path: 'dist\Blink1Control2*.exe'
+    - path: 'dist\*.exe'
       name: exes
 #    - path: installer/RELEASES
 #      name: release
