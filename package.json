@@ -52,7 +52,7 @@
     },
     "win": {
       "target": [
-        "squirrel",
+        "nsis",
         "zip"
       ],
       "remoteReleases": true,
