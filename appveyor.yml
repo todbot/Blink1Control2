@@ -74,7 +74,6 @@ build_script:
 - npm run dist
 # show outputs
 - dir dist
-- dir dist\win
 
 test_script:
 #- ps: npm run test
