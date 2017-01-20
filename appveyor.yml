@@ -89,7 +89,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: VYJPed/ilAHFpd7S0zW/C2U1jVqayW5QFBitwBqralJlKlgAPW6n1L1VUIOJswiW # your encrypted token from GitHub
-  artifact: nupkgs, zips, exes
+  artifact: zips, exes
   draft: false
   prerelease: false
   on:
