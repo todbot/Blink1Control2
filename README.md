@@ -31,7 +31,7 @@ $ npm run start
 $ npm install
 $ npm run postinstall
 $ npm run webpack
-$ npm run dist:mac
+$ npm run dist
 ```
 
 Packaging deltas from standard electron-builder
@@ -44,7 +44,7 @@ $ mv dist/mac/Blink2Control2-{version}.dmg dist/mac/Blink2Control2-{version}-mac
 ```
 $ npm install
 $ npm run webpack
-$ npm run dist:win
+$ npm run dist
 ```
 
 Packaging deltas from standard electron-builder
