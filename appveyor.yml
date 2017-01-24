@@ -86,7 +86,7 @@ test_script:
 
 #deploy: OFF
 deploy:
-  release: Blink1Control2-$(appveyor_repo_tag_name)
+  tag: $(appveyor_repo_tag_name)
   description: 'Tod put Release description here; $(appveyor_pull_request_title); $(appveyor_repo_commit_message)'
   provider: GitHub
   auth_token:

@@ -31,6 +31,7 @@
     "webpack": "webpack -p ",
     "dist:test": "build --dir",
     "dist": "build",
+    "build": "build",
     "clean": "rimraf app/node_modules node_modules",
     "env": "env",
     "postinstall": "install-app-deps && electron-rebuild --force --module-dir app",
