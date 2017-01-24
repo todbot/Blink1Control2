@@ -116,7 +116,7 @@ var _makePattern = function(template) {
 };
 
 var _generatePatternStr = function(pattern) {
-    if (!pattern || !pattern.repeats || !pattern.colors) {
+    if (!pattern || pattern.repeats < 0 || pattern.repeats > 9 || !pattern.colors) {  // thx @aw9
         return '';
     }
     var pattstr = pattern.repeats;
@@ -226,7 +226,7 @@ var PatternsService = {
     formatPatternForOutput: function(patt) {
         if (!patt) { return null; }
         patt.pattern = _generatePatternStr(patt);
-        return _.pick(patt, 'name', 'id', 'pattern');
+        return _.pick(patt, 'name', 'id', 'pattern', 'locked');
     },
     // for apiServer
     formatPatternsForOutput: function(patts) {

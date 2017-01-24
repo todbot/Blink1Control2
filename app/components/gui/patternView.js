@@ -129,6 +129,7 @@ var PatternView = React.createClass({
 		var pattern = this.state.pattern;
 		pattern.locked = !pattern.locked;
 		this.setState({pattern:pattern});
+		this.props.onPatternUpdated(pattern);
 	},
 	onCopyPattern: function() {
 		log.msg("onCopyPattern", this.state.pattern.id);
