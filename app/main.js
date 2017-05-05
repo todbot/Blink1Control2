@@ -19,9 +19,14 @@ var mainWindow = null;
 var powerSaveBlocker= require('electron').powerSaveBlocker;
 var id = powerSaveBlocker.start('prevent-app-suspension');
 
-// ignore-gpu-blacklist o maybe fix bad performance issue in Mac Sierra beta
-app.commandLine.appendSwitch('ignore-gpu-blacklist');
+//// ignore-gpu-blacklist o maybe fix bad performance issue in Mac Sierra beta
+//app.commandLine.appendSwitch('ignore-gpu-blacklist');
 // app.commandLine.appendSwitch('disable-renderer-backgrounding');
+
+// Linux 3d acceleration causes black screen for Electron-based apps, so turn it off
+if( process.platform === 'linux' ) {
+    app.disableHardwareAcceleration();
+}
 
 // Someone tried to run a second instance, we should focus our window.
 // Really only applicable on Windows, maybe Linux
