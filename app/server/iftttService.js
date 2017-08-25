@@ -56,6 +56,7 @@ var IftttService = {
 	intervalTimer: null,
     lastTime: 0,
 	lastEvents: {},
+    connectionError: false,
 
 	setIftttKey: function(k) { this.iftttKey = k; },
 	getIftttKey: function() { return this.iftttKey; },
@@ -140,13 +141,15 @@ var IftttService = {
 			// FIXME: do error handling like: net error, bad response, etc.
 			if( error ) {
 				msg = error.message;
-				if( msg.indexOf('ENOTFOUND') !== -1 ) { msg = 'cannot reach IFTTT gateway'; }
-				else {
+				if( msg.indexOf('ENOTFOUND') !== -1 ) {
+                    msg = 'Cannot reach IFTTT gateway';
+                } else {
 					msg = 'IFTTT connection offline';
 				}
 				// log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:errmsg} );
 				// log.msg( msg +' for '+self.iftttKey); // FIXME:
 				log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:msg} );
+                self.connectionError = true;
 				return;
 			}
 			if( response.statusCode !== 200 ) {
@@ -162,6 +165,10 @@ var IftttService = {
 				// log.msg("needle response body json: ", respobj);
 			// var shouldSave = false;
 			if( respobj.events ) {
+                if( self.connectionError ) {
+                    self.connectionError = false;
+					log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:'Connection Ok'});
+                }
 				respobj.events.map( function(evt) {
 					// FIXME
 					// log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:'no new events' } );
