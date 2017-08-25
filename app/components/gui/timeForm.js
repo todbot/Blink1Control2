@@ -202,7 +202,7 @@ var TimeForm = React.createClass({
                                 <Button bsSize="small"  onClick={this.props.onCopy} style={{float:'left'}}>Copy</Button>
                           </Col>
                           <Col xs={3}>
-                                <Switch labelText="Enable" size="small"
+                                <Switch bsSize="small" labelText="Enable"
                                     state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
                           </Col>
                           <Col xs={4}>

@@ -156,8 +156,8 @@ var ScriptForm = React.createClass({
                                 <Button bsSize="small" onClick={this.props.onCopy} style={{float:'left'}}>Copy</Button>
                             </Col>
                             <Col xs={3}>
-                                    <Switch size="small" labelText="Enable"
-                                        state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
+                                <Switch bsSize="small" labelText="Enable"
+                                    state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
                             </Col>
                             <Col xs={4}>
                                 <Button bsSize="small" onClick={this.props.onCancel}>Cancel</Button>
