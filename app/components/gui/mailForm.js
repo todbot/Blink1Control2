@@ -104,6 +104,21 @@ var MailForm = React.createClass({
             return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
 
+        // var makeDisplayTriggerVal = function(triggerType, triggerVal) {
+        //     var val = triggerVal || '';
+        //     //value={this.state.triggerType==='unread' ? this.state.triggerVal : ''}
+        //     if( triggerType==='unread' ) {
+        //         val = isNaN(triggerVal) ? '1' : triggerVal;
+        //     }
+        //     //value={this.state.triggerType==='subject' ? this.state.triggerVal : ''}
+        //     else if( triggerType === 'sender' ) {
+        //         val = isNaN(triggerVal) ? 'Mr Sender';
+        //     }
+        //     else if( ) {
+        //
+        //     }
+        // };
+
         return (
             <Modal show={this.props.show} onHide={this.close} bsSize="large">
                 <Modal.Header>
@@ -121,7 +136,6 @@ var MailForm = React.createClass({
                                 type="select" label="Account type" placeholder="IMAP"
                                 onChange={this.onMailTypeClick} >
                                 <option value="IMAP">IMAP</option>
-                                <option value="GMAIL">Gmail</option>
                             </Input>
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                                 type="text" label="Mail server" placeholder="mail.example.com"
@@ -151,7 +165,7 @@ var MailForm = React.createClass({
                             <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
                                 style={{}}
                                 type="number" label="Unread email count >="
-                                value={this.state.triggerType==='unread' ? this.state.triggerVal : ''}
+                                value={this.state.triggerType==='unread' ? (isNaN(this.state.triggerVal) ? 1 : this.state.triggerVal) : ''}
                                 onChange={this.onTriggerValClick} name="unread"
                                 addonBefore={<input type="radio" value='unread'
                                 checked={this.state.triggerType==='unread'} onChange={this.onTriggerTypeClick} />} />
@@ -193,12 +207,13 @@ var MailForm = React.createClass({
                 <Modal.Footer>
                     <Row>
                         <Col xs={5}>
-                            <Button bsSize="small" bsStyle="danger" onClick={this.props.onDelete} style={{float:'left'}}>Delete</Button>
+                            <Button bsSize="small" bsStyle="danger" onClick={this.props.onDelete}
+                                style={{float:'left'}}>Delete</Button>
                             <Button bsSize="small" onClick={this.props.onCopy} style={{float:'left'}}>Copy</Button>
                         </Col>
                         <Col xs={3}>
-                                <Switch size="small" labelText="Enable"
-                                    state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
+                            <Switch bsSize="small" labelText="Enable"
+                                state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
                         </Col>
                         <Col xs={4}>
                             <Button bsSize="small" onClick={this.props.onCancel}>Cancel</Button>
