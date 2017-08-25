@@ -1,11 +1,14 @@
 "use strict";
 
-// FIXME: how to make JSHint not say "illegal return statement"
-if( require('electron-squirrel-startup') ) { return; }
+// // FIXME: how to make JSHint not say "illegal return statement"
+// if( require('electron-squirrel-startup') ) { return; }
 
 var electron = require('electron');
 var app = electron.app;
 var ipcMain = electron.ipcMain;
+
+var autoUpdater = electron.autoUpdater;
+var dialog = electron.dialog;
 
 var BrowserWindow = electron.BrowserWindow;
 var Menu = electron.Menu;
@@ -14,6 +17,33 @@ var crashReporter = electron.crashReporter;
 var path = require('path');
 
 var mainWindow = null;
+
+// if( process.env.NODE_ENV !== 'development' ) {
+if( false ) { // do not use for now, need to solve this for real, add "check for Updates" menu item
+    const server = 'https://blink1hazeltest.herokuapp.com';
+    const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
+    autoUpdater.setFeedURL(feed);
+    // setInterval(() => {
+    //   autoUpdater.checkForUpdates()
+    // }, 1*60*1000);  // check every 1 minute
+
+    autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+      const dialogOpts = {
+        type: 'info',
+        buttons: ['Restart', 'Later'],
+        title: 'Application Update',
+        message: process.platform === 'win32' ? releaseNotes : releaseName,
+        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+      }
+      dialog.showMessageBox(dialogOpts, (response) => {
+        if (response === 0) autoUpdater.quitAndInstall()
+      })
+    });
+    autoUpdater.on('error', message => {
+      console.error('There was a problem updating the application')
+      console.error(message)
+    });
+}
 
 // turn off 'app-suspension' because it was causing bad timing in renderer
 var powerSaveBlocker= require('electron').powerSaveBlocker;
@@ -28,7 +58,7 @@ if( process.platform === 'linux' ) {
     app.disableHardwareAcceleration();
 }
 
-// Someone tried to run a second instance, we should focus our window.
+// If someone tried to run a second instance, we should focus our window.
 // Really only applicable on Windows, maybe Linux
 var shouldQuitMultiInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     if(mainWindow) {
@@ -43,6 +73,9 @@ if(shouldQuitMultiInstance) {
     app.quit()
 }
 
+//
+// now that we're ready to go, let's get started for real...
+//
 var pkg = require('./package.json');
 var config = require('./configuration');
 
@@ -199,7 +232,7 @@ app.on('ready', function () {
 
 	// mainWindow.setMenu(null);  // remove default menu
 	mainWindow.on('close', function (e) {
-		console.log("Blink1Control2: mainWindow.close");
+		console.log("Blink1Control2: mainWindow.close:",e);
 		if( !isQuitting ) {
 			mainWindow.hide();
 			return e.preventDefault();
@@ -227,7 +260,15 @@ app.on('ready', function () {
 	app.on('activate', function() {
 		mainWindow.show();
 	});
+    //() => mainWindow.show());
 
+    // https://discuss.atom.io/t/how-to-catch-the-event-of-clicking-the-app-windows-close-button-in-electron-app/21425/8
+    /* 'before-quit' is emitted when Electron receives
+     * the signal to exit and wants to start closing windows */
+    app.on('before-quit', function() {
+        console.log("Blink1Control: mainWindow.before-quit");
+        isQuitting = true;
+    });
 
     ipcMain.on('openAboutWindow', function() {
 		openAboutWindow();
