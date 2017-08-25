@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.0.0-beta4",
+  "version": "2.0.1",
   "author": "ThingM",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "productName": "Blink1Control2",
@@ -21,7 +21,7 @@
     "lodash": "^4.16.6",
     "moment": "^2.17.1",
     "nconf": "^0.8.4",
-    "needle": "^1.4.2",
+    "needle": "^1.5.1",
     "node-blink1": "^0.2.2",
     "node-hid": "^0.5.7",
     "simplecrypt": "^0.1.0",
