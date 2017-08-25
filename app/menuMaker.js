@@ -72,7 +72,9 @@ var MenuMaker = {
                 click: function() {
                     mainWindow.show();
                 }
-            },
+            }
+        ];
+        var contextMenuTemplateC = [
             {	label: 'Quit',
                 click: function() {
                     ipcRenderer.send('quitnow');
@@ -147,12 +149,12 @@ var MenuMaker = {
         ];*/
 
         var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
-        // tray.popUpContextMenu(contextMenu);
-        tray.setContextMenu( contextMenu );
-
         if (process.platform === 'darwin') {
             app.dock.setMenu( contextMenu ); // Make Dock have same context menu
         }
+        // add on the Quit button for the Tray but not for the Dock menu above
+        contextMenu = Menu.buildFromTemplate( contextMenuTemplate.concat( contextMenuTemplateC ));
+        tray.setContextMenu( contextMenu );
     },
 
     setupTrayMenu: function() {
@@ -204,7 +206,7 @@ var MenuMaker = {
             }},
             { type: "separator" }
         ];
-        
+
         controlMenuTemplate = controlMenuTemplate.concat( bigButtonMenu );
 
         // Mac-specific menu  (hide, unhide, etc. enables Command-Q )
