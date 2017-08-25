@@ -111,7 +111,8 @@ var VirtualBlink1 = React.createClass({
         var botColor = tinycolor(this.state.colors[1]).setAlpha(botLum); // was (Math.pow(botLum,0.5));
         // var topColor = tinycolor(this.state.colors[0]).setAlpha(Math.pow(topLum,0.5));
         // var botColor = tinycolor(this.state.colors[1]).setAlpha(Math.pow(botLum,0.5));
-        var colorDesc = "Click for device rescan\nLED A:"+this.state.colors[0] + "\nLED     B:"+ this.state.colors[1];
+        var colorDesc = "Click for device rescan\nLED A:" +
+        this.state.colors[0].toHexString() + "\nLED B:"+ this.state.colors[1].toHexString();
 
         // console.log("VirtualBlink1: color0:",topColor.toRgbString());
         var topgradient =  // (this.state.colors[0].toHexString() === '#000000') ?
