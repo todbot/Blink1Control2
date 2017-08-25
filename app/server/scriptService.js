@@ -34,10 +34,10 @@ var ScriptService = {
         this.config.maxStringLength = this.config.maxStringLength || 200;
 
         var allrules = conf.readSettings('eventRules') || [];
-		this.rules = allrules.filter( function(r) {
+        this.rules = allrules.filter( function(r) {
             return (r.type==='script' || r.type==='file'|| r.type==='url') && r.enabled;
         });
-		log.msg("ScriptService.start: rules:", this.rules);
+        log.msg("ScriptService.start: rules:", this.rules);
         this.startScripts();
     },
     stop: function() {
@@ -119,16 +119,16 @@ var ScriptService = {
         else if( rule.type === 'url' ) {
             var url = rule.path;
             needle.get(url, {decode: false, parse: false}, function(err, response) {
-    			// FIXME: do error handling like: net error, bad response, etc.
-    			if( err ) {
+                // FIXME: do error handling like: net error, bad response, etc.
+                if( err ) {
                     log.msg("ScriptService.runScript: error fetching url",err, response);
                     log.addEvent( {type:'error', source:'url', id:rule.name, text:err.message });
                     return;
                 }
                 if( response.statusCode !== 200 ) { // badness
                     log.addEvent( {type:'error', source:'url', id:rule.name, text:response.statusMessage });
-    				return;
-    			}
+                    return;
+                }
                 // otherwise continue as normal
                 self.parse( rule, response.body);
             });

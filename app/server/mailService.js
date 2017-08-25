@@ -32,43 +32,43 @@ var ImapSearcher = require('./imapSearcher');
 // var listeners = {};
 
 var MailService = {
-	config: {},
-	rules: [],
-	searchers: [],
+    config: {},
+    rules: [],
+    searchers: [],
 
-	start: function() {
-		log.msg("MailService.start");
-		this.setupSearchers();
-	},
-	stop: function() {
-		this.searchers.map( function(searcher) {
-			searcher.stop();
-		});
-	},
-	reloadConfig: function() {
-		this.stop();
-		this.start();
-	},
+    start: function() {
+        log.msg("MailService.start");
+        this.setupSearchers();
+    },
+    stop: function() {
+        this.searchers.map( function(searcher) {
+            searcher.stop();
+        });
+    },
+    reloadConfig: function() {
+        this.stop();
+        this.start();
+    },
     setupSearchers: function() {
-		var self = this;
-		self.config = conf.readSettings('eventServices:mailService');
-		if( self.config.enable === false ) { return; }
-		var allrules = conf.readSettings('eventRules') || [];
-		self.rules = allrules.filter( function(r){return r.type==='mail';} );
-		log.msg("MailService.checkMail. rules=", self.rules);
-		if( !self.rules ) {
-			self.rules = [];
-		}
-		self.searchers = []; // FIXME: hmmm
-		self.rules.map( function(rule) {
-			if( rule.enabled && rule.mailtype === 'IMAP' ) {
-				var searcher = new ImapSearcher( rule ); //, self.handleResults.bind(self) );
-				log.msg("MailService.checkMail: starting searcher for ",rule.name, "current searchers:",self.searchers);
-				searcher.start();
-				self.searchers.push( searcher );
-				// FIXME: merge rules for same mail server?43
-			}
-		});
+        var self = this;
+        self.config = conf.readSettings('eventServices:mailService');
+        if( self.config.enable === false ) { return; }
+        var allrules = conf.readSettings('eventRules') || [];
+        self.rules = allrules.filter( function(r){return r.type==='mail';} );
+        log.msg("MailService.checkMail. rules=", self.rules);
+        if( !self.rules ) {
+            self.rules = [];
+        }
+        self.searchers = []; // FIXME: hmmm
+        self.rules.map( function(rule) {
+            if( rule.enabled && rule.mailtype === 'IMAP' ) {
+                var searcher = new ImapSearcher( rule ); //, self.handleResults.bind(self) );
+                log.msg("MailService.checkMail: starting searcher for ",rule.name, "current searchers:",self.searchers);
+                searcher.start();
+                self.searchers.push( searcher );
+                // FIXME: merge rules for same mail server?43
+            }
+        });
 
     }
 

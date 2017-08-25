@@ -119,6 +119,7 @@ var TimeService = {
                 if( now.getHours() === rHour &&
                     now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
+					// how to turn off?
                     log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'countdown alarm' });
                     PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                 }

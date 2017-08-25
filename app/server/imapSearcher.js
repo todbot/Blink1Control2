@@ -60,6 +60,7 @@ ImapSearcher.prototype.searchMailDo = function() {
     if( self.imap === null ) {
         log.msg("ImapSearcher.searchMailDo: null imap object"); return;
     }
+    // actually do the search
     self.imap.search( searchCriteria,  function(err, res) {
         log.msg("ImapSearcher.searchMail: criteria=",searchCriteria, ",pattId:",self.patternId,",results:",res);
         if (err) {
@@ -76,11 +77,10 @@ ImapSearcher.prototype.searchMailDo = function() {
         }
         else {
             if( self.triggerOff && self.triggered ) {
-                self.triggered = false;
                 log.addEvent( {type:'triggerOff', source:'mail', text:'off', id:self.id} ); // type mail
                 // PatternsService.stopPattern( self.patternId );
-                PatternsService.playPatternFrom( self.id, "~off");
             }
+            self.triggered = false;
             // even if we didn't trigger, log new results of search
             log.addEvent( {type:'info', source:'mail', id:self.id, text:''+res.length+' msgs match'} );
         }
@@ -132,7 +132,7 @@ ImapSearcher.prototype.start = function() {
         }
     });
 
-    self.imap.on('error', function(err) {
+    self.imap.once('error', function(err) {
         var msg = err.message;
         if(      msg.indexOf('ENOTFOUND') !== -1 ) { msg = 'server not found'; }
         else if( msg.indexOf('ETIMEDOUT') !== -1 ) { msg = 'server timeout'; }
@@ -147,14 +147,23 @@ ImapSearcher.prototype.start = function() {
         }, retrySecs * 1000); // FIXME: adjustable?
     });
 
-    self.imap.on('end', function() {
+    self.imap.once('close', function() {
+        // log.addEvent({type:'error', source:'mail', id:self.id, text:'closed'});
+        log.msg('ImapSeracher: connection closed. reopening');
+        self.timer = setTimeout(function() {
+            log.msg("ImapSearcher: timer restart");
+            self.start(); // restart
+        }, retrySecs * 1000); // FIXME: adjustable?
+    });
+
+    self.imap.once('end', function() {
         log.msg('ImapSearcher: connection ended');
         clearTimeout( self.timer );
         self.imap.end();
     });
 
-    self.imap.on('ready', function() {
-    // self.imap.once('ready', function() {
+    // self.imap.on('ready', function() {
+    self.imap.once('ready', function() {
         self.imap.openBox('INBOX', true, function(err,box) {
             if (err) {
                 log.msg("ImapSearcher.openBox error",err);
@@ -165,27 +174,28 @@ ImapSearcher.prototype.start = function() {
             self.lastResults = []; //[box.uidnext]; // hmmm
             log.msg('ImapSearcher: lastMsgId:',box.uidnext,' box', box);
             log.addEvent( {type:'info', source:'mail', id:self.id, text:'connected' } );
-            self.searchMail();
+            self.searchMail(); // do an initial search
 
-            self.imap.on('update', function( seqno, info) {
-                log.msg("ImapSearcher.onupdate:", seqno, info.flags, info);
-                // if( info.flags[0] === "\\Seen" ) {
-                //     // _.pull( self.lastResults, seqno );
-                //     //log.msg("ImapSearcher.update SEEEN, lastResults:",self.lastResults);
-                // }
-                self.searchMail();
-            });
-            self.imap.on('expunge', function( seqno ) {
-                log.msg("ImapSearcher.onexpunge:", seqno);
-                self.searchMail();
-            });
             self.imap.on('mail', function(numnewmsgs ) { // on new mail
                 log.msg("ImapSearcher.onmail:", self.triggerType, numnewmsgs);
                 self.searchMail(); //numnewmsgs);
                 log.msg("ImapSearcher.onmail: done");
             }); // on mail
+            self.imap.on('update', function( seqno, info) {
+                log.msg("ImapSearcher.onupdate:", seqno, info.flags, info);
+                self.searchMail(); // and do a search on any updates
+                // if( info.flags[0] === "\\Seen" ) {
+                //     // _.pull( self.lastResults, seqno );
+                //     //log.msg("ImapSearcher.update SEEEN, lastResults:",self.lastResults);
+                // }
+            });
+            self.imap.on('expunge', function( seqno ) {
+                log.msg("ImapSearcher.onexpunge:", seqno);
+                self.searchMail();
+            });
         }); // openbox
     }); // ready
+    log.debug("ImapSearcher.ready");
 
     // and then finally, connect
     self.imap.connect();

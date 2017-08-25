@@ -1,6 +1,6 @@
 module.exports = {
-	patterns:
-	[
+    patterns:
+    [
     {
         "name": "red flash",
         "patternstr": "9,#ff0000,0.5,0,#000000,0.5"
@@ -29,10 +29,10 @@ module.exports = {
         "name": "groovy",
         "patternstr": "3,#ff4cff,1.0,0, #630000,0.2,0,#0000ff,0.1,0"
     },
-	{
-		"name": "off",
-		"patternstr": "1,#000000,0.1,0"
-	},
+    {
+        "name": "off",
+        "patternstr": "1,#000000,0.1,0"
+    },
     {
         "name": "policecar",
         "patternstr": "6, #ff0000,0.3,1, #0000ff,0.3,2, #000000,0.1,0, #ff0000,0.3,2, #0000ff,0.3,1, #000000,0.1,0"
@@ -117,5 +117,5 @@ module.exports = {
         "name": "patternB",
         "patternstr": "3,#ff4cff,0.7,0,#630000,0.2,0,#0000ff,0.1,0"
     }
-	]
+    ]
 };
