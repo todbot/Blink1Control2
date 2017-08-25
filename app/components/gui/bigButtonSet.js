@@ -146,15 +146,15 @@ var BigButtonSet = React.createClass({
         var button = this.state.buttonsSys.find( function(b) { return b.name === buttonname; });
         if( button ) {
             if( button.name === "White" ) {
-				this.setBlink1Color( "#FFFFFF" );
-			}
+                this.setBlink1Color( "#FFFFFF" );
+            }
             else if( button.name === "Reset" ) {
                 Blink1Service.off();  // FIXME: what is reset?
-			}
-			else if( button.name === "Off" ) {
+            }
+            else if( button.name === "Off" ) {
                 PatternsService.stopAllPatterns();
                 Blink1Service.off();
-			}
+            }
             else if( button.name === "Color Cycle" ) {
                 Blink1Service.toyStart('colorcycle');
             }

@@ -21,14 +21,14 @@ var Blink1SerialOption = require('./blink1SerialOption');
 var TimeForm = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
-		rule: React.PropTypes.object.isRequired,
+        rule: React.PropTypes.object.isRequired,
         allowMultiBlink1: React.PropTypes.bool,
         patterns: React.PropTypes.array,
         onSave: React.PropTypes.func,
         onCancel: React.PropTypes.func,
         onDelete: React.PropTypes.func,
         onCopy: React.PropTypes.func
-	},
+    },
     getInitialState: function() {
         return {
         };
@@ -38,7 +38,7 @@ var TimeForm = React.createClass({
     // then is shown (and gets new props)
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
-		this.setState({
+        this.setState({
             type: 'time',
             enabled: rule.enabled,
             name: rule.name,
@@ -50,7 +50,7 @@ var TimeForm = React.createClass({
             patternId: rule.patternId || nextProps.patterns[0].id,
             blink1Id: rule.blink1Id || "0"
          });
-	},
+    },
     handleClose: function() {
         var state = this.state;
         // adjust countdown time to be proper time in the future
@@ -66,14 +66,14 @@ var TimeForm = React.createClass({
         this.setState({blink1Id: blink1Id});
     },
     handleChangeHours: function(event) {
-		var number = parseInt(event.target.value) || 0;
-		// number = ( number < 0 ) ? 23 : (number>23) ? 0 : number;
+        var number = parseInt(event.target.value) || 0;
+        // number = ( number < 0 ) ? 23 : (number>23) ? 0 : number;
         this.setState({alarmHours: number});
     },
     handleChangeMinutes: function(event) {
-		var number = parseInt(event.target.value) || 0;
+        var number = parseInt(event.target.value) || 0;
         // console.log("mins: ", event.target.value, number);
-		// number = ( number < 0 ) ? 59 : (number>59) ? 0 : number;
+        // number = ( number < 0 ) ? 59 : (number>59) ? 0 : number;
         this.setState({alarmMinutes: number});
     },
     setHourly: function() {

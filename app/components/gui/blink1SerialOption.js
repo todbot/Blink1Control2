@@ -18,7 +18,7 @@ var Blink1SerialOption = React.createClass({
         wrapperClassName: React.PropTypes.string,
         serial: React.PropTypes.string,
         onChange: React.PropTypes.func.isRequired
-	},
+    },
     getInitialState: function() {
         return {
             serial: this.props.serial,

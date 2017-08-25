@@ -37,11 +37,11 @@ var PreferencesModal = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
         show: React.PropTypes.bool,
-		// rule: React.PropTypes.object.isRequired
+        // rule: React.PropTypes.object.isRequired
         // patternId: React.PropTypes.string.isRequired,
         // onPatternUpdated: React.PropTypes.func.isRequired
         blink1Serials:  React.PropTypes.array
-	},
+    },
     getInitialState: function() {
         return {
             startMinimized:   conf.readSettings('startup:startMinimized') || false,
@@ -72,7 +72,7 @@ var PreferencesModal = React.createClass({
         if( !this.props.show ) {
             this.setState( this.getInitialState() );
         }
-	},
+    },
     saveSettings: function() {
 
         if( ! Blink1Service.setHostId( this.state.hostId ) ) {

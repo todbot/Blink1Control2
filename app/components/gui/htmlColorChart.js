@@ -40,7 +40,7 @@ var HtmlColorChart = React.createClass({
             return (<tr key={i}>{colorrow.map(createCell,this)}</tr>);
 
         };
-		return (
+        return (
             <table style={{borderCollapse:'collapse', outine:'1px solid #eee', cursor:'crosshair' }}>
                 <tbody>
                 {htmlcolors.map(createRow,this)}

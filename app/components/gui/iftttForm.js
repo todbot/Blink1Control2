@@ -17,14 +17,14 @@ var Blink1SerialOption = require('./blink1SerialOption');
 var IftttForm = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
-		rule: React.PropTypes.object.isRequired,
+        rule: React.PropTypes.object.isRequired,
         allowMultiBlink1: React.PropTypes.bool,
         patterns: React.PropTypes.array,
         onSave: React.PropTypes.func,
         onCancel: React.PropTypes.func,
         onDelete: React.PropTypes.func,
         onCopy: React.PropTypes.func
-	},
+    },
     getInitialState: function() {
         return {
             // name: rule.name,
@@ -34,7 +34,7 @@ var IftttForm = React.createClass({
     // FIXME: why am I doing this?
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
-		this.setState({
+        this.setState({
             type: 'ifttt',
             enabled: rule.enabled,
             name: rule.name,
@@ -42,7 +42,7 @@ var IftttForm = React.createClass({
             patternId: rule.patternId || nextProps.patterns[0].id,
             blink1Id: rule.blink1Id || "0"
          }); // FIXME: why
-	},
+    },
     handleClose: function() {
         this.props.onSave(this.state);
     },

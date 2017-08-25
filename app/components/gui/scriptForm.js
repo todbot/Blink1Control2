@@ -22,21 +22,21 @@ var Blink1SerialOption = require('./blink1SerialOption');
 var ScriptForm = React.createClass({
     mixins: [LinkedStateMixin],
     propTypes: {
-		rule: React.PropTypes.object.isRequired,
+        rule: React.PropTypes.object.isRequired,
         allowMultiBlink1: React.PropTypes.bool,
         patterns: React.PropTypes.array,
         onSave: React.PropTypes.func,
         onCancel: React.PropTypes.func,
         onDelete: React.PropTypes.func,
         onCopy: React.PropTypes.func
-	},
+    },
     getInitialState: function() {
         return {};
     },
     // FIXME: why am I doing this instead of getInitialState?
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
-		this.setState({
+        this.setState({
             type: rule.type || 'script',
             enabled: rule.enabled,
             name: rule.name,
@@ -49,7 +49,7 @@ var ScriptForm = React.createClass({
             intervalSecs: rule.intervalSecs || 10,
             errormsg: ''
          });
-	},
+    },
     handleClose: function() {
         if( !this.state.path ) {
             this.setState({errormsg: 'Must choose a '+this.state.type});
