@@ -71,7 +71,8 @@ build_script:
 - npm install
 - npm run postinstall
 - npm run webpack
-- npm run dist
+- npm run dist:draft
+- npm run dist:win32
 # show outputs
 - dir dist
 

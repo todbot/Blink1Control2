@@ -111,7 +111,7 @@ script:
 
 - npm run webpack
 # this builds the .dmg and .zip files
-- npm run dist
+- npm run dist:draft
 
 - echo "*** done. debug begin ***"
 - env | sort

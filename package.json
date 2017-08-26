@@ -32,7 +32,7 @@
     "dist:test": "build --dir",
     "dist:draft": "build --draft",
     "dist": "build",
-    "build": "build",
+    "dist:win32": "build --ia32 --win --draft",
     "clean": "rimraf app/node_modules node_modules",
     "env": "env",
     "postinstall": "electron-builder install-app-deps && electron-rebuild --force --module-dir app",
@@ -41,7 +41,7 @@
   "build": {
     "appId": "com.thingm.blink1control2",
     "asar": true,
-    "npmRebuild": false,
+    "npmRebuild": true,
     "mac": {
       "category": "public.app-category.utilities",
       "icon": "build/icon.icns"
