@@ -68,11 +68,12 @@ var MenuMaker = {
             //     }
             // },
             {	type: "separator" },
-            {	label: 'Open Settings...',
+            {	label: 'Open Controls...',
                 click: function() {
                     mainWindow.show();
                 }
-            }
+            },
+            {	type: "separator" }
         ];
         var contextMenuTemplateC = [
             {	label: 'Quit',
