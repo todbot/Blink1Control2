@@ -2,7 +2,8 @@
   "startup": {
     "startAtLogin": false,
     "startupPattern": "~pattern:1,#00a300,0.5,0,#000000,0.5,0",
-    "startMinimized": false
+    "startMinimized": false,
+    "hideDockIcon": false
   },
   "logger": {
     "maxEvents": 1000,

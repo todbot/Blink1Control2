@@ -44,6 +44,7 @@ var PreferencesModal = React.createClass({
     },
     getInitialState: function() {
         return {
+            startHideDockIcon:conf.readSettings('startup:hideDockIcon') || false,
             startMinimized:   conf.readSettings('startup:startMinimized') || false,
             startAtLogin:     conf.readSettings('startup:startAtLogin') || false,
             startupPattern:   conf.readSettings('startup:startupPattern') || "",
@@ -80,6 +81,7 @@ var PreferencesModal = React.createClass({
             return false;
         }
 
+        conf.saveSettings('startup:hideDockIcon', this.state.hideDockIcon);
         conf.saveSettings('startup:startMinimized', this.state.startMinimized);
         conf.saveSettings('startup:startAtLogin', this.state.startAtLogin);
         conf.saveSettings('blink1Service:enableGamma', this.state.enableGamma);
@@ -159,7 +161,7 @@ var PreferencesModal = React.createClass({
         var createPatternOption = function(item, idx) {
             return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
-
+        var showIfMac = (process.platform === 'darwin') ? '':'hidden';
         return (
         <div>
             <Modal show={this.props.show} onHide={this.close} bsSize="large">
@@ -180,6 +182,9 @@ var PreferencesModal = React.createClass({
                                 <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
                                     type="checkbox" label="Start at login"
                                     checkedLink={this.linkState('startAtLogin')} />
+                                <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12 {hideIfMac}" bsSize="small"
+                                    type="checkbox" label="Hide Dock Icon (on restart)"
+                                    checkedLink={this.linkState('hideDockIcon')} />
                                 <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
                                     type="checkbox" label="LED gamma-correction"
                                     checkedLink={this.linkState('enableGamma')} />
