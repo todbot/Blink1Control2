@@ -13,7 +13,7 @@ See [NOTES.md](NOTES.md) for more info.
 $ npm install
 $ npm run postinstall
 $ npm run watch &
-$ npm run startdev
+$ npm run startdev   # (or npm run startdev:win on Windows)
 ```
 Or to emulate a production run:
 ```
@@ -45,25 +45,20 @@ $ mv dist/mac/Blink2Control2-{version}.dmg dist/mac/Blink2Control2-{version}-mac
 $ npm install
 $ npm run webpack
 $ npm run dist
+$ npm run dist:win32bit  # build windows 32bit
 ```
 
-Packaging deltas from standard electron-builder
-```
- mv dist/Blink1Control2-win32-x64.zip  dist/win/Blink1Control2-{version}-win32-x64.zip
-```
 
-### Publishing
+#### Linux:
 
-Steps:
-- Create tag in git repository
-- Make release on github
-- Copy files from dev boxes to github release page
-    - dist/mac/Blink1Control2-{version}-mac.dmg
-    - dist/mac/Blink1Control2-{version}-mac.zip
-    - dist/win/Blink1Control2.Setup-{version}-win32-x64.exe
-    - dist/Blink1Control2-{version}-win32-x64.zip
-- Write release notes (changelog)
-- Publish release
-- Check release
-    - Download each version, unzip / install / launch to test
-- Publish announcement
+Install the following pre-requisites:
+```
+- libgnome-keyring-dev
+- icnsutils
+- graphicsmagick
+- xz-utils
+- rpm
+- bsdtar
+- libusb-1.0.0-dev
+```
+(see: https://github.com/electron-userland/electron-builder/issues/1407)
