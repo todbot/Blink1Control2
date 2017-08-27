@@ -145,9 +145,16 @@ var openAboutWindow = function () {
 	return aboutWindow;
 };
 
+var openMainWindow = function() {
+	mainWindow.show();
+};
+var openDevTools = function() {
+	mainWindow.show();
+    mainWindow.webContents.openDevTools({mode:'bottom'});
+};
 var openPreferences = function() {
 	mainWindow.show();
-	mainWindow.webContents.send('openPreferences');
+	mainWindow.webContents.send('showPreferences');
 };
 
 // called via ipcMain below
@@ -274,8 +281,17 @@ app.on('ready', function () {
         isQuitting = true;
     });
 
+    ipcMain.on('openMainWindow', function() {
+		openMainWindow();
+	});
     ipcMain.on('openAboutWindow', function() {
 		openAboutWindow();
+	});
+    ipcMain.on('openPreferences', function() {
+		openPreferences();
+	});
+    ipcMain.on('openDevTools', function() {
+		openDevTools();
 	});
 	ipcMain.on('openHelpWindow', function() {
 		openHelpWindow();

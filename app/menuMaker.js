@@ -4,7 +4,6 @@ var remote = require('electron').remote;
 var Menu = remote.Menu;
 var Tray = remote.Tray;
 var app = remote.app;
-var BrowserWindow = remote.BrowserWindow;
 var ipcRenderer = require('electron').ipcRenderer;
 
 var pkg = require('./package.json');
@@ -13,8 +12,6 @@ var log = require('./logger');
 var Eventer = require('./eventer');
 
 var Blink1Service = require('./server/blink1Service');
-
-var mainWindow = BrowserWindow.getAllWindows()[0];
 
 var tray = null;
 
@@ -70,7 +67,7 @@ var MenuMaker = {
             {	type: "separator" },
             {	label: 'Open Controls...',
                 click: function() {
-                    mainWindow.show();
+                    ipcRenderer.send('openMainWindow');
                 }
             },
             {	type: "separator" }
@@ -223,17 +220,25 @@ var MenuMaker = {
                     // FIXME: make appropriate OS-specific version of Windows
                     { type: 'separator' },
                     { label: 'Hide Blink1Control2', accelerator: "CommandOrControl+H", role: 'hide' },
-                    { label: 'Hide Others', accelerator: 'Command+Shift+H', role: 'hideothers' },
+                    { label: 'Hide Others', accelerator: 'CommandOrControl+Shift+H', role: 'hideothers' },
                     { label: 'Show All', role: 'unhide' },
                     { type: "separator" },
                     { label: 'Preferences...', accelerator: "CommandOrControl+,",
                         click: function() {
-                            mainWindow.webContents.send('openPreferences');
+                            ipcRenderer.send('openPreferences');
                         }
                     },
                     { type: "separator" },
-                    { label: 'Open DevTools', accelerator: 'Alt+Command+I', click: function() {
-                        mainWindow.show(); mainWindow.webContents.openDevTools({mode:'bottom'}); }
+                    { label: 'Open Controls...', accelerator: 'CommandOrControl+O',
+                        click: function() {
+                            ipcRenderer.send('openMainWindow');
+                        }
+                    },
+                    { type: "separator" },
+                    { label: 'Open DevTools', accelerator: 'Alt+CommandOrControl+I',
+                        click: function() {
+                            ipcRenderer.send('openDevTools');
+                        }
                     },
                     { type: "separator" },
                     { label: 'Close Window', accelerator: "CommandOrControl+W", role:'close' },
