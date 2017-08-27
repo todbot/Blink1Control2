@@ -32,7 +32,7 @@
     "dist:test": "build --dir",
     "dist:draft": "build --draft --publish=never",
     "dist": "build",
-    "dist:win32": "build --ia32 --win --draft --publish=never",
+    "dist:win32bit": "build --ia32 --win --draft --publish=never",
     "clean": "rimraf app/node_modules node_modules",
     "env": "env",
     "postinstall": "electron-builder install-app-deps && electron-rebuild --force --module-dir app",
@@ -75,8 +75,9 @@
       "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
       "category": "Utility",
       "target": [
-        "AppImage",
-        "deb"
+        "tar.gz",
+        "deb",
+        "AppImage"
       ]
     }
   },
