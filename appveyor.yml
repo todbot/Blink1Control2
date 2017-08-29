@@ -86,18 +86,18 @@ test_script:
 #- IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
 
 #deploy: OFF
-deploy:
-  tag: $(appveyor_repo_tag_name)
-  description: 'Tod put Release description here; $(appveyor_pull_request_title); $(appveyor_repo_commit_message)'
-  provider: GitHub
-  auth_token:
-    secure: VYJPed/ilAHFpd7S0zW/C2U1jVqayW5QFBitwBqralJlKlgAPW6n1L1VUIOJswiW # your encrypted token from GitHub
-  artifact: zips, exes
-  draft: false
-  prerelease: false
-  on:
-    branch: master                 # release from master branch only
-    appveyor_repo_tag: true        # deploy on tag push only
+#deploy:
+#  tag: $(appveyor_repo_tag_name)
+#  description: 'Tod put Release description here; $(appveyor_pull_request_title); $(appveyor_repo_commit_message)'
+#  provider: GitHub
+#  auth_token:
+#    secure: VYJPed/ilAHFpd7S0zW/C2U1jVqayW5QFBitwBqralJlKlgAPW6n1L1VUIOJswiW # your encrypted token from GitHub
+#  artifact: zips, exes
+#  draft: false
+#  prerelease: false
+#  on:
+#    branch: master                 # release from master branch only
+#    appveyor_repo_tag: true        # deploy on tag push only
 
 matrix:
   fast_finish: true
