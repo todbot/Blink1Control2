@@ -183,9 +183,11 @@ var MenuMaker = {
         Eventer.on('deviceUpdated', this.updateTrayMenu);
         Eventer.on('bigButtonsUpdated', this.updateTrayMenu);
 
-        // tray.on('click', function() {
-        //     self.showTrayMenu();
-        // });
+        if( process.platform === 'win32' ) {
+            tray.on('click', function() {
+                ipcRenderer.send('openMainWindow');
+            });
+        }
         // tray.on('right-click', function() {
         //     self.showTrayMenu();
         // });
@@ -201,7 +203,7 @@ var MenuMaker = {
         // 	swatchIconBuffer.writeUInt32BE( 0xFF0000FF, i );
         // }
         // var swatchIcon = nativeImage.createFromBuffer( swatchIconBuffer );
-        var resetShortcut = this.getShortcutReset();
+        var resetShortcut = MenuMaker.getShortcutReset();
 
         var bigButtonMenu = MenuMaker.createBigButtonMenu(true);
 
