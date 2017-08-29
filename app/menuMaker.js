@@ -18,6 +18,11 @@ var tray = null;
 
 var MenuMaker = {
 
+    getShortcutReset: function() {
+        var globalShortcutPrefix = config.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift';
+        var resetKey = config.readSettings('startup:shortcutResetKey') || 'R';
+        return globalShortcutPrefix + '+' + resetKey;
+    },
     /**
      * Return an array of MenuItem templates
      * @method createBigButtonMenu
@@ -41,7 +46,7 @@ var MenuMaker = {
 
     updateTrayMenu: function() {
         log.msg("MenuMaker.updateTrayMenu");
-        var resetShortcut = config.readSettings('startup:globalResetShortcut') || 'CommandOrControl+Shift+R';
+        var resetShortcut = this.getShortcutReset();
 
         var contextMenuTemplate = [
             {  label: 'Blink1Control2 is running', enabled: false},
@@ -196,7 +201,7 @@ var MenuMaker = {
         // 	swatchIconBuffer.writeUInt32BE( 0xFF0000FF, i );
         // }
         // var swatchIcon = nativeImage.createFromBuffer( swatchIconBuffer );
-        var resetShortcut = config.readSettings('startup:globalResetShortcut') || 'CommandOrControl+Shift+R';
+        var resetShortcut = this.getShortcutReset();
 
         var bigButtonMenu = MenuMaker.createBigButtonMenu(true);
 

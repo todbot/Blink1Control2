@@ -188,12 +188,15 @@ app.on('ready', function () {
 	}
     var showDebug = config.readSettings('logger.showDebug') || false;
 
-    // global shortcut  (see also MenuMaker)
+    // Install global shortcut key (see also MenuMaker)
 	var globalShortcut = electron.globalShortcut;
     // var ret = globalShortcut.register('CommandOrControl+3', function() {
     //     mainWindow.webContents.send('playBigButtonUser', 3);
     // });
-    var resetShortcut = config.readSettings('startup:globalResetShortcut') || 'CommandOrControl+Shift+R';
+    var globalShortcutPrefix = config.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift';
+    var resetKey = config.readSettings('startup:shortcutResetKey') || 'R';
+    var resetShortcut = globalShortcutPrefix + '+' + resetKey;
+
     var ret = globalShortcut.register(resetShortcut, function() {
       console.log('resetShortcut is pressed');
       mainWindow.webContents.send('resetAlerts');
