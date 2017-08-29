@@ -41,6 +41,7 @@ var MenuMaker = {
 
     updateTrayMenu: function() {
         log.msg("MenuMaker.updateTrayMenu");
+        var resetShortcut = config.readSettings('startup:globalResetShortcut') || 'CommandOrControl+Shift+R';
 
         var contextMenuTemplate = [
             {  label: 'Blink1Control2 is running', enabled: false},
@@ -54,7 +55,7 @@ var MenuMaker = {
         var contextMenuTemplateB = [
             {  type: "separator" },
             {  label: 'Off / Reset Alerts',
-                // accelerator: 'CommandOrControl+R',
+                accelerator: resetShortcut,
                 click: function() {
                     Eventer.emit('playBigButtonSys', 'Off');
                 }
@@ -195,11 +196,12 @@ var MenuMaker = {
         // 	swatchIconBuffer.writeUInt32BE( 0xFF0000FF, i );
         // }
         // var swatchIcon = nativeImage.createFromBuffer( swatchIconBuffer );
+        var resetShortcut = config.readSettings('startup:globalResetShortcut') || 'CommandOrControl+Shift+R';
 
         var bigButtonMenu = MenuMaker.createBigButtonMenu(true);
 
         var controlMenuTemplate = [
-            { label: 'Off / Reset Alerts', accelerator: "CommandOrControl+R", click: function() {
+            { label: 'Off / Reset Alerts', accelerator: resetShortcut, click: function() {
                 mainWindow.webContents.send('resetAlerts');
             }},
             { type: "separator" }
