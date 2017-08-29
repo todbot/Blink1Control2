@@ -46,7 +46,7 @@ var MenuMaker = {
 
     updateTrayMenu: function() {
         log.msg("MenuMaker.updateTrayMenu");
-        var resetShortcut = this.getShortcutReset();
+        var resetShortcut = MenuMaker.getShortcutReset();
 
         var contextMenuTemplate = [
             {  label: 'Blink1Control2 is running', enabled: false},
