@@ -6,6 +6,7 @@ var conffile = conf.getFilepath();
 var aHomepage = '<a href="' + pkg.homepage + '">' + pkg.homepage + '</a>';
 var aBugs = '<a href="' + pkg.bugs + '">' + pkg.bugs + '</a>';
 
+var conffilelink = '<a href="file://' + conffile + '">' + conffile + '</a>';
 </script>
 
 <html>
@@ -22,7 +23,7 @@ var aBugs = '<a href="' + pkg.bugs + '">' + pkg.bugs + '</a>';
       To report issues/bugs: <script>document.write(aBugs)</script><br/>
     </p>
     <p>
-      Config file: <script>document.write(conffile)</script>
+      Config file: <script>document.write(conffilelink)</script>
     </p>
     <p>
       Electron / Node / Chromium :
