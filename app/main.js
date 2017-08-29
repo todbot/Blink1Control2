@@ -45,18 +45,6 @@ if( false ) { // do not use for now, need to solve this for real, add "check for
     });
 }
 
-// turn off 'app-suspension' because it was causing bad timing in renderer
-var powerSaveBlocker= require('electron').powerSaveBlocker;
-var id = powerSaveBlocker.start('prevent-app-suspension');
-
-//// ignore-gpu-blacklist o maybe fix bad performance issue in Mac Sierra beta
-//app.commandLine.appendSwitch('ignore-gpu-blacklist');
-// app.commandLine.appendSwitch('disable-renderer-backgrounding');
-
-// Linux 3d acceleration causes black screen for Electron-based apps, so turn it off
-if( process.platform === 'linux' ) {
-    app.disableHardwareAcceleration();
-}
 
 // If someone tried to run a second instance, we should focus our window.
 // Really only applicable on Windows, maybe Linux
@@ -86,16 +74,22 @@ crashReporter.start({
 	autoSubmit: true
 });
 
+// turn off 'app-suspension' because it was causing bad timing in renderer
+// FIXME: check if this is still the case in Electron
+var powerSaveBlocker= require('electron').powerSaveBlocker;
+var id = powerSaveBlocker.start('prevent-app-suspension');
 
-// global shortcut idea (see below also)
-// var configInit = function() {
-// 	// if (!configuration.readSettings('shortcutKeys')) {
-// 	 //	 configuration.saveSettings('shortcutKeys', ['ctrl', 'shift']);
-// 	 // }
-// 	if (!configuration.readSettings('shortcutKeys')) {
-// 		 configuration.saveSettings('shortcutKeys', ['ctrl', 'shift']);
-// 	 }
-// };
+// Linux 3d acceleration sometimes causes black screen for Electron-based apps, so turn it off
+var disablegpu = config.readSettings('startup:disableHardwareAcceleration');
+if( disablegpu || (disablegpu === undefined && process.platform === 'linux') ) {
+    console.log("disabling hardware acceleration");
+    app.disableHardwareAcceleration();
+}
+//// ignore-gpu-blacklist o maybe fix bad performance issue in Mac Sierra beta
+//app.commandLine.appendSwitch('ignore-gpu-blacklist');
+// app.commandLine.appendSwitch('disable-renderer-backgrounding');
+
+
 var isQuitting = false;
 
 var quit = function() {
@@ -194,19 +188,20 @@ app.on('ready', function () {
 	}
     var showDebug = config.readSettings('logger.showDebug') || false;
 
-    // NOTE: the below works
-	// var globalShortcut = electron.globalShortcut;
+    // global shortcut  (see also MenuMaker)
+	var globalShortcut = electron.globalShortcut;
     // var ret = globalShortcut.register('CommandOrControl+3', function() {
     //     mainWindow.webContents.send('playBigButtonUser', 3);
     // });
+    var resetShortcut = config.readSettings('startup:globalResetShortcut') || 'CommandOrControl+Shift+R';
+    var ret = globalShortcut.register(resetShortcut, function() {
+      console.log('resetShortcut is pressed');
+      mainWindow.webContents.send('resetAlerts');
+    });
+    if (!ret) { console.log('globalShortcut registration failed');  }
+    // Check whether a shortcut is registered.
+    console.log("shortcut registered:", globalShortcut.isRegistered(resetShortcut));
 
-	// // Register a 'ctrl+x' shortcut listener.
-    // var ret = globalShortcut.register('Command+R', function() {
-    //   console.log('command+r is pressed');
-    // });
-    // if (!ret) { console.log('globalShortcut registration failed');  }
-    // // Check whether a shortcut is registered.
-    // console.log(globalShortcut.isRegistered('Command+R'));
 
 	if( process.env.NODE_ENV === 'development' ) {
 		mainWindow = new BrowserWindow({
