@@ -136,6 +136,7 @@ var MailForm = React.createClass({
                                 type="select" label="Account type" placeholder="IMAP"
                                 onChange={this.onMailTypeClick} >
                                 <option value="IMAP">IMAP</option>
+                                <option value="GMAIL">Gmail IMAP</option>
                             </Input>
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                                 type="text" label="Mail server" placeholder="mail.example.com"

@@ -61,7 +61,7 @@ var MailService = {
         }
         self.searchers = []; // FIXME: hmmm
         self.rules.map( function(rule) {
-            if( rule.enabled && rule.mailtype === 'IMAP' ) {
+            if( rule.enabled && (rule.mailtype === 'IMAP' || rule.mailtype === 'GMAIL') ) {
                 var searcher = new ImapSearcher( rule ); //, self.handleResults.bind(self) );
                 log.msg("MailService.checkMail: starting searcher for ",rule.name, "current searchers:",self.searchers);
                 searcher.start();
