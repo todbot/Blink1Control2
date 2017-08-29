@@ -195,7 +195,7 @@ ImapSearcher.prototype.start = function() {
             });
         }); // openbox
     }); // ready
-    log.debug("ImapSearcher.ready");
+    log.msg("ImapSearcher.ready");
 
     // and then finally, connect
     self.imap.connect();
