@@ -67,7 +67,7 @@ var PatternView = React.createClass({
         this.setState({pattern: pattern, editing: false});
         log.msg("PatternView.onPlayStopPattern", pattern.id, pattern.playing);
         if( pattern.playing ) {
-            PatternsService.playPatternFrom( 'play', pattern.id);
+            PatternsService.playPatternFrom( 'patternView', pattern.id);
         }
         else {
             PatternsService.stopPattern(pattern.id);
@@ -118,11 +118,21 @@ var PatternView = React.createClass({
     onEditPattern: function() {
         log.msg("PatternView.onEditPattern");
         var pattern = this.state.pattern;
-        if( pattern.playing ) { PatternsService.stopPattern(pattern.id); }
-
+        if( pattern.playing ) {
+            PatternsService.stopPattern(pattern.id);
+        }
+        // FIXME: this addChangeListener is to watch for color picker changes. sigh
         Blink1Service.addChangeListener( this.onColorChanged, "patternView" );
-
+        PatternsService.inEditing = true;
         this.setState( {editing: true });
+    },
+    onEditDone: function() {
+        log.msg("PatternView.onEditDone");
+        this.setState( {editing: false, activeSwatch:-1 });
+        var pattern = this.state.pattern;
+        Blink1Service.removeChangeListener( "patternView" ); // FIXME HACK
+        PatternsService.inEditing = false;
+        this.props.onPatternUpdated(pattern);
     },
     onLockPattern: function() {
         log.msg("PatternView.onLockPattern");
@@ -140,13 +150,6 @@ var PatternView = React.createClass({
         log.msg("onDeletePattern", this.state.pattern.id);
         var pattern = this.state.pattern;
         this.props.onDeletePattern( pattern.id );
-    },
-    onEditDone: function() {
-        log.msg("PatternView.onEditDone");
-        this.setState( {editing: false, activeSwatch:-1 });
-        var pattern = this.state.pattern;
-        Blink1Service.removeChangeListener( "patternView" ); // FIXME HACK
-        this.props.onPatternUpdated(pattern);
     },
 
     render: function() {
