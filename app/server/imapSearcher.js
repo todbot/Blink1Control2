@@ -5,14 +5,13 @@
 
 "use strict";
 
-// var _ = require('lodash');
+var _ = require('lodash');
 
 var Imap = require('imap');
 var simplecrypt = require('simplecrypt');
+// var moment = require('moment');
 
 var log = require('../logger');
-var PatternsService = require('./patternsService');
-
 var PatternsService = require('./patternsService');
 
 var retrySecs = 30;
@@ -27,6 +26,7 @@ var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control'});
 function ImapSearcher(config) { //}, callback) {
     var self = this;
     self.config = config;
+    // self.startTime = new Date();
 }
 
 // IMAP updates can come fast and furious when marking several msgs
@@ -42,7 +42,7 @@ ImapSearcher.prototype.searchMail = function() {
     }, searchDelaySecs * 1000);
 };
 
-/// called from an open imap
+/// called from an open imap object
 ImapSearcher.prototype.searchMailDo = function() {
     log.msg("ImapSearcher.searchMailDo");
     var self = this;
@@ -56,6 +56,7 @@ ImapSearcher.prototype.searchMailDo = function() {
     else { // just else to guard against unknown criteria
         //if( self.triggerType === 'unread' ) {
         searchCriteria = ['UNSEEN'];
+        // searchCriteria = ['UNSEEN', ['SINCE', moment(self.startTime).format('MMMM DD, YYYY')]];
     }
     if( self.imap === null ) {
         log.msg("ImapSearcher.searchMailDo: null imap object"); return;
@@ -68,6 +69,10 @@ ImapSearcher.prototype.searchMailDo = function() {
             log.addEvent( {type:'error', source:'mail', id:self.id, text:'search error '+err });
             throw err;
         }
+
+        // filter out all msgs before lastMsgId
+        res = _.filter( res, function(o) { return o >= self.lastMsgId } );
+
         if( res.length > 0 || (res.length >= self.triggerVal) ) {
             if( !self.triggered ) {  //  we've yet been triggered
                 self.triggered = true;
