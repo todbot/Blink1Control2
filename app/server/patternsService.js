@@ -69,7 +69,7 @@ var listeners = {};
 
 var _generateId = function(pattern) {
     var simplename = pattern.name.toLowerCase().replace(/\W+/g, '');
-    //return simplename.replace(/\s+/g, '-'); // nope agove nukes whitespace too
+    //return simplename.replace(/\s+/g, '-'); // nope above nukes whitespace too
     return simplename;
 };
 
@@ -152,6 +152,7 @@ var PatternsService = {
          */
         playingSerialize: false
     },
+    inEditing: false,  // can be set to true during pattern editing?
     reloadConfig: function() {
         this.config = conf.readSettings('patternsService') || {};
     },
@@ -354,6 +355,10 @@ var PatternsService = {
     playPatternFrom: function(source, pattid, blink1id) {
     // playPattern: function(pattid, blink1id) {
         log.msg("PatternsService.playPatternFrom: src:",source,"id:", pattid, ", blink1id:", blink1id, "patternsTemp:", patternsTemp);
+
+        // if a pattern is being edited, do not allow playing
+        if( this.inEditing && source != 'patternView' ) { return; }  // FIXME: wat
+
         blink1id = ( blink1id === undefined ) ? '' : blink1id; // set default for playingQueue
 
         if (this.config.playingSerialize) {
@@ -455,7 +460,7 @@ var PatternsService = {
                 return false; // FIXME: return error?
             }
         }
-        log.msg("PatternsService.playPattern: okay got pattern", pattern);
+        log.msg("PatternsService.playPatternFrom: okay, got pattern", pattern);
         // NOT IMPLEMENTED: otherwise, treat 'id' as a pattern object
 
         if (pattern.playing) {
