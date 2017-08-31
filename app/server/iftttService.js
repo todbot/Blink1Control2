@@ -127,16 +127,15 @@ var IftttService = {
         var url = this.config.baseUrl + self.iftttKey;
 
         var opts = {};
-        // var proxyurl = self.makeProxyUrl();
-        // if( proxyurl ) {
-        // 	opts.proxy = proxyurl;
-        // }
-        // log.msg("iftttService.fetch: opts:",opts);
+        var proxyurl = self.makeProxyUrl();
+        if( proxyurl ) {
+        	opts.proxy = proxyurl;
+        }
+        log.msg("iftttService.fetch: opts:",opts);
 
         log.msg("IftttService.fetch:", url, self.lastTime, "defaultId:",defaultId);
-        // request(baseUrl + this.iftttKey, function(error, response, body) {
         needle.get( url, opts, function(error, response) {
-        // needle.get( url, function(error, response) {
+        // request(url, function(error, response, body) {
             var msg = '';
             // FIXME: do error handling like: net error, bad response, etc.
             if( error ) {
