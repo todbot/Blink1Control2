@@ -19,7 +19,6 @@ var config = {
   externals: {
     "express": 'commonjs express',
     "node-hid": 'commonjs node-hid',
-    // "serialport": 'commonjs serialport',
     'nconf': 'commonjs nconf',
     'xml2js': 'commonjs xml2js' // this is to keep webpack from complaing about optional dep of 'needle'
   },
