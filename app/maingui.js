@@ -30,6 +30,14 @@ var Blink1Service = require('./server/blink1Service');
 var ApiServer = require('./server/apiServer');
 var PatternsService = require('./server/patternsService');
 
+// log.msg("starting up global-tunnel");
+// var globalTunnel = require('global-tunnel');
+// globalTunnel.initialize({
+//   host: '127.0.0.1',
+//   port: 8888
+//   // sockets: 50 // optional pool size for each http and https
+// });
+
 // log.msg("---- before service start");
 
 MenuMaker.setupMainMenu();
