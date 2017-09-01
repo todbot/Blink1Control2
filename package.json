@@ -87,6 +87,7 @@
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-react": "^6.11.1",
     "bootstrap": "^3.3.6",
+    "cross-env": "^5.0.5",
     "css-loader": "^0.24.0",
     "devtron": "^1.3.0",
     "electron": "^1.7.5",
