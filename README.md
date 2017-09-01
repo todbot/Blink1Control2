@@ -1,58 +1,46 @@
 # Blink1Control2
 
-Blink1Control written in Electron, Node.js, and React.
+Blink1Control is the GUI application for controlling and hooking events to blink(1). It is the primary user-level application for controlling blink(1). It is an event-based system for triggering blink(1) color patterns. Those events can be on your computer or on the Net.
+
+Blink1Control2 is the current version, written in Electron, Node.js, and React.
 
 <img src="./docs/blink1control2-screenshot1.png" width="425">
 <img src="./docs/blink1control2-screenshot2.png" width="425">
 
-See [NOTES.md](NOTES.md) for more info.
 
 ### Setup steps (for development)
 
+You will need a working C compiler setup for Node projects.
+You can find details for that here:
+https://github.com/node-hid/node-hid#compiling-from-source
+
+Start a hot-reloading content server and the application:
 ```
 $ npm install
-$ npm run postinstall
 $ npm run watch &
-$ npm run startdev   # (or npm run startdev:win on Windows)
+$ npm run startdev
 ```
+
 Or to emulate a production run:
 ```
 $ npm install
-$ npm run postinstall
 $ npm run webpack
 $ npm run start
 ```
 
 ### Build steps (for production)
 
-#### Mac OS X:
-
-```
-$ npm install
-$ npm run postinstall
-$ npm run webpack
-$ npm run dist
-```
-
-Packaging deltas from standard electron-builder
-```
-$ mv dist/mac/Blink2Control2-{version}.dmg dist/mac/Blink2Control2-{version}-mac.dmg
-
-```
-#### Windows:
-
 ```
 $ npm install
 $ npm run webpack
 $ npm run dist
-$ npm run dist:win32bit  # build windows 32bit
+$ npm run dist:win32bit  # only on Windows, to build windows 32bit
 ```
-
 
 #### Linux:
 
 Install the following pre-requisites:
-```
+
 - libgnome-keyring-dev
 - icnsutils
 - graphicsmagick
@@ -60,5 +48,9 @@ Install the following pre-requisites:
 - rpm
 - bsdtar
 - libusb-1.0.0-dev
-```
+
 (see: https://github.com/electron-userland/electron-builder/issues/1407)
+
+### Other info
+- [Publishing.md](Publishing.md) for info on publishing binaries
+- [NOTES.md](NOTES.md) for random behind-the-scenes thoughts
