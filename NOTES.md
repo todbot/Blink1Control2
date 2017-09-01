@@ -5,8 +5,11 @@ Random notes / documentation while developing the app
 
 
 ### App capability changes / To-do's
+- TODO: Entirely rethink color pattern architecture
+    - maybe instead "assign pattern to blink1 ledn" is primary UI
+
 - IDEA: How to set patterns to LEDA / LEDB?
-- MAYBE: "Set pattern to LEDA / LEDB"
+- MAYBE: "Set pattern to LEDA / LEDB" option
 - DONE-ish: Add "go back to last pattern" or "return to previous state" color pattern
 -- Still need to "return to original state"
 - TODO: put 'patternSerial' in config & preferences
@@ -16,10 +19,10 @@ Random notes / documentation while developing the app
 -  (maybe restructure app to not need IFTTT "rules"?)
 - TODO: Patterns should allow multiple LEDs to change per step (take array of {color,ledn,time})
 - DONE: TODO: Add 'enable' flag to each rule in Mail & Tools
-- NANA: partition code into client & server so webpack doesn't bundle server code
+- DONE: partition code into client & server so webpack doesn't bundle server code
 - DONE : TODO: what about 'parametric patterns', e.g. "blink 5 times, fill in color & on/off time"
 - TODO: Number() vs parseInt() in `PatternsService._parsePatternStr()`?
-- TODO: global shortcut, see: https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md
+- DONE: global shortcut, see: https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md
 - DONE: Support multiple blink(1)s (especially in upcoming IFTTT update)
     - partially working, verify with:
         - `curl 'http://localhost:8934/blink1/id'`
@@ -33,8 +36,8 @@ Random notes / documentation while developing the app
         - ToolTable and/or EventList?
         - Preferences dialog?
 - TODO: Fix ImapSearcher's "new mail" issues.
-    - doesn't seem to re-trigger when more new mail happens
-    - does retrigger every time on restart (save last msgid in config?)
+    - TODO?: doesn't seem to re-trigger when more new mail happens
+    - DONE: does retrigger every time on restart (save last msgid in config?)
 
 
 ### General Program structure
@@ -129,18 +132,7 @@ Random notes / documentation while developing the app
 
 ### Packaging & Releasing
 - Currently using `electron-builder`
-- but `electron-packager` also still supported a little
-- On Windows set env var `DEBUG=electron-windows-installer`
-    to discover weird XML parsing errors when '&' is in description
 
-#### Prepping node-hid
--  do `npm run postinstall` (should be done automatically on `npm install`, but sometimes seems not to)
-
-#### Building on Windows
-- Can't use my standard MinGW rxvt shell?
-- Instead, open up Node's "Node Command Prompt" from Start menu
-- May need to install webpack & webpack-dev-server globally: `npm install -g webpack` ??
-- 'webpack --display-error-details' to help debug
 
 ### Slow GUI issues
 - console.log() in renderer really seems to slow down GUI
@@ -155,11 +147,23 @@ Random notes / documentation while developing the app
 
 ## old notes
 
+#### Building on Windows
+- Can't use my standard MinGW rxvt shell?
+- Instead, open up Node's "Node Command Prompt" from Start menu
+- May need to install webpack & webpack-dev-server globally: `npm install -g webpack` ??
+- 'webpack --display-error-details' to help debug
+
+#### Prepping node-hid
+-  do `npm run postinstall` (should be done automatically on `npm install`, but sometimes seems not to)
+
 #### Prepping node-hid
 - See 'preinstall' target in package.json
 - also see: https://github.com/voodootikigod/node-serialport/issues/538#issuecomment-184251385
 
 #### Packaging
+- but `electron-packager` also still supported a little
+- On Windows set env var `DEBUG=electron-windows-installer`
+    to discover weird XML parsing errors when '&' is in description
 ```
  ./node_modules/.bin/electron-packager ./ Blink1ControlJs --platform=darwin --arch=x64 --version=0.30.6 --icon=./src/images/blink1-icon0-bw.png --out=build --version-string.CompanyName=ThingM --version-string.ProductName=Blink1ControlJs --version-string.ProductVersion=0.0.69
 ```
