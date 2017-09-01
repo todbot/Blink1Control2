@@ -12,7 +12,8 @@ var PatternsService = require('./patternsService');
 var app = express();
 app.set('json spaces', 2);
 var myLogger = function (req, res, next) {
-  log.msg("ApiServer", req.url);
+  // log.msg("ApiServer", req.url);
+  log.addEvent( {type:'info', source:'api', id:req.ip, text:req.url} );
   next();
 };
 app.use(myLogger);
