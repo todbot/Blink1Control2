@@ -1,8 +1,11 @@
 # Blink1Control2
 
-Blink1Control is the GUI application for controlling and hooking events to blink(1). It is the primary user-level application for controlling blink(1). It is an event-based system for triggering blink(1) color patterns. Those events can be on your computer or on the Net.
+Blink1Control is the desktop application for controlling and hooking events to blink(1). It is the primary user-level application for controlling blink(1). It is an event-based system for triggering blink(1) color patterns. Those events can be on your computer or on the Net.
 
 Blink1Control2 is the current version, written in Electron, Node.js, and React.
+
+There are pre-built downloads for Mac OS X, Windows, and Linux.
+See the [releases page](releases) for details.
 
 <img src="./docs/blink1control2-screenshot1.png" width="425">
 <img src="./docs/blink1control2-screenshot2.png" width="425">
