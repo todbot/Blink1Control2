@@ -5,10 +5,9 @@ Blink1Control is the desktop application for controlling and hooking events to b
 Blink1Control2 is the current version, written in Electron, Node.js, and React.
 
 There are pre-built downloads for Mac OS X, Windows, and Linux.
-See the [releases page](releases) for details.
+See the [releases page](https://github.com/todbot/Blink1Control2/releases) for details.
 
-<img src="./docs/blink1control2-screenshot1.png" width="425">
-<img src="./docs/blink1control2-screenshot2.png" width="425">
+<img src="./docs/blink1control2-screenshot1.png" width="425"><img src="./docs/blink1control2-screenshot2.png" width="425">
 
 
 ### Setup steps (for development)
