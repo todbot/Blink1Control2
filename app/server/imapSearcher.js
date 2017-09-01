@@ -76,7 +76,8 @@ ImapSearcher.prototype.searchMailDo = function() {
         if( res.length > 0 || (res.length >= self.triggerVal) ) {
             if( !self.triggered ) {  //  we've yet been triggered
                 self.triggered = true;
-                PatternsService.playPatternFrom( self.id, self.patternId );
+                // PatternsService.playPatternFrom( self.id, self.patternId );
+                PatternsService.playPatternFrom( self.id, self.patternId, self.blink1Id );
             }
             log.addEvent( {type:'trigger', source:'mail', id:self.id, text:''+res.length+' msgs match'} );
         }
@@ -118,9 +119,12 @@ ImapSearcher.prototype.start = function() {
     self.triggerVal = self.config.triggerVal; // FIXME
     self.triggerOff = self.config.triggerOff;
     self.patternId = self.config.patternId;
+    self.blink1Id = self.config.blink1Id;
+    // FIXME: the above is brittle. Just use self.config.patternId, etc.
+
     self.startdate = Date.now();
-    self.lastSeenId = 0; // FIXME: notused
-    self.lastResults = [];
+    // self.lastSeenId = 0; // FIXME: notused
+    self.lastResults = []; // FIXME: notused also, but its being assigned
     self.triggered = false;
 
     self.imap = new Imap({
