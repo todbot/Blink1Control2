@@ -23,11 +23,9 @@
   "bugs": "https://github.com/todbot/Blink1Control2/issues",
   "license": "ISC",
   "scripts": {
-    "startdev": "NODE_ENV=development npm run start",
-    "startdev:win": "set NODE_ENV=development&& npm run start",
+    "startdev": "cross-env NODE_ENV=development npm run start",
     "start": "electron app",
-    "watch": "NODE_ENV=development webpack-dev-server --hot --inline",
-    "watch:win": "set NODE_ENV=development&& webpack-dev-server --hot --inline",
+    "watch": "cross-env NODE_ENV=development webpack-dev-server --hot --inline",
     "webpack": "webpack -p",
     "pack": "npm run webpack",
     "dist:test": "build --dir",

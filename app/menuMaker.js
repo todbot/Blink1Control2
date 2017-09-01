@@ -190,7 +190,7 @@ var MenuMaker = {
         ];
 
         var templateApp = [
-            {	label: myname,
+            {	label: 'File',
                 submenu: [
                     { label: 'About ' + myname,
                         click: function() {
