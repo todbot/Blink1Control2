@@ -198,12 +198,12 @@ app.on('ready', function () {
     var resetShortcut = globalShortcutPrefix + '+' + resetKey;
 
     var ret = globalShortcut.register(resetShortcut, function() {
-      console.log('resetShortcut is pressed');
+    //   console.log('resetShortcut is pressed');
       mainWindow.webContents.send('resetAlerts');
     });
     if (!ret) { console.log('globalShortcut registration failed');  }
     // Check whether a shortcut is registered.
-    console.log("shortcut registered:", globalShortcut.isRegistered(resetShortcut));
+    console.log("global shortcut key registered:", globalShortcut.isRegistered(resetShortcut));
 
 
 	if( process.env.NODE_ENV === 'development' ) {

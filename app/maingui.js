@@ -111,11 +111,9 @@ ipcRenderer.on('reloadConfig', function( event,arg ) {
 });
 
 // used by Main because menus are there
-// (can these be in renderer process? why not)
 ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {
     log.msg("resetAlerts");
     Eventer.emit('playBigButtonSys', 'Off');
-
 });
 
 ipcRenderer.on('playBigButtonUser', function(event,arg) {
