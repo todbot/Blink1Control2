@@ -125,15 +125,15 @@ var IftttService = {
 
         //if( rules.length === 0 ) { return; } // no rules, don't waste effort
         var url = this.config.baseUrl + self.iftttKey;
-
+        //
         var opts = {};
-        var proxyurl = self.makeProxyUrl();
-        if( proxyurl ) {
-        	opts.proxy = proxyurl;
-        }
-        log.msg("iftttService.fetch: opts:",opts);
+        // var proxyurl = self.makeProxyUrl();
+        // if( proxyurl ) {
+        // 	opts.proxy = proxyurl;
+        // }
+        // log.msg("iftttService.fetch: opts:",opts);
 
-        log.msg("IftttService.fetch:", url, self.lastTime, "defaultId:",defaultId);
+        log.msg("IftttService.fetch start:", url, self.lastTime, "defaultId:",defaultId);
         needle.get( url, opts, function(error, response) {
         // request(url, function(error, response, body) {
             var msg = '';
@@ -173,7 +173,7 @@ var IftttService = {
                     // log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:'no new events' } );
                     evt.eventDate = new Date(parseInt(1000 * evt.date));
                     evt.name = evt.name.trim();
-                    log.msg("IftttService.fetch:", evt.eventDate > self.lastTime, ":",  self.lastTime, evt.eventDate );
+                    log.msg("IftttService.fetch isNew:", evt.eventDate > self.lastTime, ":",  self.lastTime, evt.eventDate );
                     if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
                         log.addEvent( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:'src:'+evt.source}); //evt.source  } );
 
