@@ -143,7 +143,8 @@ var MenuMaker = {
 
         var controlMenuTemplate = [
             { label: 'Off / Reset Alerts', accelerator: resetShortcut, click: function() {
-                mainWindow.webContents.send('resetAlerts');
+                // mainWindow.webContents.send('resetAlerts');
+                Eventer.emit('playBigButtonSys', 'Off'); // FIXME: super fixme
             }},
             { type: 'separator' }
         ];
