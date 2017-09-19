@@ -76,7 +76,6 @@ var IftttService = {
         }
         var allrules = conf.readSettings('eventRules') || [];
         this.rules = allrules.filter( function(r){return r.type === 'ifttt';} );
-        this.iftttKey = Blink1Service.getIftttKey();
         log.msg("IftttService.reloadConfig. rules=", this.rules);
     },
     // getRules: function() {
@@ -122,6 +121,9 @@ var IftttService = {
         var self = this;
         var rules = self.rules; //self.getRules();
         var defaultId = '-default-'; // FIXME: see ToolTable.render.makeLastValue
+
+        // always get latest IftttKey in case plug/unplug
+        self.iftttKey = Blink1Service.getIftttKey();
 
         //if( rules.length === 0 ) { return; } // no rules, don't waste effort
         var url = this.config.baseUrl + self.iftttKey;
