@@ -1,7 +1,5 @@
 os: unstable
 environment:
-#  NODE_PRE_GYP_GITHUB_TOKEN:
-#    secure: VYJPed/ilAHFpd7S0zW/C2U1jVqayW5QFBitwBqralJlKlgAPW6n1L1VUIOJswiW
 
   matrix:
 #  - nodejs_version: "4"
@@ -28,7 +26,6 @@ install:
       "appveyor_build_version" = $env:appveyor_build_version
       "appveyor_pull_request_title" = $env:appveyor_pull_request_title
       "electron_version" = $env:electron_version
-      "PRE_GYP_GITHUB_TOKEN" = $env:NODE_PRE_GYP_GITHUB_TOKEN
     } | Out-String | Write-Host;
 
 # work around bug in npm 2.15.1 where checksums were coming back bad (node 0.12)
