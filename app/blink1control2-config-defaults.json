@@ -5,6 +5,7 @@
     "startMinimized": false,
     "hideDockIcon": false,
     "disableHardwareAcceleration": null,
+    "preventAppSuspension": false,
     "shortcutPrefix": "CommandOrControl+Shift",
     "shortcutResetKey": "R"
   },

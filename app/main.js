@@ -76,8 +76,13 @@ crashReporter.start({
 
 // turn off 'app-suspension' because it was causing bad timing in renderer
 // FIXME: check if this is still the case in Electron
-var powerSaveBlocker= require('electron').powerSaveBlocker;
-var id = powerSaveBlocker.start('prevent-app-suspension');
+// update: 18 Sep 2017, this seems to not be an issue, so make it a configurable
+var preventAppSuspension = config.readSettings('startup:preventAppSuspension');
+if( preventAppSuspension ) {
+    var powerSaveBlocker= require('electron').powerSaveBlocker;
+    var id = powerSaveBlocker.start('prevent-app-suspension');
+    console.log("powerSaveBlocker id:",id);
+}
 
 // Linux 3d acceleration sometimes causes black screen for Electron-based apps, so turn it off
 var disablegpu = config.readSettings('startup:disableHardwareAcceleration');
