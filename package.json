@@ -44,7 +44,7 @@
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "publish": {
       "provider": "s3",
-      "bucket": "electron-auto-updater-test"
+      "bucket": "blink1control2"
     },
     "mac": {
       "category": "public.app-category.utilities",
