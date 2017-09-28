@@ -88,7 +88,7 @@ var Blink1Service = {
         Blink1Service.scanForDevices();
     },
     scanForDevices: function() {
-        // log.msg("Blink1Service.scanForDevices");
+        log.msg("Blink1Service.scanForDevices");
         // initial population of any already-plugged in devices
         var serials = Blink1.devices();
         serials.sort();
@@ -151,6 +151,9 @@ var Blink1Service = {
         //     log.msg("FORGETTING OLD BLINK1!!!!");
         //     currentBlink1Id = 0;
         // }
+
+        Blink1Service.notifyChange();  // FIXME: need to think about this
+
         setTimeout( this.scanForDevices.bind(this), 5000);
     },
     _removeAllDevices: function() {
