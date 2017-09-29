@@ -1,22 +1,43 @@
-### Publishing
-
-[FIXME: need to update this]
+### Publishing Releases
 
 Steps:
+- Update version in package.json
+- Build release:
+    ```
+    npm install
+    npm run pack
+    npm run dist  // this does the publish
+    ```
+-
+
+
+
 - Create tag in git repository
 - Make release on github
-- Copy files from dev boxes / CI to github release page
-    - dist/mac/Blink1Control2-{version}-mac.dmg
-    - dist/mac/Blink1Control2-{version}-mac.zip
-    - dist/win/Blink1Control2.Setup-{version}-win32-x64.exe
-    - dist/Blink1Control2-{version}-win32-x64.zip
 - Write release notes (changelog)
 - Publish release
 - Check release
     - Download each version, unzip / install / launch to test
 - Publish announcement
 
-Packaging deltas from standard electron-builder
-```
- mv dist/Blink1Control2-win32-x64.zip  dist/win/Blink1Control2-{version}-win32-x64.zip
-```
+
+
+
+#### random notes
+- Testing out S3 artifact publishing by setting:
+    ```
+    "build": {
+      "publish": {
+        "provider": "s3",
+        "bucket": "blink1control2"
+      }
+    }
+    ```
+    and setting `AWS_ACCESS_KEY_ID` & `AWS_SECRET_ACCESS_KEY` environment variable in Travis and Appveyor environment settings
+- But for actual publishing, use github releases (default), which requires `GH_TOKEN` secure environment variable and:
+    ```
+    "build": {
+      "publish": {
+        "provider": "github"
+      }
+    }
