@@ -244,7 +244,7 @@ var MenuMaker = {
         else {
             template = templateApp.concat(templateEdit,templateControl);
         }
-        console.log("template = ", template);
+        // console.log("template = ", template);
 
         Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 

@@ -63,7 +63,7 @@ ReactDOM.render( <App />, document.getElementById('app'));
 // var perfmeasurements = Perf.getLastMeasurements();
 // console.log("Perf output:\n");
 // Perf.printInclusive(perfmeasurements);
-log.msg("---- after render");
+// log.msg("---- after render");
 
 
 // FIXME: IDEA for event source modularity. almost there
