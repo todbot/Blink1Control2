@@ -179,8 +179,8 @@ var openHelpWindow = function() {
 // the main deal
 //
 app.on('ready', function () {
-    var startHideDockIcon = config.readSettings('startup:hideDockIcon');
-    if( startHideDockIcon && process.platform === 'darwin' ) {
+    var hideDockIcon = config.readSettings('startup:hideDockIcon');
+    if( hideDockIcon && process.platform === 'darwin' ) {
         app.dock.hide();
     }
 	var startMinimized = config.readSettings('startup:startMinimized');
