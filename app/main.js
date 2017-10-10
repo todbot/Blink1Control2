@@ -1,14 +1,12 @@
 "use strict";
 
-// // FIXME: how to make JSHint not say "illegal return statement"
-// if( require('electron-squirrel-startup') ) { return; }
-
 var electron = require('electron');
 var app = electron.app;
 var ipcMain = electron.ipcMain;
-
-var autoUpdater = electron.autoUpdater;
 var dialog = electron.dialog;
+
+var autoUpdater = require('electron-updater').autoUpdater;
+var autoUpdateMsg = "";
 
 var BrowserWindow = electron.BrowserWindow;
 var Menu = electron.Menu;
@@ -17,33 +15,6 @@ var crashReporter = electron.crashReporter;
 var path = require('path');
 
 var mainWindow = null;
-
-// if( process.env.NODE_ENV !== 'development' ) {
-if( false ) { // do not use for now, need to solve this for real, add "check for Updates" menu item
-    const server = 'https://blink1hazeltest.herokuapp.com';
-    const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
-    autoUpdater.setFeedURL(feed);
-    // setInterval(() => {
-    //   autoUpdater.checkForUpdates()
-    // }, 1*60*1000);  // check every 1 minute
-
-    autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-      const dialogOpts = {
-        type: 'info',
-        buttons: ['Restart', 'Later'],
-        title: 'Application Update',
-        message: process.platform === 'win32' ? releaseNotes : releaseName,
-        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-      }
-      dialog.showMessageBox(dialogOpts, (response) => {
-        if (response === 0) autoUpdater.quitAndInstall()
-      })
-    });
-    autoUpdater.on('error', message => {
-      console.error('There was a problem updating the application')
-      console.error(message)
-    });
-}
 
 
 // If someone tried to run a second instance, we should focus our window.
@@ -140,7 +111,7 @@ var openAboutWindow = function () {
     aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
 
 	// aboutWindow.loadURL('data:text/html,' + info);
-	aboutWindow.loadURL( 'file://' + __dirname + '/about.html' );
+	aboutWindow.loadURL( 'file://' + __dirname + '/about.html#'+autoUpdateMsg );
 	return aboutWindow;
 };
 
@@ -175,10 +146,27 @@ var openHelpWindow = function() {
 	helpWindow.loadURL( 'file://' + __dirname + '/help/index.html' );
 };
 
+autoUpdater.on('checking-for-update', () => {
+  console.log('Checking for update...');
+});
+autoUpdater.on('update-available', (info) => {
+  console.log('Update available.');
+});
+autoUpdater.on('update-not-available', (info) => {
+  console.log('Update not available.');
+});
+autoUpdater.on('error', (err) => {
+  console.log('Error in auto-updater.');
+});
+
 //
 // the main deal
 //
 app.on('ready', function () {
+
+    autoUpdater.autoDownload = false;
+    // autoUpdater.checkForUpdates();
+
     var hideDockIcon = config.readSettings('startup:hideDockIcon');
     if( hideDockIcon && process.platform === 'darwin' ) {
         app.dock.hide();
@@ -209,7 +197,6 @@ app.on('ready', function () {
     if (!ret) { console.log('globalShortcut registration failed');  }
     // Check whether a shortcut is registered.
     console.log("global shortcut key registered:", globalShortcut.isRegistered(resetShortcut));
-
 
 	if( process.env.NODE_ENV === 'development' ) {
 		mainWindow = new BrowserWindow({
@@ -274,7 +261,6 @@ app.on('ready', function () {
 	app.on('activate', function() {
 		mainWindow.show();
 	});
-    //() => mainWindow.show());
 
     // https://discuss.atom.io/t/how-to-catch-the-event-of-clicking-the-app-windows-close-button-in-electron-app/21425/8
     /* 'before-quit' is emitted when Electron receives
