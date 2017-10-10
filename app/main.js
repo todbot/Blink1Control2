@@ -233,7 +233,7 @@ app.on('ready', function () {
 
 	// mainWindow.setMenu(null);  // remove default menu
 	mainWindow.on('close', function (e) {
-		console.log("Blink1Control2: mainWindow.close:",e);
+		console.log("Blink1Control2: mainWindow.close:"); 
 		if( !isQuitting ) {
 			mainWindow.hide();
 			return e.preventDefault();
@@ -266,7 +266,7 @@ app.on('ready', function () {
     /* 'before-quit' is emitted when Electron receives
      * the signal to exit and wants to start closing windows */
     app.on('before-quit', function() {
-        console.log("Blink1Control: mainWindow.before-quit");
+        console.log("Blink1Control2: mainWindow.before-quit");
         isQuitting = true;
     });
 
