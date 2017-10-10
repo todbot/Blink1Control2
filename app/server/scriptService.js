@@ -208,6 +208,7 @@ var ScriptService = {
             if( matches ) {
                 var patt_name = matches[1];
                 if( this.playPattern( patt_name, rule.name  ) ) {
+                // if( this.playPattern( patt_name, rule.name, rule.blink1id ) ) {
                     log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str});
                 }
                 log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
@@ -225,6 +226,7 @@ var ScriptService = {
                 if( color.isValid() ) {
                     log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:colormatch});
                     this.playPattern( color.toHexString(), rule.name );
+                    // this.playPattern( color.toHexString(), rule.name, rule.blink1id );
                 }
                 else {
                     log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+colormatch});
