@@ -67,7 +67,7 @@ install:
 build_script:
 - npm install
 - npm run postinstall
-- npm run webpack
+- npm run pack
 - npm run dist
 # show outputs
 - dir dist
