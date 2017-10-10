@@ -27,7 +27,7 @@ addons:
 
 # Build matrix
 os:
-#- linux
+- linux
 - osx
 env:
   global:
@@ -110,8 +110,8 @@ script:
 - npm run dist:draft
 
 - echo "*** done. debug begin ***"
-- env | sort
-- ls -al dist/mac
+#- env | sort
+- ls -al dist
 - echo "*** done. debug end ***"
 
 # cleanup
