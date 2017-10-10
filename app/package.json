@@ -14,7 +14,7 @@
     "auto-launch": "^5.0.1",
     "d3-timer": "^1.0.6",
     "debug": "^2.2.0",
-    "electron-updater": "^2.8.9",
+    "electron-updater": "^2.10.2",
     "express": "^4.13.4",
     "imap": "^0.8.19",
     "is-electron-renderer": "^2.0.0",
