@@ -9,6 +9,7 @@ var Button = require('react-bootstrap').Button;
 var BrowserWindow = require('electron').remote.BrowserWindow;
 
 var log = require('../../logger');
+var Eventer = require('../../eventer');
 
 var moment = require('moment');
 
@@ -21,14 +22,15 @@ var EventList = React.createClass({
     },
     getInitialState: function() {
         return {
-            events: log.getLastEvents()
+            events: []
         };
     },
     componentDidMount: function() {
-        log.addChangeListener( this.getUpdates, "EventList" );
+        Eventer.on('newStatus', this.updateStatus);
     },
-    getUpdates: function() {
-        var events = log.getLastEvents();
+    updateStatus: function(statuses) {
+        // log.msg("status: ",statuses);
+        var events = statuses;
         events = events.filter( function(e) {
             return e.type === 'trigger' || e.type === 'triggerOff';
         });
@@ -36,7 +38,7 @@ var EventList = React.createClass({
     },
 
     clearEvents: function() {
-        log.clearEvents(); // FIXME: only clear display, not log?
+        // Eventer.clearEvents(); // FIXME: only clear display, not log?
         this.setState({events: []});
     },
 
@@ -49,7 +51,7 @@ var EventList = React.createClass({
     //  text: 'blah blah'  // text of event
     // }
     showEventLog: function() {
-        var events = log.getEvents();
+        var events = Eventer.getStatuses(); //lo.getEvents();
         var info = '';
         if( events.length === 0 ) {
             info = 'no events to display';

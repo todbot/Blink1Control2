@@ -44,6 +44,7 @@ var needle = require('needle'); // a better 'request' (or at least, works w/ web
 
 var conf = require('../configuration');
 var log = require('../logger');
+var Eventer = require('../eventer');
 
 var PatternsService = require('./patternsService');
 var Blink1Service = require('./blink1Service'); // FIXME: for iftttKey only
@@ -147,9 +148,8 @@ var IftttService = {
                 } else {
                     msg = 'IFTTT connection offline';
                 }
-                // log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:errmsg} );
                 // log.msg( msg +' for '+self.iftttKey); // FIXME:
-                log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:msg} );
+                Eventer.addStatus( {type:'error', source:'ifttt', id:defaultId, text:msg} );
                 self.connectionError = true;
                 return;
             }
@@ -158,7 +158,7 @@ var IftttService = {
                 if( response.statusCode === 404 ) {
                     msg = 'no IFTTT events yet';
                 }
-                log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:msg} );
+                Eventer.addStatus( {type:'info', source:'ifttt', id:defaultId, text:msg} );
                 return;
             }
             // otherwise continue as normal
@@ -168,16 +168,16 @@ var IftttService = {
             if( respobj.events ) {
                 if( self.connectionError ) {
                     self.connectionError = false;
-                    log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:'Connection Ok'});
+                    Eventer.addStatus( {type:'info', source:'ifttt', id:defaultId, text:'Connection Ok'});
                 }
                 respobj.events.map( function(evt) {
                     // FIXME
-                    // log.addEvent( {type:'info', source:'ifttt', id:defaultId, text:'no new events' } );
+                    // Eventer.addStatus( {type:'info', source:'ifttt', id:defaultId, text:'no new events' } );
                     evt.eventDate = new Date(parseInt(1000 * evt.date));
                     evt.name = evt.name.trim();
                     log.msg("IftttService.fetch isNew:", evt.eventDate > self.lastTime, ":",  self.lastTime, evt.eventDate );
                     if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
-                        log.addEvent( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:'src:'+evt.source}); //evt.source  } );
+                        Eventer.addStatus( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:'src:'+evt.source}); //evt.source  } );
 
                          // special meta-pattern, FIXME?
                          if( evt.name.startsWith('~') ) {
@@ -210,7 +210,7 @@ var IftttService = {
                 // }
             }
             else {
-                log.addEvent( {type:'error', source:'ifttt', id:defaultId, text:'bad response'} );
+                Eventer.addStatus( {type:'error', source:'ifttt', id:defaultId, text:'bad response'} );
                 log.msg("IftttFetcher: bad response: ", response);
             }
         });

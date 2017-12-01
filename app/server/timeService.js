@@ -35,6 +35,7 @@
 
 var conf = require('../configuration');
 var log = require('../logger');
+var Eventer = require('../eventer');
 
 var moment = require('moment');
 
@@ -101,7 +102,7 @@ var TimeService = {
                 log.msg("TimeService.checkTime: hourly:", rHour,rMin,rSec, " - ", now.getHours(),now.getMinutes(),now.getSeconds());
                 if( now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
-                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'hourly alarm' });
+                    Eventer.addStatus( {type:'trigger', source:'time', id:rule.name, text:'hourly alarm' });
                     PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                 }
             }
@@ -110,7 +111,7 @@ var TimeService = {
                 if( now.getHours() === rHour &&
                     now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
-                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'daily alarm' });
+                    Eventer.addStatus( {type:'trigger', source:'time', id:rule.name, text:'daily alarm' });
                     PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                 }
             }
@@ -120,7 +121,7 @@ var TimeService = {
                     now.getMinutes() === rMin &&
                     now.getSeconds() === rSec ) {
 					// how to turn off?
-                    log.addEvent( {type:'trigger', source:'time', id:rule.name, text:'countdown alarm' });
+                    Eventer.addStatus( {type:'trigger', source:'time', id:rule.name, text:'countdown alarm' });
                     PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                 }
             }

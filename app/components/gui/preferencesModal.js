@@ -18,6 +18,7 @@ var MenuMaker = require('../../menuMaker');
 
 var conf = require('../../configuration');
 var log = require('../../logger');
+var Eventer = require('../../eventer');
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
@@ -136,7 +137,7 @@ var PreferencesModal = React.createClass({
         }
 
         // FIXME: a hack to get ToolTable to refetch allowMulti pref
-        log.addEvent({type:'info', source:'preferences', text:'settings updated'});
+        Eventer.addStatus({type:'info', source:'preferences', text:'settings updated'});
 
         return true;
     },

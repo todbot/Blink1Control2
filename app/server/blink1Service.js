@@ -360,6 +360,8 @@ var Blink1Service = {
      * @return {[type]}           [description]
      */
     fadeToColor: function( millis, color, ledn, blink1_id) {
+        // var startmillis = new Date().getTime()
+        // console.log("Blink1Service.fadeToColor: start " + startmillis);
         ledn = ledn || 0;  // 0 == all LEDs
         if( typeof color === 'string' ) {
             color = tinycolor( color ); // FIXME: must be better way
@@ -389,6 +391,7 @@ var Blink1Service = {
         // color, ledn, & blink1idx is known-good at this point
         this._fadeToRGB( millis, color, ledn, blink1Idx);
 
+        // console.log("Blink1Service.fadeToColor: end   " + (new Date().getTime() - startmillis));
     },
 
     /**

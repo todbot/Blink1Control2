@@ -6,6 +6,8 @@ var simplecrypt = require('simplecrypt');
 
 var conf = require('../configuration');
 var log = require('../logger');
+var Eventer = require('../eventer');
+
 var PatternsService = require('./patternsService');
 
 var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control'});
@@ -56,13 +58,13 @@ var SkypeService = {
         self.skyweb = skyweb;
 
         self.success= false;
-        log.addEvent( {type:'info', source:'skype', id:rule.name, text:'connecting...'});
+        Eventer.addStatus( {type:'info', source:'skype', id:rule.name, text:'connecting...'});
 
         skyweb.login(rule.username, pass).then((skypeAccount) => {
             self.success = true;
             log.msg('SkywebService is initialized now!');
             // log.msg('Here is some info about you:' + JSON.stringify(skypeAccount.selfInfo, null, 2));
-            log.addEvent( {type:'info', source:'skype', id:rule.name, text:'connected'});
+            Eventer.addStatus( {type:'info', source:'skype', id:rule.name, text:'connected'});
             // console.log('Your contacts : ' + JSON.stringify(skyweb.contactsService.contacts, null, 2));
         }); // this following doesn't work
         //, () => {
@@ -74,7 +76,7 @@ var SkypeService = {
         setTimeout( function() {
             // check to see if we're okay or not
             if( !self.success ) {
-                log.addEvent( {type:'error', source:'skype', id:rule.name, text:'login error '});
+                Eventer.addStatus( {type:'error', source:'skype', id:rule.name, text:'login error '});
             }
         }, 10000 );
 
@@ -95,7 +97,7 @@ var SkypeService = {
                 if( rule.triggerType === 'text' || rule.triggerType === 'any' ) {
                     if( message.resource.messagetype === 'Text' ) {
                         log.msg("SkypeService: INCOMING TEXT FROM",cname);
-                        log.addEvent( {type:'trigger', source:'skype', id:rule.name, text:'text: '+cname});
+                        Eventer.addStatus( {type:'trigger', source:'skype', id:rule.name, text:'text: '+cname});
                         PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                     }
                 }
@@ -103,8 +105,8 @@ var SkypeService = {
                     if( message.resource.messagetype === 'Event/Call' &&
                         message.resource.content.includes('started') ) {
                         log.msg("SkypeService: INCOMING CALL FROM",cname);
-                        log.addEvent( {type:'trigger', source:'skype', id:rule.name, text:'call: '+cname});
-                        // log.addEvent( 'Skype call: '+cname);
+                        Eventer.addStatus( {type:'trigger', source:'skype', id:rule.name, text:'call: '+cname});
+                        // Eventer.addStatus( 'Skype call: '+cname);
                         PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                     }
                 }

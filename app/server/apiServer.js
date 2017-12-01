@@ -5,6 +5,7 @@ var tinycolor = require('tinycolor2');
 
 var config = require('../configuration');
 var log = require('../logger');
+var Eventer = require('../eventer');
 
 var Blink1Service = require('./blink1Service');
 var PatternsService = require('./patternsService');
@@ -13,7 +14,7 @@ var app = express();
 app.set('json spaces', 2);
 var myLogger = function (req, res, next) {
   // log.msg("ApiServer", req.url);
-  log.addEvent( {type:'info', source:'api', id:req.ip, text:req.url} );
+  Eventer.addStatus( {type:'info', source:'api', id:req.ip, text:req.url} );
   next();
 };
 app.use(myLogger);

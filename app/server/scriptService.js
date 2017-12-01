@@ -7,6 +7,8 @@ var tinycolor = require('tinycolor2');
 
 var conf = require('../configuration');
 var log = require('../logger');
+var Eventer = require('../eventer');
+
 var PatternsService = require('./patternsService');
 
 
@@ -82,7 +84,7 @@ var ScriptService = {
             try {
                 var script = spawn( rule.path );
                 script.on('error', function(error) {
-                    log.addEvent( {type:'error', source:rule.type, id:rule.name, text:error.message});
+                    Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:error.message});
                 });
                 script.stdout.on('data', function(data) {
                     var str = data.toString();
@@ -92,13 +94,13 @@ var ScriptService = {
                 });
                 script.stderr.on('data', function(data) {
                     log.msg("ScriptService.runScript stderr data",data);
-                    log.addEvent( {type:'error', source:'script', id:rule.name, text:'stderr:'+data });
+                    Eventer.addStatus( {type:'error', source:'script', id:rule.name, text:'stderr:'+data });
                 });
                 script.on('close', function(code) {
                     log.msg("ScriptService.runScript close",code);
                 });
             } catch(error) {
-                log.addEvent( {type:'error', source:rule.type, id:rule.name, text:error.message});
+                Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:error.message});
             }
         }
         else if( rule.type === 'file' ) {
@@ -106,7 +108,7 @@ var ScriptService = {
                 // FIXME: put limit on size
                 // FIXME: check for no file
                 if(err) {
-                    log.addEvent( {type:'error', source:'file', id:rule.name, text:err.message});
+                    Eventer.addStatus( {type:'error', source:'file', id:rule.name, text:err.message});
                     return;
                     // return log.error(err);
                 }
@@ -122,11 +124,11 @@ var ScriptService = {
                 // FIXME: do error handling like: net error, bad response, etc.
                 if( err ) {
                     log.msg("ScriptService.runScript: error fetching url",err, response);
-                    log.addEvent( {type:'error', source:'url', id:rule.name, text:err.message });
+                    Eventer.addStatus( {type:'error', source:'url', id:rule.name, text:err.message });
                     return;
                 }
                 if( response.statusCode !== 200 ) { // badness
-                    log.addEvent( {type:'error', source:'url', id:rule.name, text:response.statusMessage });
+                    Eventer.addStatus( {type:'error', source:'url', id:rule.name, text:response.statusMessage });
                     return;
                 }
                 // otherwise continue as normal
@@ -170,11 +172,11 @@ var ScriptService = {
         var matches;
 
         if( self.lastEvents[rule.name] === str && rule.actOnNew ) {
-            log.addEvent( {type:'info', source:rule.type, id:rule.name, text:'not modified'});
+            Eventer.addStatus( {type:'info', source:rule.type, id:rule.name, text:'not modified'});
             return;
         }
         self.lastEvents[rule.name] = str;
-        // log.addEvent( { type:'trigger', text:data.substring(0,40), source:rule.type, id:rule.name} );
+        // Eventer.addStatus( { type:'trigger', text:data.substring(0,40), source:rule.type, id:rule.name} );
 
         var actionType = rule.actionType;
         if( actionType === 'parse-json' ) {
@@ -184,23 +186,23 @@ var ScriptService = {
                 if( json.pattern ) {
                     // returns true on found pattern // FIXME: go back to using 'findPattern'
                     if( this.playPattern( json.pattern, rule.name, rule.blink1id ) ) {
-                        log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:json.pattern});
+                        Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:json.pattern});
                     }
                     else {
-                        log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+json.pattern});
+                        Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+json.pattern});
                     }
                 }
                 else if( json.color ) {
                     var c = tinycolor(json.color);
                     if( c.isValid() ) {
-                        log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:json.color});
+                        Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:json.color});
                         this.playPattern( c.toHexString(), rule.name, rule.blink1id );
                     } else {
-                        log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+json.color});
+                        Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+json.color});
                     }
                 }
             } catch(error) {
-                log.addEvent( {type:'error', source:rule.type, id:rule.name, text:error.message});
+                Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:error.message});
             }
         }
         else if( actionType === 'parse-pattern' ) {
@@ -209,12 +211,12 @@ var ScriptService = {
                 var patt_name = matches[1];
                 if( this.playPattern( patt_name, rule.name  ) ) {
                 // if( this.playPattern( patt_name, rule.name, rule.blink1id ) ) {
-                    log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:str});
+                    Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:str});
                 }
-                log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
+                Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
             }
             else {
-                log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
+                Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
             }
         }
         else { // parse-color
@@ -224,16 +226,16 @@ var ScriptService = {
                 var colormatch = matches[1];
                 var color = tinycolor( colormatch );
                 if( color.isValid() ) {
-                    log.addEvent( {type:'trigger', source:rule.type, id:rule.name, text:colormatch});
+                    Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:colormatch});
                     this.playPattern( color.toHexString(), rule.name );
                     // this.playPattern( color.toHexString(), rule.name, rule.blink1id );
                 }
                 else {
-                    log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+colormatch});
+                    Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+colormatch});
                 }
             }
             else {
-                log.addEvent( {type:'error', source:rule.type, id:rule.name, text:'no color found in:'+str});
+                Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'no color found in:'+str});
             }
         }
     }

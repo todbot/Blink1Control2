@@ -14,6 +14,8 @@ var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control'});
 
 var conf = require('../../configuration');
 var log = require('../../logger');
+var Eventer = require('../../eventer');
+
 var util = require('../../utils');
 
 var Blink1Service = require('../../server/blink1Service');
@@ -48,22 +50,22 @@ var ToolTable = React.createClass({
             conf.saveSettings("eventRules", rules);
             this.updateService(rules[0]);  // FIXME: why is this here?
         }
-        var events = log.getEvents();
+        // var events = Eventer.getStatuses();
         // MailService.addChangeListener(this.updateSearchStatus, "MailTable");
         return {
             rules: rules,
-            events: events, // FIXME: hmmmmm
+            events: [], //events, // FIXME: hmmmmm
             workingIndex:-1,
             showForm: false,
         };
     },
     componentDidMount: function() {
-        this.getUpdates(); // set up polling, ugh FIXME:
-        log.addChangeListener( this.getUpdates, "ToolTable" );
+        // this.updateStatus(); // set up polling, ugh FIXME:
+        Eventer.on('newStatus', this.updateStatus);
     },
     // callback called by event service
-    getUpdates: function() {
-        var events = log.getEvents();
+    updateStatus: function(statuses) {
+        var events = statuses; //log.getEvents();
         // log.msg("ToolTable.getUpdates, events:",events);
 
         if( !this.state.showForm ) {  //i.e. don't change when we're in edit mode

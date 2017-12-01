@@ -136,7 +136,7 @@ var BigButtonSet = React.createClass({
             else if( button.type === 'pattern' ) {
                 PatternsService.playPatternFrom( button.name, button.patternId, button.blink1Id );
             }
-            log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
+            Eventer.addStatus( {type:'trigger', source:'button', id:button.name, text:button.name} );
         }
         else {
             log.msg("bigButtonSet.playBigButtonUser: no button ", buttonindex);
@@ -167,7 +167,7 @@ var BigButtonSet = React.createClass({
             else if( button.name === "Strobe Light" ) {
                 Blink1Service.toyStart('strobe');
             }
-            log.addEvent({type:'trigger', source:'button', id:button.name, text:button.name} );
+            Eventer.addStatus( {type:'trigger', source:'button', id:button.name, text:button.name} );
         }
         else {
             log.msg("bigButtonSet.playBigButtonSys: no button ", buttonname);
