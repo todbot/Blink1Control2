@@ -58,9 +58,10 @@ cache:
 
 before_install:
 # suppress 'shell_session_update' error https://github.com/travis-ci/travis-ci/issues/6307
-- rvm get head
-# reinstall latest nvm
-- rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh
+#- rvm get head
+## reinstall latest nvm
+#- rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh
+#
 - nvm install $TRAVIS_NODE_VERSION
 - PATH=$PATH:`pwd`/node_modules/.bin
 
