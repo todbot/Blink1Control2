@@ -45,14 +45,13 @@ var util = require("util");
 
 var conf = require('./configuration');
 var logconfig = conf.readSettings('logger');
-if( !logconfig.maxEvents ) {logconfig.maxEvents = 100; }
+if( !logconfig.maxEvents || logconfig.maxEvents > 200 ) {logconfig.maxEvents = 200; }
 
 function Eventer() {
     //Inherit from EventEmitter
     EventEmitter.call(this);
     this._savedStatuses = [];
-    // this._maxStatuses = logconfig.maxEvents;
-    this._maxStatuses = 10;
+    this._maxStatuses = logconfig.maxEvents;
 }
 //Inherit prototype methods
 util.inherits(Eventer, EventEmitter);
@@ -72,6 +71,7 @@ Eventer.prototype.addStatus = function(status) {
     if( self._savedStatuses.length > self._maxStatuses ) {
         self._savedStatuses.shift(); // remove oldest (first)
     }
+    console.log('eventer size:',self._savedStatuses.length, "max:",self._maxStatuses);
     self.emit('newStatus', self._savedStatuses);
 }
 

@@ -51,7 +51,7 @@ var EventList = React.createClass({
     //  text: 'blah blah'  // text of event
     // }
     showEventLog: function() {
-        var events = Eventer.getStatuses(); //lo.getEvents();
+        var events = this.state.events;
         var info = '';
         if( events.length === 0 ) {
             info = 'no events to display';
@@ -84,7 +84,8 @@ var EventList = React.createClass({
         logWindow.loadURL( 'data:text/html,' + info);
     },
     render: function() {
-        var revevents = this.state.events.concat().reverse();
+        // var revevents = this.state.events.concat().reverse();
+        var revevents = this.state.events.slice(0).reverse();
         var createEventLine = function(event,index) {
             var humantime = moment(event.date).format('LTS');
             var source = event.source;
