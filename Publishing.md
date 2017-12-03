@@ -1,16 +1,15 @@
 ### Publishing Releases
 
 Steps:
-- Update version in package.json
+- Update version in package.json and app/package.json
 - Build release:
     ```
-    npm install
-    npm run pack
-    npm run dist  // this does the publish
+    npm run clean  // removes node_modules so they get rebuilt
+    npm install    // installs & builds node_modules
+    npm run pack   // bundles app code using webpack to bundle.js
+    npm run dist   // this does the publish
     ```
 -
-
-
 
 - Create tag in git repository
 - Make release on github

@@ -32,7 +32,7 @@
     "dist:draft": "electron-builder --publish=never",
     "dist": "electron-builder",
     "dist:win32bit": "electron-builder --ia32 --win --publish=never",
-    "clean": "rimraf app/node_modules node_modules package-lock.json",
+    "clean": "rimraf app/node_modules node_modules package-lock.json app/package-lock.json",
     "env": "env",
     "postinstall": "electron-builder install-app-deps",
     "test": "echo \"tested\""

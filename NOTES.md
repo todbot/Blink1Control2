@@ -2,7 +2,9 @@
 ## NOTES
 
 Random notes / documentation while developing the app
+===
 
+NOTE: consider this historical info. most of these are out-of-date as of Nov 2017
 
 ### App capability changes / To-do's
 - TODO: Entirely rethink color pattern architecture
