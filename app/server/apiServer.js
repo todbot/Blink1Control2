@@ -118,7 +118,7 @@ app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
 app.get('/blink1/pattern/add', function(req,res) {
     var status = 'pattern add';
     var pattout = '';
-    if( ! req.query.name || ! req.query.pattern ) {
+    if( ! req.query.pname || ! req.query.pattern ) {
         status = "must specify 'name' and 'pattern' string";
     }
     else {
