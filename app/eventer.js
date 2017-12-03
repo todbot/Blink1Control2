@@ -71,7 +71,7 @@ Eventer.prototype.addStatus = function(status) {
     if( self._savedStatuses.length > self._maxStatuses ) {
         self._savedStatuses.shift(); // remove oldest (first)
     }
-    console.log('eventer size:',self._savedStatuses.length, "max:",self._maxStatuses);
+    // console.log('eventer size:',self._savedStatuses.length, "max:",self._maxStatuses);
     self.emit('newStatus', self._savedStatuses);
 }
 

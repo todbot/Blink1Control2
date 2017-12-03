@@ -37,19 +37,9 @@ var ToolTableList = React.createClass({
 
         this.setState({events: events});
 
-        // hmm is there a better way to do the following
-        // allowMulti if set and number of blink1s > 1
-        // var allowMulti = conf.readSettings("blink1Service:allowMulti") && (Blink1Service.isConnected() > 1);
-        // this.setState({'allowMultiBlink1': allowMulti });
-
     },
-    // handleEditRule: function(index) {
-    //     this.props.onEditRule(index);
-    // },
 
     render: function() {
-        console.log("TOOLTABLELIST RENDER");
-
         var patterns = PatternsService.getAllPatterns();
         var events = this.state.events;
 
