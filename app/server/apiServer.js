@@ -78,32 +78,29 @@ app.get('/blink1/pattern(s)?', function(req,res) {
 });
 
 app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
-    // var patt_id = req.query.id ;
-    var patt_name = req.query.pname;
+    var status = 'pattern '+req.params.type+': no pattern with that name';
+    var patt_name = req.query.pname || req.query.name || '';
     var blink1id = req.query.blink1id || 0;
-    var status = 'no pattern with that name';
-
-    // if( patt_name ) {
-    //     patt_id = PatternsService.getIdForName(patt_name);
-    //     // returns true on found pattern // FIXME: go back to using 'findPattern'?
-    // }
 
     if( req.params.type === 'play' ) {
         if( patt_name ) {
             // returns true on found pattern // FIXME: go back to using 'findPattern'
             if( PatternsService.playPatternFrom( 'api', patt_name, blink1id ) ) {
-                status = 'playing pattern ' +patt_name;
+                status = 'pattern play: playing ' +patt_name;
             }
         }
     }
     else { // stop
         if( !patt_name ) {
             PatternsService.stopAllPatterns();
-            status = 'stopping all patterns';
+            status = 'pattern stop: stopping all patterns';
         }
         else {
-            if( PatternsService.stopPattern( patt_name ) ) {
-                status = 'stopping pattern ' +patt_name;
+            var id = PatternsService.getIdForName( patt_name );
+            if( !id ) { id = patt_name; }
+
+            if( PatternsService.stopPattern( id ) ) {
+                status = 'pattern stop: stopping ' +patt_name;
             }
         }
     }
@@ -116,15 +113,17 @@ app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
     });
 });
 app.get('/blink1/pattern/add', function(req,res) {
-    var status = 'pattern add';
+    var status = 'pattern add: no pattern added';
+    var patt_name = req.query.pname || req.query.name || '';
     var pattout = '';
-    if( ! req.query.pname || ! req.query.pattern ) {
+    if( ! patt_name && ! req.query.pattern ) {
         status = "must specify 'name' and 'pattern' string";
     }
     else {
-        var patt = PatternsService.newPatternFromString( req.query.pname, req.query.pattern);
+        var patt = PatternsService.newPatternFromString( patt_name, req.query.pattern);
         if( patt ) { PatternsService.savePattern(patt); }
         pattout = PatternsService.formatPatternForOutput(patt);
+        status = "pattern add: pattern '"+patt_name+"' added";
     }
     res.json({
         pattern: pattout,
@@ -132,17 +131,19 @@ app.get('/blink1/pattern/add', function(req,res) {
     });
 });
 app.get('/blink1/pattern/del', function(req,res) {
-    var status = 'pattern del';
-    var id = req.query.id;
-    if( ! req.query.name || ! req.query.id ) {
-        status = "must specify 'name' or 'id'";
+    var status = 'pattern del: no pattern deleted';
+    var patt_name = req.query.pname || req.query.name || ''; // hmmmm
+    var id = req.query.id || '';
+    if( patt_name ) {
+        id = PatternsService.getIdForName( patt_name );
+        if( !id ) { id = patt_name; }
+    }
+    if( id ) {
+        PatternsService.deletePattern( id );
+        status = "pattern '"+id+"' deleted";
     }
     else {
-        if( req.query.name ) {
-            id = PatternsService.getIdForName( req.query.name );
-        }
-        PatternsService.deletePattern( id );
-        status = "pattern id '"+id+"' deleted";
+        status = "must specify 'name' or 'id'";
     }
     res.json({
         status: status
