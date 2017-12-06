@@ -7,7 +7,7 @@ Steps:
     npm run clean  // removes node_modules so they get rebuilt
     npm install    // installs & builds node_modules
     npm run pack   // bundles app code using webpack to bundle.js
-    npm run dist   // this does the publish
+    npm run dist   // this does the publish, must do it on each OS (Mac,Win,Linux)
     ```
 -
 

@@ -353,7 +353,6 @@ var PatternsService = {
      * @return {pattid} id of pattern playing, or false if pattern doesn't exist
      */
     playPatternFrom: function(source, pattid, blink1id) {
-    // playPattern: function(pattid, blink1id) {
         log.msg("PatternsService.playPatternFrom: src:",source,"id:", pattid, ", blink1id:", blink1id, "patternsTemp:", patternsTemp);
 
         // if a pattern is being edited, do not allow playing

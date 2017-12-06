@@ -56,7 +56,7 @@ var ScriptService = {
     startScripts: function() {
         var self = this;
         var rules = self.rules;
-        log.msg("ScriptService.startScripts: rules",rules); //, "caller:",arguments.caller.toString());
+        // log.msg("ScriptService.startScripts: rules",rules); //, "caller:",arguments.caller.toString());
         rules.map( function(rule) {
             log.msg("ScriptService.startScripts: starting ",rule);
             if( !rule.path || !rule.intervalSecs ) {
@@ -165,7 +165,7 @@ var ScriptService = {
      */
     parse: function(rule, str) {
         str = str.substring(0,this.config.maxStringLength);
-        log.msg("ScriptService.parse:", str, "rule:",rule);
+        // log.msg("ScriptService.parse:", str, "rule:",rule);
         var self = this;
         var patternre = /pattern:\s*(#*\w+)/;
         var colorre = /(#[0-9a-f]{6}|#[0-9a-f]{3}|color:\s*(.+?)\s)/i;
@@ -220,10 +220,8 @@ var ScriptService = {
         }
         else { // parse-color
             matches = colorre.exec(str);
-            log.msg("matches:",matches, "blink1Id:", rule.blink1Id);
             if( matches && matches) {
                 var colormatch = matches[2];
-                log.msg("colormatch:",colormatch);
                 var color = tinycolor( colormatch );
                 if( color.isValid() ) {
                     Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:colormatch});
