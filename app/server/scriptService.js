@@ -138,8 +138,8 @@ var ScriptService = {
 
     },
 
-    playPattern: function(pattid,ruleid) {
-        if( PatternsService.playPatternFrom( ruleid, pattid ) ) {
+    playPattern: function(pattid,ruleid,blink1id) {
+        if( PatternsService.playPatternFrom( ruleid, pattid, blink1id ) ) {
             this.lastPatterns[ruleid] = pattid;
             return pattid;
         }
@@ -185,7 +185,7 @@ var ScriptService = {
                 json = JSON.parse(str);
                 if( json.pattern ) {
                     // returns true on found pattern // FIXME: go back to using 'findPattern'
-                    if( this.playPattern( json.pattern, rule.name, rule.blink1id ) ) {
+                    if( this.playPattern( json.pattern, rule.name, rule.blink1Id ) ) {
                         Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:json.pattern});
                     }
                     else {
@@ -196,7 +196,7 @@ var ScriptService = {
                     var c = tinycolor(json.color);
                     if( c.isValid() ) {
                         Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:json.color});
-                        this.playPattern( c.toHexString(), rule.name, rule.blink1id );
+                        this.playPattern( c.toHexString(), rule.name, rule.blink1Id );
                     } else {
                         Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+json.color});
                     }
@@ -209,8 +209,7 @@ var ScriptService = {
             matches = patternre.exec( str );
             if( matches ) {
                 var patt_name = matches[1];
-                if( this.playPattern( patt_name, rule.name  ) ) {
-                // if( this.playPattern( patt_name, rule.name, rule.blink1id ) ) {
+                if( this.playPattern( patt_name, rule.name, rule.blink1Id ) ) {
                     Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:str});
                 }
                 Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
@@ -221,14 +220,14 @@ var ScriptService = {
         }
         else { // parse-color
             matches = colorre.exec(str);
-            log.msg("matches:",matches);
-            if( matches ) {
-                var colormatch = matches[1];
+            log.msg("matches:",matches, "blink1Id:", rule.blink1Id);
+            if( matches && matches) {
+                var colormatch = matches[2];
+                log.msg("colormatch:",colormatch);
                 var color = tinycolor( colormatch );
                 if( color.isValid() ) {
                     Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:colormatch});
-                    this.playPattern( color.toHexString(), rule.name );
-                    // this.playPattern( color.toHexString(), rule.name, rule.blink1id );
+                    this.playPattern( color.toHexString(), rule.name, rule.blink1Id );
                 }
                 else {
                     Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'invalid color '+colormatch});
