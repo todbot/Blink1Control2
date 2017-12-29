@@ -176,6 +176,12 @@ var MenuMaker = {
                             ipcRenderer.send('openMainWindow');
                         }
                     },
+                    { label: 'Rescan for devices',
+                        click: function() {
+                            console.log("rescan menu click");
+                            Blink1Service.reloadConfig();
+                        }
+                    },
                     { type: 'separator' },
                     { role: 'toggledevtools',label: 'Toggle Dev Tools' },
                     { type: 'separator' },
