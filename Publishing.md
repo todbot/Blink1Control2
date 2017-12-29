@@ -9,11 +9,9 @@ Steps:
     npm run pack   // bundles app code using webpack to bundle.js
     npm run dist   // this does the publish, must do it on each OS (Mac,Win,Linux)
     ```
--
-
-- Create tag in git repository
-- Make release on github
+- Make release on github (creates tag)
 - Write release notes (changelog)
+- Upload build artifacts
 - Publish release
 - Check release
     - Download each version, unzip / install / launch to test
@@ -23,7 +21,7 @@ Steps:
 
 
 #### random notes
-- Testing out S3 artifact publishing by setting:
+- Test out S3 artifact publishing by setting in package.json:
     ```
     "build": {
       "publish": {
@@ -32,7 +30,7 @@ Steps:
       }
     }
     ```
-    and setting `AWS_ACCESS_KEY_ID` & `AWS_SECRET_ACCESS_KEY` environment variable in Travis and Appveyor environment settings
+  and setting `AWS_ACCESS_KEY_ID` & `AWS_SECRET_ACCESS_KEY` environment variable in Travis and Appveyor environment settings
 - But for actual publishing, use github releases (default), which requires `GH_TOKEN` secure environment variable and:
     ```
     "build": {
