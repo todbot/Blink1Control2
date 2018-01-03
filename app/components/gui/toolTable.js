@@ -31,20 +31,19 @@ var TimeForm = require('./timeForm');
 
 var ToolTableList = require('./toolTableList');
 
-// not used any more, can delete
-var example_rules = [
-];
-
 
 var ToolTable = React.createClass({
 
     getInitialState: function() {
         var rules = conf.readSettings('eventRules');
-        if( !rules || rules.length===0 ) {
-            log.msg("ToolTable.getInitialState: no rules, using examples");
-            rules = example_rules;
+        // do rules sanity check
+        if( !rules ||
+            rules.length===0 ||
+            (rules.find( function(r) { return !r.type || !r.name } ) )
+        ) {
+            log.msg("ToolTable.getInitialState: no rules or bad rules, setting to empty");
+            rules = [];
             conf.saveSettings("eventRules", rules);
-            this.updateService(rules[0]);  // FIXME: why is this here?
         }
         // var events = Eventer.getStatuses();
         return {
@@ -62,6 +61,10 @@ var ToolTable = React.createClass({
     // based on rulenew, feed appropriate service new rule
     // FIXME: these "reloadConfig()" should really restart only new/changed rule
     updateService(rule) {
+        if( !rule || !rule.type ) {
+            log.msg("ToolTable.updateService: bad rule ",rule);
+            return;
+        }
         if( rule.type === 'ifttt' ) {
             IftttService.reloadConfig();
         }

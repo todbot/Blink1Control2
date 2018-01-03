@@ -141,7 +141,7 @@ var ToolTableList = React.createClass({
         return (
             <div style={{display: "block", overflowY: "scroll", height: 165, border:'1px solid #eee'}}>
                 <div style={{padding:10}} hidden={this.props.rules.length}>
-                    <h3> Click 'add rule' to begin! //FIXME </h3>
+                    <h3> Click 'add event source' to begin! </h3>
                 </div>
                 <Table bordered condensed hover style={{fontSize:"0.9em"}} hidden={this.props.rules.length===0}>
                     <thead>
