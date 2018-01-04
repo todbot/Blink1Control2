@@ -9,6 +9,8 @@
  * - ~blink:#ff00ff-5
  * - ~pattern:3,#ff00ff,0.5,0,#00ff00,1.3,0
  * - ~pattern-stop:pattname
+ * - ~play:pattname
+ * - ~stop:pattname
  *
  * a fully populated in-memory pattern looks like:
  *  var pattern = {
@@ -415,10 +417,15 @@ var PatternsService = {
                 });
                 patternsTemp.push(patt); // save temp pattern
                 pattid = patt.id;
-            } else if (pattid.startsWith('~pattern-stop:')) { // FIXME: use regex yo
+            }
+            else if (pattid.startsWith('~pattern-stop:') ) { // FIXME: use regex yo
                 patternstr = pattid.substring(pattid.lastIndexOf(':') + 1);
                 return PatternsService.stopPattern(patternstr);
-            } else if (pattid.startsWith('~pattern:')) { // FIXME: use regex yo
+            }
+            else if( pattid.startsWith('~pattern-play:') ) {
+                pattid = pattid.substring(pattid.lastIndexOf(':') + 1); // play happens later
+            }
+            else if (pattid.startsWith('~pattern:')) { // FIXME: use regex yo
                 var pattparts = pattid.split(':');
                 if( pattparts.length !== 3 ) { // not a proper pattern
                     return false;
