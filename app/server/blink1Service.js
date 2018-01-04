@@ -63,6 +63,7 @@ for( var i=0; i< maxBlink1s; i++ ) {
 }
 
 var Blink1Service = {
+    deviceScanner: null,
     // toyEnable: false,
     // toyTimer:null,
     // toyMode:'off',
@@ -100,7 +101,10 @@ var Blink1Service = {
         // log.msg("Blink1Service.scanForDevices: done. serials:", serials);
         if( serials.length === 0 ) { // no blink1s, look for insertion events
             if( this.conf.deviceRescan ) {
-                setTimeout( this.scanForDevices.bind(this), 5000);  // look again in 5 secs
+                if( this.deviceScanner ) {
+                    clearTimeout( this.deviceScanner );
+                }
+                this.deviceScanner = setTimeout( this.scanForDevices.bind(this), 5000);  // look again in 5 secs
             }
         }
     },
