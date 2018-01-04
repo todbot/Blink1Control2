@@ -175,12 +175,11 @@ var IftttService = {
                     // Eventer.addStatus( {type:'info', source:'ifttt', id:defaultId, text:'no new events' } );
                     evt.eventDate = new Date(parseInt(1000 * evt.date));
                     evt.name = evt.name.trim();
-                    log.msg("IftttService.fetch isNew:", evt.eventDate > self.lastTime, ":",  self.lastTime, evt.eventDate );
+                    log.msg("IftttService.fetch isNew:", evt.eventDate > self.lastTime, ":",  self.lastTime, "/", evt.eventDate );
                     if (evt.eventDate > self.lastTime ) { // only notice newer than our startup
-                        Eventer.addStatus( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:'src:'+evt.source}); //evt.source  } );
-
                          // special meta-pattern, FIXME?
                          if( evt.name.startsWith('~') ) {
+                            Eventer.addStatus( {date:evt.eventDate, type:'trigger', source:'ifttt', id:'meta:'+evt.name, text:'src:'+evt.source});
                             if( !self.lastEvents[evt.name] ) { self.lastEvents[evt.name] = new Date(0); }
                             log.msg("IftttService.fetch: *** META RULE MATCH:", evt.name, '--', evt.eventDate, '--');
                             if( evt.eventDate > self.lastEvents[evt.name] ) {
@@ -188,6 +187,7 @@ var IftttService = {
                             }
                         }
                         else {
+                            Eventer.addStatus( {date:evt.eventDate, type:'trigger', source:'ifttt', id:evt.name, text:'src:'+evt.source});
                             rules.map( function(r) {
                                 log.msg('IftttService.fetch: rule:', JSON.stringify(r));
                                 if( evt.name === r.name ) {
