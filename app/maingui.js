@@ -84,16 +84,11 @@ var SkypeService = require('./server/skypeService');
 var ScriptService = require('./server/scriptService');
 var TimeService = require('./server/timeService');
 
-// FIXME:
-// Need to start these after a bit, so blink1s can be registerd
-// (really, they should be called on a calback of Blink1Service.isReady() or similar)
-setTimeout( function() {
-    IftttService.start();
-    MailService.start();
-    SkypeService.start();
-    ScriptService.start();
-    TimeService.start();
-}, 3000);
+IftttService.start();
+MailService.start();
+SkypeService.start();
+ScriptService.start();
+TimeService.start();
 
 // events from the main process, from menu actions
 ipcRenderer.on('quitting', function( event,arg ) {
