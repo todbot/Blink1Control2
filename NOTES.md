@@ -145,35 +145,11 @@ NOTE: consider this historical info. most of these are out-of-date as of Nov 201
 - needed to do `usb-detection.stopMonitoring()`
 - Disable use of `usb-detection` for now and use polling (which can be turned off in config)
 
-
-
-## old notes
+#### Creating Help page
+- Currently "Blink1Control2-manual.pages" not in github
+- Export as ePub
+- Use Calibre to convert ePub to HTML
 
 #### Building on Windows
-- Can't use my standard MinGW rxvt shell?
-- Instead, open up Node's "Node Command Prompt" from Start menu
-- May need to install webpack & webpack-dev-server globally: `npm install -g webpack` ??
-- 'webpack --display-error-details' to help debug
-
-#### Prepping node-hid
--  do `npm run postinstall` (should be done automatically on `npm install`, but sometimes seems not to)
-
-#### Prepping node-hid
-- See 'preinstall' target in package.json
-- also see: https://github.com/voodootikigod/node-serialport/issues/538#issuecomment-184251385
-
-#### Packaging
-- but `electron-packager` also still supported a little
-- On Windows set env var `DEBUG=electron-windows-installer`
-    to discover weird XML parsing errors when '&' is in description
-```
- ./node_modules/.bin/electron-packager ./ Blink1ControlJs --platform=darwin --arch=x64 --version=0.30.6 --icon=./src/images/blink1-icon0-bw.png --out=build --version-string.CompanyName=ThingM --version-string.ProductName=Blink1ControlJs --version-string.ProductVersion=0.0.69
-```
-but doesn't change Mac app icon (or I'm doing something wrong)
-See:
-- https://github.com/maxogden/electron-packager
-- http://www.mylifeforthecode.com/using-electron-packager-to-package-an-electron-app/
-- https://github.com/shama/letswritecode/blob/master/packaging-distributing-electron-apps/package.json
-- https://github.com/ThorstenHans/electron-angular-es6
-- https://github.com/szwacz/electron-boilerplate/blob/master/tasks/release.js
-- https://github.com/teseve/teseve
+- Use standard Powershell with git installed and "windows-build-tools"
+  as described here: https://github.com/node-hid/node-hid#compiling-from-source
