@@ -233,7 +233,7 @@ app.on('ready', function () {
 
 	// mainWindow.setMenu(null);  // remove default menu
 	mainWindow.on('close', function (e) {
-		console.log("Blink1Control2: mainWindow.close:"); 
+		console.log("Blink1Control2: mainWindow.close:");
 		if( !isQuitting ) {
 			mainWindow.hide();
 			return e.preventDefault();

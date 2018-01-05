@@ -148,7 +148,9 @@ NOTE: consider this historical info. most of these are out-of-date as of Nov 201
 #### Creating Help page
 - Currently "Blink1Control2-manual.pages" not in github
 - Export as ePub
-- Use Calibre to convert ePub to HTML
+- Use Calibre to convert ePub to HTMLZ
+- Rename .htmlz to .zip, Unzip file
+- Copy contents to "app/help" directory
 
 #### Building on Windows
 - Use standard Powershell with git installed and "windows-build-tools"
