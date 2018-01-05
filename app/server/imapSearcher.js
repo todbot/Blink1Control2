@@ -75,22 +75,23 @@ ImapSearcher.prototype.searchMailDo = function() {
         // filter out all msgs before lastMsgId
         res = _.filter( res, function(o) { return o >= self.lastMsgId } );
 
+        var matchstr = (res.length == 1) ? "msg matches" : "msgs match";
         if( res.length > 0 || (res.length >= self.triggerVal) ) {
             if( !self.triggered ) {  //  we've yet been triggered
                 self.triggered = true;
                 // PatternsService.playPatternFrom( self.id, self.patternId );
                 PatternsService.playPatternFrom( self.id, self.patternId, self.blink1Id );
             }
-            Eventer.addStatus( {type:'trigger', source:'mail', id:self.id, text:''+res.length+' msgs match'} );
+            Eventer.addStatus( {type:'trigger', source:'mail', id:self.id, text:''+res.length+' '+matchstr} );
         }
         else {
             if( self.triggerOff && self.triggered ) {
                 Eventer.addStatus( {type:'triggerOff', source:'mail', text:'off', id:self.id} ); // type mail
-                // PatternsService.stopPattern( self.patternId );
+                PatternsService.stopPattern( self.patternId );  // FIXME: why was this commented out during the refactor?
             }
             self.triggered = false;
             // even if we didn't trigger, log new results of search
-            Eventer.addStatus( {type:'info', source:'mail', id:self.id, text:''+res.length+' msgs match'} );
+            Eventer.addStatus( {type:'info', source:'mail', id:self.id, text:''+res.length+' '+matchstr} );
         }
         self.lastResults = res; // _.union(self.lastResults, res).sort();
     });
