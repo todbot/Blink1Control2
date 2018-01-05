@@ -210,21 +210,31 @@ var PreferencesModal = React.createClass({
                             <div style={{border:'1px solid #ddd', paddingLeft:15}}>
                                 <h5><u> General </u></h5>
                                 <form className="form-horizontal">
-                                <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
-                                    type="checkbox" label="Start minimized"
-                                    checkedLink={this.linkState('startMinimized')} />
-                                <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
-                                    type="checkbox" label="Start at login"
-                                    checkedLink={this.linkState('startAtLogin')} />
-                                <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12 {showIfMac}" bsSize="small"
-                                    type="checkbox" label="Hide Dock Icon"
-                                    checkedLink={this.linkState('hideDockIcon')} />
-                                <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
-                                    type="checkbox" label="LED gamma-correction"
-                                    checkedLink={this.linkState('enableGamma')} />
-                                <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
-                                    type="checkbox" label="Pattern play serialize"
-                                    checkedLink={this.linkState('playingSerialize')} />
+                                    <div title="On next restart, app is systray/menubar only">
+                                        <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
+                                            type="checkbox" label="Start minimized"
+                                            checkedLink={this.linkState('startMinimized')} />
+                                    </div>
+                                    <div title="Start app at login">
+                                        <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
+                                            type="checkbox" label="Start at login"
+                                            checkedLink={this.linkState('startAtLogin')} />
+                                    </div>
+                                    <div title="Don't show app in Dock">
+                                        <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12 {showIfMac}" bsSize="small"
+                                            type="checkbox" label="Hide Dock Icon"
+                                            checkedLink={this.linkState('hideDockIcon')} />
+                                    </div>
+                                    <div title="Use more accurate colors. When off, colors are brighter">
+                                        <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
+                                            type="checkbox" label="LED gamma-correction"
+                                            checkedLink={this.linkState('enableGamma')} />
+                                    </div>
+                                    <div title="Only allow color patterns to play single-file, not at the same time">
+                                        <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
+                                            type="checkbox" label="Pattern play serialize"
+                                            checkedLink={this.linkState('playingSerialize')} />
+                                    </div>
                                 </form>
 
                             </div>
