@@ -27,9 +27,10 @@ $ npm run startdev
 
 Or to emulate a production run:
 ```
-$ npm install
-$ npm run webpack
-$ npm run start
+$ npm install        // installs all dependencies locally
+$ npm run webpack    // packs app, there will be some warnings, ignore
+$ npm run start      // starts the packaged app
+$ npm run dist       // create relocatable app and installer(s), in "dist" dir
 ```
 
 ### Build steps (for production)
@@ -38,7 +39,6 @@ $ npm run start
 $ npm install
 $ npm run webpack
 $ npm run dist
-$ npm run dist:win32bit  # only on Windows, to build windows 32bit
 ```
 
 #### Linux:
