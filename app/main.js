@@ -17,9 +17,10 @@ var path = require('path');
 var mainWindow = null;
 
 
+
 // If someone tried to run a second instance, we should focus our window.
 // Really only applicable on Windows, maybe Linux
-var shouldQuitMultiInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
+var shouldQuitMultiInstance = app.makeSingleInstance((argv, workingDirectory) => {
     if(mainWindow) {
         if(mainWindow.isMinimized()) {
             mainWindow.restore();
@@ -29,7 +30,7 @@ var shouldQuitMultiInstance = app.makeSingleInstance((commandLine, workingDirect
     }
 });
 if(shouldQuitMultiInstance) {
-    app.quit()
+	app.exit(); // was app.quit(), but that doesn't exit early enough any more
 }
 
 //
