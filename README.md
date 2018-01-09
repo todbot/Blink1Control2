@@ -20,20 +20,32 @@ https://github.com/node-hid/node-hid#compiling-from-source
 
 Start a hot-reloading content server and the application:
 ```
-$ npm install
-$ npm run watch &
-$ npm run startdev
+npm install
+npm run watch &
+npm run startdev
 ```
 
 Or to emulate a production run:
 ```
-$ npm install        # installs all dependencies locally
-$ npm run webpack    # packs app, there will be some warnings, ignore
-$ npm run start      # starts the packaged app
-$ npm run dist       # create relocatable app and installer(s), in "dist" dir
+npm install        # installs all dependencies locally
+npm run webpack    # packs app, there will be some warnings, ignore
+npm run start      # starts the packaged app
+npm run dist       # create relocatable app and installer(s), in "dist" dir
 ```
 
 #### Linux:
+
+Install udev rules file in `/etc/udev/rules.d/51-blink1.rules` with contents:
+```
+SUBSYSTEM=="input", GROUP="input", MODE="0666"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="27b8", ATTRS{idProduct}=="01ed", MODE:="666", GROUP="plugdev"
+KERNEL=="hidraw*", ATTRS{idVendor}=="27b8", ATTRS{idProduct}=="01ed", MODE="0666", GROUP="plugdev"
+```
+And install the rules with:
+```
+sudo udevadm control --reload-rules
+```
+Then unplug and replug the blink(1) device.
 
 Install the following pre-requisites:
 
