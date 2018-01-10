@@ -130,10 +130,12 @@ var PreferencesModal = React.createClass({
             console.log("PreferencesModal: error setting startAtLogin"); // handle error
         });
 
-        if( this.state.hideDockIcon && process.platform === 'darwin' ) {
-            app.dock.hide();
-        } else {
-            app.dock.show();
+        if( process.platform === 'darwin' ) {
+            if( this.state.hideDockIcon ) {
+                app.dock.hide();
+            } else {
+                app.dock.show();
+            }
         }
 
         // FIXME: a hack to get ToolTable to refetch allowMulti pref
