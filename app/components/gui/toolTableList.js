@@ -11,6 +11,8 @@ var Eventer = require('../../eventer');
 
 var PatternsService = require('../../server/patternsService');
 
+var log = require('../../logger');
+
 var ToolTableList = React.createClass({
 
     propTypes: {
@@ -98,6 +100,9 @@ var ToolTableList = React.createClass({
                 } else {
                     desc = rule.alarmType + ' @ ' + rule.alarmHours + ':' + rule.alarmMinutes + ' ' + rule.alarmTimeMode;
                 }
+            }
+            else if( rule.type === 'mqtt' ) {
+                desc = rule.topic + "@" + rule.url;
             }
             return desc;
         };

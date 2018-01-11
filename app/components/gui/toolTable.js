@@ -1,7 +1,6 @@
 "use strict";
 
 var React = require('react');
-var _ = require('lodash');
 
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
@@ -22,12 +21,14 @@ var MailService = require('../../server/mailService');
 var ScriptService = require('../../server/scriptService');
 var SkypeService = require('../../server/skypeService');
 var TimeService = require('../../server/timeService');
+var MqttService = require('../../server/mqttService');
 
 var IftttForm = require('./iftttForm');
 var MailForm = require('./mailForm');
 var ScriptForm = require('./scriptForm');
 var SkypeForm = require('./skypeForm');
 var TimeForm = require('./timeForm');
+// var MqttForm = require('./mqttForm');
 
 var ToolTableList = require('./toolTableList');
 
@@ -86,6 +87,9 @@ var ToolTable = React.createClass({
         else if( rule.type === 'time' ) {
             TimeService.reloadConfig();
         }
+        else if( rule.type === 'mqtt' ) {
+            // MqttService.reloadConfig();
+        }
     },
     handleSaveForm: function(data) {
         log.msg("ToolTable.handleSaveForm:",data, "workingIndex:", this.state.workingIndex);
@@ -133,7 +137,7 @@ var ToolTable = React.createClass({
         console.log("ToolTable.handleCopyRule");
         if( this.state.workingIndex >= 0) {
             var rules = this.state.rules;
-            var rule = _.clone(rules[ this.state.workingIndex ]);
+            var rule = Object.assign( {}, rules[ this.state.workingIndex ]); // clone
             rule.id = rule.id + util.cheapUid(4);
             rule.name = rule.name + ' (copy)';
             rules.splice( this.state.workingIndex, 0, rule);
@@ -159,7 +163,7 @@ var ToolTable = React.createClass({
             }; // FIXME: make createBlankRule(type)
         if( this.state.workingIndex !== -1 ) { // -1 means new rule, otherwise real rule
             // clone so form works on a copy. FIXME: needed?
-            workingRule = _.clone( this.state.rules[this.state.workingIndex] );
+            workingRule = Object.assign({}, this.state.rules[this.state.workingIndex] );
         }
         if( workingRule.password ) {
             try {
@@ -168,6 +172,12 @@ var ToolTable = React.createClass({
                 log.msg("toolTable: error decrypting passwd: ",err);
             }
         }
+
+        // <MqttForm show={this.state.showForm==='mqtt'}
+        //     workingIndex={this.state.workingIndex}
+        //     rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
+        //     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
+        //     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
         return (
             <div style={{position: "relative", height: 200, cursor:'default'}}>
@@ -202,6 +212,7 @@ var ToolTable = React.createClass({
                     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
+
                 <ToolTableList
                     rules={this.state.rules}
                     // events={this.state.events}
@@ -222,6 +233,7 @@ var ToolTable = React.createClass({
             </div>
         );
     }
+    // <MenuItem eventKey="mqtt"><i className="fa fa-share-alt"></i> Add MQTT</MenuItem>
 
 });
 
