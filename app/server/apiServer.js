@@ -76,6 +76,13 @@ app.get('/blink1/pattern(s)?', function(req,res) {
         patterns: PatternsService.getAllPatternsForOutput()
     });
 });
+app.get('/blink1/pattern/queue', function(req,res) {
+    res.json({
+        status: "pattern queue results",
+        // patterns: PatternsService.getAllPatternsForOutput()
+        queue: PatternsService.getPlayingQueueForOutput()
+    });
+});
 
 app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
     var status = 'pattern '+req.params.type+': no pattern with that name';
