@@ -25,20 +25,26 @@ var config = {
   plugins: [
     //  new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /de|fr|hu/)  // moment
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-    new webpack.IgnorePlugin(/vertx/)  // for skyweb
+    // new webpack.IgnorePlugin(/mqtt.min/),  //
+    new webpack.IgnorePlugin(/vertx/)  // for skyweb (maybe not needed anymore?)
   ],
   module: {
       noParse: [
-        //   /electron-rebuild/,
-        //   /\.json/
+          // /mqtt.min/
       ],
+    // noParse: [
+    //     // ['ws']
+    // ],
     loaders: [
       {
           test: /\.js|\.jsx$/,
           query: { presets: ['react','es2015'] },
-          loader: 'babel-loader',
+          // loader: 'babel-loader',
+          loader: ['babel-loader'],
           exclude: /node_modules/
       },
+      { test: /mqtt\/.*\.js/, loader: 'shebang-loader', include: [/node_modules\/mqtt/] },
+
       { test: /\.css$/, loader: 'style-loader!css-loader' },
       { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&mimetype=application/font-woff" },
       { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
