@@ -323,19 +323,21 @@ var PatternsService = {
         playingQueue = []; // clear any queued patterns
         this.notifyChange();
     },
-    stopPattern: function(sourceId) {
-        return this.stopPatternFrom(null, sourceId);
+    stopPattern: function(pattId) {
+        return this.stopPatternFrom(null, pattId, null, false); // FIXME: defaults?
     },
     /**
      * Stop a pattern playing. Notfies change listeners
      * @method
-     * @param  {String} pattid   name/id of pattern
      * @param  {String} sourceId name/id of source who wants to stop the pattern
+     * @param  {String} pattid   name/id of pattern
+     * @param  {String/Int} blink1Id serial or id of blink1 device to use, or empty
+     * @param  {boolean} doOff   true to fade blink1 off (otherwise leave it)
      * @return {boolean}         true if pattern was stopped
      */
-    stopPatternFrom: function(sourceId, pattid) {
+    stopPatternFrom: function(sourceId, pattid, blink1Id, doOff) {
         var self = this;
-        log.msg('PatternsService.stopPattern:', pattid, playingPattern.id, "source:", sourceId);
+        log.msg('PatternsService.stopPattern:', pattid, '/', playingPattern.id, "source:", sourceId, "blink1Id:", blink1Id);
         // remove any from the playingQueue
         playingQueue = playingQueue.filter( (qInfo) =>
             qInfo.pattern.id === pattid && qInfo.source === sourceId
@@ -345,7 +347,6 @@ var PatternsService = {
         var rc = false;
         self.getAllPatterns().forEach( function(pattern) {
             if( pattern.id !== pattid ) { return; }
-            // log.msg("stopPattern: match:",pattid)
             pattern.playing = false;
 
             if( pattern.timer ) {
@@ -353,19 +354,21 @@ var PatternsService = {
             }
             if (playingPattern.id === pattern.id) {
                 playingPattern = {};
-                if (playingQueue.length > 0) {
+                if (playingQueue.length > 0) { // if queue, get next in queue
                     var qInfo = playingQueue.pop();
-                    log.msg("PatternsService.stopPattern: next off playingQueue:", qInfo.source, qInfo.pattern.id);
+                    log.msg("PatternsService.stopPattern: playing next in playingQueue:", qInfo.source, qInfo.pattern.id);
                     self._playPatternInternalFrom(qInfo.source, qInfo.pattern, qInfo.blink1Id);
-                // } else {
-                //     self.notifyChange(); // FIXME: reduce notifys
                 }
-            // } else {
-            //     self.notifyChange();
             }
             rc = pattern.id;
+
         });
-        if( rc ) { self.notifyChange(); }
+        if( rc ) {
+            self.notifyChange();
+            if(doOff) {
+                Blink1Service.fadeToColor(300, '#000000', 0, blink1Id); // 0 = all LEDs
+            }
+        }
         return rc;
     },
 

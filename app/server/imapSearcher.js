@@ -5,8 +5,6 @@
 
 "use strict";
 
-var _ = require('lodash');
-
 var Imap = require('imap');
 var simplecrypt = require('simplecrypt');
 // var moment = require('moment');
@@ -65,7 +63,7 @@ ImapSearcher.prototype.searchMailDo = function() {
     }
     // actually do the search
     self.imap.search( searchCriteria,  function(err, res) {
-        log.msg("ImapSearcher.searchMail: criteria=",searchCriteria, ",pattId:",self.patternId,",results:",res);
+        log.msg("ImapSearcher.searchMailDo: SEARCH criteria:",searchCriteria, "pattId:",self.patternId,"results:",res);
         if (err) {
             // log.msg("ImapSearcher.searchMail: search error",err);
             Eventer.addStatus( {type:'error', source:'mail', id:self.id, text:'search error '+err });
@@ -73,7 +71,8 @@ ImapSearcher.prototype.searchMailDo = function() {
         }
 
         // filter out all msgs before lastMsgId
-        res = _.filter( res, function(o) { return o >= self.lastMsgId } );
+        // res = lodash.filter( res, function(o) { return o >= self.lastMsgId } );
+        res = res.filter( (id) => id >= self.lastMsgId );
 
         var matchstr = (res.length == 1) ? "msg matches" : "msgs match";
         if( res.length > 0 || (res.length >= self.triggerVal) ) {
@@ -87,13 +86,13 @@ ImapSearcher.prototype.searchMailDo = function() {
         else {
             if( self.triggerOff && self.triggered ) {
                 Eventer.addStatus( {type:'triggerOff', source:'mail', text:'off', id:self.id} ); // type mail
-                PatternsService.stopPattern( self.patternId );  // FIXME: why was this commented out during the refactor?
+                PatternsService.stopPatternFrom( self.id, self.patternId, self.blink1Id, true ); // stop pattern *we* started and fade to black
             }
             self.triggered = false;
             // even if we didn't trigger, log new results of search
             Eventer.addStatus( {type:'info', source:'mail', id:self.id, text:''+res.length+' '+matchstr} );
         }
-        self.lastResults = res; // _.union(self.lastResults, res).sort();
+        self.lastResults = res; // lodash.union(self.lastResults, res).sort();
     });
 };
 
@@ -197,7 +196,7 @@ ImapSearcher.prototype.start = function() {
                 log.msg("ImapSearcher.onupdate:", seqno, info.flags, info);
                 self.searchMail(); // and do a search on any updates
                 // if( info.flags[0] === "\\Seen" ) {
-                //     // _.pull( self.lastResults, seqno );
+                //     // lodash.pull( self.lastResults, seqno );
                 //     //log.msg("ImapSearcher.update SEEEN, lastResults:",self.lastResults);
                 // }
             });
@@ -225,6 +224,9 @@ ImapSearcher.prototype.stop = function() {
 module.exports = ImapSearcher;
 
 
+
+// RANDOM NOTES FROM THE PAST THAT MAY BE HELPFUL
+
             // var uncnt = res.length - self.lastResults.length;
             // if( uncnt > 0 ) { // we have search results
             //     log.msg("UNSEEN MORE!");
@@ -242,8 +244,8 @@ module.exports = ImapSearcher;
     //
     //         if( results.length > 0 ) { // we have search results
     //             // count those w/ higher msg id than last time
-    //             var lastMax = _.max(self.lastResults);
-    //             var newMax  = _.max(results);
+    //             var lastMax = lodash.max(self.lastResults);
+    //             var newMax  = lodash.max(results);
     //             if( newMax > lastMax ) {
     //             // if( results.length > self.lastResults.length ) {
     //                 Eventer.addStatus( {type:'trigger', source:'mail', text:self.triggerVal, id:self.id} );
@@ -258,7 +260,7 @@ module.exports = ImapSearcher;
     //                 // self.callback( makeMessage( self.id, 'triggerOff', self.triggerVal) );
     //             }
     //         }
-    //         self.lastResults = _.union(self.lastResults, results).sort();
+    //         self.lastResults = lodash.union(self.lastResults, results).sort();
     //         log.msg("ImapSearcher: search lastResults:", self.lastResults);
     //     }); // search
     // }
@@ -293,13 +295,13 @@ module.exports = ImapSearcher;
 //     //   self.imap.search([ 'UNSEEN', ['SINCE', 'Sep 1, 2015'], ['SUBJECT',[searchstr] ]], function(err, results) {
 //         self.imap.search( ['UNSEEN',  ['SUBJECT',[searchstr]]], function(err, results) {
 //             if (err) { throw err; }
-//             var newmsgcount = _.reduce( results,
+//             var newmsgcount = lodash.reduce( results,
 //                 function(msgcount,id) {
 //                     if( id > self.lastSeenId ) { msgcount++; } return msgcount;
 //                 }, 0);
 //             log.msg("old lastId:",self.lastSeenId, "newmsgs:",newmsgcount," results:",results);
 //
-//             self.lastSeenId = _.last(results);
+//             self.lastSeenId = lodash.last(results);
 //             return callback(results);
 //
 // });
