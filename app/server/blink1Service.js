@@ -4,7 +4,6 @@
 
 "use strict";
 
-// var _ = require('lodash');
 
 var Blink1 = require('node-blink1');
 
@@ -28,7 +27,7 @@ var maxBlink1s = 4;
  */
 var maxLEDsPerBlink1 = 2; // 18
 
-var listeners = {};  // callback listeners
+var listeners = [];  // callback listeners
 
 /**
  * blink1 devices currently opened.
@@ -79,7 +78,7 @@ var Blink1Service = {
     },
     conf: {},
     start: function() {
-        listeners = {}; // erase previous listeners
+        listeners = []; // erase previous listeners
         this.reloadConfig();
     },
     reloadConfig: function() {
@@ -115,10 +114,10 @@ var Blink1Service = {
       */
     _addDevice: function(serialnumber) {
         log.msg("Blink1Service._addDevice:", serialnumber);
-        var olddev = _.find( blink1s, {serial:serialnumber} );
+        var olddev = blink1s.find( (blink1) => blink1.serial===serialnumber );
         if( !olddev ) {
             log.msg("Blink1Service._addDevice: new serial ", serialnumber);
-            blink1s.push( { serial: serialnumber, device: null, toSetup:true } );
+            blink1s.push( { serial: serialnumber, device: null } );
         }
         // set up all devices at once
         // we wait 500msec because it was failing without it
@@ -144,13 +143,20 @@ var Blink1Service = {
      */
     _removeDevice: function(serialnumber) {
         log.msg("Blink1Service._removeDevice: current devices:", blink1s);
-        var olds = _.remove( blink1s, {serial:serialnumber} );
-        olds.forEach( function(b1) {
-            if( b1.device ) {
-                b1.device.close();
-                b1.device = null;
+        blink1s = blink1s.filter( (blink1) => {
+            if( blink1.serial === serialnumber ) {
+                if( blink1.device ) { blink1.device.close(); blink1.device==null; }
+                return false; // remove it
             }
-        });
+            return true; // keep it
+        } );
+        // var olds = lodash.remove( blink1s, {serial:serialnumber} );
+        // olds.forEach( function(b1) {
+        //     if( b1.device ) {
+        //         b1.device.close();
+        //         b1.device = null;
+        //     }
+        // });
         // if( currentBlink1Id === serialnumber ) {
         //     log.msg("FORGETTING OLD BLINK1!!!!");
         //     currentBlink1Id = 0;
@@ -377,7 +383,6 @@ var Blink1Service = {
         // log.msg('Blink1Service.fadeToColor: blink1Idx:',blink1Idx,' msec:',millis,' ledn:',ledn,
         // 	' c:',color.toHexString(), "currentState:\n"+ this.dumpCurrentState()); // JSON.stringify(currentState,null,2));
 
-        // var colors = _.clone(currentState[blink1Idx].colors);
         var colors = currentState[blink1Idx].colors;
         // handle special meaning: ledn=0 -> all LEDs
         if( ledn === 0 ) { colors = colors.fill( color ); }
@@ -483,28 +488,17 @@ var Blink1Service = {
         this.toy.timer = setTimeout(this.toyDo.bind(this), this.toy.interval);
     },
 
-    addChangeListener: function(callback, callername) {
-        listeners[callername] = callback;
-        // console.log("Blink1Service: addChangelistener", listeners );
+    addChangeListener: function(callback, name) {
+        listeners.push( {name, callback} );
+        log.msg("Blink1Service: addChangelistener", listeners );
     },
-    removeChangeListener: function(callername) {
-        log.msg("Blink1Service.removeChangelistener: removing", callername);
-        delete listeners[callername];
-        // log.msg("Blink1Service.removeChangelistener", listeners );
-    },
-    removeAllListeners: function() {
-        _.keys( listeners, function(callername) {
-            this.removeChangelistener(callername);
-        });
+    removeChangeListener: function(name) {
+        listeners = listeners.filter( (listener) => listener.name !== name );
+        log.msg("Blink1Service.removeChangelistener", listeners );
     },
     notifyChange: function() {
-        // log.msg("blink1service: listeners:",listeners);
-        _.forIn( listeners, function(callback) {
-            // currentColor and currentColors are tinycolor objects
-            // callback( Blink1Service.getCurrentColor(), currentColors, currentLedN, currentMillis);
-            // callback( Blink1Service.getCurrentColor(), currentState[0].colors, currentState[0].ledn, currentState[0].millis );
-            callback();
-        });
+        // log.msg("Blink1Service.notifyChange:",listeners);
+        listeners.forEach( (listener) => { if(listener.callback) listener.callback() } );
     },
 
 
@@ -512,11 +506,3 @@ var Blink1Service = {
 
 
 module.exports = Blink1Service;
-
-// _closeCurrentDevice: function()	{
-// 	log.msg('Blink1Service._closeCurrentDevice: closing blink1');
-// 	if( blink1 ) {
-// 		blink1.close();
-// 		blink1 = null;
-// 	}
-// },
