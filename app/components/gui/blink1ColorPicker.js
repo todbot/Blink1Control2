@@ -34,7 +34,7 @@ var Blink1ColorPicker = React.createClass({
         };
     },
     componentDidMount: function() {
-        log.msg("Blink1ColorPicker.componentDidMount",this.state.color);
+        // log.msg("Blink1ColorPicker.componentDidMount",this.state.color);
         Blink1Service.addChangeListener( this.updateCurrentColor, "blink1ColorPicker" );
     },
     /**  Callback for Blink1Service notifyChange */
