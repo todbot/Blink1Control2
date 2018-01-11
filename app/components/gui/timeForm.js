@@ -1,6 +1,5 @@
 "use strict";
 
-// var _ = require('lodash');
 var moment = require('moment');
 
 var React = require('react');

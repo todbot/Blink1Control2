@@ -3,7 +3,6 @@
 var React = require('react');
 //var update = require('react-addons-update');
 
-// var _ = require('lodash');
 
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;

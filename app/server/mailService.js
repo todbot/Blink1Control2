@@ -19,8 +19,6 @@
 
 "use strict";
 
-// var _ = require('lodash');
-
 var conf = require('../configuration');
 var log = require('../logger');
 

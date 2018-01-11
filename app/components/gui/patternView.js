@@ -2,8 +2,6 @@
 
 var React = require('react');
 
-var _ = require('lodash');
-
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
 
@@ -185,7 +183,7 @@ var PatternView = React.createClass({
         var style_colorlist = { width:170, display:'flex', flexWrap:'wrap', alignItems:'center'};
         var style_colorswatch = { flex:'0 0 auto', width:17, height:17, margin:1, padding:1,
                                     borderWidth:1, borderStyle:'solid', borderRadius:3, borderColor:'#bbb' };
-        var style_addswatch = _.clone(style_colorswatch); style_addswatch.display = 'flex'; style_addswatch.justifyContent='center';
+        var style_addswatch = Object.assign({}, style_colorswatch); style_addswatch.display = 'flex'; style_addswatch.justifyContent='center';
         var style_lockbutton={ width:20 };
         var style_editoptions= { width:20 };
 
@@ -202,7 +200,7 @@ var PatternView = React.createClass({
         }
 
         var createColorSwatch = function(color ,i) {
-            var mystyle = _.clone(style_colorswatch);
+            var mystyle = Object.assign({}, style_colorswatch); // clone
             mystyle.backgroundColor = color;
             mystyle.background = 'linear-gradient(180deg, ' + color.rgb+', ' + color.rgb+' 50%, ' + color.rgb+' 50%, ' + color.rgb +')';
             if( isEditing && i === this.state.activeSwatch ) {
