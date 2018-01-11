@@ -67,11 +67,10 @@ ReactDOM.render( <App />, document.getElementById('app'));
 
 
 // FIXME: IDEA for event source modularity. almost there
-// var _ = require('lodash');
 // var eventServices = conf.readSettings('eventServices');
 // var services = [];
 // console.log("eventServices:");
-// _.map(eventServices, function(s) {
+// eventServices.map( function(s) {
 //     console.log("service:",s.service, s.type, s.enabled);
 //     var service = require('./server/'+s.service);
 //     service.start();
@@ -83,12 +82,16 @@ var MailService = require('./server/mailService');
 var SkypeService = require('./server/skypeService');
 var ScriptService = require('./server/scriptService');
 var TimeService = require('./server/timeService');
+// var MqttService = require('./server/mqttService');
 
 IftttService.start();
 MailService.start();
 SkypeService.start();
 ScriptService.start();
 TimeService.start();
+// MqttService.start();
+
+log.msg("services started");
 
 // events from the main process, from menu actions
 ipcRenderer.on('quitting', function( event,arg ) {
