@@ -63,8 +63,8 @@ var ScriptService = {
                 log.error("ScriptService.startScripts: bad conf ",rule);
                 return;
             }
-            self.runScript(rule); //initial run
-            var timer = setInterval( self.runScript.bind(self,rule), rule.intervalSecs * 1000);
+            self.runRule(rule); //initial run
+            var timer = setInterval( self.runRule.bind(self,rule), rule.intervalSecs * 1000);
             self.ruleTimers.push( timer );
         });
     },
@@ -76,9 +76,9 @@ var ScriptService = {
     //   path: filepath to run
     //   actOnNew: true/false
     // }
-    runScript: function(rule) {
+    runRule: function(rule) {
         var self = this;
-        log.msg("ScriptService.runScript:",rule,"timers:",self.ruleTimers);
+        log.msg("ScriptService.runRule:",rule,"timers:",self.ruleTimers);
         if( rule.type === 'script' ) {
             var spawn = require('child_process').spawn;
             try {
@@ -88,16 +88,16 @@ var ScriptService = {
                 });
                 script.stdout.on('data', function(data) {
                     var str = data.toString();
-                    log.msg("ScriptService.runScript: str:",str,"last:",self.lastEvents[rule.name]);
+                    log.msg("ScriptService.runRule: str:",str,"last:",self.lastEvents[rule.name]);
                     // self.handleEvent(rule,str);
                     self.parse(rule,str);
                 });
                 script.stderr.on('data', function(data) {
-                    log.msg("ScriptService.runScript stderr data",data);
-                    Eventer.addStatus( {type:'error', source:'script', id:rule.name, text:'stderr:'+data });
+                    log.msg("ScriptService.runRule stderr data",data);
+                    Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'stderr:'+data });
                 });
                 script.on('close', function(code) {
-                    log.msg("ScriptService.runScript close",code);
+                    log.msg("ScriptService.runRule close",code);
                 });
             } catch(error) {
                 Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:error.message});
@@ -123,7 +123,7 @@ var ScriptService = {
             needle.get(url, {decode: false, parse: false}, function(err, response) {
                 // FIXME: do error handling like: net error, bad response, etc.
                 if( err ) {
-                    log.msg("ScriptService.runScript: error fetching url",err, response);
+                    log.msg("ScriptService.runRule: error fetching url",err, response);
                     Eventer.addStatus( {type:'error', source:'url', id:rule.name, text:err.message });
                     return;
                 }
@@ -164,8 +164,11 @@ var ScriptService = {
      * @return {[type]}      [description]
      */
     parse: function(rule, str) {
+        log.msg("ScriptService.parse:", str, "rule:",rule);
+        if( typeof str != "string" ) {
+            str = (str) ? str.toString() : ''; // convert to string
+        }
         str = str.substring(0,this.config.maxStringLength);
-        // log.msg("ScriptService.parse:", str, "rule:",rule);
         var self = this;
         var patternre = /pattern:\s*(#*\w+)/;
         var colorre = /(#[0-9a-f]{6}|#[0-9a-f]{3}|color:\s*(.+?)\s)/i;
