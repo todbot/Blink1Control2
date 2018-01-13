@@ -38,7 +38,7 @@ var EventList = React.createClass({
     },
 
     clearEvents: function() {
-        // Eventer.clearEvents(); // FIXME: only clear display, not log?
+        Eventer.clearStatuses(); // FIXME: only clear display, not log?
         this.setState({events: []});
     },
 
@@ -53,10 +53,10 @@ var EventList = React.createClass({
     showEventLog: function() {
         var events = this.state.events;
         var info = '';
+        info += '<style> table { width:100% } table, th, td { font-size:85%; font-family:sans-serif; padding:5px; border:1px solid grey; border-collapse:collapse; }</style>';
         if( events.length === 0 ) {
             info = 'no events to display';
         } else {
-            info += '<style> table { width:100% } table, th, td { font-size:85%; font-family:sans-serif; padding:5px; border:1px solid grey; border-collapse:collapse; }</style>';
             info += '<table>';
             info += '<tr><th>date</th><th>type</th><th>source</th><th>id</th><th>text</th></tr>';
             events.map( function(e) {

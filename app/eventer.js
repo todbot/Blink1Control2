@@ -83,6 +83,11 @@ Eventer.prototype.getStatuses = function(n) {
     return self._savedStatuses;
 }
 
+Eventer.prototype.clearStatuses = function() {
+    var self = this;
+    this._savedStatuses = [];
+}
+
 module.exports = new Eventer;
 
 // var eventEmitter = new EventEmitter();
