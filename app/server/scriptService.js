@@ -45,7 +45,7 @@ var ScriptService = {
     stop: function() {
         log.msg("ScriptService.stop");
         // stop previous timers
-        this.ruleTimers.map( function(t) { clearInterval(t); } );
+        this.ruleTimers.map( function(timer) { clearInterval(timer); } );
         this.ruleTimers = [];
         this.lastEvents = {};
     },
@@ -78,7 +78,7 @@ var ScriptService = {
     // }
     runRule: function(rule) {
         var self = this;
-        log.msg("ScriptService.runRule:",rule,"timers:",self.ruleTimers);
+        log.msg("ScriptService.runRule:",rule.name, rule.type, rule,"timer Ids:",self.ruleTimers);
         if( rule.type === 'script' ) {
             var spawn = require('child_process').spawn;
             try {
@@ -164,7 +164,7 @@ var ScriptService = {
      * @return {[type]}      [description]
      */
     parse: function(rule, str) {
-        log.msg("ScriptService.parse:", str, "rule:",rule);
+        // log.msg("ScriptService.parse:", str, "rule:",rule);
         if( typeof str != "string" ) {
             str = (str) ? str.toString() : ''; // convert to string
         }
