@@ -6,8 +6,6 @@ var Button = require('react-bootstrap').Button;
 var Input = require('react-bootstrap').Input;
 var Modal = require('react-bootstrap').Modal;
 
-var LinkedStateMixin = require('react-addons-linked-state-mixin');
-
 var remote = require('electron').remote;
 var Menu = remote.Menu;
 var MenuItem = remote.MenuItem;
@@ -19,8 +17,6 @@ var log = require('../../logger');
 var currentWindow = remote.getCurrentWindow();
 
 var BigButton = React.createClass({
-    mixins: [LinkedStateMixin],
-
     propTypes: {
         idx: React.PropTypes.number,
         name: React.PropTypes.string.isRequired,
@@ -107,6 +103,13 @@ var BigButton = React.createClass({
         log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx);
         this.props.onEdit(eventKey, this.props.idx, arg);
     },
+    handleInputChange: function(event) {
+        var target = event.target;
+        var value = target.type === 'checkbox' ? target.checked : target.value;
+        var name = target.name;
+        this.setState({ [name]: value });
+    },
+
     // handleMouseDown: function(evt) {
     //     // log.msg("BigButton.handleMouseDown:", evt, "buttons:",evt.buttons, evt.button, 'ctrl:',evt.ctrlKey );
     //     if( evt.button === 2 || evt.ctrlKey) {
@@ -165,7 +168,8 @@ var BigButton = React.createClass({
                   <Modal.Body>
                       <form className="form-horizontal" onSubmit={this.handleEditClose} >
                           <Input labelClassName="col-xs-5" wrapperClassName="col-xs-7" bsSize="small"
-                              type="text" label="Button Name" valueLink={this.linkState('tempname')} />
+                              type="text" label="Button Name"
+                              name="tempname" value={this.state.tempname} onChange={this.handleInputChange} />
                       </form>
                   </Modal.Body>
                   <Modal.Footer>

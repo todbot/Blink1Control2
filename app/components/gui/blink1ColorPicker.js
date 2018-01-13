@@ -2,22 +2,12 @@
 
 var React = require('react');
 
-// var Grid = require('react-bootstrap').Grid;
-// var Row = require('react-bootstrap').Row;
-// var Col = require('react-bootstrap').Col;
-// var Well = require('react-bootstrap').Well;
-// var Form = require('react-bootstrap').Form;
-// var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
-// var ButtonInput = require('react-bootstrap').ButtonInput;
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
 
 var log = require('../../logger');
 var Blink1Service = require('../../server/blink1Service');
 
-// var ColorPicker = require('react-color');
-
-// var HtmlColorChart = require('./htmlColorChart');
 import HtmlColorChart from './htmlColorChart';
 var tinycolor = require('tinycolor2');
 
@@ -26,6 +16,7 @@ var Blink1ColorPicker = React.createClass({
     getInitialState: function() {
         return {
             color: "#33dd33", // color is a hex string, not a tinycolor (had issues with using tinycolor here)
+            colorHex: "#33dd33",  // FIXME: look into why is there color and colorHex?
             secs: 0.1,
             ledn: 0,
             r: 0, // FIXME: should use color but easier & cleaner this way
@@ -40,7 +31,6 @@ var Blink1ColorPicker = React.createClass({
     },
     /**  Callback for Blink1Service notifyChange */
     updateCurrentColor: function() {
-        // FIXME: the Blink1Service callback is crusty now
         var blink1Id = Blink1Service.getCurrentBlink1Id();
         var colr = Blink1Service.getCurrentColor( blink1Id );
         var secs = Blink1Service.getCurrentMillis( blink1Id ) / 1000;
@@ -169,27 +159,3 @@ var Blink1ColorPicker = React.createClass({
 });
 
 module.exports = Blink1ColorPicker;
-
-// <div style={{ display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"}}>
-// 	<ColorPicker.default type="sketch" color={this.state.color} onChange={this.setColor} />
-// </div>
-// <div style={{ display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"}}>
-// 	<ButtonGroup vertical>
-// 	  <Button onClick={this.setLedN.bind(this, 0)} active={this.state.ledn===0}>LED AB</Button>
-// 	  <Button onClick={this.setLedN.bind(this, 1)} active={this.state.ledn===1}>LED A</Button>
-// 	  <Button onClick={this.setLedN.bind(this, 2)} active={this.state.ledn===2}>LED B</Button>
-// 	</ButtonGroup>
-// </div>
-
-// <form horizontal className="col-sm-8">
-// 	<Input type="number" label="msec" value={this.state.millis}  onChange={this.handleChangeMillis}
-// 		labelClassName="col-sm-6" wrapperClassName="col-sm-6" bsSize="small" />
-// </form>
-// <form horizontal className="col-sm-8">
-// 	<Input type="number" label='R'
-// 		labelClassName="col-sm-4" wrapperClassName="col-sm-8" bsSize="small" />
-// 	<Input type="number" label='G'
-// 		labelClassName="col-sm-4" wrapperClassName="col-sm-8" bsSize="small" />
-// 	<Input type="number" label='B'
-// 		labelClassName="col-sm-4" wrapperClassName="col-sm-8" bsSize="small" />
-// </form>

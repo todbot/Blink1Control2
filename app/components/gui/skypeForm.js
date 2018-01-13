@@ -8,8 +8,6 @@ var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
-// var FormControls = require('react-bootstrap').FormControls;
-var LinkedStateMixin = require('react-addons-linked-state-mixin');
 
 var Switch = require('react-bootstrap-switch');
 
@@ -17,7 +15,6 @@ var log = require('../../logger');
 
 
 var MailForm = React.createClass({
-    mixins: [LinkedStateMixin],
     propTypes: {
         rule: React.PropTypes.object.isRequired,
         patterns: React.PropTypes.array,
@@ -56,6 +53,13 @@ var MailForm = React.createClass({
         log.msg("mailForm.handleTriggerType ",evt.target.value,evt);
         this.setState({triggerType: evt.target.value});
     },
+    handleInputChange: function(event) {
+        var target = event.target;
+        var value = target.type === 'checkbox' ? target.checked : target.value;
+        var name = target.name;
+        this.setState({ [name]: value });
+    },
+
     render: function() {
         var self = this;
         // var patterns = this.props.patterns;
@@ -74,13 +78,13 @@ var MailForm = React.createClass({
                         <form className="form-horizontal" >
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
                                 type="text" label="Name" placeholder="Enter text"
-                                valueLink={this.linkState('name')} />
+                                name="name" value={this.state.name} onChange={this.handleInputChange} />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
                                 type="text" label="Skype username" placeholder="Enter username (usually full email address)"
-                                valueLink={this.linkState('username')} />
+                                name="username" value={this.state.username} onChange={this.handleInputChange} />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
                                 type="password" label="Password" placeholder=""
-                                valueLink={this.linkState('password')} />
+                                name="password" value={this.state.password} onChange={this.handleInputChange} />
 
                             <Grid >
                                 <Row><Col xs={2}>
@@ -103,8 +107,8 @@ var MailForm = React.createClass({
 
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
                                 type="select" label="Pattern"
-                                valueLink={this.linkState('patternId')} >
-                                {this.props.patterns.map( createPatternOption, this )}
+                                name="patternId" value={this.state.patternId} onChange={this.handleInputChange} >
+                                {this.props.patterns.map( createPatternOption )}
                             </Input>
 
                         </form>

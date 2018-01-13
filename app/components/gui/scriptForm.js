@@ -9,18 +9,13 @@ var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
 
-var LinkedStateMixin = require('react-addons-linked-state-mixin');
-
 var Switch = require('react-bootstrap-switch');
 
 var dialog = require('electron').remote.dialog;
 
 var Blink1SerialOption = require('./blink1SerialOption');
-// var Blink1Service = require('../../server/blink1Service'); // FIXME: shouldn't need this dep
-
 
 var ScriptForm = React.createClass({
-    mixins: [LinkedStateMixin],
     propTypes: {
         rule: React.PropTypes.object.isRequired,
         allowMultiBlink1: React.PropTypes.bool,
@@ -33,7 +28,7 @@ var ScriptForm = React.createClass({
     getInitialState: function() {
         return {};
     },
-    // FIXME: why am I doing this instead of getInitialState?
+
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
         this.setState({
@@ -70,8 +65,13 @@ var ScriptForm = React.createClass({
         this.setState({actionType:actionType});
     },
     handleBlink1SerialChange: function(blink1Id) {
-        // console.log("handleBlink1SerialChange: ",e);//,blink1Id);
         this.setState({blink1Id: blink1Id});
+    },
+    handleInputChange: function(event) {
+        var target = event.target;
+        var value = target.type === 'checkbox' ? target.checked : target.value;
+        var name = target.name;
+        this.setState({ [name]: value });
     },
     render: function() {
         var self = this;
@@ -102,14 +102,15 @@ var ScriptForm = React.createClass({
                         <form className="form-horizontal" >
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
                                 type="text" label="Rule Name" placeholder="Descriptive name"
-                                valueLink={this.linkState('name')} />
+                                name="name" value={this.state.name} onChange={this.handleInputChange} />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
                                 type="text" label={pathlabel} placeholder={pathplaceholder}
-                                valueLink={this.linkState('path')}
-                                onClick={type!=='url' ? this.openFileDialog : null}/>
+                                name="path" value={this.state.path} onChange={type!=='url' ? function(){}:this.handleInputChange}
+                                onClick={type!=='url' ? this.openFileDialog : null}
+                                 />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
                                 type="select" label="Check interval" placeholder="15 seconds"
-                                valueLink={this.linkState('intervalSecs')} >
+                                name="intervalSecs" value={this.state.intervalSecs} onChange={this.handleInputChange} >
                                 <option value="2">2 seconds</option>
                                 <option value="5">5 seconds</option>
                                 <option value="10">10 seconds</option>
@@ -137,7 +138,7 @@ var ScriptForm = React.createClass({
                                 </Col></Row>
                                 <Row><Col xs={4} xsOffset={2}>
                                     <Input bsSize="small" type="checkbox" label="Trigger on new values only"
-                                        checkedLink={this.linkState('actOnNew')} />
+                                        name="actOnNew" checked={this.state.actOnNew} onChange={this.handleInputChange} />
                                 </Col></Row>
                             </Grid>
 
@@ -145,7 +146,6 @@ var ScriptForm = React.createClass({
                                 <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
                                     labelClassName="col-xs-3" wrapperClassName="col-xs-3"
                                     serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
-
 
                         </form>
                     </Modal.Body>

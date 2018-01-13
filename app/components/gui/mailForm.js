@@ -7,9 +7,7 @@ var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
-// var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
-// var FormControls = require('react-bootstrap').FormControls;
-var LinkedStateMixin = require('react-addons-linked-state-mixin');
+
 
 var Switch = require('react-bootstrap-switch');
 
@@ -18,7 +16,6 @@ var log = require('../../logger');
 var Blink1SerialOption = require('./blink1SerialOption');
 
 var MailForm = React.createClass({
-    mixins: [LinkedStateMixin],
     propTypes: {
         rule: React.PropTypes.object.isRequired,
         allowMultiBlink1: React.PropTypes.bool,
@@ -97,27 +94,18 @@ var MailForm = React.createClass({
         // log.msg("mailForm.onTriggerClick ",evt.target.value, evt.target.name);
         this.setState({triggerVal: evt.target.value, triggerType: evt.target.name});
     },
+    handleInputChange: function(event) {
+        var target = event.target;
+        var value = target.type === 'checkbox' ? target.checked : target.value;
+        var name = target.name;
+        this.setState({ [name]: value });
+    },
     render: function() {
         var self = this;
         var patterns = this.props.patterns;
         var createPatternOption = function(item, idx) {
             return ( <option key={idx} value={item.id}>{item.name}</option> );
         };
-
-        // var makeDisplayTriggerVal = function(triggerType, triggerVal) {
-        //     var val = triggerVal || '';
-        //     //value={this.state.triggerType==='unread' ? this.state.triggerVal : ''}
-        //     if( triggerType==='unread' ) {
-        //         val = isNaN(triggerVal) ? '1' : triggerVal;
-        //     }
-        //     //value={this.state.triggerType==='subject' ? this.state.triggerVal : ''}
-        //     else if( triggerType === 'sender' ) {
-        //         val = isNaN(triggerVal) ? 'Mr Sender';
-        //     }
-        //     else if( ) {
-        //
-        //     }
-        // };
 
         return (
             <Modal show={this.props.show} onHide={this.close} bsSize="large">
@@ -131,7 +119,7 @@ var MailForm = React.createClass({
                         <Col xs={6}>
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                                 type="text" label="Name" placeholder="Enter text"
-                                valueLink={this.linkState('name')} />
+                                name="name" value={this.state.name} onChange={this.handleInputChange} />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-4" bsSize="small"
                                 type="select" label="Account type" placeholder="IMAP"
                                 onChange={this.onMailTypeClick} value={this.state.mailtype}>
@@ -140,22 +128,22 @@ var MailForm = React.createClass({
                             </Input>
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                                 type="text" label="Mail server" placeholder="mail.example.com"
-                                valueLink={this.linkState('host')} />
+                                name="host" value={this.state.host} onChange={this.handleInputChange} />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                                 type="text" label="Username" placeholder="Enter username (e.g. email addr)"
-                                valueLink={this.linkState('username')} />
+                                name="username" value={this.state.username} onChange={this.handleInputChange} />
                             <Input labelClassName="col-xs-3" wrapperClassName="col-xs-6" bsSize="small"
                                 type="password" label="Password" placeholder=""
-                                valueLink={this.linkState('password')} />
+                                name="password" value={this.state.password} onChange={this.handleInputChange} />
                             <Row>
                                 <Col xs={6}>
                                     <Input labelClassName="col-xs-6" wrapperClassName="col-xs-6" bsSize="small"
                                         type="text" label="Port" placeholder="993"
-                                        valueLink={this.linkState('port')} />
+                                        name="port" value={this.state.port} onChange={this.handleInputChange} />
                                 </Col><Col xs={6}>
                                     <Input bsSize="small"
                                         type="checkbox" label="Use SSL"
-                                        checkedLink={this.linkState('useSSL')} />
+                                        name="useSSL" checked={this.state.useSSL} onChange={this.handleInputChange} />
                                 </Col>
                             </Row>
                         </Col>
@@ -189,13 +177,13 @@ var MailForm = React.createClass({
 
                             <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
                                 type="select" label="Pattern"
-                                valueLink={this.linkState('patternId')} >
-                                {patterns.map( createPatternOption, this )}
+                                value={this.state.patternId} onChange={this.handlePatternIdChange} >
+                                {patterns.map( createPatternOption )}
                             </Input>
 
                             <Input labelClassName="col-xs-10" wrapperClassName="col-xs-offset-3 col-xs-9" bsSize="small"
                                 type="checkbox" label="Turn blink(1) off when no match"
-                                checkedLink={this.linkState('triggerOff')} />
+                                name="triggerOff" checked={this.state.triggerOff} onChange={this.handleInputChange} />
 
                                 {!this.props.allowMultiBlink1 ? null :
                                     <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
@@ -228,3 +216,19 @@ var MailForm = React.createClass({
 });
 
 module.exports = MailForm;
+
+
+// var makeDisplayTriggerVal = function(triggerType, triggerVal) {
+//     var val = triggerVal || '';
+//     //value={this.state.triggerType==='unread' ? this.state.triggerVal : ''}
+//     if( triggerType==='unread' ) {
+//         val = isNaN(triggerVal) ? '1' : triggerVal;
+//     }
+//     //value={this.state.triggerType==='subject' ? this.state.triggerVal : ''}
+//     else if( triggerType === 'sender' ) {
+//         val = isNaN(triggerVal) ? 'Mr Sender';
+//     }
+//     else if( ) {
+//
+//     }
+// };

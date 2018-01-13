@@ -11,14 +11,11 @@ var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
 
-var LinkedStateMixin = require('react-addons-linked-state-mixin');
-
 var Switch = require('react-bootstrap-switch');
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
 var TimeForm = React.createClass({
-    mixins: [LinkedStateMixin],
     propTypes: {
         rule: React.PropTypes.object.isRequired,
         allowMultiBlink1: React.PropTypes.bool,
@@ -90,6 +87,12 @@ var TimeForm = React.createClass({
         var val = d.target.value;
         this.setState({alarmTimeMode: val});
     },
+    handleInputChange: function(event) {
+        var target = event.target;
+        var value = target.type === 'checkbox' ? target.checked : target.value;
+        var name = target.name;
+        this.setState({ [name]: value });
+    },
 
     render: function() {
         var self = this;
@@ -121,8 +124,8 @@ var TimeForm = React.createClass({
                         <Row>
                             <div className="form-horizontal">
                                 <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                                    type="text" label="Rule Name" placeholder="Name of rule on IFTTT"
-                                    valueLink={this.linkState('name')} />
+                                    type="text" label="Rule Name" placeholder="Name of rule"
+                                    name="name" value={this.state.name} onChange={this.handleInputChange} />
                             </div>
                         </Row>
                         <Row>
@@ -183,8 +186,8 @@ var TimeForm = React.createClass({
                             <div className="form-horizontal">
                                 <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
                                     type="select" label="Pattern"
-                                    valueLink={this.linkState('patternId')} >
-                                    {this.props.patterns.map( createPatternOption, this )}
+                                    name="patternId" value={this.state.patternId} onChange={this.handleInputChange} >
+                                    {this.props.patterns.map( createPatternOption )}
                                 </Input>
                                 {!this.props.allowMultiBlink1 ? null :
                                     <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"

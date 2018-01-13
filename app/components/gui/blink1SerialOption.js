@@ -37,14 +37,14 @@ var Blink1SerialOption = React.createClass({
             return ( <option key={idx} value={item}>{item}</option> );
         };
         var serials = Blink1Service.getAllSerials();
-        serials = serials.slice(); //copy
+        serials = serials.slice(); //copy so we can add defaultText
         serials.unshift( this.props.defaultText );
 
         return (
             <Input labelClassName={this.props.labelClassName} wrapperClassName={this.props.wrapperClassName}
                     bsSize="small" type="select" label={this.props.label} width={7}
                     value={this.state.serial} onChange={this.handleChange} >
-                    {serials.map( createBlink1SerialOption, this )}
+                    {serials.map( createBlink1SerialOption )}
             </Input>
         );
     }

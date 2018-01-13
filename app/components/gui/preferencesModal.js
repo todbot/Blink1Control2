@@ -9,8 +9,6 @@ var Input = require('react-bootstrap').Input;
 var ButtonInput = require('react-bootstrap').ButtonInput;
 var Button = require('react-bootstrap').Button;
 
-var LinkedStateMixin = require('react-addons-linked-state-mixin');
-
 var PatternsService = require('../../server/patternsService');
 var Blink1Service   = require('../../server/blink1Service');
 var ApiServer   = require('../../server/apiServer');
@@ -37,7 +35,6 @@ var blink1ControlAutoLauncher = new AutoLaunch({
 }); // FIXME: pkg.productName
 
 var PreferencesModal = React.createClass({
-    mixins: [LinkedStateMixin],
     propTypes: {
         show: React.PropTypes.bool,
         // rule: React.PropTypes.object.isRequired
@@ -187,6 +184,13 @@ var PreferencesModal = React.createClass({
     handleBlink1NonComputerSet: function(e) {
         log.msg("PreferncesModal: SET!!",e);
     },
+    handleInputChange: function(event) {
+        var target = event.target;
+        var value = target.type === 'checkbox' ? target.checked : target.value;
+        var name = target.name;
+        this.setState({ [name]: value });
+    },
+
     render: function() {
         var createPatternOption = function(patt, idx) {
             return ( <option key={idx} value={patt.id}>{patt.name}</option> );
@@ -215,27 +219,27 @@ var PreferencesModal = React.createClass({
                                     <div title="On next restart, app is systray/menubar only">
                                         <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
                                             type="checkbox" label="Start minimized"
-                                            checkedLink={this.linkState('startMinimized')} />
+                                            name="startMinimized" checked={this.state.startMinimized} onChange={this.handleInputChange} />
                                     </div>
                                     <div title="Start app at login">
                                         <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
                                             type="checkbox" label="Start at login"
-                                            checkedLink={this.linkState('startAtLogin')} />
+                                            name="startAtLogin" checked={this.state.startAtLogin} onChange={this.handleInputChange} />
                                     </div>
                                     <div title="Don't show app in Dock">
                                         <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12 {showIfMac}" bsSize="small"
                                             type="checkbox" label="Hide Dock Icon"
-                                            checkedLink={this.linkState('hideDockIcon')} />
+                                            name="hideDockIcon" checked={this.state.hideDockIcon} onChange={this.handleInputChange} />
                                     </div>
                                     <div title="Use more accurate colors. When off, colors are brighter">
                                         <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
                                             type="checkbox" label="LED gamma-correction"
-                                            checkedLink={this.linkState('enableGamma')} />
+                                            name="enableGamma" checked={this.state.enableGamma} onChange={this.handleInputChange} />
                                     </div>
                                     <div title="Only allow color patterns to play single-file, not at the same time">
                                         <Input labelClassName="col-xs-10" wrapperClassName="col-xs-12" bsSize="small"
                                             type="checkbox" label="Pattern play serialize"
-                                            checkedLink={this.linkState('playingSerialize')} />
+                                            name="playingSerialize" value={this.state.playingSerialize} onChange={this.handleInputChange} />
                                     </div>
                                 </form>
 
@@ -250,7 +254,7 @@ var PreferencesModal = React.createClass({
                                     <Col xs={5}>
                                         <Input labelClassName="" wrapperClassName="col-xs-12"  bsSize="small"
                                             type="select" label=""
-                                            valueLink={this.linkState('shortcutPrefix')} >
+                                            name="shortcutPrefix" value={this.state.shortcutPrefix} onChange={this.handleInputChange} >
                                             <option key={1} value="CommandOrControl+Shift">{cmdKeyStr}+Shift</option>
                                             <option key={2} value="CommandOrControl">{cmdKeyStr}</option>
                                             <option key={3} value="CommandOrControl+Alt">{cmdKeyStr}+Alt</option>
@@ -259,7 +263,7 @@ var PreferencesModal = React.createClass({
                                     </Col><Col xs={4}>
                                         <Input labelClassName="" wrapperClassName="col-xs-10" bsSize="small"
                                             type="text" label="" placeholder="" size="1"
-                                            valueLink={this.linkState('shortcutResetKey')} />
+                                            name="shortcutResetKey" value={this.state.shortcutResetKey} onChange={this.handleInputChange} />
                                     </Col>
                                 </Row>
                                 </form>
@@ -271,12 +275,13 @@ var PreferencesModal = React.createClass({
                                     <form className="form-horizontal">
                                         <Input labelClassName="col-xs-6" wrapperClassName="col-xs-5" bsSize="small"
                                           type="text" label="HostId" placeholder=""
-                                          valueLink={this.linkState('hostId')} />
+                                          name="hostId" value={this.state.hostid} onChange={this.handleInputChange} />
                                         <Blink1SerialOption labelClassName="col-xs-6" wrapperClassName="col-xs-5"
                                             label="Preferred device" defaultText="- use first -"
                                             serial={this.state.blink1ToUse} onChange={this.handleBlink1SerialChange}/>
                                         <Input labelClassName="col-xs-12" wrapperClassName="col-xs-12" bsSize="small"
-                                            type="checkbox" label="Use multi blink(1) devices in rules" checkedLink={this.linkState('allowMultiBlink1')}  />
+                                            type="checkbox" label="Use multi blink(1) devices in rules"
+                                            name="allowMultiBlink1" value={this.state.allowMultiBlink1} onChange={this.handleInputChange} />
                                     </form>
                             </div>
 
@@ -284,10 +289,11 @@ var PreferencesModal = React.createClass({
                                 <h5><u> API server configuration </u></h5>
                                 <form className="form-horizontal">
                                     <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
-                                        type="checkbox" label="Start API server" checkedLink={this.linkState('apiServerEnable')}  />
+                                        type="checkbox" label="Start API server"
+                                        name="apiServerEnable" value={this.state.apiServerEnable} onChange={this.handleInputChange} />
                                     <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                                       type="number" label="port" placeholder=""
-                                      valueLink={this.linkState('apiServerPort')} />
+                                      name="apiServerPort" value={this.state.apiServerPort} onChange={this.handleInputChange} />
                                     <Row className="form-group form-group-sm">
                                         <Col xs={3} className="control-label">
                                         <label> host</label>
@@ -328,8 +334,8 @@ var PreferencesModal = React.createClass({
                                 </Col><Col xs={8}>
                                     <Input labelClassName="col-xs-1" wrapperClassName="col-xs-10" bsSize="small"
                                         type="select" label=""
-                                        valueLink={this.linkState('patternId')} >
-                                        {this.state.patterns.map( createPatternOption, this )}
+                                        name="patternId" value={this.state.patternId} onChange={this.handleInputChange} >
+                                        {this.state.patterns.map( createPatternOption )}
                                     </Input>
                                 </Col></Row>
                                     <Row>
@@ -363,19 +369,19 @@ module.exports = PreferencesModal;
                                 <h5><u> Proxy configuration </u></h5>
                                 <form className="form-horizontal">
                                     <Input labelClassName="col-xs-8" wrapperClassName="col-xs-12" bsSize="small"
-                                        type="checkbox" label="Use HTTP proxy" checkedLink={this.linkState('proxyEnable')}  />
+                                        type="checkbox" label="Use HTTP proxy" checkedLnk={this.linkState('proxyEnable')}  />
                                     <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                                         type="text" label="host" placeholder="localhost"
-                                        valueLink={this.linkState('proxyHost')} />
+                                        valueLink={this.lnkState('proxyHost')} />
                                     <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                                         type="number" label="port" placeholder="8080"
-                                        valueLink={this.linkState('proxyPort')} />
+                                        valueLink={this.lnkState('proxyPort')} />
                                     <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                                         type="text" label="username" placeholder=""
-                                        valueLink={this.linkState('proxyUser')} />
+                                        valueLink={this.lnkState('proxyUser')} />
                                     <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8" bsSize="small"
                                         type="text" label="password" placeholder=""
-                                        valueLink={this.linkState('proxyPass')} />
+                                        valueLink={this.lnkState('proxyPass')} />
                                 </form>
                             </div>
 */
