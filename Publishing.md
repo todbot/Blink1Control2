@@ -1,7 +1,7 @@
 ### Publishing Releases
 
 Steps:
-- Update version in package.json and app/package.json
+- Update version in `package.json` and `app/package.json` (they must match!)
 - Build release:
     ```
     npm run clean  // removes node_modules so they get rebuilt
