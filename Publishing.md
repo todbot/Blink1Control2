@@ -7,6 +7,7 @@ Steps:
     npm run clean  // removes node_modules so they get rebuilt
     npm install    // installs & builds node_modules
     npm run pack   // bundles app code using webpack to bundle.js
+    rimraf dist
     npm run dist   // this does the publish, must do it on each OS (Mac,Win,Linux)
     ```
 - Make release on github (creates tag)
