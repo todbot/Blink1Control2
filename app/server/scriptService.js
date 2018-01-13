@@ -164,7 +164,7 @@ var ScriptService = {
      * @return {[type]}      [description]
      */
     parse: function(rule, str) {
-        // log.msg("ScriptService.parse:", str, "rule:",rule);
+//        log.msg("ScriptService.parse: str=", str, "rule:",rule);
         if( typeof str != "string" ) {
             str = (str) ? str.toString() : ''; // convert to string
         }
@@ -225,6 +225,8 @@ var ScriptService = {
             matches = colorre.exec(str);
             if( matches && matches) {
                 var colormatch = matches[2];
+                if( !colormatch ) { colormatch = matches[1]; }
+
                 var color = tinycolor( colormatch );
                 if( color.isValid() ) {
                     Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:colormatch});
