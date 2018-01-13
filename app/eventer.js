@@ -67,6 +67,7 @@ util.inherits(Eventer, EventEmitter);
 // }
 Eventer.prototype.addStatus = function(status) {
     var self = this;
+    if( !status.date ) { status.date = new Date(); } // add date now if none
     self._savedStatuses.push(status); // add status line
     if( self._savedStatuses.length > self._maxStatuses ) {
         self._savedStatuses.shift(); // remove oldest (first)
