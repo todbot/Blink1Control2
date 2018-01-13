@@ -17,7 +17,8 @@ var Blink1Service = require('../../server/blink1Service');
 
 // var ColorPicker = require('react-color');
 
-var HtmlColorChart = require('./htmlColorChart');
+// var HtmlColorChart = require('./htmlColorChart');
+import HtmlColorChart from './htmlColorChart';
 var tinycolor = require('tinycolor2');
 
 
