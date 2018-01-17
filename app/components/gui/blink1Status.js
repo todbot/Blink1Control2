@@ -14,7 +14,9 @@ var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
 var VirtualBlink1 = require('./virtualBlink1');
 
-var PreferencesModal = require('./preferencesModal');
+// var PreferencesModal = require('./preferencesModal');
+import PreferencesModal from './preferencesModal';
+
 var log = require('../../logger');
 
 var Blink1Status = React.createClass({
@@ -61,6 +63,7 @@ var Blink1Status = React.createClass({
     },
     onPrefsClick: function() {
         this.setState({showForm: true});
+        log.msg("PREFS CLICK");
     },
     saveForm: function(/*data*/) {
         this.setState({ showForm: false });
@@ -97,7 +100,7 @@ var Blink1Status = React.createClass({
         var onlineStatus = (navigator.onLine ? 'network online' : 'network offline');
 
         // <VirtualBlink1 blink1Color={this.state.blink1Color} /> // FIXME
-        var header = <h4>Device <button style={{float:'right' }} bsStyle='link' onClick={this.onPrefsClick}><i className="fa fa-gear" title="Open Preferences..."></i></button></h4>;
+        var header = <h4>Device <button style={{float:'right' }} onClick={this.onPrefsClick}><i className="fa fa-gear" title="Open Preferences..."></i></button></h4>;
 
         return (
             <Panel header={header} style={{ width: 280, height: 320, margin:5, padding:0 }}>

@@ -5,17 +5,20 @@
 
 var React = require('react');
 
-var Input = require('react-bootstrap').Input;
+var Col = require('react-bootstrap').Col;
+var FormControl = require('react-bootstrap').FormControl;
+var FormGroup = require('react-bootstrap').FormGroup;
+var ControlLabel = require('react-bootstrap').ControlLabel;
 
 var Blink1Service = require('../../server/blink1Service');
-// var log = require('../../logger');
 
 var Blink1SerialOption = React.createClass({
     propTypes: {
         label: React.PropTypes.string,
-        labelClassName: React.PropTypes.string,
+        labelColWidth: React.PropTypes.number,
+        controlColWidth: React.PropTypes.number,
+        bsSize: React.PropTypes.string,
         defaultText: React.PropTypes.string,
-        wrapperClassName: React.PropTypes.string,
         serial: React.PropTypes.string,
         onChange: React.PropTypes.func.isRequired
     },
@@ -41,11 +44,15 @@ var Blink1SerialOption = React.createClass({
         serials.unshift( this.props.defaultText );
 
         return (
-            <Input labelClassName={this.props.labelClassName} wrapperClassName={this.props.wrapperClassName}
-                    bsSize="small" type="select" label={this.props.label} width={7}
-                    value={this.state.serial} onChange={this.handleChange} >
-                    {serials.map( createBlink1SerialOption )}
-            </Input>
+            <FormGroup controlId="formBlink1Serial" bsSize={this.props.bsSize} >
+                <Col sm={this.props.labelColWidth} componentClass={ControlLabel}> {this.props.label} </Col>
+                <Col sm={this.props.controlColWidth}>
+                    <FormControl componentClass="select" width={7}
+                        value={this.state.serial} onChange={this.handleChange} >
+                        {serials.map( createBlink1SerialOption )}
+                    </FormControl>
+                </Col>
+            </FormGroup>
         );
     }
 });

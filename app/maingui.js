@@ -84,14 +84,16 @@ var ScriptService = require('./server/scriptService');
 var TimeService = require('./server/timeService');
 // var MqttService = require('./server/mqttService');
 
-IftttService.start();
-MailService.start();
-SkypeService.start();
-ScriptService.start();
-TimeService.start();
-// MqttService.start();
+setTimeout( function() {
+    IftttService.start();
+    MailService.start();
+    SkypeService.start();
+    ScriptService.start();
+    TimeService.start();
+    // MqttService.start();
+    log.msg("services started");
+}, 1000);
 
-log.msg("services started");
 
 // events from the main process, from menu actions
 ipcRenderer.on('quitting', function( event,arg ) {

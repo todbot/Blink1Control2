@@ -6,15 +6,22 @@ var Grid = require('react-bootstrap').Grid;
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
-var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
+
+var Form = require('react-bootstrap').Form;
+var FormControl = require('react-bootstrap').FormControl;
+var FormGroup = require('react-bootstrap').FormGroup;
+var ControlLabel = require('react-bootstrap').ControlLabel;
+var Radio = require('react-bootstrap').Radio;
 
 var Switch = require('react-bootstrap-switch');
 
 var log = require('../../logger');
 
+var Blink1SerialOption = require('./blink1SerialOption');
 
-var MailForm = React.createClass({
+
+var SkypeForm = React.createClass({
     propTypes: {
         rule: React.PropTypes.object.isRequired,
         patterns: React.PropTypes.array,
@@ -30,12 +37,12 @@ var MailForm = React.createClass({
         var rule = nextProps.rule;
         this.setState({
             type:'skype',
-            enabled: rule.enabled,
-            name: rule.name,
-            username: rule.username,
-            password: rule.password,
+            enabled: rule.enabled || false,
+            name: rule.name || 'new rule',
+            username: rule.username || '',
+            password: rule.password || '',
             actionType: 'play-pattern',
-            patternId: rule.patternId || nextProps.patterns[0].id,
+            patternId: rule.patternId || nextProps.patterns[0].id || '',
             triggerType: rule.triggerType || 'any',
             triggerVal: rule.triggerVal || '1' ,
         });
@@ -50,8 +57,11 @@ var MailForm = React.createClass({
         this.props.onSave(this.state);
     },
     handleTriggerType: function(evt) {
-        log.msg("mailForm.handleTriggerType ",evt.target.value,evt);
+        log.msg("mailForm.handleTriggerType ",evt.target.value);
         this.setState({triggerType: evt.target.value});
+    },
+    handleBlink1SerialChange: function(blink1Id) {
+        this.setState({blink1Id: blink1Id});
     },
     handleInputChange: function(event) {
         var target = event.target;
@@ -75,43 +85,60 @@ var MailForm = React.createClass({
                     </Modal.Header>
                     <Modal.Body>
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
-                        <form className="form-horizontal" >
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                                type="text" label="Name" placeholder="Enter text"
-                                name="name" value={this.state.name} onChange={this.handleInputChange} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                                type="text" label="Skype username" placeholder="Enter username (usually full email address)"
-                                name="username" value={this.state.username} onChange={this.handleInputChange} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
-                                type="password" label="Password" placeholder=""
-                                name="password" value={this.state.password} onChange={this.handleInputChange} />
+                        <Form horizontal>
+                            <FormGroup controlId="formName" >
+                                <Col sm={3} componentClass={ControlLabel}> Rule Name </Col>
+                                <Col sm={8}>
+                                    <FormControl type="text" label="Name" placeholder="Enter rule name"
+                                        name="name" value={this.state.name} onChange={this.handleInputChange} />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup controlId="formUsername" >
+                                <Col sm={3} componentClass={ControlLabel}> Skype Username </Col>
+                                <Col sm={8}>
+                                    <FormControl type="text" placeholder="Enter username (usually full email address)"
+                                        name="username" value={this.state.username} onChange={this.handleInputChange} />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup controlId="formPassword">
+                                <Col sm={3} componentClass={ControlLabel}> Password </Col>
+                                <Col sm={8}>
+                                    <FormControl type="password" placeholder=""
+                                        name="password" value={this.state.password} onChange={this.handleInputChange} />
+                                </Col>
+                            </FormGroup>
 
-                            <Grid >
-                                <Row><Col xs={2}>
-                                    <label> Play pattern on</label>
-                                </Col><Col xs={4} style={{border:'0px solid green'}}>
-                                    <Input
-                                        type="radio" label="Any Skype event" value="any"
+                            <FormGroup controlId="formPattern" >
+                                <Col xs={3} componentClass={ControlLabel}> Play pattern on </Col>
+                                <Col xs={4} >
+                                    <Radio value="any"
                                         checked={this.state.triggerType==='any'}
-                                        onChange={this.handleTriggerType} />
-                                    <Input
-                                        type="radio" label="Incoming call" value="incoming-call"
+                                        onChange={this.handleTriggerType} > Any Skype event </Radio>
+                                    <Radio value="incoming-call"
                                         checked={this.state.triggerType==='incoming-call'}
-                                        onChange={this.handleTriggerType} />
-                                    <Input
-                                        type="radio" label="Incoming text message" value="incoming-text"
+                                        onChange={this.handleTriggerType} > Incoming call </Radio>
+                                    <Radio value="incoming-text"
                                         checked={this.state.triggerType==='incoming-text'}
-                                        onChange={this.handleTriggerType} />
-                                </Col></Row>
-                            </Grid>
+                                        onChange={this.handleTriggerType} > Incoming text message </Radio>
+                                </Col>
+                            </FormGroup>
 
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
-                                type="select" label="Pattern"
-                                name="patternId" value={this.state.patternId} onChange={this.handleInputChange} >
-                                {this.props.patterns.map( createPatternOption )}
-                            </Input>
+                            <FormGroup controlId="formPatternId">
+                                <Col sm={3} componentClass={ControlLabel}>  Pattern  </Col>
+                                <Col sm={8}>
+                                    <FormControl componentClass="select"
+                                        name="patternId" value={this.state.patternId} onChange={this.handleInputChange} >
+                                        {this.props.patterns.map( createPatternOption )}
+                                    </FormControl>
+                                </Col>
+                            </FormGroup>
 
-                        </form>
+                            {!this.props.allowMultiBlink1 ? <div/>:
+                                <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
+                                    labelColWidth={3} controlColWidth={4}
+                                    serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
+
+                        </Form>
                     </Modal.Body>
                     <Modal.Footer>
                         <Row>
@@ -120,8 +147,8 @@ var MailForm = React.createClass({
                                 <Button bsSize="small" onClick={this.props.onCopy} style={{float:'left'}}>Copy</Button>
                             </Col>
                             <Col xs={3}>
-                                    <Switch bsSize="small" labelText="Enable"
-                                        state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
+                                <Switch bsSize="mini" labelText='enabled'
+                                    state={this.state.enabled} onChange={(el,enabled)=> this.setState({enabled})} />
                             </Col>
                             <Col xs={4}>
                                 <Button bsSize="small" onClick={this.props.onCancel}>Cancel</Button>
@@ -135,4 +162,4 @@ var MailForm = React.createClass({
     }
 });
 
-module.exports = MailForm;
+module.exports = SkypeForm;

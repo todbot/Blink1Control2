@@ -8,8 +8,13 @@ var React = require('react');
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
-var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
+
+var Form = require('react-bootstrap').Form;
+var FormControl = require('react-bootstrap').FormControl;
+var FormGroup = require('react-bootstrap').FormGroup;
+var ControlLabel = require('react-bootstrap').ControlLabel;
+var Radio = require('react-bootstrap').Radio;
 
 var Switch = require('react-bootstrap-switch');
 
@@ -36,14 +41,14 @@ var TimeForm = React.createClass({
         var rule = nextProps.rule;
         this.setState({
             type: 'time',
-            enabled: rule.enabled,
-            name: rule.name,
+            enabled: rule.enabled || false,
+            name: rule.name || '',
             alarmType: rule.alarmType || 'hourly',
             alarmHours: rule.alarmHours || 8,
             alarmMinutes: rule.alarmMinutes || 15,
             alarmTimeMode: rule.alarmTimeMode || 'am', // 'pm' or '24'
             actionType: 'play-pattern',
-            patternId: rule.patternId || nextProps.patterns[0].id,
+            patternId: rule.patternId || nextProps.patterns[0].id || '',
             blink1Id: rule.blink1Id || "0"
          });
     },
@@ -111,6 +116,7 @@ var TimeForm = React.createClass({
         var altype = this.state.alarmType;
         var almode = this.state.alarmTimeMode;
         var numStyle = {marginLeft:5, marginRight:5, textAlign:'right'};
+        // var leftStyle = {marginRight:5, marginLeft:5};
 
         return (
             <div>
@@ -120,82 +126,74 @@ var TimeForm = React.createClass({
                     </Modal.Header>
                     <Modal.Body>
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
-                        <form>
-                        <Row>
-                            <div className="form-horizontal">
-                                <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                                    type="text" label="Rule Name" placeholder="Name of rule"
-                                    name="name" value={this.state.name} onChange={this.handleInputChange} />
-                            </div>
-                        </Row>
-                        <Row>
-                            <Col xs={3} className="text-right">
-                                <label> Trigger when </label>
-                            </Col>
-                            <Col xs={9}>
-                                <Input>
-                                    <div className="form-inline" onClick={this.setHourly}>
-                                        <div className="radio-inline">
-                                            <input type="radio" name="hourly" value="hourly"
-                                                checked={altype==='hourly'} onChange={this.setHourly} />
-                                            every hour at the:
-                                        </div>
-                                        <input type="number" min={0} max={59} step={1} size={2} style={numStyle}
-                                                value={altype==='hourly'?mins:''} onChange={this.handleChangeMinutes} />
-                                        minute mark
-                                    </div>
-                                </Input>
-                                <Input>
-                                    <div className="form-inline" onClick={this.setDaily}>
-                                        <div className="radio-inline" >
-                                            <input type="radio" name="daily" value="daily"
-                                                checked={altype==='daily'} onChange={this.setDaily} />
-                                            every day at:
-                                        </div>
-                                        <input type="number" min={1} max={12} step={1} size={2}
-                                            style={{textAlign:'right'}}
-                                            value={altype==='daily' ? hrs : ''} onChange={this.handleChangeHours}/> :
-                                        <input type="number" min={0} max={59} step={1} size={2}
-                                            style={{textAlign:'right', marginRight:10}}
-                                            value={altype==='daily'?mins:''} onChange={this.handleChangeMinutes}/>
-                                        <div className="radio-inline" >
-                                            <input type="radio" name="am" value="am"
-                                                checked={almode==='am'} onChange={this.setAlarmTimeMode}/> am
-                                        </div>
-                                        <div className="radio-inline" >
-                                            <input type="radio" name="pm" value="pm"
-                                                checked={almode==='pm'} onChange={this.setAlarmTimeMode}/> pm
-                                        </div>
-                                    </div>
-                                </Input>
-                                <Input>
-                                    <div className="form-inline" onClick={this.setCountdown}>
-                                        <div className="radio-inline" >
-                                            <input type="radio" name="countdown" value="countdown"
-                                                checked={altype==='countdown'} onChange={this.setCountdown} />
-                                            elapsed time :
-                                        </div>
-                                        <input type="number" min={0} max={59} step={1} size={2}
-                                            value={altype==='countdown'?mins:''} onChange={this.handleChangeMinutes} />
-                                        minutes (one-time, non-repeating)
-                                    </div>
-                                </Input>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <div className="form-horizontal">
-                                <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
-                                    type="select" label="Pattern"
-                                    name="patternId" value={this.state.patternId} onChange={this.handleInputChange} >
-                                    {this.props.patterns.map( createPatternOption )}
-                                </Input>
-                                {!this.props.allowMultiBlink1 ? null :
-                                    <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
-                                        labelClassName="col-xs-3" wrapperClassName="col-xs-4"
-                                        serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
-                            </div>
-                        </Row>
-                        </form>
+                        <Form horizontal>
+                            <FormGroup controlId="formName" title="">
+                                <Col sm={3} componentClass={ControlLabel}>  Rule Name  </Col>
+                                <Col sm={8}>
+                                    <FormControl type="text" placeholder="Name of rule"
+                                        name="name" value={this.state.name} onChange={this.handleInputChange} />
+                                </Col>
+                            </FormGroup>
+
+                            <FormGroup controlId="formTriggerH" title="" onClick={this.setHourly}>
+                                <Col sm={3} componentClass={ControlLabel}> Trigger when </Col>
+                                <Col sm={8}>
+                                    <input type="radio" name="hourly" value="hourly"
+                                        checked={altype==='hourly'} onChange={this.setHourly} />
+                                    <span style={numStyle}> every hour at the: </span>
+                                    <input type="number" min={0} max={59} step={1} size={2} style={numStyle}
+                                        value={altype==='hourly'?mins:''} onChange={this.handleChangeMinutes} />
+                                    minute mark
+                                </Col>
+                            </FormGroup>
+
+                            <FormGroup controlId="formTriggerD" onClick={this.setDaily}>
+                                <Col sm={3} componentClass={ControlLabel}>  </Col>
+                                <Col sm={8}>
+                                    <input type="radio" name="daily" value="daily"
+                                        checked={altype==='daily'} onChange={this.setDaily} />
+                                    <span style={numStyle}> every day at:</span>
+                                    <input type="number" min={1} max={12} step={1} size={2} style={numStyle}
+                                        value={altype==='daily'?hrs:''} onChange={this.handleChangeHours} /> :
+                                    <input type="number" min={0} max={59} step={1} size={2} style={numStyle}
+                                        value={altype==='daily'?mins:''} onChange={this.handleChangeMinutes} />
+                                    <input type="radio" name="am" value="am"
+                                        checked={almode==='am'} onChange={this.setAlarmTimeMode}/>
+                                    <span style={numStyle}> am </span>
+                                    <input type="radio" name="pm" value="pm"
+                                        checked={almode==='pm'} onChange={this.setAlarmTimeMode}/>
+                                    <span style={numStyle}>pm</span>
+                                </Col>
+                            </FormGroup>
+
+                            <FormGroup controlId="formTriggerC" onClick={this.setCoundtdown}>
+                                <Col sm={3} componentClass={ControlLabel}>  </Col>
+                                <Col sm={8}>
+                                    <input type="radio" name="countdown" value="countdown"
+                                        checked={altype==='countdown'} onChange={this.setCountdown} />
+                                    <span style={numStyle}> elapsed time: </span>
+                                    <input type="number" min={0} max={59} step={1} size={2}
+                                        value={altype==='countdown'?mins:''} onChange={this.handleChangeMinutes} />
+                                    <span style={numStyle}> minutes (one-time/no repeat) </span>
+                                </Col>
+                            </FormGroup>
+
+                            <FormGroup controlId="formPatternId">
+                                <Col sm={3} componentClass={ControlLabel}>  Pattern  </Col>
+                                <Col sm={8}>
+                                    <FormControl componentClass="select"
+                                        name="patternId" value={this.state.patternId} onChange={this.handleInputChange} >
+                                        {this.props.patterns.map( createPatternOption )}
+                                    </FormControl>
+                                </Col>
+                            </FormGroup>
+
+                            {!this.props.allowMultiBlink1 ? <div/>:
+                                <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
+                                    labelColWidth={3} controlColWidth={4}
+                                    serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
+
+                        </Form>
                     </Modal.Body>
                     <Modal.Footer>
                         <Row>
@@ -204,8 +202,8 @@ var TimeForm = React.createClass({
                                 <Button bsSize="small"  onClick={this.props.onCopy} style={{float:'left'}}>Copy</Button>
                           </Col>
                           <Col xs={3}>
-                                <Switch bsSize="small" labelText="Enable"
-                                    state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
+                              <Switch bsSize="mini" labelText='enabled'
+                                  state={this.state.enabled} onChange={(el,enabled)=> this.setState({enabled})} />
                           </Col>
                           <Col xs={4}>
                                 <Button bsSize="small" onClick={this.props.onCancel}>Cancel</Button>
@@ -220,3 +218,53 @@ var TimeForm = React.createClass({
 });
 
 module.exports = TimeForm;
+
+//         <Input>
+//             <div className="form-inline" onClick={this.setHourly}>
+//                 <div className="radio-inline">
+//                     <input type="radio" name="hourly" value="hourly"
+//                         checked={altype==='hourly'} onChange={this.setHourly} />
+//                     every hour at the:
+//                 </div>
+//                 <input type="number" min={0} max={59} step={1} size={2} style={numStyle}
+//                         value={altype==='hourly'?mins:''} onChange={this.handleChangeMinutes} />
+//                 minute mark
+//             </div>
+//         </Input>
+//         <Input>
+//             <div className="form-inline" onClick={this.setDaily}>
+//                 <div className="radio-inline" >
+//                     <input type="radio" name="daily" value="daily"
+//                         checked={altype==='daily'} onChange={this.setDaily} />
+//                     every day at:
+//                 </div>
+//                 <input type="number" min={1} max={12} step={1} size={2}
+//                     style={{textAlign:'right'}}
+//                     value={altype==='daily' ? hrs : ''} onChange={this.handleChangeHours}/> :
+//                 <input type="number" min={0} max={59} step={1} size={2}
+//                     style={{textAlign:'right', marginRight:10}}
+//                     value={altype==='daily'?mins:''} onChange={this.handleChangeMinutes}/>
+//                 <div className="radio-inline" >
+//                     <input type="radio" name="am" value="am"
+//                         checked={almode==='am'} onChange={this.setAlarmTimeMode}/> am
+//                 </div>
+//                 <div className="radio-inline" >
+//                     <input type="radio" name="pm" value="pm"
+//                         checked={almode==='pm'} onChange={this.setAlarmTimeMode}/> pm
+//                 </div>
+//             </div>
+//         </Input>
+//         <Input>
+//             <div className="form-inline" onClick={this.setCountdown}>
+//                 <div className="radio-inline" >
+//                     <input type="radio" name="countdown" value="countdown"
+//                         checked={altype==='countdown'} onChange={this.setCountdown} />
+//                     elapsed time :
+//                 </div>
+//                 <input type="number" min={0} max={59} step={1} size={2}
+//                     value={altype==='countdown'?mins:''} onChange={this.handleChangeMinutes} />
+//                 minutes (one-time, non-repeating)
+//             </div>
+//         </Input>
+//     </Col>
+// </Row>

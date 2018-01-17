@@ -145,12 +145,11 @@ var ToolTable = React.createClass({
         }
     },
 
-    handleAddRule: function(evt,key) {
+    handleAddRule: function(key) {
         log.msg("ToolTable.handleAddRule",key);
         this.setState({showForm:key, workingIndex:-1});
     },
     render: function() {
-
         // hmm is there a better way to do the following
         // allowMulti if set and number of blink1s > 1
         var allowMultiBlink1 = conf.readSettings("blink1Service:allowMulti") && (Blink1Service.isConnected() > 1);
@@ -212,7 +211,6 @@ var ToolTable = React.createClass({
                     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
-
                 <ToolTableList
                     rules={this.state.rules}
                     // events={this.state.events}
@@ -233,6 +231,61 @@ var ToolTable = React.createClass({
             </div>
         );
     }
+
+    //     return (
+    //         <div style={{position: "relative", height: 200, cursor:'default'}}>
+    //
+    //             <ScriptForm show={this.state.showForm==='script' || this.state.showForm==='file' || this.state.showForm === 'url' }
+    //                 workingIndex={this.state.workingIndex}
+    //                 rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
+    //                 onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
+    //                 onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
+    //
+    //             <MailForm show={this.state.showForm==='mail'}
+    //                 workingIndex={this.state.workingIndex}
+    //                 rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
+    //                 onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
+    //                 onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
+    //
+    //             <IftttForm show={this.state.showForm==='ifttt'}
+    //                 workingIndex={this.state.workingIndex}
+    //                 rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
+    //                 onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
+    //                 onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
+    //
+    //             <SkypeForm show={this.state.showForm==='skype'}
+    //                 workingIndex={this.state.workingIndex}
+    //                 rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
+    //                 onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
+    //                 onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
+    //
+    //             <TimeForm show={this.state.showForm==='time'}
+    //                 workingIndex={this.state.workingIndex}
+    //                 rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
+    //                 onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
+    //                 onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
+    //
+    //
+    //             <ToolTableList
+    //                 rules={this.state.rules}
+    //                 // events={this.state.events}
+    //                 showForm={this.state.showForm}
+    //                 onEditRule={this.handleEditRule} />
+    //
+    //             <div style={{position: "absolute", bottom: 0}}>
+    //                 <DropdownButton bsSize="small" bsStyle="primary" onSelect={this.handleAddRule} id="addRule" title={<span><i className="fa fa-plus"></i> add event source</span>}>
+    //                     <MenuItem eventKey="ifttt"><img width={15} height={15} src="images/ifttt.png" /> Add IFTTT </MenuItem>
+    //                     <MenuItem eventKey="mail"><i className="fa fa-envelope"></i> Add Mail </MenuItem>
+    //                     <MenuItem eventKey="script"><i className="fa fa-code"></i> Add Script</MenuItem>
+    //                     <MenuItem eventKey="url"><i className="fa fa-cloud"></i> Add URL</MenuItem>
+    //                     <MenuItem eventKey="file"><i className="fa fa-file"></i> Add File</MenuItem>
+    //                     <MenuItem eventKey="skype"><i className="fa fa-skype"></i> Add Skype</MenuItem>
+    //                     <MenuItem eventKey="time"><i className="fa fa-clock-o"></i> Add Alarm</MenuItem>
+    //                 </DropdownButton>
+    //             </div>
+    //         </div>
+    //     );
+    // }
     // <MenuItem eventKey="mqtt"><i className="fa fa-share-alt"></i> Add MQTT</MenuItem>
 
 });

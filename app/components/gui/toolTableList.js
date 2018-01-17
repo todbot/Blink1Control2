@@ -150,7 +150,7 @@ var ToolTableList = React.createClass({
                 </div>
                 <Table bordered condensed hover style={{fontSize:"0.9em"}} hidden={this.props.rules.length===0}>
                     <thead>
-                        <tr stye={{lineHeight:"100%"}}>
+                        <tr style={{lineHeight:"100%"}}>
                             <th style={{width:140}}>Name</th>
                             <th style={{width:225}}>Description</th>
                             <th style={{width: 30}}>Type</th>

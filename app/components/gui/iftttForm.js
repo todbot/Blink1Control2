@@ -5,8 +5,12 @@ var React = require('react');
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
 var Modal = require('react-bootstrap').Modal;
-var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
+
+var Form = require('react-bootstrap').Form;
+var FormControl = require('react-bootstrap').FormControl;
+var FormGroup = require('react-bootstrap').FormGroup;
+var ControlLabel = require('react-bootstrap').ControlLabel;
 
 var Switch = require('react-bootstrap-switch');
 
@@ -23,20 +27,17 @@ var IftttForm = React.createClass({
         onCopy: React.PropTypes.func
     },
     getInitialState: function() {
-        return {
-            // name: rule.name,
-            // patternId: rule.patternId
-        };
+        return {};
     },
-    // FIXME: why am I doing this instead of getInitialState?
+    // FIXME: why do this instead of getInitialState?  because need props to load state
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
         this.setState({
             type: 'ifttt',
-            enabled: rule.enabled,
-            name: rule.name,
+            enabled: rule.enabled || false,
+            name: rule.name || 'new rule',
             actionType: 'play-pattern',
-            patternId: rule.patternId || nextProps.patterns[0].id,
+            patternId: rule.patternId || nextProps.patterns[0].id || '',
             blink1Id: rule.blink1Id || "0"
          }); // FIXME: why
     },
@@ -44,14 +45,16 @@ var IftttForm = React.createClass({
         this.props.onSave(this.state);
     },
     handleBlink1SerialChange: function(blink1Id) {
+        console.log("blink1Id:",blink1Id);
         this.setState({blink1Id: blink1Id});
     },
-    handleNameChange: function(event) {
-        this.setState({name: event.target.value});
+    handleInputChange: function(event) {
+        var target = event.target;
+        var value = target.type === 'checkbox' ? target.checked : target.value;
+        var name = target.name;
+        this.setState({ [name]: value });
     },
-    handlePatternIdChange: function(event) {
-        this.setState({patternId: event.target.value});
-    },
+
     render: function() {
         var self = this;
 
@@ -67,20 +70,30 @@ var IftttForm = React.createClass({
                     </Modal.Header>
                     <Modal.Body>
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
-                        <form className="form-horizontal" >
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                                type="text" label="Rule Name" placeholder="Name of rule on IFTTT"
-                                value={this.state.name} onChange={this.handleNameChange} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
-                                type="select" label="Pattern"
-                                value={this.state.patternId} onChange={this.handlePatternIdChange} >
-                                {this.props.patterns.map( createPatternOption )}
-                            </Input>
-                            {!this.props.allowMultiBlink1 ? null :
+                        <Form horizontal>
+                            <FormGroup controlId="formName" title="">
+                                <Col sm={3} componentClass={ControlLabel}>  Rule Name  </Col>
+                                <Col sm={8}>
+                                    <FormControl type="text" placeholder="Name of rule on IFTTT"
+                                        name="name" value={this.state.name} onChange={this.handleInputChange} />
+                                </Col>
+                            </FormGroup>
+
+                            <FormGroup controlId="formPatternId">
+                                <Col sm={3} componentClass={ControlLabel}>  Pattern  </Col>
+                                <Col sm={8}>
+                                    <FormControl componentClass="select"
+                                        name="patternId" value={this.state.patternId} onChange={this.handleInputChange} >
+                                        {this.props.patterns.map( createPatternOption )}
+                                    </FormControl>
+                                </Col>
+                            </FormGroup>
+
+                            {!this.props.allowMultiBlink1 ? <div/>:
                                 <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
-                                    labelClassName="col-xs-3" wrapperClassName="col-xs-4"
+                                    labelColWidth={3} controlColWidth={4}
                                     serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
-                        </form>
+                        </Form>
                     </Modal.Body>
                     <Modal.Footer>
                         <Row>
@@ -89,8 +102,8 @@ var IftttForm = React.createClass({
                                 <Button bsSize="small"  onClick={this.props.onCopy} style={{float:'left'}}>Copy</Button>
                           </Col>
                           <Col xs={3}>
-                                <Switch bsSize="small" labelText="Enable"
-                                    state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
+                              <Switch bsSize="mini" labelText='enabled'
+                                  state={this.state.enabled} onChange={(el,enabled)=> this.setState({enabled})} />
                           </Col>
                           <Col xs={4}>
                                 <Button bsSize="small" onClick={this.props.onCancel}>Cancel</Button>

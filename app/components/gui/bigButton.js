@@ -3,8 +3,12 @@
 var React = require('react');
 
 var Button = require('react-bootstrap').Button;
-var Input = require('react-bootstrap').Input;
+//var Input = require('react-bootstrap').Input;
 var Modal = require('react-bootstrap').Modal;
+
+var Form = require('react-bootstrap').Form;
+var FormControl = require('react-bootstrap').FormControl;
+var FormGroup = require('react-bootstrap').FormGroup;
 
 var remote = require('electron').remote;
 var Menu = remote.Menu;
@@ -161,78 +165,25 @@ var BigButton = React.createClass({
                     <div style={namestyle}>{this.props.name}</div>
                 </Button>
 
-                <Modal show={this.state.showEditMenu} onHide={this.hideEditMenu} bsSize="small" >
-                  <Modal.Header>
-                    <Modal.Title>Edit Button Name</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                      <form className="form-horizontal" onSubmit={this.handleEditClose} >
-                          <Input labelClassName="col-xs-5" wrapperClassName="col-xs-7" bsSize="small"
-                              type="text" label="Button Name"
-                              name="tempname" value={this.state.tempname} onChange={this.handleInputChange} />
-                      </form>
-                  </Modal.Body>
-                  <Modal.Footer>
-                      <Button onClick={this.hideEditMenu}>Cancel</Button>
-                      <Button type="submit" onClick={this.handleEditClose}>OK</Button>
-                 </Modal.Footer>
-              </Modal>
+                <Modal show={this.state.showEditMenu} onHide={this.handleEditClose} bsSize="small" enforceFocus={false} >
+                    <Modal.Header closeButton>
+                        <Modal.Title>Edit Button Name</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form inline >
+                            <FormControl type="text" name="tempname"  value={this.state.tempname}
+                                placeholder="Enter name"  onChange={this.handleInputChange} />
+                        </Form>
+                    </Modal.Body>
+                      <Modal.Footer>
+                          <Button onClick={this.hideEditMenu}>Cancel</Button>
+                          <Button type="submit" onClick={this.handleEditClose}>OK</Button>
+                     </Modal.Footer>
+                </Modal>
+
             </div>
         );
     }
 });
 
-
 module.exports = BigButton;
-
-// var cmstyle = {
-// 	position: 'absolute',
-// 	backgroundColor: '#EEE',
-// 	boxShadow: '0 5px 10px rgba(0, 0, 0, 0.2)',
-// 	border: '1px solid #CCC',
-// 	borderRadius: 3,
-// 	marginLeft: -5,
-// 	marginTop: 5,
-// 	padding: 10
-// };
-
-
-
-            // <Overlay
-            // 	show={this.state.showContextMenu}
-            // 	onHide={this.hideContextMenu}
-            // 	rootClose={true}
-            // 	container={this}
-            // 	target={this.refs.btbar}
-            // 	>
-            // 	<Popover title="Edit Button" id="editbutton">
-            // 		<MenuItem eventKey="setcolor" onSelect={this.doContextMenu}>Set to current color</MenuItem>
-            // 		<MenuItem eventKey="setpattern" onSelect={this.doContextMenu}>Set to last pattern</MenuItem>
-            // 		<MenuItem eventKey="moveleft" onSelect={this.doContextMenu}>Move button left</MenuItem>
-            // 		<MenuItem eventKey="delete" onSelect={this.doContextMenu}>Delete button</MenuItem>
-            // 	</Popover>
-            // </Overlay>
-            //
-
-
-
-// var modalish= (
-// 	<span id="booper">
-// 		<Button style={buttonStyle} ref={function(ref) { console.log("WHAT, ref=",ref); return self.mybuttonRef = ref; }}
-// 			onClick={this.props.onClick} onContextMenu={this.showContextMenu}>
-// 			{iconContent}<div style={tstyle}>{this.props.name}</div>
-// 		</Button>
-// 		<Modal show={this.state.showContextMenu} onHide={this.hideContextMenu} bsSize="small" >
-// 		  <Modal.Header>
-// 			<Modal.Title>Edit Button</Modal.Title>
-// 		  </Modal.Header>
-// 		  <Modal.Body>
-// 			  FUCKKKK.
-// 			  <MenuItem eventKey="setcolor" onSelect={this.doContextMenu}>Set to current color</MenuItem>
-// 			  <MenuItem eventKey="setpattern" onSelect={this.doContextMenu}>Set to last pattern</MenuItem>
-// 			  <MenuItem eventKey="moveleft" onSelect={this.doContextMenu}>Move button left</MenuItem>
-// 			  <MenuItem eventKey="delete" onSelect={this.doContextMenu}>Delete button</MenuItem>
-// 		  </Modal.Body>
-// 	  </Modal>
-// 	</span>
-// );
