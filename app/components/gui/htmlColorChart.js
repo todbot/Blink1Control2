@@ -5,7 +5,7 @@
 
 import React, { Component } from 'react';
 
-let htmlcolors = require('./htmlColorsList');
+const htmlcolors = require('./htmlColorsList');
 
 // var colorChartPng = require('../../images/colorChart.png');
 const cw = 12; // cell width
