@@ -14,6 +14,8 @@ require('../node_modules/react-bootstrap-switch/dist/css/bootstrap3/react-bootst
 var React = require('react');
 var ReactDOM = require('react-dom');
 
+console.log("NOD_ENV:",process.env.NODE_ENV);
+
 // var Perf = require('react-addons-perf');
 
 var ipcRenderer = require('electron').ipcRenderer;
@@ -85,14 +87,15 @@ var TimeService = require('./server/timeService');
 // var MqttService = require('./server/mqttService');
 
 setTimeout( function() {
-    IftttService.start();
-    MailService.start();
-    SkypeService.start();
-    ScriptService.start();
-    TimeService.start();
-    // MqttService.start();
-    log.msg("services started");
-}, 1000);
+  log.msg("services starting...");
+  IftttService.start();
+  MailService.start();
+  SkypeService.start();
+  ScriptService.start();
+  TimeService.start();
+  // MqttService.start();
+  log.msg("services started");
+}, 2000);
 
 
 // events from the main process, from menu actions
