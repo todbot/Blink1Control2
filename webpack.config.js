@@ -26,7 +26,12 @@ var config = {
     //  new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /de|fr|hu/)  // moment
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     // new webpack.IgnorePlugin(/mqtt.min/),  //
-    new webpack.IgnorePlugin(/vertx/)  // for skyweb (maybe not needed anymore?)
+    new webpack.IgnorePlugin(/vertx/),  // for skyweb (maybe not needed anymore?)
+    new webpack.DefinePlugin({
+      'process.env':{
+        'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+      }
+    })
   ],
   module: {
       noParse: [
