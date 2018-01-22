@@ -35,7 +35,6 @@ var appPath = app.getAppPath();
 if( process.platform === 'darwin' ) {
     appPath = path.resolve( appPath, '../../..');
 }
-console.log("appPath:",appPath);
 var blink1ControlAutoLauncher = new AutoLaunch({
   name: 'Blink1Control2',
   path: appPath
@@ -54,11 +53,12 @@ var PreferencesModal = React.createClass({
     return this.loadSettings();
   },
   // doing this so we get guaranteed fresh config
-componentWillReceiveProps: function(/* nextProps */) {
-  if (!this.props.show) {
-    var settings = this.loadSettings();
-    this.setState(settings);
-  }
+  componentWillReceiveProps: function(nextProps) {
+    // if (!this.props.show) {
+    if( nextProps.show ) {
+      var settings = this.loadSettings();
+      this.setState(settings);
+    }
 },
 loadSettings: function() {
   var settings = {
