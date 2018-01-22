@@ -15,9 +15,6 @@ var conf = require('./configuration');
 //     // /ScriptService/
 // ];
 
-var events = [];
-var listeners = [];
-
 var logconfig = conf.readSettings('logger');
 if( !logconfig.maxEvents ) {logconfig.maxEvents = 100; }
 if( !logconfig.ignoredSources ) { logconfig.ignoredSources = []; }
