@@ -38,6 +38,7 @@ if( ! fs.existsSync(conf_file) ) {
 nconf.file({file: conf_file});
 
 var Config = {
+  saveTimer:null,
     // start: function() {
     //     var logconfig = this.readSettings('logger');
     //     // log.setConfig( logconfig );
@@ -45,7 +46,8 @@ var Config = {
     saveSettings: function(settingKey, settingValue) {
         // console.log("saving key:",settingKey);
         nconf.set(settingKey, settingValue);
-        nconf.save();
+        //nconf.save();
+        this.queueSave();
     },
     readSettings: function(settingKey) {
         nconf.load();
@@ -54,6 +56,20 @@ var Config = {
     getFilepath: function() {
         return conf_file;
         // return nconf.stores.file.file;  //FIXME: seems weird
+    },
+    queueSave: function() {
+      var self = this;
+      if( !self.saveTimer ) {
+        // console.log("queueSave: starting timer");
+        self.saveTimer = setTimeout( function() {
+          nconf.save();
+          self.saveTimer = null;
+          // console.log("queueSave: saved!");
+        }, 1000 );
+      }
+      else { // do nothing, wait for timer to expire to save us
+        // console.log("queueSave: timer already started")
+      }
     }
     // getUserDataHome: function() {
     //     var userDataHome = app.getPath('userData');
