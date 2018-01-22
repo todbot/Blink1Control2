@@ -147,7 +147,7 @@ var BigButtonSet = React.createClass({
   //     PatternsService.playPatternFrom( patternid );
   // },
   // can be called outside of this class
-  playBigButtonUser: function(buttonindex) {
+  playBigButtonUser: function(buttonindex,evt) {
     var button = this.state.buttonsUser[buttonindex];
     if( button ) {
       log.msg("bigButtonSet.playBigButtonUser:", buttonindex, button.name, button.blink1Id, button.ledn);
@@ -201,6 +201,7 @@ var BigButtonSet = React.createClass({
   },
 
   render: function() {
+    var self = this;
     var patterns = PatternsService.getAllPatterns();
     var serials = Blink1Service.getAllSerials();
 
@@ -214,7 +215,7 @@ var BigButtonSet = React.createClass({
       return (
             <BigButton key={index} idx={index} name={button.name} type={button.type}
                 color={button.color} patterns={patterns} serials={serials} serial={button.blink1Id}
-                onClick={this.playBigButtonUser.bind(null, index)}
+                onClick={this.playBigButtonUser.bind(this,index)}
                 onEdit={this.onEdit} onEditName={this.handleEditName.bind(this,index)}
                 />
       );
