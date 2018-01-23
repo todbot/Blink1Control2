@@ -119,7 +119,7 @@ var openMainWindow = function() {
 };
 var openDevTools = function() {
   mainWindow.show();
-  mainWindow.webContents.openDevTools({mode:'bottom'});
+  mainWindow.webContents.openDevTools({mode:'detach'});
 };
 var openPreferences = function() {
   mainWindow.show();
@@ -202,7 +202,7 @@ app.on('ready', function () {
       title: "Blink1Control2",
       maximizable: false,
       width: 1040,
-      height: 900,
+      height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
       resizable: true,
       show: false, // show later based on config
       webPreferences: {backgroundThrottling: false}
@@ -213,7 +213,7 @@ app.on('ready', function () {
       // }
     });
     mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
-    mainWindow.webContents.openDevTools({mode:'bottom'});
+    mainWindow.webContents.openDevTools({mode:'detach'});
   }
   else {
     mainWindow = new BrowserWindow({
