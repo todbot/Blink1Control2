@@ -34,26 +34,28 @@ var ToolTableList = require('./toolTableList');
 
 
 var ToolTable = React.createClass({
-
-    getInitialState: function() {
-        var rules = conf.readSettings('eventRules');
-        // do rules sanity check
-        if( !rules ||
-            rules.length===0 ||
-            (rules.find( function(r) { return !r.type || !r.name } ) )
-        ) {
-            log.msg("ToolTable.getInitialState: no rules or bad rules, setting to empty");
-            rules = [];
-            conf.saveSettings("eventRules", rules);
-        }
-        // var events = Eventer.getStatuses();
-        return {
-            rules: rules,
-            events: [],
-            workingIndex:-1,
-            showForm: "",
-        };
-    },
+  getInitialState: function() {
+    // var rules = conf.readSettings('eventRules');
+    var rules = JSON.parse(JSON.stringify( conf.readSettings('eventRules') ) ); // deep copy to avoid ipcRenderer.sendSync
+    var allowMultiBlink1 = conf.readSettings("blink1Service:allowMulti");
+      // do rules sanity check
+      if( !rules ||
+          rules.length===0 ||
+          (rules.find( function(r) { return !r.type || !r.name } ) )
+      ) {
+          log.msg("ToolTable.getInitialState: no rules or bad rules, setting to empty");
+          rules = [];
+          conf.saveSettings("eventRules", rules);
+      }
+      // var events = Eventer.getStatuses();
+      return {
+          rules: rules,
+          allowMultiBlink1: allowMultiBlink1,
+          events: [],
+          workingIndex:-1,
+          showForm: "",
+      };
+  },
     saveRules: function(rules) {
         log.msg("ToolTable.saveRules");
         this.setState({rules: rules});  // FIXME:
@@ -134,7 +136,7 @@ var ToolTable = React.createClass({
         this.setState({ showForm: "" });
     },
     handleCopyRule: function() {
-        console.log("ToolTable.handleCopyRule");
+        // console.log("ToolTable.handleCopyRule");
         if( this.state.workingIndex >= 0) {
             var rules = this.state.rules;
             var rule = Object.assign( {}, rules[ this.state.workingIndex ]); // clone
@@ -150,11 +152,14 @@ var ToolTable = React.createClass({
         this.setState({showForm:key, workingIndex:-1});
     },
     render: function() {
-        // hmm is there a better way to do the following
-        // allowMulti if set and number of blink1s > 1
-        var allowMultiBlink1 = conf.readSettings("blink1Service:allowMulti") && (Blink1Service.isConnected() > 1);
+      log.msg("ToolTableList.render");
+      // hmm is there a better way to do the following
+      // allowMulti if set and number of blink1s > 1
+      // var allowMultiBlink1 = conf.readSettings("blink1Service:allowMulti") && (Blink1Service.isConnected() > 1);
+      // var allowMultiBlink1 = (Blink1Service.isConnected() > 1) && conf.readSettings("blink1Service:allowMulti");
+      var allowMultiBlink1 = (Blink1Service.isConnected() > 1) && this.state.allowMultiBlink1;
 
-        var patterns = PatternsService.getAllPatterns();
+      var patterns = PatternsService.getAllPatterns();
         // var events = this.state.events;
         var workingRule = { name: 'new '+ this.state.showForm + ' rule '+ (this.state.rules.length+1),
                         type: this.state.showForm,
