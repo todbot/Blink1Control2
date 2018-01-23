@@ -96,25 +96,26 @@ saveSettings: function() {
     return false;
   }
 
-  conf.saveSettings('startup:hideDockIcon', this.state.hideDockIcon);
-  conf.saveSettings('startup:startMinimized', this.state.startMinimized);
-  conf.saveSettings('startup:startAtLogin', this.state.startAtLogin);
+  conf.saveSettingsMem('startup:hideDockIcon', this.state.hideDockIcon);
+  conf.saveSettingsMem('startup:startMinimized', this.state.startMinimized);
+  conf.saveSettingsMem('startup:startAtLogin', this.state.startAtLogin);
   // conf.saveSettings('startup:startupPattern', this.state.startupPattern);
-  conf.saveSettings('startup:shortcutPrefix', this.state.shortcutPrefix);
-  conf.saveSettings('startup:shortcutResetKey', this.state.shortcutResetKey);
-  conf.saveSettings('blink1Service:enableGamma', this.state.enableGamma);
-  conf.saveSettings('blink1Service:blink1ToUse', this.state.blink1ToUse);
-  conf.saveSettings('blink1Service:allowMulti', this.state.allowMultiBlink1);
-  conf.saveSettings('apiServer:enabled', this.state.apiServerEnable);
-  conf.saveSettings('apiServer:port', this.state.apiServerPort);
-  conf.saveSettings('apiServer:host', this.state.apiServerHost);
-  conf.saveSettings('proxy:enable', this.state.proxyEnable);
-  conf.saveSettings('proxy:host', this.state.proxyHost);
-  conf.saveSettings('proxy:port', this.state.proxyPort);
-  conf.saveSettings('proxy:username', this.state.proxyUser);
-  conf.saveSettings('proxy:password', this.state.proxyPass);
-  conf.saveSettings('patternsService:playingSerialize', this.state.playingSerialize);
-
+  conf.saveSettingsMem('startup:shortcutPrefix', this.state.shortcutPrefix);
+  conf.saveSettingsMem('startup:shortcutResetKey', this.state.shortcutResetKey);
+  conf.saveSettingsMem('blink1Service:enableGamma', this.state.enableGamma);
+  conf.saveSettingsMem('blink1Service:blink1ToUse', this.state.blink1ToUse);
+  conf.saveSettingsMem('blink1Service:allowMulti', this.state.allowMultiBlink1);
+  conf.saveSettingsMem('apiServer:enabled', this.state.apiServerEnable);
+  conf.saveSettingsMem('apiServer:port', this.state.apiServerPort);
+  conf.saveSettingsMem('apiServer:host', this.state.apiServerHost);
+  conf.saveSettingsMem('proxy:enable', this.state.proxyEnable);
+  conf.saveSettingsMem('proxy:host', this.state.proxyHost);
+  conf.saveSettingsMem('proxy:port', this.state.proxyPort);
+  conf.saveSettingsMem('proxy:username', this.state.proxyUser);
+  conf.saveSettingsMem('proxy:password', this.state.proxyPass);
+  conf.saveSettingsMem('patternsService:playingSerialize', this.state.playingSerialize);
+  conf.saveSettingsSync(); // save settings to disk
+  
   Blink1Service.reloadConfig();
   ApiServer.reloadConfig();
   PatternsService.reloadConfig();
