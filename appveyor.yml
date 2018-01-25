@@ -68,7 +68,7 @@ build_script:
 - npm install
 - npm run postinstall
 - npm run pack
-- npm run dist
+- npm run dist:draft
 # show outputs
 - dir dist
 
