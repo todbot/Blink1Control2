@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "author": "ThingM <blink1@thingm.com> (https://blink1.thingm.com/)",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "productName": "Blink1Control2",
@@ -18,7 +18,7 @@
     "events": "^1.1.1",
     "express": "^4.13.4",
     "imap": "^0.8.19",
-    "is-electron-renderer": "^2.0.0",
+    "is-electron-renderer": "^2.0.1",
     "moment": "^2.17.1",
     "nconf": "^0.10.0",
     "needle": "^1.5.1",

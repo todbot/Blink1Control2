@@ -100,7 +100,7 @@ var MenuMaker = {
 
     setupTrayMenu: function() {
         // var self = this;
-        console.log("resourcesPath:",process.resourcesPath, "appPath:",app.getAppPath());
+        // console.log("resourcesPath:",process.resourcesPath, "appPath:",app.getAppPath());
         if( process.platform === 'win32' ) {  // FIXME: make this icon better for Windows
             tray = new Tray( app.getAppPath() + '/images/icons/blink1mk2-icon2-128px.ico' );
         }
@@ -160,6 +160,12 @@ var MenuMaker = {
                             ipcRenderer.send('openAboutWindow');
                         }
                     },
+                    { label: 'Check for Updates...',
+                      click: function(menuItem) {
+                        // console.log("MENUITEM:", menuItem);
+                        ipcRenderer.send('checkForUpdates');
+                      }
+                    },
                     { type: 'separator' },
                     { label: 'Preferences...', accelerator: "CommandOrControl+,",
                         click: function() {
@@ -203,6 +209,11 @@ var MenuMaker = {
                         click: function() {
                             ipcRenderer.send('openAboutWindow');
                         }
+                    },
+                    { label: 'Check for updates',
+                      click: function() {
+                        ipcRenderer.send('checkForUpdates');
+                      }
                     },
                     { type: 'separator' },
                     { label: 'Preferences...', accelerator: "CommandOrControl+,",

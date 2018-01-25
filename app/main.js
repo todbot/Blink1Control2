@@ -5,14 +5,13 @@ var app = electron.app;
 var ipcMain = electron.ipcMain;
 var dialog = electron.dialog;
 
-var autoUpdater = require('electron-updater').autoUpdater;
-var autoUpdateMsg = "";
-
 var BrowserWindow = electron.BrowserWindow;
 var Menu = electron.Menu;
 var crashReporter = electron.crashReporter;
 
 var path = require('path');
+
+var updater = require('./updater');
 
 var mainWindow = null;
 
@@ -110,7 +109,7 @@ var openAboutWindow = function () {
     aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
 
   // aboutWindow.loadURL('data:text/html,' + info);
-  aboutWindow.loadURL( 'file://' + __dirname + '/about.html#'+autoUpdateMsg );
+  aboutWindow.loadURL( 'file://' + __dirname + '/about.html') //+autoUpdateMsg );
   return aboutWindow;
 };
 
@@ -145,31 +144,32 @@ var openHelpWindow = function() {
   helpWindow.loadURL( 'file://' + __dirname + '/help/index.html' );
 };
 
-autoUpdater.on('checking-for-update', () => {
-  console.log('Checking for update...');
-});
-autoUpdater.on('update-available', (info) => {
-  console.log('Update available.');
-});
-autoUpdater.on('update-not-available', (info) => {
-  console.log('Update not available.');
-});
-autoUpdater.on('error', (err) => {
-  console.log('Error in auto-updater.');
-});
+// autoUpdater.on('checking-for-update', () => {
+//   console.log('Checking for update...');
+// });
+// autoUpdater.on('update-available', (info) => {
+//   console.log('Update available.');
+// });
+// autoUpdater.on('update-not-available', (info) => {
+//   console.log('Update not available.');
+// });
+// autoUpdater.on('error', (err) => {
+//   console.log('Error in auto-updater.');
+// });
 
 //
 // the main deal
 //
 app.on('ready', function () {
 
-    autoUpdater.autoDownload = false;
+    // autoUpdater.autoDownload = false;
     // autoUpdater.checkForUpdates();
 
-    var hideDockIcon = config.readSettings('startup:hideDockIcon');
-    if( hideDockIcon && process.platform === 'darwin' ) {
-        app.dock.hide();
-    }
+  var hideDockIcon = config.readSettings('startup:hideDockIcon');
+  if( hideDockIcon && process.platform === 'darwin' ) {
+    app.dock.hide();
+  }
+
   var startMinimized = config.readSettings('startup:startMinimized');
   if( !startMinimized ) {
     var splash = openAboutWindow();
@@ -178,7 +178,7 @@ app.on('ready', function () {
       mainWindow.show();
     }, 3000 );
   }
-    var showDebug = config.readSettings('logger.showDebug') || false;
+  var showDebug = config.readSettings('logger.showDebug') || false;
 
   // Install global shortcut key (see also MenuMaker)
   var globalShortcut = electron.globalShortcut;
@@ -289,5 +289,8 @@ app.on('ready', function () {
   ipcMain.on('quitnow', function() {
     quit();
   });
+  ipcMain.on('checkForUpdates', function() {
+    updater.checkForUpdates();
+  })
 
 });

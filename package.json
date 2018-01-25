@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "author": "ThingM <blink1@thingm.com> (https://blink1.thingm.com/)",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "keywords": [
@@ -31,6 +31,7 @@
     "dist:test": "electron-builder --dir",
     "dist:draft": "electron-builder --publish=never",
     "dist": "electron-builder",
+    "release": "electron-builder",
     "dist:win32bit": "electron-builder --ia32 --win --publish=never",
     "clean": "rimraf app/node_modules node_modules package-lock.json app/package-lock.json",
     "env": "env",
