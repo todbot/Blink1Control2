@@ -55,7 +55,7 @@ var PreferencesModal = React.createClass({
   // doing this so we get guaranteed fresh config
   componentWillReceiveProps: function(nextProps) {
     // if (!this.props.show) {
-    if( nextProps.show ) {
+    if( !this.props.show && nextProps.show ) {
       var settings = this.loadSettings();
       this.setState(settings);
     }
@@ -115,7 +115,7 @@ saveSettings: function() {
   conf.saveSettingsMem('proxy:password', this.state.proxyPass);
   conf.saveSettingsMem('patternsService:playingSerialize', this.state.playingSerialize);
   conf.saveSettingsSync(); // save settings to disk
-  
+
   Blink1Service.reloadConfig();
   ApiServer.reloadConfig();
   PatternsService.reloadConfig();
@@ -238,7 +238,7 @@ render: function() {
                   LED gamma-correction
                 </Checkbox>
                 <Checkbox bsSize="small" title="Only allow color patterns to play single-file, not at the same time"
-                  name="playingSerialize" value={this.state.playingSerialize} onChange={this.handleInputChange} >
+                  name="playingSerialize" checked={this.state.playingSerialize} onChange={this.handleInputChange} >
                   Pattern play serialize
                 </Checkbox>
               </Form>
