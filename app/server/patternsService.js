@@ -352,6 +352,9 @@ var PatternsService = {
             if( pattern.timer ) {
                 clearTimeout(pattern.timer);  // pattern.timer.stop()
             }
+            if( pattern.temp ) {
+              patternsTemp = patternsTemp.filter( (patt) => patt.id !== pattern.id );
+            }
             if (playingPattern.id === pattern.id) {
                 playingPattern = {};
                 if (playingQueue.length > 0) { // if queue, get next in queue
@@ -409,12 +412,19 @@ var PatternsService = {
         var blinkre = /~blink:(#*\w+)-(\d+)(-(.+))?/; // blink:color-cnt-time
         // first, is the pattern actually a hex color?
         if (pattid.startsWith('#')) { // color
-            // count + ',' + c.toHexString() + ','+secs+
-            Blink1Service.fadeToColor(100, pattid, 0, blink1Id); // 0 == all LEDs
-            return pattid;
+            // Blink1Service.fadeToColor(100, pattid, 0, blink1Id); // 0 == all LEDs
+            patternstr = '1,' + pattid + ',0,0';
+            patt = _makePattern({
+                name: pattid,
+                id: pattid,
+                patternstr: patternstr,
+                temp: true
+            });
+            patternsTemp.push(patt); // save temp pattern
+            pattid = patt.id;            //return pattid;
         }
         // then, look for special meta-pattern
-        if (pattid.startsWith('~')) {
+        else if (pattid.startsWith('~')) {
             if (pattid === '~off') {
                 log.msg("PatternsService: playing special '~off' pattern");
                 PatternsService.stopAllPatterns();
@@ -542,11 +552,7 @@ var PatternsService = {
             pattern.playpos = 0;
             pattern.playcount++;
             if (pattern.playcount === pattern.repeats) {
-                this.stopPattern(pattern.id); // notifies change listeners
-                if (pattern.temp) { // remove temp pattern after its done
-                    patternsTemp.filter( (patt) => patt.id !== pattern.id );
-                    this.notifyChange();
-                }
+                this.stopPatternFrom(source, pattern.id, blink1Id); // notifies change listeners
                 return;
             }
         }
