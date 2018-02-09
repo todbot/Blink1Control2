@@ -14,7 +14,9 @@ let updater = {}
 autoUpdater.autoDownload = false
 
 autoUpdater.on('error', (error) => {
-  dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString())
+  // dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString())
+  var status = (error && error.status) ? error.status : '';
+  dialog.showErrorBox('Error: could not check for updates. ', status);
 })
 
 autoUpdater.on('update-available', () => {
