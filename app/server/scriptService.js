@@ -69,7 +69,7 @@ var ScriptService = {
         });
     },
     // FIXME: put limits in to "str" length
-    // script rule:
+    // script/url/file rule:
     // {
     //   name: 'name of script'
     //   type: 'script'
@@ -79,6 +79,7 @@ var ScriptService = {
     runRule: function(rule) {
         var self = this;
         log.msg("ScriptService.runRule:",rule.name, rule.type, rule,"timer Ids:",self.ruleTimers);
+
         if( rule.type === 'script' ) {
             var spawn = require('child_process').spawn;
             try {
