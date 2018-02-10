@@ -34,20 +34,11 @@ os:
 env:
   global:
   matrix:
-#  - TRAVIS_NODE_VERSION="4"
-#  - TRAVIS_NODE_VERSION="6"
-  - TRAVIS_NODE_VERSION="7"
-#  - TRAVIS_NODE_VERSION="4" ARCH="x86"
-#  - TRAVIS_NODE_VERSION="6" ARCH="x86"
-#  - TRAVIS_NODE_VERSION="7" ARCH="x86"
+  - TRAVIS_NODE_VERSION="8"
 matrix:
   exclude:
   - os: osx
-    env: TRAVIS_NODE_VERSION="4" ARCH="x86"
-  - os: osx
-    env: TRAVIS_NODE_VERSION="6" ARCH="x86"
-  - os: osx
-    env: TRAVIS_NODE_VERSION="7" ARCH="x86"
+    env: TRAVIS_NODE_VERSION="8" ARCH="x86"
 
 cache:
   directories:
@@ -78,19 +69,10 @@ before_install:
 - node -p 'process.platform + "@" + process.arch'
 - npm --version
 #- ldconfig -p | grep i386
-#- ls -al /lib/i386-linux-gnu/*usb*
 
 # use g++-4.8 on Linux
 #- if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
 #- $CXX --version
-
-## figure out if we should publish
-#- PUBLISH_BINARY=false
-## if we are building a tag then publish
-#- echo $TRAVIS_BRANCH
-#- echo `git describe --tags --always HEAD`
-#- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
-#- echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 
 # Cleanup the output of npm
 - npm config set progress false
@@ -100,31 +82,16 @@ install:
 # ensure source install works
 #- export V=1
 - npm install
-- npm run postinstall
 
 script:
-# if publishing, do it
-#- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package; fi;
-#- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish --release; fi;
-
-- npm run webpack
-# this builds the .dmg and .zip files
+- npm run pack
 - npm run dist:draft
 
-- echo "*** done. debug begin ***"
-#- env | sort
+- echo "*** done. dist contents ***"
 - ls -al dist
-- echo "*** done. debug end ***"
+- echo "*** done. ***"
 
-# cleanup
-#- node-pre-gyp clean
 
-# test binary exists
-#- if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi;
-
-# after_success:
-# - bash <(curl -s https://codecov.io/bash)
-#
 before_deploy:
 
 deploy:

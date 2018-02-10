@@ -2,12 +2,9 @@ os: unstable
 environment:
 
   matrix:
-#  - nodejs_version: "4"
-#  - nodejs_version: "6"
-  - nodejs_version: "7"
+  - nodejs_version: "8"
 
 platform:
-#- x86
 - x64
 
 install:
@@ -28,84 +25,25 @@ install:
       "electron_version" = $env:electron_version
     } | Out-String | Write-Host;
 
-# work around bug in npm 2.15.1 where checksums were coming back bad (node 0.12)
-- ps: >
-    if ($(npm -v) -eq "2.15.1") {
-      npm install -g npm@3 | Write-Host;
-    }
-    npm -v | Write-Host;
 
-# work around an issue with node-gyp v3.3.1 and node 4x
-# package.json has no certificates in it so we're cool
-# https://github.com/nodejs/node-gyp/issues/921
-- ps: npm config set -g cafile=package.json | Write-Host;
-- ps: npm config set -g strict-ssl=false | Write-Host;
-
-# Check if we're building the latest tag, if so
-# then we publish the binaries if tests pass.
-- ps: >
-    if ($env:appveyor_repo_tag -match "true" -and ("$(git describe --tags --always HEAD)" -eq $env:appveyor_repo_tag_name)) {
-      $env:publish_binary = 1;
-    } else {
-      $env:publish_binary = 0;
-    }
-    true;
-
-- ps: >
-    if ($env:publish_binary -eq 1) {
-      "We're publishing a binary!" | Write-Host
-    } else {
-      "We're not publishing a binary" | Write-Host
-    }
-    true;
-
-# Cleanup the output of npm
 - ps: >
     npm config set progress false
     npm config set spin false
 
 build_script:
 - npm install
-- npm run postinstall
 - npm run pack
 - npm run dist:draft
 # show outputs
 - dir dist
 
 test_script:
-#- ps: npm run test
-
-# If we run npm test in powershell it'll have the wrong encoding
-# so we have to do it like this
-
-#- IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
-#- IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
-
-#deploy: OFF
-#deploy:
-#  tag: $(appveyor_repo_tag_name)
-#  description: 'Tod put Release description here; $(appveyor_pull_request_title); $(appveyor_repo_commit_message)'
-#  provider: GitHub
-#  auth_token:
-#    secure: VYJPed/ilAHFpd7S0zW/C2U1jVqayW5QFBitwBqralJlKlgAPW6n1L1VUIOJswiW # your encrypted token from GitHub
-#  artifact: zips, exes
-#  draft: false
-#  prerelease: false
-#  on:
-#    branch: master                 # release from master branch only
-#    appveyor_repo_tag: true        # deploy on tag push only
 
 matrix:
   fast_finish: true
 
 artifacts:
-#    - path: 'dist\**\*.nupkg' # upload all NuGet packages to release assets
-#      name: nupkgs
     - path: 'dist\*.zip'
       name: zips
     - path: 'dist\*.exe'
       name: exes
-#    - path: installer/RELEASES
-#      name: release
-#    - path: installer/ElectronTemplateSetup.exe
-#      name: setup
