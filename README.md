@@ -30,7 +30,7 @@ Or to emulate a production run:
 npm install        # installs all dependencies locally
 npm run webpack    # packs app, there will be some warnings, ignore
 npm run start      # starts the packaged app
-npm run dist       # create relocatable app and installer(s), in "dist" dir
+npm run dist:draft # create relocatable app and installer(s), in "dist" dir
 ```
 
 #### Linux:
@@ -51,11 +51,11 @@ Install the following pre-requisites:
 
 - libgnome-keyring-dev
 - icnsutils
-- graphicsmagick
 - xz-utils
 - rpm
 - bsdtar
 - libusb-1.0.0-dev
+- libudev-dev
 
 (see: https://github.com/electron-userland/electron-builder/issues/1407)
 
