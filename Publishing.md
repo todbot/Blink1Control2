@@ -22,7 +22,7 @@ Steps:
 #### Current build machines
 - Mac OS X 10.12.6 on Macbook Pro 2013
 - Windows 10 Pro (in VM)
-- Ubuntu 16.04 (in VM)
+- Ubuntu 14.04 (in VM)  (must be 14.04 for earlier libc)
 
 
 
