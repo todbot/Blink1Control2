@@ -98,12 +98,12 @@ var handleUrl = function(e,url) {
 var openAboutWindow = function () {
   // DEV: aboutWindow will be garbage collection automatically
   var aboutWindow = new BrowserWindow({
+    icon: path.join(__dirname, 'images/icons/blink1mk2-icon2-128px.png'),
     title: "About Blink1Control2",
     alwaysOnTop: true,
     autoHideMenuBar: true,
     height: 375,
     width: 500
-    // icon: assets['icon-32'],
   });
     aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
     aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
@@ -134,7 +134,6 @@ var openHelpWindow = function() {
     center: true,
     height: 700,
       width: 800
-      // icon: assets['icon-32'],
     });
     helpWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
     helpWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
@@ -199,6 +198,7 @@ app.on('ready', function () {
 
   if( process.env.NODE_ENV === 'development' ) {
     mainWindow = new BrowserWindow({
+      icon: path.join(__dirname, 'images/icons/blink1mk2-icon2-128px.png'),
       title: "Blink1Control2",
       maximizable: false,
       width: 1040,
@@ -217,6 +217,7 @@ app.on('ready', function () {
   }
   else {
     mainWindow = new BrowserWindow({
+      icon: path.join(__dirname, 'images/icons/blink1mk2-icon2-128px.png'),
       title: "Blink1Control2",
       width: 1040,
       height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
