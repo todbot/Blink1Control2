@@ -87,7 +87,7 @@ var BigButton = React.createClass({
   },
   showContextMenu: function(evt) {
     // log.msg("BigButton:showContextMenu2: menu:",a,"b:",b,"c:",c);
-    evt.preventDefault();
+    evt.preventDefault(); // don't send click further down
     if( this.props.type === 'sys' ) { return; } // no context for sys buttons
     var menu = this.makeMenu();
     menu.popup(currentWindow);
@@ -98,7 +98,8 @@ var BigButton = React.createClass({
   },
 
   render: function() {
-    var buttonStyle = { width: 72, height: 72, padding: 3, margin: 5, textShadow:'none'  };
+    //var buttonStyle = { width: 72, height: 72, padding: 3, margin: 5, textShadow:'none'  };
+    var buttonStyle = { width:'100%', textShadow:'none'  };
     // var tstyle = { height: 28, border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal'  };
     // var tstyle = { height: 24, display:'flex',justifyContent:'center',alignItems:'center',border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal', verticalAlign:'middle' };
     var namestyle = { height: 24, display:'flex',justifyContent:'center', alignItems:'flex-end',
@@ -132,14 +133,26 @@ var BigButton = React.createClass({
       iconContent = <i className="fa fa-plus fa-2x"></i>;
     }
     var titlestr = (this.props.type !== 'sys') ? "right-click to edit button":"";
+    var hasContextMenu = !(this.props.type === 'sys' ); // no context for sys buttons
+    //var contextVisible = (hasContextMenu) ? 'visible' : 'hidden';
+    var contextButton = (!hasContextMenu) ? null :
+      <button style={{ position:'absolute', top:3, right:3, margin:0, padding:0, width:15, height:10,
+                  lineHeight:0, background:'transparent', outline:'none',border:'0px solid' }}
+        onClick={this.showContextMenu } title="click to edit button"><i className="fa fa-caret-down"></i></button>;
 
     return (
+      // onMouseEnter={() => log.msg("mouseEnter: "+this.props.name)}
+      // onMouseLeave={() => log.msg("mouseLeave: "+this.props.name)}
+      <div
+        style={{position:'relative', width:72, height:72, padding:3, margin:5, display:'inline-block', background:'transparent'}}>
+        {contextButton}
       <Button style={buttonStyle} title={titlestr}
           onContextMenu={this.showContextMenu}
           onClick={this.props.onClick}>
           {iconContent}
           <div style={namestyle}>{this.props.name}</div>
       </Button>
+      </div>
     );
   }
 });
