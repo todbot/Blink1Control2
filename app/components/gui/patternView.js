@@ -161,7 +161,7 @@ var PatternView = React.createClass({
         var lockMenuIcon = (pattern.locked) ? "fa fa-lock" : "fa fa-unlock-alt";
         var lockMenuText = (pattern.locked) ? "Unlock pattern" : "Lock pattern";
 
-        var littleButtStyle = {borderStyle: "none", background: "inherit", display: "inline", padding: 0, outline: 0 };
+        var littleButtStyle = {borderStyle:'none', background:'inherit', display:'inline', padding: 0, outline: 'none' };
 
         var editOptions =
             <DropdownButton style={editButtStyle} title="" id={pid} pullRight >
@@ -216,7 +216,7 @@ var PatternView = React.createClass({
         return (
             <div style={style_pattern}>
 
-                <div style={style_playbutton} onClick={this.onPlayStopPattern}>
+                <div style={style_playbutton} onClick={this.onPlayStopPattern} title="click to try pattern">
                     <i className={(pattern.playing) ? "fa fa-stop" : "fa fa-play"}></i>
                 </div>
 
@@ -231,7 +231,7 @@ var PatternView = React.createClass({
                 </div>
 
                 <div style={style_lockbutton}><i style={{}} className={pattern.locked ? "fa fa-lock" : ""}></i></div>
-                <div style={style_editoptions}>{editOptions}</div>
+                <div style={style_editoptions} title="pattern edit options">{editOptions}</div>
             </div>
         );
     }
