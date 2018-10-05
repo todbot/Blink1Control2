@@ -65,6 +65,7 @@ var Blink1ColorPicker = React.createClass({
     },
     handleChangeSecs: function(event) {
         var secs = event.target.value;  // FIXME
+        secs = ( secs < 0 ) ? 0 : (secs>10) ? 10 : secs;
         Blink1Service.setCurrentMillis(secs*1000); // doesn't trigger an updateCurrentColor?
         this.setState({secs: secs});
     },
