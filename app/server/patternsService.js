@@ -7,7 +7,7 @@
  * - ~off
  * - ~blink:white-3
  * - ~blink:#ff00ff-5
- * - ~pattern:3,#ff00ff,0.5,0,#00ff00,1.3,0
+ * - ~pattern:pattname:3,#ff00ff,0.5,0,#00ff00,1.3,0
  * - ~pattern-stop:pattname
  * - ~play:pattname
  * - ~stop:pattname
@@ -425,6 +425,7 @@ var PatternsService = {
         }
         // then, look for special meta-pattern
         else if (pattid.startsWith('~')) {
+          log.msg('TESTING pattern string:'+pattid);
             if (pattid === '~off') {
                 log.msg("PatternsService: playing special '~off' pattern");
                 PatternsService.stopAllPatterns();
@@ -464,7 +465,7 @@ var PatternsService = {
             }
             else if (pattid.startsWith('~pattern:')) { // FIXME: use regex yo
                 var pattparts = pattid.split(':');
-                if( pattparts.length !== 3 ) { // not a proper pattern
+                if( pattparts.length !== 3 ) { // not a proper pattern, must have '~pattern', 'pattname', and 'pattstring'
                     return false;
                 }
                 var pattname = pattparts[1];

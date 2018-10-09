@@ -34,7 +34,7 @@ var MenuMaker = {
             return {
                 label: "Set: " + bb.name,
                 accelerator: (withAccelerators) ? "CommandOrControl+" + (idx+1): null,
-                // icon: swatchIcon,
+                // FIXME: would be nice to have little swatch of button color
                 click: function(/*item*/) {
                     Eventer.emit('playBigButtonUser', idx);
                 }
@@ -130,13 +130,7 @@ var MenuMaker = {
     },
 
     setupMainMenu: function() {
-        // var swatchIconImg = new Jimp(32, 32, 0xFF0000FF, function (err, image) {
-        // };
-        // var swatchIconBuffer = new Buffer( 32 * 32 * 4 );
-        // for( var i = 0; i < swatchIconBuffer.length; i=i+4) {
-        // 	swatchIconBuffer.writeUInt32BE( 0xFF0000FF, i );
-        // }
-        // var swatchIcon = nativeImage.createFromBuffer( swatchIconBuffer );
+
         var resetShortcut = MenuMaker.getShortcutReset();
 
         var bigButtonMenu = MenuMaker.createBigButtonMenu(true);
