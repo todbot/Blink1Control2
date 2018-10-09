@@ -11,6 +11,7 @@ Steps:
     npm run dist   # build the dist products, and publish, must do it on each OS (Mac,Win,Linux)
     ```
     Note: must set GH_TOKEN for `npm run dist` to publish to github
+    (e.g. `export GH_TOKEN=...` on Mac & Linux, `$env:GH_TOKEN=...` on Windows Powershell)
 
 - Edit release on github (tag created by 'dist' above)
 - Write release notes (changelog)
