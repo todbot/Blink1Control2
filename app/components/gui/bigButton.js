@@ -137,7 +137,7 @@ var BigButton = React.createClass({
     //var contextVisible = (hasContextMenu) ? 'visible' : 'hidden';
     var contextButton = (!hasContextMenu) ? null :
       <button style={{ position:'absolute', top:3, right:3, margin:0, padding:0, width:15, height:10,
-                  lineHeight:0, background:'transparent', outline:'none',border:'0px solid' }}
+                  lineHeight:0, color:'#666', background:'transparent', outline:'none',border:'none' }}
         onClick={this.showContextMenu } title="click to edit button"><i className="fa fa-caret-down"></i></button>;
 
     return (
