@@ -113,10 +113,7 @@ var ScriptService = {
                     return;
                     // return log.error(err);
                 }
-                // if( self.lastEvents[rule.name] !== data ) {
-                self.parse(rule,data); // NOPE
-                    // self.lastEvents[rule.name] = data;
-                // }
+                self.parse(rule,data);
             });
         }
         else if( rule.type === 'url' ) {
@@ -158,10 +155,10 @@ var ScriptService = {
      * if 'actionType == 'parse-pattern', attempt to find a pattern
      *   with the "pattern:<patternname>" format, and play it.
      *   Can also use meta-patterns here.
-     * Otherwise, look in text for a color string.
+     * if 'actionType == 'parse-color', look in text for RGB hex color string
      *
      * @param  {Rule} rule eventRules rule for this content
-     * @param  {String} str  the content to be parsed
+     * @param  {String} str  the content to be parsed, potentially multiple lines
      * @return {[type]}      [description]
      */
     parse: function(rule, str) {
@@ -171,8 +168,10 @@ var ScriptService = {
         }
         str = str.substring(0,this.config.maxStringLength);
         var self = this;
-        var patternre = /pattern:\s*(#*\w+)/;
-        var colorre = /(#[0-9a-f]{6}|#[0-9a-f]{3}|color:\s*(.+?)\s)/i;
+        //var patternre = /pattern:\s*(#*\w+)/; // orig
+        //var patternre = /pattern:\s*(\"([^"])*\"|#?\w+)/; // suggested by @slakichi in issue #101
+        var patternre = /pattern:\s*("*)(.+)\1/; // match everything either quoted or not
+        var colorre = /(#[0-9a-f]{6}|#[0-9a-f]{3}|color:\s*(.+?)\s)/i; // regex to match hex color codes or 'color:' names
         var matches;
 
         if( self.lastEvents[rule.name] === str && rule.actOnNew ) {
@@ -212,11 +211,14 @@ var ScriptService = {
         else if( actionType === 'parse-pattern' ) {
             matches = patternre.exec( str );
             if( matches ) {
-                var patt_name = matches[1];
+                var patt_name = matches[2]; // it's always the 2nd match, either quoted or not
+
                 if( this.playPattern( patt_name, rule.name, rule.blink1Id ) ) {
-                    Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:str});
+                    Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:patt_name});
                 }
-                Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
+                else { 
+                    Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
+                }
             }
             else {
                 Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
