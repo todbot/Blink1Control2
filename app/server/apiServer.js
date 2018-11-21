@@ -31,15 +31,17 @@ app.get('/blink1(/id)?', function(req,res) {
     });
 });
 app.get('/blink1/off', function(req,res) {
+    var blink1_id = Number(req.query.blink1_id);
     PatternsService.stopAllPatterns();
-    Blink1Service.fadeToColor(0.1, '#000000', 0); // turn off everyone
+    Blink1Service.fadeToColor(0.1, '#000000', 0, blink1_id); // turn off everyone
     res.json({
         status: "blink1 off"
     });
 });
 app.get('/blink1/on', function(req,res) {
+    var blink1_id = Number(req.query.blink1_id);
     PatternsService.stopAllPatterns();
-    Blink1Service.fadeToColor(0.1, '#ffffff'); // turn off everyone
+    Blink1Service.fadeToColor(0.1, '#ffffff', 0, blink1_id); // turn off everyone
     res.json({
         status: "blink1 on"
     });
