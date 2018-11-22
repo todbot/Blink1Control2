@@ -50,7 +50,7 @@ app.get('/blink1/fadeToRGB', function(req, res) {
     var color = tinycolor(req.query.rgb);
     var secs = Number(req.query.time) || 0.1;
     var ledn = Number(req.query.ledn) || 0;
-    var blink1_id = Number(req.query.blink1_id) || 0;
+    var blink1_id = Number(req.query.blink1_id);  // undefined means all blink1 devices
 
     // var blink1_id = req.query.blink1_id || '';
     var status = "success";
