@@ -14,6 +14,7 @@ var log = require('../../logger');
 
 var currentWindow = remote.getCurrentWindow();
 
+
 var BigButton = React.createClass({
   propTypes: {
     idx: React.PropTypes.number,
@@ -38,8 +39,9 @@ var BigButton = React.createClass({
     // log.msg("BigButton.componentDidMount type:",this.props.type);
     // if( this.props.type !== 'sys' ) { this.menu = this.makeMenu(); }
   },
+  // Make serials menu
   makeSerialsMenu: function() {
-    // Make serials menu
+    var self = this;
     var serialsmenu = null;
     if( this.props.serials && this.props.serials.length > 0 ) {
       serialsmenu = new Menu();

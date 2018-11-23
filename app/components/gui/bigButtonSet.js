@@ -141,7 +141,13 @@ var BigButtonSet = React.createClass({
   // internal function used by differnt kinds of buttons
   setBlink1Color: function(color, ledn, blink1id) {
     ledn = ledn || 0; // 0 means all
+    // if( blink1id === undefined ) { 
+    //   Blink1Service.getAllSerials().map( function(serial,idx) {
+    //     Blink1Service.fadeToColor( 100, color, ledn, serial );  // FIXME: millis
+    //   });
+    // } else { 
     Blink1Service.fadeToColor( 100, color, ledn, blink1id );  // FIXME: millis
+    // }
   },
   // playPattern: function(patternid) {
   //     PatternsService.playPatternFrom( patternid );
@@ -204,7 +210,7 @@ var BigButtonSet = React.createClass({
     var self = this;
     var patterns = PatternsService.getAllPatterns();
     var serials = Blink1Service.getAllSerials();
-
+    
     var createBigButtonSys = function(button, index) { // FIXME: understand bind()
       return (
             <BigButton key={index} name={button.name} type='sys'  iconClass={button.iconClass}
