@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "author": "ThingM <blink1@thingm.com> (https://blink1.thingm.com/)",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "keywords": [
@@ -106,10 +106,8 @@
     "cross-env": "^5.0.5",
     "css-loader": "^0.24.0",
     "devtron": "^1.4.0",
-    "electron": "^1.7.11",
-    "electron-builder": "^19.56.0",
-    "electron-builder-squirrel-windows": "19.33.0",
-    "electron-publisher-s3": "^19.28.3",
+    "electron": "^1.8.8",
+    "electron-builder": "^20.36.2",
     "file-loader": "^0.9.0",
     "font-awesome": "^4.5.0",
     "json-loader": "^0.5.4",
