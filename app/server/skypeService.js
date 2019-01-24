@@ -54,31 +54,39 @@ var SkypeService = {
             return;
         }
 
-        var skyweb = new Skyweb();
+        // var skyweb = new Skyweb();
+        var skyweb = new Skyweb.default();
         self.skyweb = skyweb;
 
         self.success= false;
         Eventer.addStatus( {type:'info', source:'skype', id:rule.name, text:'connecting...'});
 
+        var errorCount=0;
+        const errorListener = (eventName: string, error: string) => {
+            log.msg(`SkypeService: ${errorCount} : Error occured : ${error}`);
+            errorCount++;
+            if (errorCount === 10) {
+                log.msg(`SkypeService: removing error listener`);
+                skyweb.un('error', errorListener); // Removing error listener
+            }
+        };
+        skyweb.on('error', errorListener); //Adding error listener
+
         skyweb.login(rule.username, pass).then((skypeAccount) => {
             self.success = true;
-            log.msg('SkywebService is initialized now!');
+            log.msg('SkypeService is initialized now!');
             // log.msg('Here is some info about you:' + JSON.stringify(skypeAccount.selfInfo, null, 2));
             Eventer.addStatus( {type:'info', source:'skype', id:rule.name, text:'connected'});
             // console.log('Your contacts : ' + JSON.stringify(skyweb.contactsService.contacts, null, 2));
-        }); // this following doesn't work
-        //, () => {
-        //	console.log("Skyweb error!!!!");
-        //}
-        //);
+        }); 
 
         // super hacky way to see if Skyweb succeeeded because it sucks at error handling
         setTimeout( function() {
             // check to see if we're okay or not
             if( !self.success ) {
-                Eventer.addStatus( {type:'error', source:'skype', id:rule.name, text:'login error '});
+                Eventer.addStatus( {type:'error', source:'skype', id:rule.name, text:'login error (timeout)'});
             }
-        }, 10000 );
+        }, 15000 );
 
         // FIXME: is this callback required?
         // No, it automatically accepts contact add requests
@@ -92,11 +100,12 @@ var SkypeService = {
             messages.forEach((message)=> {
                 var convlink = message.resource.conversationLink;
                 var cname = convlink.substring(convlink.lastIndexOf('/8:')+3);
-                log.msg("SkypeService msg type:",message.resource.messagetype, "cname:",cname,
+                log.msg("SkypeService msg type:",message.resource.messagetype, "trigger:",rule.triggerType, "cname:",cname,
                         "dispname:",message.resource.imdisplayname, "content:",message.resource.content, message);
                 if( rule.triggerType === 'text' || rule.triggerType === 'any' ) {
-                    if( message.resource.messagetype === 'Text' ) {
-                        log.msg("SkypeService: INCOMING TEXT FROM",cname);
+                    if( message.resource.messagetype === 'Text' ||
+                        message.resource.messagetype === 'RichText' ) {
+                            log.msg("SkypeService: INCOMING TEXT FROM",cname);
                         Eventer.addStatus( {type:'trigger', source:'skype', id:rule.name, text:'text: '+cname});
                         PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
                     }
