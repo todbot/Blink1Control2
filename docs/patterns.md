@@ -9,7 +9,7 @@ Allowed patterns & meta-patterns for PatternsService:
     * e.g. `#ff0033`
 * `~off`
 * `~blink:{color}-{count}`
-    * e.g. `~blink:red-3`
+    * e.g. `~blink:red-3`  (can be CSS color name)
     * e.g. `~blink:#ff00ff-5`
 * `~blink:{color}-{count}-{on/off time}`
     * e.g. `~blink:white-3-0.2`

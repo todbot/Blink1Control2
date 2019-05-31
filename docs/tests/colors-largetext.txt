@@ -1,0 +1,10 @@
+Here is a bunch of random text.
+This needs to go above the 'maxStringLength'
+(which is by default 200 chars)
+
+color: #00f3ff
+
+"Bacon ipsum dolor sit amet salami jowl corned beef, andouille flank tongue ball tip kielbasa pastrami tri-tip meatloaf short loin beef biltong. Cow bresaola ground round strip steak fatback meatball shoulder leberkas pastrami sausage corned beef t-bone pork belly drumstick.
+
+blahblahblahblah
+

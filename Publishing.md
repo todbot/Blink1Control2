@@ -10,6 +10,7 @@ Steps:
     rimraf dist    # delete previous dist products (optional)
     npm run dist   # build the dist products, and publish, must do it on each OS (Mac,Win,Linux)
     ```
+    To test "pack" run `npm run dist:draft`.
     Note: must set GH_TOKEN for `npm run dist` to publish to github
     (e.g. `export GH_TOKEN=...` on Mac & Linux, `$env:GH_TOKEN=...` on Windows Powershell)
 
