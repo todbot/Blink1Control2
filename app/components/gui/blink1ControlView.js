@@ -14,14 +14,10 @@ var PatternList = require('./patternList');
 var Blink1TabViews = require('./blink1TabViews');
 var Blink1ColorPicker = require('./blink1ColorPicker');
 
+class Blink1ControlView extends React.Component {
+//var Blink1ControlView = React.createClass({
 
-var Blink1ControlView = React.createClass({
-
-  getInitialState: function() {
-    return {};
-  },
-
-  render: function() {
+  render() {
     var panelLstyle = {
       width: 330, height: 375, margin: 0, marginTop:5, marginRight:5, padding: 0,
       display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"};
@@ -57,7 +53,10 @@ var Blink1ControlView = React.createClass({
       </div>
     );
   }
-});
+
+}
+
+//});
 
 // <Row>
 //     <Panel header="Color Picker" style={panelLstyle}>
@@ -69,3 +68,5 @@ var Blink1ControlView = React.createClass({
 // </Row>
 
 module.exports = Blink1ControlView;
+//export default class Blink1ControlView {};
+//export Blink1ControlView;
