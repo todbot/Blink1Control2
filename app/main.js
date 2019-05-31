@@ -15,9 +15,9 @@ var updater = require('./updater');
 
 var mainWindow = null;
 
-// If someone tried to run a second instance, we should focus our window.
-// Really only applicable on Windows, maybe Linux
-var shouldQuitMultiInstance = app.makeSingleInstance((argv, workingDirectory) => {
+// Electron 4
+app.requestSingleInstanceLock()
+app.on('second-instance', function (event, argv, cwd) {
     if(mainWindow) {
         if(mainWindow.isMinimized()) {
             mainWindow.restore();
@@ -25,10 +25,23 @@ var shouldQuitMultiInstance = app.makeSingleInstance((argv, workingDirectory) =>
         mainWindow.show();
         mainWindow.focus();
     }
-});
-if(shouldQuitMultiInstance) {
-  app.exit(); // was app.quit(), but that doesn't exit early enough any more
-}
+})
+// Pre Electron-4
+// // If someone tried to run a second instance, we should focus our window.
+// // Really only applicable on Windows, maybe Linux
+// var shouldQuitMultiInstance = app.makeSingleInstance((argv, workingDirectory) => {
+//     if(mainWindow) {
+//         if(mainWindow.isMinimized()) {
+//             mainWindow.restore();
+//         }
+//         mainWindow.show();
+//         mainWindow.focus();
+//     }
+// });
+// if(shouldQuitMultiInstance) {
+//   app.exit(); // was app.quit(), but that doesn't exit early enough any more
+// }
+
 
 //
 // now that we're ready to go, let's get started for real...
@@ -205,6 +218,7 @@ app.on('ready', function () {
       height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
       resizable: true,
       show: false, // show later based on config
+      nodeIntegration: true,
       webPreferences: {backgroundThrottling: false}
       // webPreferences: {
       //     zoomFactor: 1.0,
@@ -223,6 +237,7 @@ app.on('ready', function () {
       height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
       resizable: showDebug, // allow resize when in debug mode
       show: false,  // show later based on config value
+      nodeIntegration: true,
       webPreferences: {backgroundThrottling: false}
       // closable: false,
       // useContentSize: true,
