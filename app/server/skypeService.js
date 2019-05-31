@@ -62,7 +62,7 @@ var SkypeService = {
         Eventer.addStatus( {type:'info', source:'skype', id:rule.name, text:'connecting...'});
 
         var errorCount=0;
-        const errorListener = (eventName: string, error: string) => {
+        const errorListener = (eventName, error) => {
             log.msg(`SkypeService: ${errorCount} : Error occured : ${error}`);
             errorCount++;
             if (errorCount === 10) {
@@ -78,7 +78,7 @@ var SkypeService = {
             // log.msg('Here is some info about you:' + JSON.stringify(skypeAccount.selfInfo, null, 2));
             Eventer.addStatus( {type:'info', source:'skype', id:rule.name, text:'connected'});
             // console.log('Your contacts : ' + JSON.stringify(skyweb.contactsService.contacts, null, 2));
-        }); 
+        });
 
         // super hacky way to see if Skyweb succeeeded because it sucks at error handling
         setTimeout( function() {
