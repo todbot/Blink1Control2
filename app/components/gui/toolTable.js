@@ -7,7 +7,7 @@ var MenuItem = require('react-bootstrap').MenuItem;
 
 var simplecrypt = require('simplecrypt');
 
-var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control'});
+var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control', method:"aes-192-ecb"});
 
 var conf = require('../../configuration');
 var log = require('../../logger');

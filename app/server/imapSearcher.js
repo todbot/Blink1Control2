@@ -17,7 +17,8 @@ var PatternsService = require('./patternsService');
 var retrySecs = 30;
 var searchDelaySecs = 2;
 
-var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control'});
+// FIXME: use non-deprected (and better) crypto system
+var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control', method:"aes-192-ecb"});
 
 
 function ImapSearcher(config) {

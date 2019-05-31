@@ -10,7 +10,8 @@ var Eventer = require('../eventer');
 
 var PatternsService = require('./patternsService');
 
-var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control'});
+// FIXME: use non-deprected (and better) crypto system
+var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control',method:"aes-192-ecb"});
 
 
 var SkypeService = {
