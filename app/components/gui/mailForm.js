@@ -41,6 +41,7 @@ var MailForm = React.createClass({
     },
     componentWillReceiveProps: function(nextProps) {
         var rule = nextProps.rule;
+        // log.msg("mailForm: rule:",rule);
         this.setState({
             type: 'mail',
             enabled: rule.enabled || false,
@@ -51,7 +52,7 @@ var MailForm = React.createClass({
             port: rule.port || 993,
             username: rule.username || '',
             password: rule.password || '' ,
-            useSSL: rule.useSSL || true,
+            useSSL: rule.useSSL,
             actionType: 'play-pattern',
             triggerType: rule.triggerType || 'unread',
             triggerVal: rule.triggerVal || '1' ,
@@ -87,10 +88,10 @@ var MailForm = React.createClass({
         }
         this.setState({mailtype:mailtype});
     },
-    handleTriggerChange: function(evt,type) {
-        console.log("type:",type,evt.target);
-//        this.setState({triggerType:type, triggerVal:evt.target.value});
-    },
+    // handleTriggerChange: function(evt,type) {
+    //     console.log("type:",type,evt.target);
+    //     // this.setState({triggerType:type, triggerVal:evt.target.value});
+    // },
     handleInputChange: function(event) {
         var target = event.target;
         var value = target.type === 'checkbox' ? target.checked : target.value;
@@ -162,7 +163,7 @@ var MailForm = React.createClass({
                                         name="port" value={this.state.port} onChange={this.handleInputChange} />
                                 </Col>
                                 <Col sm={3}>
-                                    <Checkbox inline checked={this.state.useSSL} onChange={this.handleInputChange}>
+                                    <Checkbox inline name="useSSL" checked={this.state.useSSL} onChange={this.handleInputChange}>
                                         useSSL
                                     </Checkbox>
                                 </Col>
