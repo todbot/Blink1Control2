@@ -4,7 +4,7 @@ var path = require('path');
 
 var config = {
     // target: 'atom',
-  target: 'electron',
+  target: 'electron-renderer',
   context: path.join(__dirname, '/app'),
   // entry: path.join(__dirname, './src/maingui.js'),
   // entry: __dirname + '/src' + './maingui.js',
@@ -23,6 +23,7 @@ var config = {
     'xml2js': 'commonjs xml2js' // this is to keep webpack from complaing about optional dep of 'needle'
   },
   plugins: [
+    // new webpack.HotModuleReplacementPlugin({multiStep:true}),
     //  new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /de|fr|hu/)  // moment
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     // new webpack.IgnorePlugin(/mqtt.min/),  //
@@ -34,26 +35,43 @@ var config = {
     })
   ],
   module: {
-      noParse: [
-          // /mqtt.min/
-      ],
-    // noParse: [
-    //     // ['ws']
-    // ],
-    loaders: [
+    rules: [
       {
-          test: /\.js|\.jsx$/,
-          query: { presets: ['react','es2015'] },
-          // loader: 'babel-loader',
-          loader: ['babel-loader'],
-          exclude: /node_modules/
+        test: /\.(js|jsx)$/,
+        // query: { presets: ['env','react'] },
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react']
+          }
+        },
       },
-      { test: /mqtt\/.*\.js/, loader: 'shebang-loader', include: [/node_modules\/mqtt/] },
+      // {
+           // test: /\.js|\.jsx$/,
+      //     query: { presets: ['react','@babel/preset-env'] },
+      //     // loader: 'babel-loader',
+      //     use: ['babel-loader'],
+      //     exclude: /node_modules/
+      // },
+      { test: /mqtt\/.*\.js/, use: 'shebang-loader', include: [/node_modules\/mqtt/] },
 
-      { test: /\.css$/, loader: 'style-loader!css-loader' },
-      { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&mimetype=application/font-woff" },
-      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
-      { test: /\.json$/, loader: "json"}
+      // { test: /\.css$/, use: 'style-loader!css-loader' },
+      {
+        test: /\.css$/,
+        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+      },
+      //       {
+      //   test: /\.css$/,
+      //   use: [
+      //     {loader: "style-loader"},
+      //     {loader: "css-loader"},
+      //   ],
+      //   exclude: /node_modules/
+      // },
+      { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, use: "url-loader?limit=10000&mimetype=application/font-woff" },
+      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, use: "file-loader" },
+      // { test: /\.json$/, use: "json-loader"}
     ]
   }
 };
