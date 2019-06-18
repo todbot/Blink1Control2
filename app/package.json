@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "author": "ThingM <blink1@thingm.com> (https://blink1.thingm.com/)",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "productName": "Blink1Control2",
@@ -14,6 +14,7 @@
     "auto-launch": "^5.0.1",
     "d3-timer": "^1.0.7",
     "debug": "^2.2.0",
+    "electron-log": "^3.0.6",
     "electron-updater": "^4.0.6",
     "events": "^1.1.1",
     "express": "^4.16.4",

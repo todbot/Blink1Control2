@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "author": "ThingM <blink1@thingm.com> (https://blink1.thingm.com/)",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "keywords": [
@@ -25,7 +25,7 @@
   "scripts": {
     "startdev": "cross-env NODE_ENV=development npm run start",
     "start": "electron app",
-    "watch": "cross-env NODE_ENV=development webpack-dev-server --hot --inline",
+    "watch": "cross-env NODE_ENV=development webpack-dev-server --port 8080 --hot --inline",
     "webpack": "cross-env NODE_ENV=production webpack -p",
     "pack": "npm run webpack",
     "dist:test": "electron-builder --dir",
