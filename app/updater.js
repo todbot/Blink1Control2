@@ -9,6 +9,7 @@
  */
 const { dialog } = require('electron')
 const { autoUpdater } = require('electron-updater')
+const log = require("electron-log")
 
 let updater = {}
 autoUpdater.autoDownload = false
@@ -57,8 +58,10 @@ autoUpdater.on('update-downloaded', () => {
 // export this to MenuItem click callback
 // function checkForUpdates (menuItem, focusedWindow, event) {
 function checkForUpdates() {
-  // updater = menuItem
-  updater.enabled = false
-  autoUpdater.checkForUpdates()
+    // updater = menuItem
+    updater.enabled = false
+    log.transports.file.level = "debug"
+    autoUpdater.logger = log
+    autoUpdater.checkForUpdates()
 }
 module.exports.checkForUpdates = checkForUpdates
