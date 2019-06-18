@@ -75,6 +75,8 @@ if( disablegpu || (disablegpu === undefined && process.platform === 'linux') ) {
 //// ignore-gpu-blacklist o maybe fix bad performance issue in Mac Sierra beta
 //app.commandLine.appendSwitch('ignore-gpu-blacklist');
 // app.commandLine.appendSwitch('disable-renderer-backgrounding');
+// Fix Windows Electron throttling down the timers
+app.commandLine.appendSwitch('disable-background-timer-throttling');
 
 
 var isQuitting = false;
