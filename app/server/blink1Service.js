@@ -12,7 +12,7 @@ var tinycolor = require('tinycolor2');
 var config = require('../configuration');
 
 var log = require('../logger');
-var util = require('../utils');
+var utils = require('../utils');
 
 var Eventer = require('../eventer');
 
@@ -42,6 +42,16 @@ var listeners = [];  // callback listeners
 var blink1s = []; // collection of opened blink1s
 var currentBlink1Id = ''; // current blink1 (as set by colorpicker)
 
+var defaultPatternStr =  // as close as possible as the default firmware pattern
+    "0," +                                         // forever
+    "#ff0000,0.5,1,#ff0000,0.5,2,#000000,0.5,0," + // red A, red B, off
+    "#00ff00,0.5,1,#00ff00,0.5,2,#000000,0.5,0," + // grn A, grn B, off
+    "#0000ff,0.5,1,#0000ff,0.5,2,#000000,0.5,0," + // blu A, blu B, off
+    "#808080,1.0,0,#000000,1.0,0," +               // white 50% A+B, off
+    "#ffffff,0.5,1,#000000,0.5,1," +               // white 100% A, off
+    "#ffffff,0.5,2,#000000,1.0,2," +               // white 100% B, off
+    "#000000,1.0,0"                                // everybooy off
+
 /**
  * Current color state of all blink1s and their last used millis & ledns,
  *  with at least one entry.
@@ -67,6 +77,7 @@ var Blink1Service = {
     // toyTimer:null,
     // toyMode:'off',
     // toyValue:0,
+    defaultPatternStr: defaultPatternStr,
 
     // settings for toy button commands
     toy: {
@@ -251,7 +262,7 @@ var Blink1Service = {
     getHostId: function() {
         var id = config.readSettings('hostId');
         if( !id ) {
-            id = util.generateRandomHostId();
+            id = utils.generateRandomHostId();
             this.setHostId(id);
         }
         return id;
@@ -404,7 +415,7 @@ var Blink1Service = {
     },
 
     /**
-     * turn off everything, or for just a specific blink1
+     * Turn off everything, or for just a specific blink1
      * @method function
      * @param  {String} blink1id blink1 serial number or id or nothing
      * @return {[type]}          [description]
@@ -420,6 +431,58 @@ var Blink1Service = {
         } else {
             self.fadeToColor(100, '#000000', 0, blink1id); // 0 = all leds
         }
+    },
+
+    /**
+     * Write a color pattern to a blink1
+     *
+     * @param {Object} pattern   a pattern from PatternsService
+     * @param {boolean} fill     whether or not to fill-out the pattern with last pattern line
+     * @param  {String} blink1id blink1 serial number or id or nothing to use first blink1
+     */
+    writePatternToBlink1: function(pattern, fill, blink1id) {
+      log.msg("writePatternToBlink1: ")
+      var blink1idx = this.idToBlink1Index(blink1id);
+      var colors = pattern.colors;
+      if( !colors )  {
+        // error
+      }
+      var pattlen = colors.length;
+      if( pattlen < 32 ) {  // extend out pattern to fill
+        for( var i=0; i< 32-pattlen; i++) {
+          var c = {rgb:'#000000',time:0,ledn:0};
+          colors.push( (fill) ? colors[i] : c );
+        }
+      }
+      log.msg("newpatt:",colors);
+      // if the device exists
+      // (async () => {
+      if( blink1s[blink1idx] && blink1s[blink1idx].device ) {
+        var blink1dev = blink1s[blink1idx].device;
+        for(var i=0; i<colors.length; i++) {
+          var color = tinycolor(colors[i].rgb);
+          var crgb = color.toRgb();
+          var millis = colors[i].time * 1000;
+          var ledn = colors[i].ledn;
+          log.msg("Blink1Service.writePatternLine:",i,",crgb:",crgb,", millis:",millis,",ledn:",ledn);
+          try {
+            // blink1dev.fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn );
+            blink1dev.setLedN( ledn );
+            blink1dev.writePatternLine( millis, crgb.r, crgb.g, crgb.b, i );
+          } catch(err) {
+            log.error('Blink1Service.writePatternToBlink1: error', err);
+          }
+        }
+        log.msg("about to call savePattern");
+        try {
+          blink1dev.savePattern();
+        } catch(err) { // this fails for some blink(1) devices
+        }
+        log.msg("done calling savePattern")
+      }
+      else {
+        log.msg("Blink1Service.writePatternToBlink1: no blink1 device");
+      }
     },
 
     /**

@@ -61,6 +61,7 @@ var PreferencesModal = React.createClass({
     }
 },
 loadSettings: function() {
+  var patterns = PatternsService.getAllPatterns();
   var settings = {
     hideDockIcon:     conf.readSettings('startup:hideDockIcon') || false,
     startMinimized:   conf.readSettings('startup:startMinimized') || false,
@@ -81,10 +82,9 @@ loadSettings: function() {
     proxyUser:        conf.readSettings('proxy:username') || '',
     proxyPass:        conf.readSettings('proxy:password') || '',
     playingSerialize: conf.readSettings('patternsService:playingSerialize') || false,
-    patterns: PatternsService.getAllPatterns(),
-    // blink1Serials: Blink1Service.getAllSerials(),
-    // blink1Serials: ['12345678','abcdabcd'],  FIXME: make a prop
+    patterns: patterns,
     patternId: 'whiteflashes',
+    nonComputerPattern: patterns[0].id,
     errormsg: ''
   };
   return settings;
@@ -161,27 +161,28 @@ cancel: function() {
   this.props.onCancel();
 },
 handleBlink1SerialChange: function(serial) {
-  log.msg("handleBlink1NonComputerChange: ", serial);
+  log.msg("handleBlink1SerialChange: ", serial);
   PatternsService.playPatternFrom('prefs', '~blink:#888888-3', serial);
   this.setState({blink1ToUse: serial});
 },
-handleBlink1NonComputerChoice: function(event) {
-  var choice = event.target.value;
-  log.msg("handleBlink1NonComputerChange: ", choice);
-  this.setState({blink1NonComputer: choice});
+handleBlink1NonComputerSet: function(event) {
+  var choice = event.target.value
+  log.msg("handleBlink1NonComputerSet: ",choice, ",", this.state.nonComputerPattern );
   if( choice === 'off' ) {
     log.msg("settting OFF");
-  } else if( choice === 'default' ) {
-    log.msg("settting default");
-  } else if ( choice === 'pattern' ) {
-    log.msg("setting pattern");
+    var patt = PatternsService.newPatternFromString( 'offpatt', '0,#000000,0.0,0');
+    Blink1Service.writePatternToBlink1(patt,true,0);
   }
-},
-handleApiServerHostChoice: function(event) {
-  this.setState({apiServerHost: event.target.value});
-},
-handleBlink1NonComputerSet: function(event) {
-  log.msg("PreferncesModal: SET!!", event);
+  else if( choice === 'default' ) {
+    log.msg("settting default:",Blink1Service.defaultPatternStr);
+    var patt = PatternsService.newPatternFromString('default', Blink1Service.defaultPatternStr);
+    Blink1Service.writePatternToBlink1(patt,true,0);
+  }
+   else if ( choice === 'pattern' ) {
+    var patt = PatternsService.getPatternById(this.state.nonComputerPattern);
+    log.msg("setting pattern:",patt);
+    Blink1Service.writePatternToBlink1(patt,true,0);
+  }
 },
 handleInputChange: function(event) {
   var target = event.target;
@@ -329,6 +330,42 @@ render: function() {
                   </Form>
                 </div>
               </Col>
+
+              <Col md={4}  title="Set what the blink(1) does when powered but no computer">
+                <div style={sectStyle}>
+                  <h5><u> blink(1) no-computer mode </u></h5>
+                  <small>Set what blink(1) does when powered but no computer controlling it, aka "nightlight mode".
+                  </small>
+
+                  <Form horizontal>
+                    <FormGroup controlId="formNonComputerMode" bsSize="small">
+                      <Col sm={10}>
+                        <Button bsSize="xsmall" value="off" block
+                          title="blink(1) is off when powered but computer is off"
+                          onClick={this.handleBlink1NonComputerSet}>
+                          Set to Off
+                        </Button>
+                        <Button bsSize="xsmall" value="default" block
+                          title="blink(1) plays its default RGB pattern when powered but computer is off"
+                          onClick={this.handleBlink1NonComputerSet}>
+                          Set to Default
+                        </Button>
+                        <Button bsSize="xsmall" value="pattern" block
+                          title="blink(1) plays one the following patterns when powered but computer is off"
+                          onClick={this.handleBlink1NonComputerSet}>
+                          Set to Pattern:
+                        </Button>
+                        <FormControl bsSize="small" componentClass="select"
+                          name="nonComputerPattern" value={this.state.nonComputerPattern} onChange={this.handleInputChange} >
+                          {this.state.patterns.map( createPatternOption )}
+                        </FormControl>
+                      </Col>
+                    </FormGroup>
+                  </Form>
+
+                </div>
+              </Col>
+
             </Row>
           </Modal.Body>
           <Modal.Footer>
@@ -343,7 +380,7 @@ render: function() {
 
 module.exports = PreferencesModal;
 
-
+// </div> style={{border:'1px solid #ddd', paddingLeft:15, opacity:0.5 }} >
 /*
 </Col>
 <Col md={4}>
@@ -383,10 +420,6 @@ module.exports = PreferencesModal;
 </Col>
 </Row>
 */
-
-
-
-
 
 /// old 3rd column
 /*
