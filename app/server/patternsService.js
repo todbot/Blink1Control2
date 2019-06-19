@@ -42,7 +42,6 @@ var tinycolor = require('tinycolor2');
 
 var conf = require('../configuration');
 var log = require('../logger');
-// var utils = require('../utils');
 
 var Blink1Service = require('./blink1Service');
 

@@ -12,7 +12,7 @@ var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control', method:"aes-1
 var conf = require('../../configuration');
 var log = require('../../logger');
 
-var util = require('../../utils');
+var utils = require('../../utils');
 
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
@@ -140,7 +140,7 @@ var ToolTable = React.createClass({
         if( this.state.workingIndex >= 0) {
             var rules = this.state.rules;
             var rule = Object.assign( {}, rules[ this.state.workingIndex ]); // clone
-            rule.id = rule.id + util.cheapUid(4);
+            rule.id = rule.id + utils.cheapUid(4);
             rule.name = rule.name + ' (copy)';
             rules.splice( this.state.workingIndex, 0, rule);
             this.setState({rules: rules});
