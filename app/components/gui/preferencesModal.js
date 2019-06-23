@@ -85,6 +85,7 @@ loadSettings: function() {
     patterns: patterns,
     patternId: 'whiteflashes',
     nonComputerPattern: patterns[0].id,
+    nonComputerStatus: '',
     errormsg: ''
   };
   return settings;
@@ -168,21 +169,24 @@ handleBlink1SerialChange: function(serial) {
 handleBlink1NonComputerSet: function(event) {
   var choice = event.target.value
   log.msg("handleBlink1NonComputerSet: ",choice, ",", this.state.nonComputerPattern );
+  var err = '';
   if( choice === 'off' ) {
     log.msg("settting OFF");
     var patt = PatternsService.newPatternFromString( 'offpatt', '0,#000000,0.0,0');
-    Blink1Service.writePatternToBlink1(patt,true,0);
+    err = Blink1Service.writePatternToBlink1(patt,true,0);
   }
   else if( choice === 'default' ) {
     log.msg("settting default:",Blink1Service.defaultPatternStr);
     var patt = PatternsService.newPatternFromString('default', Blink1Service.defaultPatternStr);
-    Blink1Service.writePatternToBlink1(patt,true,0);
+    err = Blink1Service.writePatternToBlink1(patt,true,0);
   }
    else if ( choice === 'pattern' ) {
     var patt = PatternsService.getPatternById(this.state.nonComputerPattern);
     log.msg("setting pattern:",patt);
-    Blink1Service.writePatternToBlink1(patt,true,0);
+    err = Blink1Service.writePatternToBlink1(patt,true,0);
   }
+
+  this.setState({nonComputerStatus: err});
 },
 handleInputChange: function(event) {
   var target = event.target;
@@ -206,6 +210,7 @@ render: function() {
     paddingLeft: 15,
     paddingBottom: 10
   };
+
   return (
     <div>
       <Modal show={this.props.show} onHide={this.close} bsSize="large">
@@ -362,7 +367,7 @@ render: function() {
                       </Col>
                     </FormGroup>
                   </Form>
-
+                  <span>{this.state.nonComputerStatus}</span>
                 </div>
               </Col>
 
