@@ -10,6 +10,7 @@ var Menu = electron.Menu;
 var crashReporter = electron.crashReporter;
 
 var path = require('path');
+var isAccelerator = require("electron-is-accelerator");
 
 var updater = require('./updater');
 
@@ -203,14 +204,20 @@ app.on('ready', function () {
   var globalShortcutPrefix = config.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift';
   var resetKey = config.readSettings('startup:shortcutResetKey') || 'R';
   var resetShortcut = globalShortcutPrefix + '+' + resetKey;
+  console.log("global shortcut:", resetShortcut);
 
-  var ret = globalShortcut.register(resetShortcut, function() {
-    //   console.log('resetShortcut is pressed');
-      mainWindow.webContents.send('resetAlerts');
+  if( isAccelerator( resetShortcut)) {
+    var ret = globalShortcut.register(resetShortcut, function() {
+      //   console.log('resetShortcut is pressed');
+        mainWindow.webContents.send('resetAlerts');
     });
     if (!ret) { console.log('globalShortcut registration failed');  }
     // Check whether a shortcut is registered.
-    console.log("global shortcut key registered:", globalShortcut.isRegistered(resetShortcut));
+    console.log("globalShortcut key registered:", globalShortcut.isRegistered(resetShortcut));
+  }
+  else {
+    console.log("ignoring bad globalShortcutkey: ",resetShortcut);
+  }
 
   if( process.env.NODE_ENV === 'development' ) {
     mainWindow = new BrowserWindow({

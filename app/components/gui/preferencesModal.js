@@ -16,6 +16,7 @@ var ControlLabel = require('react-bootstrap').ControlLabel;
 var Radio = require('react-bootstrap').Radio;
 var Checkbox = require('react-bootstrap').Checkbox;
 
+var isAccelerator = require("electron-is-accelerator");
 
 var PatternsService = require('../../server/patternsService');
 var Blink1Service   = require('../../server/blink1Service');
@@ -85,8 +86,7 @@ loadSettings: function() {
     patterns: patterns,
     patternId: 'whiteflashes',
     nonComputerPattern: patterns[0].id,
-    nonComputerStatus: '',
-    errormsg: ''
+    errorMsg: ''
   };
   return settings;
 },
@@ -185,13 +185,21 @@ handleBlink1NonComputerSet: function(event) {
     log.msg("setting pattern:",patt);
     err = Blink1Service.writePatternToBlink1(patt,true,0);
   }
-
-  this.setState({nonComputerStatus: err});
+  err = ( !err ) ? "success" : err;
+  this.setState({errorMsg: err});
 },
 handleInputChange: function(event) {
   var target = event.target;
   var value = target.type === 'checkbox' ? target.checked : target.value;
   var name = target.name;
+  if( name == 'shortcutResetKey' && value != '') {
+    var accel = this.state.shortcutPrefix +"+"+ value;
+    log.msg("accel:",accel);
+    if( !isAccelerator(accel) ) {
+      this.setState({errorMsg: "Cannot use '"+value+"' as shortcut key"});
+      return;
+    }
+  }
   this.setState({[name]: value});
 },
 
@@ -210,6 +218,7 @@ render: function() {
     paddingLeft: 15,
     paddingBottom: 10
   };
+  var errorSectStyle = { paddingLeft: 15, color:'red'}; 
 
   return (
     <div>
@@ -367,10 +376,13 @@ render: function() {
                       </Col>
                     </FormGroup>
                   </Form>
-                  <span>{this.state.nonComputerStatus}</span>
                 </div>
               </Col>
-
+            </Row>
+            <Row>
+              <Col>
+              <div style={errorSectStyle}>{this.state.errorMsg}</div>
+              </Col>
             </Row>
           </Modal.Body>
           <Modal.Footer>
