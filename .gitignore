@@ -19,3 +19,9 @@ pids
 
 # node-waf configuration
 .lock-wscript
+
+# vscode
+.vscode
+
+#
+package-lock.json

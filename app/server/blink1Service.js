@@ -31,6 +31,7 @@ var listeners = [];  // callback listeners
 
 /**
  * blink1 devices currently opened.
+ * This is a global because this is true across entire Node process
  * One entry per blink1, with always at least one entry.
  * Entry 0 is 'default' entry when no blink1 is plugged in.
  * Format:
@@ -439,13 +440,14 @@ var Blink1Service = {
      * @param {Object} pattern   a pattern from PatternsService
      * @param {boolean} fill     whether or not to fill-out the pattern with last pattern line
      * @param  {String} blink1id blink1 serial number or id or nothing to use first blink1
+     * @return error message, if any
      */
     writePatternToBlink1: function(pattern, fill, blink1id) {
       log.msg("writePatternToBlink1: ")
       var blink1idx = this.idToBlink1Index(blink1id);
       var colors = pattern.colors;
       if( !colors )  {
-        // error
+        return "no colors in pattern";
       }
       var pattlen = colors.length;
       if( pattlen < 32 ) {  // extend out pattern to fill
@@ -454,9 +456,7 @@ var Blink1Service = {
           colors.push( (fill) ? colors[i] : c );
         }
       }
-      log.msg("newpatt:",colors);
       // if the device exists
-      // (async () => {
       if( blink1s[blink1idx] && blink1s[blink1idx].device ) {
         var blink1dev = blink1s[blink1idx].device;
         for(var i=0; i<colors.length; i++) {
@@ -473,15 +473,15 @@ var Blink1Service = {
             log.error('Blink1Service.writePatternToBlink1: error', err);
           }
         }
-        log.msg("about to call savePattern");
         try {
           blink1dev.savePattern();
         } catch(err) { // this fails for some blink(1) devices
+          log.msg("Blink1Service.writePatternLine: savePattern exception (expected)");
         }
-        log.msg("done calling savePattern")
       }
       else {
         log.msg("Blink1Service.writePatternToBlink1: no blink1 device");
+        return "no blink1 device"
       }
     },
 
