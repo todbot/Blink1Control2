@@ -22,13 +22,39 @@ Steps:
 - Publish announcement
 
 #### Current build machines
-- Mac OS X 10.12.6 on Macbook Pro 2013
+- Mac OS X 10.14.6 on Macbook Pro 2015
 - Windows 10 Pro (in VM)
-- Ubuntu 14.04 (in VM)  (must be 14.04 for earlier libc)
+- Ubuntu 18 (in VM)  (but must be 14.04 for earlier libc)
 
 
 
 #### random notes
+- Mac signed apps:
+    - To get appId / bundleId, do one of:
+      ```
+      mdls -name kMDItemCFBundleIdentifier -r ~/Desktop/ Blink1Control2-2.2.1.app`
+      osascript -e 'id of app "Blink1Control2-2.2.1"'
+      ```
+    - To reset privacy database for particular app:
+      ```
+      tccutil reset All com.thingm.blink1control2
+      ```
+    - To get 'short name' ("ascProvider" to electron-notarize):
+      ```
+      /Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/itms/bin/iTMSTransporter -m provider -u $AID -p $AIP
+      ```
+      where env vars AID = appleId & AIP = appleIdPassword
+
+- Windows signed apps:
+    - Get Code Signing cert.
+    - Export it from Firefox-ESR as .p12 file (which requires a password to encrypt)
+    - Set env vars described in https://www.electron.build/code-signing#windows, e.g.:
+      ```
+      $env:CSC_LINK="c:\users\biff\desktop\codesign-cert.p12"
+      $env:CSC_KEY_PASSWORD=hunter2
+      ```
+    - Run `electron-builder`
+
 - For actual publishing, use github releases (default), which requires `GH_TOKEN` secure environment variable and:
     ```
     "build": {
