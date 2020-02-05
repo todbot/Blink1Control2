@@ -41,6 +41,7 @@
   "build": {
     "appId": "com.thingm.blink1control2",
     "asar": true,
+    "afterSign": "./pkg/afterSign.js",
     "npmRebuild": true,
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "publish": {
@@ -49,6 +50,10 @@
     "mac": {
       "category": "public.app-category.utilities",
       "icon": "build/icon.icns"
+      "gatekeeperAssess": false,
+      "hardenedRuntime": true,
+      "entitlements": "./build/entitlements.mac.inherit.plist",
+      "entitlementsInherit": "./build/entitlements.mac.inherit.plist"
     },
     "win": {
       "target": [
