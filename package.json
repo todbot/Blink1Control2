@@ -115,6 +115,7 @@
     "devtron": "^1.4.0",
     "electron": "^4.2.3",
     "electron-builder": "^20.38.4",
+    "electron-notarize": "^0.2.1",
     "file-loader": "^3.0.1",
     "font-awesome": "^4.5.0",
     "json-loader": "^0.5.7",
