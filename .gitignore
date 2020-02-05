@@ -2,9 +2,8 @@
 .DS_STORE
 *~
 
-# build products  (the 'build' dir is wrong, we need to rename it)
+# build products
 dist
-build
 node_modules
 
 # Logs
