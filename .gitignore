@@ -5,6 +5,7 @@
 # build products
 dist
 node_modules
+app/build
 
 # Logs
 logs

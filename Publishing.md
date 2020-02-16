@@ -4,10 +4,10 @@ Steps:
 - Update version in `package.json` and `app/package.json` (they must match!)
 - Build release:
     ```
+    rimraf dist    # delete previous dist products (optional)
     npm run clean  # removes node_modules so they get rebuilt, does not remove 'dist' dir
     npm install    # installs & builds node_modules
     npm run pack   # bundles app code using webpack to bundle.js
-    rimraf dist    # delete previous dist products (optional)
     npm run dist   # build the dist products, and publish, must do it on each OS (Mac,Win,Linux)
     ```
     To test "pack" run `npm run dist:draft`.
@@ -47,9 +47,18 @@ Steps:
       osascript -e 'id of app "Blink1Control2-2.2.1"'
       osascript -e "id of app \"`pwd`/dist/mac/Blink1Control2.app\""
       ```
-    - To reset privacy database for particular app:
+    - To reset privacy database for particular app (to test Mac access dialogs):
       ```
       tccutil reset All com.thingm.blink1control2
+      ```
+
+    - To see valid signing identities
+      ```
+      security find-identity -v -p codesigning
+      ```
+    - Which can then be used to sign command-line apps with:
+      ```
+      codesign -s (identity from above) /path/to/executable
       ```
 
 - Windows signed apps:
@@ -60,7 +69,7 @@ Steps:
       $env:CSC_LINK="c:\users\biff\desktop\codesign-cert.p12"
       $env:CSC_KEY_PASSWORD=hunter2
       ```
-    - Run `electron-builder`
+    - Run `npm run dist`
 
 - For actual publishing, use github releases (default), which requires `GH_TOKEN` secure environment variable and:
     ```
