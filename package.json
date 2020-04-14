@@ -132,5 +132,10 @@
     "webpack": "^4.31.0",
     "webpack-cli": "^3.3.2",
     "webpack-dev-server": "^3.4.1"
+  },
+  "dependencies": {
+    "@slack/events-api": "^2.3.2",
+    "@slack/rtm-api": "^5.0.3",
+    "@slack/web-api": "^5.8.0"
   }
 }
