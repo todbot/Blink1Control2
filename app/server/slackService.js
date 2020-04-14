@@ -12,7 +12,7 @@ const { RTMClient } = require('@slack/rtm-api');
 var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control',method:"aes-192-ecb"});
 
 var SlackService = {
-    skyweb: null,
+    rtmClient: null,
     config: {},
 
     reloadConfig: function() {
@@ -21,7 +21,7 @@ var SlackService = {
     },
 
     stop: function() {
-        this.skyweb = null;
+        this.rtmClient.stop()
     },
     start: function() {
         var self = this;
@@ -66,6 +66,7 @@ var SlackService = {
             }
         };
         const rtm = new RTMClient(token);
+        self.rtmClient = rmt
         rtm.start()
             .catch(console.error);
         self.success = true
@@ -83,6 +84,10 @@ var SlackService = {
             });
         });
         rtm.on('error', errorListener);
+
+        (async () => {
+            await rtm.start();
+        })();
     }
 };
 
