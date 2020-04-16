@@ -5,6 +5,7 @@ var conf = require('../configuration');
 var log = require('../logger');
 var Eventer = require('../eventer');
 var PatternsService = require('./patternsService');
+var simplecrypt = require('simplecrypt');
 const { RTMClient } = require('@slack/rtm-api');
 
 
@@ -21,7 +22,9 @@ var SlackService = {
     },
 
     stop: function() {
-        this.rtmClient.stop()
+        if (this.rtmClient) {
+            this.rtmClient.stop()
+        }
     },
     start: function() {
         var self = this;
@@ -84,10 +87,6 @@ var SlackService = {
             });
         });
         rtm.on('error', errorListener);
-
-        (async () => {
-            await rtm.start();
-        })();
     }
 };
 

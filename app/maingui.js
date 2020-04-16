@@ -82,6 +82,7 @@ ReactDOM.render( <App />, document.getElementById('app'));
 var IftttService = require('./server/iftttService');
 var MailService = require('./server/mailService');
 var SkypeService = require('./server/skypeService');
+var SlackService = require('./server/slackService');
 var ScriptService = require('./server/scriptService');
 var TimeService = require('./server/timeService');
 // var MqttService = require('./server/mqttService');
@@ -91,6 +92,7 @@ setTimeout( function() {
   IftttService.start();
   MailService.start();
   SkypeService.start();
+  SlackService.start();
   ScriptService.start();
   TimeService.start();
   // MqttService.start();

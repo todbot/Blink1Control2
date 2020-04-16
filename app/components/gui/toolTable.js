@@ -20,6 +20,7 @@ var IftttService = require('../../server/iftttService');
 var MailService = require('../../server/mailService');
 var ScriptService = require('../../server/scriptService');
 var SkypeService = require('../../server/skypeService');
+var SlackService = require('../../server/slackService');
 var TimeService = require('../../server/timeService');
 var MqttService = require('../../server/mqttService');
 
@@ -87,6 +88,9 @@ var ToolTable = React.createClass({
         else if( rule.type === 'skype' ) {
             SkypeService.reloadConfig();
         }
+        else if( rule.type === 'slack' ) {
+            SlackService.reloadConfig();
+        }        
         else if( rule.type === 'time' ) {
             TimeService.reloadConfig();
         }

@@ -91,6 +91,9 @@ var ToolTableList = React.createClass({
             else if( rule.type === 'skype' ) {
                 desc = rule.username + ':' + rule.triggerType;
             }
+            else if( rule.type === 'slack' ) {
+                desc = rule.name;
+            }            
             else if( rule.type === 'time' ) {
                 if( rule.alarmType === 'countdown' ) {
                     desc = 'countdown to ' + rule.alarmHours +':'+ rule.alarmMinutes;

@@ -136,6 +136,8 @@
   "dependencies": {
     "@slack/events-api": "^2.3.2",
     "@slack/rtm-api": "^5.0.3",
-    "@slack/web-api": "^5.8.0"
+    "@slack/web-api": "^5.8.0",
+    "bufferutil": "^4.0.1",
+    "utf-8-validate": "^5.0.2"
   }
 }
