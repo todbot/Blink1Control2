@@ -133,13 +133,18 @@ var Blink1Service = {
         }
         // set up all devices at once
         // we wait 500msec because it was failing without it
-        setTimeout( Blink1Service._setupFoundDevices, 500);  // FIXME: an issue?
+        // setTimeout( Blink1Service._setupFoundDevices, 500);  // FIXME: an issue?
+        setTimeout(() =>  {
+          log.msg("BLAHAHAHA");
+          this._setupFoundDevices();
+        }, 500);
     },
     _setupFoundDevices: function() {
-        log.msg("Blink1Service._setupFoundDevices", blink1s);
+        var self = this;
+        log.msg("Blink1Service._setupFoundDevices", blink1s, "conf: ", self.conf);
         blink1s.map( function(b1) {
             if( !b1.device ) {
-                log.msg("Blink1Service._setupFoundDevice: opening ",b1.serial);
+                log.msg("Blink1Service._setupFoundDevices: opening ",b1.serial);
                 b1.device = new Blink1(b1.serial);
             }
         });
@@ -206,7 +211,11 @@ var Blink1Service = {
         if( blink1s[blink1idx] && blink1s[blink1idx].device ) {
             var crgb = color.toRgb();
             try {
-                blink1s[blink1idx].device.fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn );
+                var b1 = blink1s[blink1idx].device;
+                if( this.conf.enableDegamma ) { 
+                  b1.enableDegamma = this.conf.enableDegamma; // only set if defined
+                }
+                b1.fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn );
             } catch(err) {
                 log.error('Blink1Service._fadeToRGB: error', err);
                 this._removeDevice( blink1s[blink1idx].serial );
