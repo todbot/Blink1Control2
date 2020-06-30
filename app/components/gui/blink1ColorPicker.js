@@ -8,7 +8,7 @@ var ButtonGroup = require('react-bootstrap').ButtonGroup;
 var log = require('../../logger');
 var Blink1Service = require('../../server/blink1Service');
 
-import HtmlColorChart from './htmlColorChart';
+var HtmlColorChart = require('./htmlColorChart');
 var tinycolor = require('tinycolor2');
 
 

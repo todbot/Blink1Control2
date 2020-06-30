@@ -3,7 +3,9 @@
 
 "use strict";
 
-import React, { Component } from 'react';
+// import React, { Component } from 'react';
+var React = require('react');
+
 
 const htmlcolors = require('./htmlColorsList');
 
@@ -110,5 +112,5 @@ HtmlColorChart.propTypes = {
     currentColor: React.PropTypes.string
 };
 
-export default HtmlColorChart;
-// module.exports = HtmlColorChart;
+// export default HtmlColorChart;
+module.exports = HtmlColorChart;
