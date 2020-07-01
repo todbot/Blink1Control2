@@ -77,6 +77,23 @@ app.get('/blink1/fadeToRGB', function(req, res) {
     });
 });
 
+app.get('/blink1/lastColor', function(req, res) {
+  var status = "success";
+  var ledn = Number(req.query.ledn) || 0;
+  var blink1_id = Number(req.query.blink1_id) || 0;  // undefined means all blink1 devices
+
+  var color = Blink1Service.getCurrentColor(blink1_id, ledn);
+
+  res.json( {
+      blink1Serials: Blink1Service.getAllSerials(),
+      lastColor: color.toHexString(),
+      // lastTime: secs,
+      lastLedn: ledn,
+      cmd: "lastColor",
+      status: status
+  });
+});
+
 app.get('/blink1/pattern(s)?', function(req,res) {
     res.json({
         status: "pattern results",
