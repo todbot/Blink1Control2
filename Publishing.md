@@ -28,25 +28,28 @@ Steps:
 
 
 
-#### random notes
+#### Notes
+
 - Mac signed apps:
     - Before running `npm run dist`, set three environment variables:
       ```
-      export AID="appleid@appleid.com" (but real appleId)
-      export AIP="app-specific-password" (generated from appleid.apple.com)
+      export APPLEID="appleid@appleid.com" (but real appleId)
+      export APPLEIDPASSWD="app-specific-password" (generated from appleid.apple.com)
       export TEAM_SHORT_NAME="MyTeamShortName" (obtained from iTMSTransporter below)
       ```
 
     - To get 'short name' ("ascProvider" to electron-notarize):
       ```
-      /Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/itms/bin/iTMSTransporter -m provider -u $AID -p $AIP
+      /Applications/Transporter.app/Contents/itms/bin/iTMSTransporter -m provider -u $APPLEID -p $APPLEIDPASSWD
       ```
     - To get appId / bundleId, do one of:
       ```
-      mdls -name kMDItemCFBundleIdentifier -r ~/Desktop/ Blink1Control2-2.2.1.app`
+      mdls -name kMDItemCFBundleIdentifier -r ~/Desktop/Blink1Control2-2.2.1.app`
       osascript -e 'id of app "Blink1Control2-2.2.1"'
       osascript -e "id of app \"`pwd`/dist/mac/Blink1Control2.app\""
       ```
+      and that should return appId of "com.thingm.blink1control2"
+
     - To reset privacy database for particular app (to test Mac access dialogs):
       ```
       tccutil reset All com.thingm.blink1control2
