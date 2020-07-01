@@ -212,7 +212,7 @@ var Blink1Service = {
             var crgb = color.toRgb();
             try {
                 var b1 = blink1s[blink1idx].device;
-                if( this.conf.enableDegamma ) { 
+                if( this.conf.enableDegamma ) {
                   b1.enableDegamma = this.conf.enableDegamma; // only set if defined
                 }
                 b1.fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn );
@@ -324,13 +324,26 @@ var Blink1Service = {
         return currentState[blink1idx].millis;
     },
     // FIXME: this seems overly complex
-    getCurrentColor: function(blink1id) { // FIXME
+    getCurrentColorOld: function(blink1id) { // FIXME
         var blink1idx = this.idToBlink1Index(blink1id);
         // log.msg("getCurrentColor: idx", blink1idx, "currentState:", currentState);
         var curledn = currentState[blink1idx].ledn;
         curledn = (curledn>0) ? curledn-1 : curledn; // 0 = all LEDs in a blink1, so shift or use 0th element as rep
         return currentState[blink1idx].colors[ curledn ];
     },
+    getCurrentColor: function(blink1id,ledn) {
+      var blink1idx = this.idToBlink1Index(blink1id);
+      if(ledn===undefined) {
+        ledn = currentState[blink1idx].ledn;
+        ledn = (ledn>0) ? ledn-1 : ledn; // 0 = all LEDs in a blink1, so shift or use 0th element as rep
+      }
+      var color = currentState[blink1idx].colors[ ledn ];
+      if( color === undefined ) {
+        color = tinycolor('#000000');
+      }
+      return color;
+    },
+
     // FIXME: this is confusing
     getCurrentColors: function(blink1id) {
         var blink1idx = this.idToBlink1Index(blink1id);
