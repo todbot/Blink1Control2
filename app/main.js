@@ -174,26 +174,6 @@ var openHelpWindow = function() {
 //   console.log('Error in auto-updater.');
 // });
 
-function launchAtStartup() {
-  if (process.platform === "darwin") {
-    app.setLoginItemSettings({
-      openAtLogin: true,
-      openAsHidden: true
-    });
-  } else {
-    app.setLoginItemSettings({
-      openAtLogin: true,
-      openAsHidden: true,
-      path: updateExe,
-      args: [
-        "--processStart",
-        `"${exeName}"`,
-        "--process-start-args",
-        `"--hidden"`
-      ]
-    });
-  }
-}
 
 // ------------------------------------------------------------------------
 //

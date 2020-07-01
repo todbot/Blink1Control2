@@ -122,21 +122,8 @@ saveSettings: function() {
   MenuMaker.setupMainMenu(); // FIXME: find way to do spot edit of shortcut keys?
   MenuMaker.updateTrayMenu();
 
-  // // the startAtLogin option isn't covered by any reloadConfig() call
-  // blink1ControlAutoLauncher.isEnabled().then(isEnabled => {
-  //   if (isEnabled) {
-  //     if (!this.state.startAtLogin) {
-  //       blink1ControlAutoLauncher.disable(); // disable if enabled
-  //     }
-  //   } else { // not enabled
-  //     if (this.state.startAtLogin) {
-  //       blink1ControlAutoLauncher.enable(); // enable if disabled
-  //     }
-  //   }
-  // }).catch(err => {
-  //   console.log("PreferencesModal: error setting startAtLogin"); // handle error
-  // });
-  //
+  this.updateStartAtLogin();
+
   if (process.platform === 'darwin') {
     if (this.state.hideDockIcon) {
       app.dock.hide();
@@ -149,6 +136,28 @@ saveSettings: function() {
   Eventer.addStatus({type: 'info', source: 'preferences', text: 'settings updated'});
 
   return true;
+},
+
+updateStartAtLogin: function() {
+  log.msg("PreferencesModal.updateStartAtLogin:");
+  if( process.platform === 'win32') {
+    const appFolder = path.dirname(process.execPath);
+    const updateExe = path.resolve(appFolder, '..', 'Update.exe');
+    const exeName = path.basename(process.execPath);
+    app.setLoginItemSettings({
+      openAtLogin: this.state.startAtLogin,
+      path: updateExe,
+      args: [
+        "--processStart", `"${exeName}"`,
+        "--process-start-args",`"--hidden"`
+      ]
+    });
+  }
+  else {
+    app.setLoginItemSettings({
+      openAtLogin: this.state.startAtLogin,
+    });
+  }
 },
 
 close: function() {
