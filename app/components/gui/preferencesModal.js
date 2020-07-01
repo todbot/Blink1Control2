@@ -32,14 +32,6 @@ var Blink1SerialOption = require('./blink1SerialOption');
 var app = require('electron').remote.app;
 var path = require('path');
 
-//var appPath = app.getAppPath();
-//if( process.platform === 'darwin' ) {
-//    appPath = path.resolve( appPath, '../../..');
-//}
-// var blink1ControlAutoLauncher = new AutoLaunch({
-//   name: 'Blink1Control2'
-// }); // FIXME: pkg.productName
-
 const propTypes = {
 };
 
@@ -139,25 +131,10 @@ saveSettings: function() {
 },
 
 updateStartAtLogin: function() {
-  log.msg("PreferencesModal.updateStartAtLogin:");
-  if( process.platform === 'win32') {
-    const appFolder = path.dirname(process.execPath);
-    const updateExe = path.resolve(appFolder, '..', 'Update.exe');
-    const exeName = path.basename(process.execPath);
-    app.setLoginItemSettings({
-      openAtLogin: this.state.startAtLogin,
-      path: updateExe,
-      args: [
-        "--processStart", `"${exeName}"`,
-        "--process-start-args",`"--hidden"`
-      ]
-    });
-  }
-  else {
-    app.setLoginItemSettings({
-      openAtLogin: this.state.startAtLogin,
-    });
-  }
+  // log.msg("PreferencesModal.updateStartAtLogin:",this.state.startAtLogin);
+  app.setLoginItemSettings({
+    openAtLogin: this.state.startAtLogin,
+  });
 },
 
 close: function() {
