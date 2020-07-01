@@ -6,8 +6,8 @@ var electron_notarize = require('electron-notarize');
 
 const pkg = require('../package.json')
 
-const appleId = process.env.AID;
-const appleIdPassword = process.env.AIP;
+const appleId = process.env.APPLEID;
+const appleIdPassword = process.env.APPLEIDPASSWD;
 const ascProvider = process.env.TEAM_SHORT_NAME;  //'TodKurt38983785';  // FIXME
 
 module.exports = async function (params) {
@@ -16,6 +16,9 @@ module.exports = async function (params) {
       return;
     }
     console.log('afterSign hook triggered', params);
+    if(!appleId) throw new Error("no $APPLEID environment variable set");
+    if(!appleIdPassword) throw new Error("no $APLEIDPASSWD environment variable set");
+    if(!ascProvider) throw new Error("No $TEAM_SHORT_NAME environment variable set");
 
     const appId = pkg.build.appId
     if (!appId) throw new Error('no appId found in package.json')
