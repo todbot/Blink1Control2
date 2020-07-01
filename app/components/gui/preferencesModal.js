@@ -31,16 +31,14 @@ var Blink1SerialOption = require('./blink1SerialOption');
 
 var app = require('electron').remote.app;
 var path = require('path');
-var AutoLaunch = require('electron').remote.require('auto-launch');
-var appPath = app.getAppPath();
-if( process.platform === 'darwin' ) {
-    appPath = path.resolve( appPath, '../../..');
-}
-var blink1ControlAutoLauncher = new AutoLaunch({
-  name: 'Blink1Control2',
-  path: appPath
 
-}); // FIXME: pkg.productName
+//var appPath = app.getAppPath();
+//if( process.platform === 'darwin' ) {
+//    appPath = path.resolve( appPath, '../../..');
+//}
+// var blink1ControlAutoLauncher = new AutoLaunch({
+//   name: 'Blink1Control2'
+// }); // FIXME: pkg.productName
 
 const propTypes = {
 };
@@ -70,7 +68,7 @@ loadSettings: function() {
     startupPattern:   conf.readSettings('startup:startupPattern') || "", // FIXME: not used yet
     shortcutPrefix:   conf.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift',
     shortcutResetKey: conf.readSettings('startup:shortcutResetKey') || 'R',
-    enableGamma:      conf.readSettings('blink1Service:enableGamma') || false, // NOTE this fails if flop default to true
+    enableDegamma:    conf.readSettings('blink1Service:enableDegamma') || false,
     hostId: Blink1Service.getHostId(),
     blink1ToUse:      conf.readSettings('blink1Service:blink1ToUse') || "0", // 0 == use first avail
     allowMultiBlink1: conf.readSettings('blink1Service:allowMulti') || false,
@@ -103,7 +101,7 @@ saveSettings: function() {
   // conf.saveSettings('startup:startupPattern', this.state.startupPattern);
   conf.saveSettingsMem('startup:shortcutPrefix', this.state.shortcutPrefix);
   conf.saveSettingsMem('startup:shortcutResetKey', this.state.shortcutResetKey);
-  conf.saveSettingsMem('blink1Service:enableGamma', this.state.enableGamma);
+  conf.saveSettingsMem('blink1Service:enableDegamma', this.state.enableDegamma);
   conf.saveSettingsMem('blink1Service:blink1ToUse', this.state.blink1ToUse);
   conf.saveSettingsMem('blink1Service:allowMulti', this.state.allowMultiBlink1);
   conf.saveSettingsMem('apiServer:enabled', this.state.apiServerEnable);
@@ -124,21 +122,21 @@ saveSettings: function() {
   MenuMaker.setupMainMenu(); // FIXME: find way to do spot edit of shortcut keys?
   MenuMaker.updateTrayMenu();
 
-  // the startAtLogin option isn't covered by any reloadConfig() call
-  blink1ControlAutoLauncher.isEnabled().then(isEnabled => {
-    if (isEnabled) {
-      if (!this.state.startAtLogin) {
-        blink1ControlAutoLauncher.disable(); // disable if enabled
-      }
-    } else { // not enabled
-      if (this.state.startAtLogin) {
-        blink1ControlAutoLauncher.enable(); // enable if disabled
-      }
-    }
-  }).catch(err => {
-    console.log("PreferencesModal: error setting startAtLogin"); // handle error
-  });
-
+  // // the startAtLogin option isn't covered by any reloadConfig() call
+  // blink1ControlAutoLauncher.isEnabled().then(isEnabled => {
+  //   if (isEnabled) {
+  //     if (!this.state.startAtLogin) {
+  //       blink1ControlAutoLauncher.disable(); // disable if enabled
+  //     }
+  //   } else { // not enabled
+  //     if (this.state.startAtLogin) {
+  //       blink1ControlAutoLauncher.enable(); // enable if disabled
+  //     }
+  //   }
+  // }).catch(err => {
+  //   console.log("PreferencesModal: error setting startAtLogin"); // handle error
+  // });
+  //
   if (process.platform === 'darwin') {
     if (this.state.hideDockIcon) {
       app.dock.hide();
@@ -218,7 +216,7 @@ render: function() {
     paddingLeft: 15,
     paddingBottom: 10
   };
-  var errorSectStyle = { paddingLeft: 15, color:'red'}; 
+  var errorSectStyle = { paddingLeft: 15, color:'red'};
 
   return (
     <div>
@@ -249,7 +247,7 @@ render: function() {
                   </Checkbox> : <div/>}
 
                 <Checkbox bsSize="small" title="Use more accurate colors. When off, colors are brighter"
-                  name="enableGamma" checked={this.state.enableGamma} onChange={this.handleInputChange} >
+                  name="enableDegamma" checked={this.state.enableDegamma} onChange={this.handleInputChange} >
                   LED gamma-correction
                 </Checkbox>
                 <Checkbox bsSize="small" title="Only allow color patterns to play single-file, not at the same time"
