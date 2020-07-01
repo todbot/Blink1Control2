@@ -34,11 +34,11 @@ os:
 env:
   global:
   matrix:
-  - TRAVIS_NODE_VERSION="8"
+  - TRAVIS_NODE_VERSION="13"
 matrix:
   exclude:
   - os: osx
-    env: TRAVIS_NODE_VERSION="8" ARCH="x86"
+    env: TRAVIS_NODE_VERSION="13" ARCH="x86"
 
 cache:
   directories:
