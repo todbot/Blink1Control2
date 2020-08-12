@@ -212,8 +212,8 @@ var Blink1Service = {
             var crgb = color.toRgb();
             try {
                 var b1 = blink1s[blink1idx].device;
-                if( this.conf.enableDegamma ) {
-                  b1.enableDegamma = this.conf.enableDegamma; // only set if defined
+                if( this.conf.enableGamma !== undefined ) {
+                  b1.enableDegamma = !this.conf.enableGamma;  // FIXME: fix this in node-blink1?
                 }
                 b1.fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn );
             } catch(err) {
