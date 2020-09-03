@@ -89,14 +89,15 @@ var TimeService = {
             var rHour = parseInt(rule.alarmHours);
             var rMin = parseInt( rule.alarmMinutes ) || 0;
             var rSec = parseInt( rule.alarmSeconds ) || 0;
-			var rMode = rule.alarmTimeMode || '24';
+            var rMode = rule.alarmTimeMode || '24';
 
-			// convert am/pm to 0-24, am: 1-12 -> 1-12, pm: 1-11,12 -> 13-23,0
-			if( rMode === 'am' ) {
-				rHour = (rHour !== 12) ? rHour : 23;
-			} else if( rMode === 'pm' ) {
-				rHour = (rHour !== 12) ? rHour + 12 : 0;
-			} // else 24 hour mode
+            // convert am/pm to 0-24, am: 1-12 -> 1-12, pm: 1-11,12 -> 13-23,0
+            // convert am/pm to 0-24, am: 1-11,12 -> 1-11,0, pm: 1-11,12 -> 13-23,12
+            if( rMode === 'am' ) {
+              rHour = (rHour !== 12) ? rHour : 0;
+            } else if( rMode === 'pm' ) {
+              rHour = (rHour !== 12) ? rHour + 12 : 12;
+            } // else 24 hour mode
 
             if( rule.alarmType === 'hourly' ) {
                 log.msg("TimeService.checkTime: hourly:", rHour,rMin,rSec, " - ", now.getHours(),now.getMinutes(),now.getSeconds());
