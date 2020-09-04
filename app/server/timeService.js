@@ -91,7 +91,6 @@ var TimeService = {
             var rSec = parseInt( rule.alarmSeconds ) || 0;
             var rMode = rule.alarmTimeMode || '24';
 
-            // convert am/pm to 0-24, am: 1-12 -> 1-12, pm: 1-11,12 -> 13-23,0
             // convert am/pm to 0-24, am: 1-11,12 -> 1-11,0, pm: 1-11,12 -> 13-23,12
             if( rMode === 'am' ) {
               rHour = (rHour !== 12) ? rHour : 0;

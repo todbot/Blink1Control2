@@ -50,6 +50,13 @@ Steps:
       ```
       and that should return appId of "com.thingm.blink1control2"
 
+    - Test if app is notarized:
+      ```
+      codesign --test-requirement="=notarized" --verify --verbose myapp.app
+      xcrun stapler validate myapp.app
+      ```
+      also see https://eclecticlight.co/2019/05/31/can-you-tell-whether-code-has-been-notarized/
+
     - To reset privacy database for particular app (to test Mac access dialogs):
       ```
       tccutil reset All com.thingm.blink1control2
@@ -63,6 +70,16 @@ Steps:
       ```
       codesign -s (identity from above) /path/to/executable
       ```
+
+    - In some cases, may need to sign native hared library with your developer credentials and copy it into the app:
+
+      ```
+      npm install -g electron-osx-sign
+      cp node_modules/node-hid/build/Release/HID.node dist/mac/
+      electron-hid-toy.app/Contents/MacOS
+      electron-osx-sign dist/mac/electron-hid-toy.app  dist/mac/electron-hid-toy.app/Contents/MacOS/HID.node
+      ```
+
 
 - Windows signed apps:
     - Get Code Signing cert.

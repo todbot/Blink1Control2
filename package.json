@@ -44,9 +44,6 @@
     "afterSign": "./build/afterSign.js",
     "npmRebuild": true,
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "publish": {
-      "provider": "github"
-    },
     "mac": {
       "category": "public.app-category.utilities",
       "icon": "build/icon.icns",

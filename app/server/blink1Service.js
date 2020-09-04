@@ -132,10 +132,8 @@ var Blink1Service = {
             blink1s.push( { serial: serialnumber, device: null } );
         }
         // set up all devices at once
-        // we wait 500msec because it was failing without it
-        // setTimeout( Blink1Service._setupFoundDevices, 500);  // FIXME: an issue?
+        // we wait 500msec because it was failing without it (USB HID delay?)
         setTimeout(() =>  {
-          log.msg("BLAHAHAHA");
           this._setupFoundDevices();
         }, 500);
     },
@@ -212,9 +210,10 @@ var Blink1Service = {
             var crgb = color.toRgb();
             try {
                 var b1 = blink1s[blink1idx].device;
-                if( this.conf.enableGamma !== undefined ) {
-                  b1.enableDegamma = !this.conf.enableGamma;  // FIXME: fix this in node-blink1?
+                if( this.conf.enableGamma !== undefined ) { // i.e. if defined
+                  b1.enableDegamma = this.conf.enableGamma;  // FIXME: fix this in node-blink1?
                 }
+                else { b1.enableDegamma = false; }
                 b1.fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn );
             } catch(err) {
                 log.error('Blink1Service._fadeToRGB: error', err);
