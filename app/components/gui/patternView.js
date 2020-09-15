@@ -149,6 +149,14 @@ var PatternView = React.createClass({
         var pattern = this.state.pattern;
         this.props.onDeletePattern( pattern.id );
     },
+    handleSwatchKeyDown: function(e,i) {
+      log.msg("handleSwatchKeyDown", i, e.key)
+      if( this.state.editing && (e.key === "Backspace" || e.key === "Delete") ) {
+        var pattern = this.state.pattern;
+        delete pattern.colors[this.state.activeSwatch];
+        this.setState({pattern: pattern});
+      }
+    },
 
     render: function() {
         var pattern = this.state.pattern;
@@ -206,9 +214,11 @@ var PatternView = React.createClass({
             if( isEditing && i === this.state.activeSwatch ) {
                  mystyle.borderColor='#333'; mystyle.borderWidth = 3;
             }
+            mystyle.outline = 0
             return (
-                <div style={mystyle} key={i}
+                <div style={mystyle} key={i} tabIndex={-1}
                     onClick={this.onSwatchClick.bind(this, i)}
+                    onKeyDown={(e) => this.handleSwatchKeyDown(e,i)}
                     onDoubleClick={this.onSwatchDoubleClick.bind(this,i)}></div>
              );
         };
