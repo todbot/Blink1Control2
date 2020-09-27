@@ -84,7 +84,7 @@ var MailService = require('./server/mailService');
 var SkypeService = require('./server/skypeService');
 var ScriptService = require('./server/scriptService');
 var TimeService = require('./server/timeService');
-// var MqttService = require('./server/mqttService');
+var MqttService = require('./server/mqttService');
 
 setTimeout( function() {
   log.msg("services starting...");
@@ -93,7 +93,7 @@ setTimeout( function() {
   SkypeService.start();
   ScriptService.start();
   TimeService.start();
-  // MqttService.start();
+  MqttService.start();
   log.msg("services started");
 }, 2000);
 
