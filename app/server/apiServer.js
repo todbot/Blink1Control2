@@ -77,6 +77,23 @@ app.get('/blink1/fadeToRGB', function(req, res) {
     });
 });
 
+app.get('/blink1/lastColor', function(req, res) {
+  var status = "success";
+  var ledn = Number(req.query.ledn) || 0;
+  var blink1_id = Number(req.query.blink1_id) || 0;  // undefined means all blink1 devices
+
+  var color = Blink1Service.getCurrentColor(blink1_id, ledn);
+
+  res.json( {
+      blink1Serials: Blink1Service.getAllSerials(),
+      lastColor: color.toHexString(),
+      // lastTime: secs,
+      lastLedn: ledn,
+      cmd: "lastColor",
+      status: status
+  });
+});
+
 app.get('/blink1/pattern(s)?', function(req,res) {
     res.json({
         status: "pattern results",
@@ -94,12 +111,12 @@ app.get('/blink1/pattern/queue', function(req,res) {
 app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
     var status = 'pattern '+req.params.type+': no pattern with that name';
     var patt_name = req.query.pname || req.query.name || '';
-    var blink1id = req.query.blink1id || 0;
+    var blink1_id = req.query.blink1_id || 0;
 
     if( req.params.type === 'play' ) {
         if( patt_name ) {
             // returns true on found pattern // FIXME: go back to using 'findPattern'
-            if( PatternsService.playPatternFrom( 'api', patt_name, blink1id ) ) {
+            if( PatternsService.playPatternFrom( 'api', patt_name, blink1_id ) ) {
                 status = 'pattern play: playing ' +patt_name;
             }
         }
@@ -123,7 +140,7 @@ app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
         // id: patt_id,
         status: status,
         pname: patt_name,
-        blink1id: blink1id
+        blink1_id: blink1_id
     });
 });
 app.get('/blink1/pattern/add', function(req,res) {

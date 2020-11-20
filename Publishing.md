@@ -28,25 +28,35 @@ Steps:
 
 
 
-#### random notes
+#### Notes
+
 - Mac signed apps:
     - Before running `npm run dist`, set three environment variables:
       ```
-      export AID="appleid@appleid.com" (but real appleId)
-      export AIP="app-specific-password" (generated from appleid.apple.com)
+      export APPLEID="appleid@appleid.com" (but real appleId)
+      export APPLEIDPASSWD="app-specific-password" (generated from appleid.apple.com)
       export TEAM_SHORT_NAME="MyTeamShortName" (obtained from iTMSTransporter below)
       ```
 
     - To get 'short name' ("ascProvider" to electron-notarize):
       ```
-      /Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/itms/bin/iTMSTransporter -m provider -u $AID -p $AIP
+      /Applications/Transporter.app/Contents/itms/bin/iTMSTransporter -m provider -u $APPLEID -p $APPLEIDPASSWD
       ```
     - To get appId / bundleId, do one of:
       ```
-      mdls -name kMDItemCFBundleIdentifier -r ~/Desktop/ Blink1Control2-2.2.1.app`
+      mdls -name kMDItemCFBundleIdentifier -r ~/Desktop/Blink1Control2-2.2.1.app`
       osascript -e 'id of app "Blink1Control2-2.2.1"'
       osascript -e "id of app \"`pwd`/dist/mac/Blink1Control2.app\""
       ```
+      and that should return appId of "com.thingm.blink1control2"
+
+    - Test if app is notarized:
+      ```
+      codesign --test-requirement="=notarized" --verify --verbose myapp.app
+      xcrun stapler validate myapp.app
+      ```
+      also see https://eclecticlight.co/2019/05/31/can-you-tell-whether-code-has-been-notarized/
+
     - To reset privacy database for particular app (to test Mac access dialogs):
       ```
       tccutil reset All com.thingm.blink1control2
@@ -60,6 +70,16 @@ Steps:
       ```
       codesign -s (identity from above) /path/to/executable
       ```
+
+    - In some cases, may need to sign native hared library with your developer credentials and copy it into the app:
+
+      ```
+      npm install -g electron-osx-sign
+      cp node_modules/node-hid/build/Release/HID.node dist/mac/
+      electron-hid-toy.app/Contents/MacOS
+      electron-osx-sign dist/mac/electron-hid-toy.app  dist/mac/electron-hid-toy.app/Contents/MacOS/HID.node
+      ```
+
 
 - Windows signed apps:
     - Get Code Signing cert.

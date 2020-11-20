@@ -8,14 +8,16 @@ var Modal = require('react-bootstrap').Modal;
 var Input = require('react-bootstrap').Input;
 var Button = require('react-bootstrap').Button;
 
-var LinkedStateMixin = require('react-addons-linked-state-mixin');
+var Form = require('react-bootstrap').Form;
+var FormControl = require('react-bootstrap').FormControl;
+var FormGroup = require('react-bootstrap').FormGroup;
+var ControlLabel = require('react-bootstrap').ControlLabel;
 
 var Switch = require('react-bootstrap-switch');
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
 var MqttForm = React.createClass({
-    mixins: [LinkedStateMixin],
     propTypes: {
         rule: React.PropTypes.object.isRequired,
         allowMultiBlink1: React.PropTypes.bool,
@@ -53,6 +55,12 @@ var MqttForm = React.createClass({
     handleBlink1SerialChange: function(blink1Id) {
         this.setState({blink1Id: blink1Id});
     },
+    handleInputChange: function(event) {
+      var target = event.target;
+      var value = target.type === 'checkbox' ? target.checked : target.value;
+      var name = target.name;
+      this.setState({ [name]: value });
+    },
 
     render: function() {
         var self = this;
@@ -69,32 +77,60 @@ var MqttForm = React.createClass({
                     </Modal.Header>
                     <Modal.Body>
                         <p style={{color: "#f00"}}>{this.state.errormsg}</p>
-                        <form className="form-horizontal" >
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                                type="text" label="Rule Name" placeholder="Name of rule on IFTTT"
-                                valueLink={this.linkState('name')} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                                type="text" label="MQTT Topic" placeholder="topic to subscribe to"
-                                valueLink={this.linkState('topic')} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                                type="text" label="MQTT URL" placeholder="e.g. mqtts://io.adafruit.com/"
-                                valueLink={this.linkState('url')} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                                type="text" label="MQTT username" placeholder="optional username"
-                                valueLink={this.linkState('username')} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-8"
-                                type="text" label="MQTT password" placeholder="optional password or API key"
-                                valueLink={this.linkState('password')} />
-                            <Input labelClassName="col-xs-3" wrapperClassName="col-xs-5"
-                                type="select" label="Pattern"
-                                valueLink={this.linkState('patternId')} >
-                                {this.props.patterns.map( createPatternOption, this )}
-                            </Input>
-                            {!this.props.allowMultiBlink1 ? null :
-                                <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
-                                    labelClassName="col-xs-3" wrapperClassName="col-xs-4"
-                                    serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
-                        </form>
+                        <Form horizontal>
+                          <FormGroup controlId="formName" title="">
+                              <Col sm={3} componentClass={ControlLabel}> Rule name </Col>
+                              <Col sm={8}>
+                                  <FormControl type="text" placeholder="Name of rule"
+                                      name="name" value={this.state.name} onChange={this.handleInputChange} />
+                              </Col>
+                          </FormGroup>
+
+                          <FormGroup controlId="formHost" bsSize="small">
+                              <Col sm={3} componentClass={ControlLabel}> MQTT Topic </Col>
+                              <Col sm={6}>
+                                  <FormControl type="text" placeholder="topic to subscribe to"
+                                      name="topic" value={this.state.topic} onChange={this.handleInputChange} />
+                              </Col>
+                          </FormGroup>
+                          <FormGroup controlId="formHost" bsSize="small">
+                              <Col sm={3} componentClass={ControlLabel}> MQTT URL </Col>
+                              <Col sm={6}>
+                                  <FormControl type="text" placeholder="e.g. mqtts://io.adafruit.com/"
+                                      name="url" value={this.state.url} onChange={this.handleInputChange} />
+                              </Col>
+                          </FormGroup>
+                          <FormGroup controlId="formUsername" bsSize="small">
+                              <Col sm={3} componentClass={ControlLabel}> MQTT Username </Col>
+                              <Col sm={6}>
+                                  <FormControl type="text" placeholder="Enter username (e.g. email addr)"
+                                      name="username" value={this.state.username} onChange={this.handleInputChange} />
+                              </Col>
+                          </FormGroup>
+                          <FormGroup controlId="formPassword" bsSize="small">
+                              <Col sm={3} componentClass={ControlLabel}> MQTT Password </Col>
+                              <Col sm={6}>
+                                  <FormControl type="password" placeholder=""
+                                      name="password" value={this.state.password} onChange={this.handleInputChange} />
+                              </Col>
+                          </FormGroup>
+
+                          <FormGroup controlId="formPatternId">
+                              <Col sm={3} componentClass={ControlLabel}>  Pattern  </Col>
+                              <Col sm={8}>
+                                  <FormControl componentClass="select"
+                                      name="patternId" value={this.state.patternId} onChange={this.handleInputChange} >
+                                      {this.props.patterns.map( createPatternOption )}
+                                  </FormControl>
+                              </Col>
+                          </FormGroup>
+
+                          {!this.props.allowMultiBlink1 ? <div/>:
+                              <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
+                                  labelColWidth={3} controlColWidth={4}
+                                  serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
+
+                        </Form>
                     </Modal.Body>
                     <Modal.Footer>
                         <Row>

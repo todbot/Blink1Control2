@@ -15,7 +15,7 @@ var PatternsService = require('../../server/patternsService');
 var VirtualBlink1 = require('./virtualBlink1');
 
 // var PreferencesModal = require('./preferencesModal');
-import PreferencesModal from './preferencesModal';
+var PreferencesModal = require('./preferencesModal');
 
 var log = require('../../logger');
 

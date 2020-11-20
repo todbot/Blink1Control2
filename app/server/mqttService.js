@@ -2,14 +2,17 @@
 
 'use strict';
 
+var simplecrypt = require('simplecrypt');
 
 var conf = require('../configuration');
 var log = require('../logger');
 var Eventer = require('../eventer');
 
+var PatternsService = require('./patternsService');
 
-// var mqtt = require('mqtt');
-// var mqtt = require('../mqtt.min');
+var mqtt = require('mqtt');
+
+var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control',method:"aes-192-ecb"});
 
 var MqttService = {
 	config: {},
@@ -50,6 +53,16 @@ var MqttService = {
                 config.username = rule.username;
                 config.password = rule.password;
             }
+            var pass = '';
+            try {
+              // console.log(JSON.stringify(config,null,2), JSON.stringify(rule,null,2));
+                config.password = sc.decrypt( rule.password );
+            } catch(err) {
+                log.msg('MqttService: bad password for rule',rule.name);
+                return;
+            }
+            // config.password = 'try';
+
             var client = client  = mqtt.connect( rule.url, config );
             client.on('connect', function () {
                 client.subscribe( rule.topic );
@@ -59,8 +72,12 @@ var MqttService = {
             });
             client.on('message', function (topic, message) {
                 // message is Buffer
-                Eventer.addStatus( {type:'info', source:'mqtt', id:rule.name, text:message.toString()} );
-                console.log("topic:", topic, "message:",message.toString())
+                Eventer.addStatus( {type:'trigger', source:'mqtt', id:rule.name, text:message.toString()});
+                if( rule.enabled ) {
+                    PatternsService.playPatternFrom( rule.name, rule.patternId, rule.blink1Id );
+                }
+                // Eventer.addStatus( {type:'info', source:'mqtt', id:rule.name, text:message.toString()} );
+                console.log("rule:"+rule.name+ "topic:", topic, "message:",message.toString())
             });
             rule.client = client;
         });

@@ -21,6 +21,8 @@ var dialog = require('electron').remote.dialog;
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
+var log = require('../../logger');
+
 var ScriptForm = React.createClass({
     propTypes: {
         rule: React.PropTypes.object.isRequired,
@@ -59,11 +61,13 @@ var ScriptForm = React.createClass({
     },
     openFileDialog: function() {
         var self = this;
-        dialog.showOpenDialog(function (filenames) {
-            if (filenames === undefined) { return; }
-            var filename = filenames[0];
+        log.msg("openFileDialog: opening...")
+        dialog.showOpenDialog({properties: ['openFile'] }).then(function (response) {
+          if (!response.canceled) {
+            var filename = response.filePaths[0];  // fully qualified filename
             self.setState({path: filename});
-        });
+          }
+        })
     },
     handleActionType: function(e) {
         var actionType = e.target.value;

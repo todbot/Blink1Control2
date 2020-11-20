@@ -132,14 +132,17 @@ var Blink1Service = {
             blink1s.push( { serial: serialnumber, device: null } );
         }
         // set up all devices at once
-        // we wait 500msec because it was failing without it
-        setTimeout( Blink1Service._setupFoundDevices, 500);  // FIXME: an issue?
+        // we wait 500msec because it was failing without it (USB HID delay?)
+        setTimeout(() =>  {
+          this._setupFoundDevices();
+        }, 500);
     },
     _setupFoundDevices: function() {
-        log.msg("Blink1Service._setupFoundDevices", blink1s);
+        var self = this;
+        log.msg("Blink1Service._setupFoundDevices", blink1s, "conf: ", self.conf);
         blink1s.map( function(b1) {
             if( !b1.device ) {
-                log.msg("Blink1Service._setupFoundDevice: opening ",b1.serial);
+                log.msg("Blink1Service._setupFoundDevices: opening ",b1.serial);
                 b1.device = new Blink1(b1.serial);
             }
         });
@@ -206,7 +209,12 @@ var Blink1Service = {
         if( blink1s[blink1idx] && blink1s[blink1idx].device ) {
             var crgb = color.toRgb();
             try {
-                blink1s[blink1idx].device.fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn );
+                var b1 = blink1s[blink1idx].device;
+                if( this.conf.enableGamma !== undefined ) { // i.e. if defined
+                  b1.enableDegamma = this.conf.enableGamma;  // FIXME: fix this in node-blink1?
+                }
+                else { b1.enableDegamma = false; }
+                b1.fadeToRGB( millis, crgb.r, crgb.g, crgb.b, ledn );
             } catch(err) {
                 log.error('Blink1Service._fadeToRGB: error', err);
                 this._removeDevice( blink1s[blink1idx].serial );
@@ -315,13 +323,26 @@ var Blink1Service = {
         return currentState[blink1idx].millis;
     },
     // FIXME: this seems overly complex
-    getCurrentColor: function(blink1id) { // FIXME
+    getCurrentColorOld: function(blink1id) { // FIXME
         var blink1idx = this.idToBlink1Index(blink1id);
         // log.msg("getCurrentColor: idx", blink1idx, "currentState:", currentState);
         var curledn = currentState[blink1idx].ledn;
         curledn = (curledn>0) ? curledn-1 : curledn; // 0 = all LEDs in a blink1, so shift or use 0th element as rep
         return currentState[blink1idx].colors[ curledn ];
     },
+    getCurrentColor: function(blink1id,ledn) {
+      var blink1idx = this.idToBlink1Index(blink1id);
+      if(ledn===undefined) {
+        ledn = currentState[blink1idx].ledn;
+        ledn = (ledn>0) ? ledn-1 : ledn; // 0 = all LEDs in a blink1, so shift or use 0th element as rep
+      }
+      var color = currentState[blink1idx].colors[ ledn ];
+      if( color === undefined ) {
+        color = tinycolor('#000000');
+      }
+      return color;
+    },
+
     // FIXME: this is confusing
     getCurrentColors: function(blink1id) {
         var blink1idx = this.idToBlink1Index(blink1id);

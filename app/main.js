@@ -14,9 +14,13 @@ var isAccelerator = require("electron-is-accelerator");
 
 var updater = require('./updater');
 
+var isDevelopment = process.env.NODE_ENV === 'development';
+
 var mainWindow = null;
 
-// Electron 4
+console.log("isDevelopment:",isDevelopment);
+
+// Electron 4, check only one app can run at a time
 app.requestSingleInstanceLock()
 app.on('second-instance', function (event, argv, cwd) {
     if(mainWindow) {
@@ -100,11 +104,7 @@ app.on('window-all-closed', function () {
 });
 
 var handleUrl = function(e,url) {
-    // console.log("event:",e);
-    // console.log("handleUrl: ",url);
-    if( url.startsWith("chrome://") ) {
-        return;
-    }
+    if( url.startsWith("chrome://") ) { return; }
     else if(url != mainWindow.webContents.getURL()) {
         e.preventDefault();
         electron.shell.openExternal(url);
@@ -120,12 +120,11 @@ var openAboutWindow = function () {
     alwaysOnTop: true,
     autoHideMenuBar: true,
     height: 375,
-    width: 500
+    width: 500,
+    webPreferences: { nodeIntegration: true }
   });
-    aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
-    aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
-
-  // aboutWindow.loadURL('data:text/html,' + info);
+  aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
+  aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
   aboutWindow.loadURL( 'file://' + __dirname + '/about.html') //+autoUpdateMsg );
   return aboutWindow;
 };
@@ -150,13 +149,15 @@ var openHelpWindow = function() {
     autoHideMenuBar: true,
     center: true,
     height: 700,
-      width: 800
-    });
-    helpWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
-    helpWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
-    helpWindow.on("closed", function() {
+    width: 800,
+    webPreferences: { nodeIntegration: true }
+  });
+  helpWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
+  helpWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
+  helpWindow.on("closed", function() {
     // helpWindow = null;
   });
+
   helpWindow.loadURL( 'file://' + __dirname + '/help/index.html' );
 };
 
@@ -173,6 +174,8 @@ var openHelpWindow = function() {
 //   console.log('Error in auto-updater.');
 // });
 
+
+// ------------------------------------------------------------------------
 //
 // the main deal
 //
@@ -180,6 +183,10 @@ app.on('ready', function () {
 
     // autoUpdater.autoDownload = false;
     // autoUpdater.checkForUpdates();
+
+  // if (!isDevelopment) {
+  //   launchAtStartup();
+  // }
 
   var hideDockIcon = config.readSettings('startup:hideDockIcon');
   if( hideDockIcon && process.platform === 'darwin' ) {
@@ -219,41 +226,28 @@ app.on('ready', function () {
     console.log("ignoring bad globalShortcutkey: ",resetShortcut);
   }
 
-  if( process.env.NODE_ENV === 'development' ) {
-    mainWindow = new BrowserWindow({
-      icon: path.join(__dirname, 'images/icons/blink1mk2-icon2-128px.png'),
-      title: "Blink1Control2",
-      maximizable: false,
-      width: 1040,
-      height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
-      resizable: true,
-      show: false, // show later based on config
-      nodeIntegration: true,
-      webPreferences: {backgroundThrottling: false}
-      // webPreferences: {
-      //     zoomFactor: 1.0,
-      //     backgroundThrottling: false
-      //     // webgl: false
-      // }
-    });
-    mainWindow.loadURL('file://' + __dirname + '/index-dev.html');
-    mainWindow.webContents.openDevTools({mode:'detach'});
+  var loadurl = 'file://' + __dirname + '/index-prod.html';
+  if( isDevelopment ) {
+    loadurl = 'file://' + __dirname + '/index-dev.html';
   }
-  else {
-    mainWindow = new BrowserWindow({
-      icon: path.join(__dirname, 'images/icons/blink1mk2-icon2-128px.png'),
-      title: "Blink1Control2",
-      width: 1040,
-      height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
-      resizable: showDebug, // allow resize when in debug mode
-      show: false,  // show later based on config value
+  console.log("loadurl:"+loadurl);
+
+  mainWindow = new BrowserWindow({
+    icon: path.join(__dirname, 'images/icons/blink1mk2-icon2-128px.png'),
+    title: "Blink1Control2",
+    maximizable: false,
+    width: 1040,
+    height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
+    resizable: isDevelopment && showDebug,
+    show: false, // show later based on config
+    webPreferences: {
       nodeIntegration: true,
-      webPreferences: {backgroundThrottling: false}
-      // closable: false,
-      // useContentSize: true,
-      // center: true
-    });
-    mainWindow.loadURL('file://' + __dirname + '/index-prod.html');
+      backgroundThrottling: false
+    }
+  });
+  mainWindow.loadURL(loadurl);
+  if(isDevelopment) {
+    mainWindow.webContents.openDevTools({mode:'detach'});
   }
 
   // mainWindow.setMenu(null);  // remove default menu

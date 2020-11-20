@@ -31,16 +31,6 @@ var Blink1SerialOption = require('./blink1SerialOption');
 
 var app = require('electron').remote.app;
 var path = require('path');
-var AutoLaunch = require('electron').remote.require('auto-launch');
-var appPath = app.getAppPath();
-if( process.platform === 'darwin' ) {
-    appPath = path.resolve( appPath, '../../..');
-}
-var blink1ControlAutoLauncher = new AutoLaunch({
-  name: 'Blink1Control2',
-  path: appPath
-
-}); // FIXME: pkg.productName
 
 const propTypes = {
 };
@@ -70,7 +60,7 @@ loadSettings: function() {
     startupPattern:   conf.readSettings('startup:startupPattern') || "", // FIXME: not used yet
     shortcutPrefix:   conf.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift',
     shortcutResetKey: conf.readSettings('startup:shortcutResetKey') || 'R',
-    enableGamma:      conf.readSettings('blink1Service:enableGamma') || false, // NOTE this fails if flop default to true
+    enableGamma:      conf.readSettings('blink1Service:enableGamma') || false,
     hostId: Blink1Service.getHostId(),
     blink1ToUse:      conf.readSettings('blink1Service:blink1ToUse') || "0", // 0 == use first avail
     allowMultiBlink1: conf.readSettings('blink1Service:allowMulti') || false,
@@ -124,20 +114,7 @@ saveSettings: function() {
   MenuMaker.setupMainMenu(); // FIXME: find way to do spot edit of shortcut keys?
   MenuMaker.updateTrayMenu();
 
-  // the startAtLogin option isn't covered by any reloadConfig() call
-  blink1ControlAutoLauncher.isEnabled().then(isEnabled => {
-    if (isEnabled) {
-      if (!this.state.startAtLogin) {
-        blink1ControlAutoLauncher.disable(); // disable if enabled
-      }
-    } else { // not enabled
-      if (this.state.startAtLogin) {
-        blink1ControlAutoLauncher.enable(); // enable if disabled
-      }
-    }
-  }).catch(err => {
-    console.log("PreferencesModal: error setting startAtLogin"); // handle error
-  });
+  this.updateStartAtLogin();
 
   if (process.platform === 'darwin') {
     if (this.state.hideDockIcon) {
@@ -151,6 +128,13 @@ saveSettings: function() {
   Eventer.addStatus({type: 'info', source: 'preferences', text: 'settings updated'});
 
   return true;
+},
+
+updateStartAtLogin: function() {
+  // log.msg("PreferencesModal.updateStartAtLogin:",this.state.startAtLogin);
+  app.setLoginItemSettings({
+    openAtLogin: this.state.startAtLogin,
+  });
 },
 
 close: function() {
@@ -218,7 +202,7 @@ render: function() {
     paddingLeft: 15,
     paddingBottom: 10
   };
-  var errorSectStyle = { paddingLeft: 15, color:'red'}; 
+  var errorSectStyle = { paddingLeft: 15, color:'red'};
 
   return (
     <div>
