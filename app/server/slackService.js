@@ -9,7 +9,7 @@ var simplecrypt = require('simplecrypt');
 const { RTMClient } = require('@slack/rtm-api');
 
 
-// FIXME: use non-deprected (and better) crypto system
+// FIXME: use non-deprecated (and better) crypto system
 var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control',method:"aes-192-ecb"});
 
 var SlackService = {
@@ -23,7 +23,7 @@ var SlackService = {
 
     stop: function() {
         if (this.rtmClient) {
-            this.rtmClient.stop()
+            this.rtmClient.disconnect()
         }
     },
     start: function() {
@@ -35,11 +35,9 @@ var SlackService = {
             log.msg("SlackService: disabled");
             return;
         }
-
         var allrules = conf.readSettings('eventRules') || [];
         self.rules = allrules.filter( function(r){return r.type==='slack';} );
         log.msg("SlackService.start. rules=", self.rules);
-
         var rule = self.rules[0]; // FIXME:
         if( !rule ) {
             return;
@@ -49,19 +47,18 @@ var SlackService = {
         }
         let token = '';
         try {
-            token = sc.decrypt( rule.userToken );
+            token = sc.decrypt( rule.password );
         } catch(err) {
             log.msg('SlackService: invalid user token for rule',rule.name);
             return;
         }
-
         self.success= false;
         Eventer.addStatus( {type:'info', source:'slack', id:rule.name, text:'connecting...'});
 
-        const keywords = self.rules.keywords.split(",")
+        const keywords = rule.keywords.split(",")
         var errorCount=0;
         const errorListener = (eventName, error) => {
-            log.msg(`SlackService: ${errorCount} : Error occured : ${error}`);
+            log.msg(`SlackService: ${errorCount} : Error occurred : ${error}`);
             errorCount++;
             if (errorCount === 10) {
                 log.msg(`SlackService: removing error listener`);
@@ -69,7 +66,7 @@ var SlackService = {
             }
         };
         const rtm = new RTMClient(token);
-        self.rtmClient = rmt
+        self.rtmClient = rtm;
         rtm.start()
             .catch(console.error);
         self.success = true

@@ -90,7 +90,7 @@ var ToolTable = React.createClass({
         }
         else if( rule.type === 'slack' ) {
             SlackService.reloadConfig();
-        }        
+        }
         else if( rule.type === 'time' ) {
             TimeService.reloadConfig();
         }

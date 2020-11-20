@@ -38,7 +38,7 @@ var SlackForm = React.createClass({
             enabled: rule.enabled || false,
             name: rule.name || 'new rule',
             keywords: rule.keywords || [''],
-            userToken: rule.userToken || '',
+            password: rule.password || '',
             actionType: 'play-pattern',
             patternId: rule.patternId || nextProps.patterns[0].id || '',
         });
@@ -46,8 +46,8 @@ var SlackForm = React.createClass({
 
     handleClose: function() {
         console.log("CLOSING: state=",this.state);
-        if( !this.state.userToken ) {
-            this.setState({errormsg: "userToken not set!"});
+        if( !this.state.password ) {
+            this.setState({errormsg: "password not set!"});
             return;
         }
         this.props.onSave(this.state);
@@ -100,7 +100,7 @@ var SlackForm = React.createClass({
                                 <Col sm={3} componentClass={ControlLabel}> Slack Bot Token </Col>
                                 <Col sm={8}>
                                     <FormControl type="password" placeholder=""
-                                        name="userToken" value={this.state.userToken} onChange={this.handleInputChange} />
+                                        name="password" value={this.state.password} onChange={this.handleInputChange} />
                                 </Col>
                             </FormGroup>
 
