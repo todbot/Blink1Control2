@@ -22,7 +22,7 @@ var SlackService = {
     },
 
     stop: function() {
-        if (this.rtmClient) {
+        if (this.rtmClient && this.rtmClient.connected) {
             this.rtmClient.disconnect()
         }
     },
