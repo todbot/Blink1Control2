@@ -87,7 +87,7 @@ Steps:
     - Set env vars described in https://www.electron.build/code-signing#windows, e.g.:
       ```
       $env:CSC_LINK="c:\users\biff\desktop\codesign-cert.p12"
-      $env:CSC_KEY_PASSWORD=hunter2
+      $env:CSC_KEY_PASSWORD="hunter2"
       ```
     - Run `npm run dist`
 
