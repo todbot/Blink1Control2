@@ -44,6 +44,9 @@
     "afterSign": "./build/afterSign.js",
     "npmRebuild": true,
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "publish": {
+      "provider": "github"
+    },
     "mac": {
       "category": "public.app-category.utilities",
       "icon": "build/icon.icns",
@@ -109,7 +112,7 @@
     "cross-env": "^5.0.5",
     "css-loader": "^2.1.1",
     "devtron": "^1.4.0",
-    "electron": "^8.3.4",
+    "electron": "^11.0.4",
     "electron-builder": "^22.7.0",
     "electron-notarize": "^1.0.0",
     "file-loader": "^3.0.1",
