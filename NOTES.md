@@ -155,3 +155,15 @@ NOTE: consider this historical info. most of these are out-of-date as of Nov 201
 #### Building on Windows
 - Use standard Powershell with git installed and "windows-build-tools"
   as described here: https://github.com/node-hid/node-hid#compiling-from-source
+
+#### Slack Integration
+
+The Slack integration requires a [Classic App](https://api.slack.com/apps?new_classic_app=1).
+Should see a `(Classic)` in the pop-up window. This is important because only the Classic App has
+access to RTM ( Real Time Messaging ). Without it, this integration will not work, because we
+aren't using Events.
+
+Once the App is created, it's important to add Permissions. Add `channel:read`. Once that's done
+the only thing remaining is adding a Bot User here: `https://api.slack.com/apps/<ID>/app-home?`.
+Note that `<ID>` is the ID of your App. Once the Bot is invited into the channel, keywords watch
+should work.
