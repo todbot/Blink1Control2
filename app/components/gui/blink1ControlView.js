@@ -1,27 +1,38 @@
 "use strict";
 
-var React = require('react');
-var Panel = require('react-bootstrap').Panel;
-var Grid = require('react-bootstrap').Grid;
-var Row = require('react-bootstrap').Row;
-var Col = require('react-bootstrap').Col;
-//var Glyphicon = require('react-bootstrap').Glyphicon;
+import React from 'react';
 
-var Blink1Status = require('./blink1Status');
-var EventList = require('./eventList');
-var PatternList = require('./patternList');
+// var React = require('react');
+// var Panel = require('react-bootstrap').Panel;
+// var Grid = require('react-bootstrap').Grid;
+// var Row = require('react-bootstrap').Row;
+// var Col = require('react-bootstrap').Col;
 
-var Blink1TabViews = require('./blink1TabViews');
-var Blink1ColorPicker = require('./blink1ColorPicker');
+import { Panel } from 'react-bootstrap';
+import { Grid } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
+import { Col } from 'react-bootstrap';
 
-class Blink1ControlView extends React.Component {
+import Blink1Status from './blink1Status';
+import EventList from './eventList';
+import PatternList from './patternList';
+import Blink1TabViews from './blink1TabViews';
+import Blink1ColorPicker from './blink1ColorPicker';
+
+// var Blink1Status = require('./blink1Status');
+// var EventList = require('./eventList');
+// var PatternList = require('./patternList');
+// var Blink1TabViews = require('./blink1TabViews');
+// var Blink1ColorPicker = require('./blink1ColorPicker');
+
 //var Blink1ControlView = React.createClass({
+export default class Blink1ControlView extends React.Component {
 
   render() {
-    var panelLstyle = {
+    const panelLstyle = {
       width: 330, height: 375, margin: 0, marginTop:5, marginRight:5, padding: 0,
       display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"};
-    var panelRstyle = {
+    const panelRstyle = {
       width: 370, height: 375, margin: 0, marginTop:5, marginRight:5, padding: 0,
       display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"};
 
@@ -67,6 +78,6 @@ class Blink1ControlView extends React.Component {
 //     </Panel>
 // </Row>
 
-module.exports = Blink1ControlView;
-//export default class Blink1ControlView {};
+// export default class Blink1ControlView;
+//module.exports = Blink1ControlView;
 //export Blink1ControlView;

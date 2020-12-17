@@ -1,9 +1,8 @@
 "use strict";
 
-var React = require('react');
-
-var Button = require('react-bootstrap').Button;
-var ButtonGroup = require('react-bootstrap').ButtonGroup;
+import React from 'react';
+import { Button } from 'react-bootstrap';
+import { ButtonGroup } from 'react-bootstrap';
 
 var log = require('../../logger');
 var Blink1Service = require('../../server/blink1Service');
@@ -12,104 +11,128 @@ var HtmlColorChart = require('./htmlColorChart');
 var tinycolor = require('tinycolor2');
 
 
-var Blink1ColorPicker = React.createClass({
-    getInitialState: function() {
-        return {
-            color: "#33dd33", // color is a hex string, not a tinycolor (had issues with using tinycolor here)
-            colorHex: "#33dd33",  // FIXME: look into why is there color and colorHex?
-            secs: 0.1,
-            ledn: 0,
-            r: 0, // FIXME: should use color but easier & cleaner this way
-            g: 1,
-            b: 2,
-            blink1Id: "0",
-        };
-    },
-    componentDidMount: function() {
-        // log.msg("Blink1ColorPicker.componentDidMount",this.state.color);
-        Blink1Service.addChangeListener( this.updateCurrentColor, "blink1ColorPicker" );
-    },
-    /**  Callback for Blink1Service notifyChange */
-    updateCurrentColor: function() {
-        var blink1Id = Blink1Service.getCurrentBlink1Id();
-        var colr = Blink1Service.getCurrentColor( blink1Id );
-        var secs = Blink1Service.getCurrentMillis( blink1Id ) / 1000;
-        var ledn = Blink1Service.getCurrentLedN( blink1Id );
-        var crgb = colr.toRgb();
-        // log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",colr.toHexString(), "ledn:",ledn, "blink1Id:",blink1Id);
-        this.setState( {
-            color: colr.toHexString(),
-            colorHex: colr.toHexString().toUpperCase(),
-            ledn: ledn,
-            r: crgb.r, g: crgb.g, b: crgb.b,
-            secs:secs,
-             blink1Id: blink1Id
-        });
-    },
+// var Blink1ColorPicker = React.createClass({
+export default class Blink1ControlView extends React.Component {
+  constructor(props)  {
+    super(props);
+    this.state = {
+      color: "#33dd33", // color is a hex string, not a tinycolor (had issues with using tinycolor here)
+      colorHex: "#33dd33",  // FIXME: look into why is there color and colorHex?
+      secs: 0.1,
+      ledn: 0,
+      r: 0, // FIXME: should use color but easier & cleaner this way
+      g: 1,
+      b: 2,
+      blink1Id: "0",
+    };
+    this.updateCurrentColor = this.updateCurrentColor.bind(this);
+    this.setColorHex = this.setColorHex.bind(this);
+    this.setColor = this.setColor.bind(this);
+    this.setLedN = this.setLedN.bind(this);
+    this.handleChangeSecs = this.handleChangeSecs.bind(this);
+    this.handleChangeR = this.handleChangeR.bind(this);
+    this.handleChangeG = this.handleChangeG.bind(this);
+    this.handleChangeB = this.handleChangeB.bind(this);
+    this.handleHexChange = this.handleHexChange.bind(this);
+
+  }
+
+  componentDidMount() {
+    // log.msg("Blink1ColorPicker.componentDidMount",this.state.color);
+    Blink1Service.addChangeListener( this.updateCurrentColor, "blink1ColorPicker" );
+  }
+
+  /**  Callback for Blink1Service notifyChange */
+  updateCurrentColor() {
+    var blink1Id = Blink1Service.getCurrentBlink1Id();
+    var colr = Blink1Service.getCurrentColor( blink1Id );
+    var secs = Blink1Service.getCurrentMillis( blink1Id ) / 1000;
+    var ledn = Blink1Service.getCurrentLedN( blink1Id );
+    var crgb = colr.toRgb();
+    // log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",colr.toHexString(), "ledn:",ledn, "blink1Id:",blink1Id);
+      this.setState( {
+          color: colr.toHexString(),
+          colorHex: colr.toHexString().toUpperCase(),
+          ledn: ledn,
+          r: crgb.r, g: crgb.g, b: crgb.b,
+          secs:secs,
+           blink1Id: blink1Id
+      });
+    }
+
     // called by HtmlColorChart  why are there two?
-    setColorHex: function(color) {
+    setColorHex(color) {
         this.setColor( tinycolor(color) );
         // Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn, this.state.blink1Idx ); // FIXME: time
-    },
+    }
+
     // called by colorpicker & handleChange{R,G,B}
-    setColor: function(color) {
+    setColor(color) {
         // console.log("colorpicker.setColor",color.hex, this.state.ledn, this.state.blink1Idx);
         Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn, this.state.blink1Id ); // FIXME: time
         // and the above will call 'fetchBlink1Color' anyway
         // there must be a better way to do this
-    },
+    }
+
     // called by ledn buttons
-    setLedN: function(n) {
+    setLedN(n) {
         Blink1Service.setCurrentLedN(n); // doesn't trigger an updateCurrentColor?
         this.setState({ledn: n});
-    },
-    handleChangeSecs: function(event) {
+    }
+
+    handleChangeSecs(event) {
         var secs = event.target.value;  // FIXME
         secs = ( secs < 0 ) ? 0 : (secs>10) ? 10 : secs;
         Blink1Service.setCurrentMillis(secs*1000); // doesn't trigger an updateCurrentColor?
         this.setState({secs: secs});
-    },
-    handleChangeR: function(event) {
+    }
+
+    handleChangeR(event) {
         var number = event.target.value;
         number = ( number < 0 ) ? 0 : (number>255) ? 255 : number;
         // this.setState({r:number});
         var tc = tinycolor( {r:number, g:this.state.g, b:this.state.b} );
         this.setColor( tc );
-    },
-    handleChangeG: function(event) {
+    }
+
+    handleChangeG(event) {
         var number = event.target.value;
         if(isNaN(number)) { console.log("not a number"); return; }
         number = ( number < 0 ) ? 0 : (number>255) ? 255 : number;
         // this.setState({g:number});
         var tc = tinycolor( {r:this.state.r, g:number, b:this.state.b} );
         this.setColor( tc );
-    },
-    handleChangeB: function(event) {
+    }
+
+    handleChangeB(event) {
         var number = event.target.value;
         number = ( number < 0 ) ? 0 : (number>255) ? 255 : number;
         // this.setState({b:number});
         var tc = tinycolor( {r:this.state.r, g:this.state.g, b:number} );
         this.setColor( tc );
-    },
-    handleHexChange: function(event) {
+    }
+
+    handleHexChange(event) {
         var colorHex = event.target.value;
         var c = tinycolor(colorHex);
         if( c.isValid() ) {
             this.setColor( c );
         }
         this.setState({colorHex: colorHex.toUpperCase()});
-    },
-    handleBlink1IdChange: function(evt) {
+    }
+
+    handleBlink1IdChange(evt) {
         var id = evt.target.value;
         Blink1Service.setCurrentBlink1Id(id);
         this.setState( {blink1Id: id});
-    },
-    render: function() {
-        var serials = Blink1Service.getAllSerials();
-        var makeBlink1IdOption = function(serial,idx) {
+    }
+
+    render() {
+        const serials = Blink1Service.getAllSerials();
+        const makeBlink1IdOption = function(serial,idx) {
             return <option value={serial} key={idx}>{serial}</option>;
         };
-        var deviceCombo = (serials.length <= 1) ? null :
+        const deviceCombo = (serials.length <= 1) ? null :
             <div> device:
                 <select style={{fontSize:'80%'}} onChange={this.handleBlink1IdChange} value={this.state.blink1Id}>
                     {serials.map( makeBlink1IdOption )}
@@ -157,6 +180,6 @@ var Blink1ColorPicker = React.createClass({
                 </div>
         );
     }
-});
+}
 
-module.exports = Blink1ColorPicker;
+//module.exports = Blink1ColorPicker;

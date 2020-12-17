@@ -1,12 +1,12 @@
 "use strict";
 
-var React = require('react');
-var Panel = require('react-bootstrap').Panel;
-var ListGroup = require('react-bootstrap').ListGroup;
-var ListGroupItem = require('react-bootstrap').ListGroupItem;
-var Button = require('react-bootstrap').Button;
+import React from 'react';
+import { Panel } from 'react-bootstrap';
+import { ListGroup } from 'react-bootstrap';
+import { ListGroupItem } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-var BrowserWindow = require('electron').remote.BrowserWindow;
+const BrowserWindow = require('electron').remote.BrowserWindow;
 
 var log = require('../../logger');
 var Eventer = require('../../eventer');
@@ -15,32 +15,34 @@ var moment = require('moment');
 
 var logWindow;
 
-var EventList = React.createClass({
-    propTypes: {
-        //events: React.PropTypes.array.isRequired,
-        //onClear: React.PropTypes.func.isRequired
-    },
-    getInitialState: function() {
-        return {
-            events: []
-        };
-    },
-    componentDidMount: function() {
+export default class Blink1ControlView extends React.Component {
+    constructor(props)  {
+      super(props);
+      this.state = {
+        events:[]
+      }
+      this.updateStatus = this.updateStatus.bind(this);
+      this.clearEvents = this.clearEvents.bind(this);
+      this.showEventLog = this.showEventLog.bind(this);
+    }
+
+    componentDidMount() {
         Eventer.on('newStatus', this.updateStatus);
-    },
-    updateStatus: function(statuses) {
+    }
+
+    updateStatus(statuses) {
         // log.msg("status: ",statuses);
         var events = statuses;
         events = events.filter( function(e) {
             return e.type === 'trigger' || e.type === 'triggerOff';
         });
         this.setState({events:events});
-    },
+    }
 
-    clearEvents: function() {
+    clearEvents() {
         Eventer.clearStatuses(); // FIXME: only clear display, not log?
         this.setState({events: []});
-    },
+    }
 
     // event is format:
     // event = {
@@ -50,7 +52,7 @@ var EventList = React.createClass({
     //  id: 'red demo'  // event source 'name'
     //  text: 'blah blah'  // text of event
     // }
-    showEventLog: function() {
+    showEventLog() {
         var events = this.state.events;
         var info = '';
         info += '<style> table { width:100% } table, th, td { font-size:85%; font-family:sans-serif; padding:5px; border:1px solid grey; border-collapse:collapse; }</style>';
@@ -82,10 +84,11 @@ var EventList = React.createClass({
             });
         }
         logWindow.loadURL( 'data:text/html,' + info);
-    },
-    render: function() {
+    }
+
+    render() {
         // var revevents = this.state.events.concat().reverse();
-        var revevents = this.state.events.slice(0).reverse();
+        const revevents = this.state.events.slice(0).reverse();
         var createEventLine = function(event,index) {
             var humantime = moment(event.date).format('LTS');
             var source = event.source;
@@ -97,7 +100,7 @@ var EventList = React.createClass({
                 <ListGroupItem key={index} style={{lineHeight:"110%", fontSize: "0.85em", textIndent:-10}}><i style={{fontSize:'90%'}}>{humantime}:</i> {msg} </ListGroupItem>
             );
         };
-        var header =
+        const header =
             <h4>Recent Events
                 <Button bsSize='xsmall' style={{float:'right' }} onClick={this.showEventLog}> Log </Button>
                 <Button bsSize='xsmall' style={{float:'right' }} onClick={this.clearEvents}>Clear</Button>
@@ -111,6 +114,6 @@ var EventList = React.createClass({
             );
             // <Button bsSize="xsmall"  onClick={this.showAllEvents}>Show all</Button>
     }
-});
+}
 
-module.exports = EventList;
+// module.exports = EventList;

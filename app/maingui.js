@@ -11,8 +11,11 @@ require('../node_modules/font-awesome/css/font-awesome.min.css');
 require('../node_modules/react-bootstrap-switch/dist/css/bootstrap3/react-bootstrap-switch.min.css');
 // end requires for webpack
 
-var React = require('react');
-var ReactDOM = require('react-dom');
+//var React = require('react');
+//var ReactDOM = require('react-dom');
+import React from 'react';
+import ReactDOM from 'react-dom';
+
 
 // console.log("NOD_ENV:",process.env.NODE_ENV);
 
@@ -53,7 +56,9 @@ PatternsService.initialize();
 // Perf.start();
 
 // Begin actual render code
-var Blink1ControlView = require('./components/gui/blink1ControlView');
+//var Blink1ControlView = require('./components/gui/blink1ControlView');
+import Blink1ControlView from './components/gui/blink1ControlView'
+
 var App = React.createClass({
   render: function() {
     return ( <Blink1ControlView /> );

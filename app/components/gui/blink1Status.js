@@ -1,38 +1,47 @@
 "use strict";
 
-var React = require('react');
-var Panel = require('react-bootstrap').Panel;
-var Well = require('react-bootstrap').Well;
+import React from 'react';
+import { Panel } from 'react-bootstrap';
+import { Well } from 'react-bootstrap';
 
-var ipcRenderer = require('electron').ipcRenderer;
-var remote = require('electron').remote;
-var Menu = remote.Menu;
-var MenuItem = remote.MenuItem;
-var currentWindow = remote.getCurrentWindow();
+const { ipcRenderer } = require('electron')
+const remote = require('electron').remote;
+
+const Menu = remote.Menu;
+const MenuItem = remote.MenuItem;
+const currentWindow = remote.getCurrentWindow();
 
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
 var VirtualBlink1 = require('./virtualBlink1');
 
-// var PreferencesModal = require('./preferencesModal');
 var PreferencesModal = require('./preferencesModal');
 
 var log = require('../../logger');
 
-var Blink1Status = React.createClass({
+export default class Blink1ControlView extends React.Component {
 
-    getInitialState: function() {
-        return {
-            blink1Color: Blink1Service.getCurrentColor(),
-            statusStr: Blink1Service.getStatusString(),
-            serialNumber: Blink1Service.serialNumberForDisplay(),
-            blink1Serials: Blink1Service.getAllSerials(),
-            iftttKey: Blink1Service.getIftttKey(),
-            currentPattern: '-',
-            showForm: false
-        };
-    },
-    componentDidMount: function() {
+    constructor(props)  {
+      super(props);
+      this.state = {
+        blink1Color: Blink1Service.getCurrentColor(),
+        statusStr: Blink1Service.getStatusString(),
+        serialNumber: Blink1Service.serialNumberForDisplay(),
+        blink1Serials: Blink1Service.getAllSerials(),
+        iftttKey: Blink1Service.getIftttKey(),
+        currentPattern: '-',
+        showForm: false
+      };
+      // things that can be clicked on, basically
+      this.updateColorState = this.updateColorState.bind(this);
+      this.updatePatternState = this.updatePatternState.bind(this);
+      this.onPrefsClick = this.onPrefsClick.bind(this);
+      this.cancelForm = this.saveForm.bind(this);
+      this.saveForm = this.saveForm.bind(this);
+      this.showIfttContextMenu = this.showIfttContextMenu.bind(this);
+    }
+
+    componentDidMount() {
         var self = this;
         Blink1Service.addChangeListener( this.updateColorState, "blink1Status" );
         PatternsService.addChangeListener( this.updatePatternState, "blink1Status" );
@@ -40,10 +49,9 @@ var Blink1Status = React.createClass({
         ipcRenderer.on('showPreferences', function( /*event,arg*/ ) {
             self.setState({showForm: true});
         });
+    }
 
-        this.makeMenu();
-    },
-    updateColorState: function(/*currentColor,  colors,ledn */) {
+    updateColorState(/*currentColor,  colors,ledn */) {
         this.setState({
                         blink1ColorLast: Blink1Service.getCurrentColor(),//currentColor,
                         statusStr: Blink1Service.getStatusString(),
@@ -51,43 +59,39 @@ var Blink1Status = React.createClass({
                         blink1Serials: Blink1Service.getAllSerials(),
                         iftttKey: Blink1Service.getIftttKey()
                     });
-    },
-    updatePatternState: function() {
+    }
+
+    updatePatternState() {
         this.setState( {
             currentPattern: PatternsService.getPlayingPatternName(),
             currentSource: PatternsService.getPlayingPatternSource() });
-    },
+    }
 
-    onIftttKeyClick: function() {
+    onIftttKeyClick() {
         log.msg("Blink1Status.onIfttKeyClick!");
-    },
-    onPrefsClick: function() {
+    }
+
+    onPrefsClick() {
         this.setState({showForm: true});
         log.msg("PREFS CLICK");
-    },
-    saveForm: function(/*data*/) {
+    }
+
+    saveForm(/*data*/) {
         this.setState({ showForm: false });
-    },
-    cancelForm: function() {
+    }
+
+    cancelForm() {
         this.setState({ showForm: false });
-    },
-    showIfttContextMenu: function(event) {
+    }
+
+    showIfttContextMenu() {
         log.msg("Blink1Status.showIfttContextMenu: ",event);
-        var menu = this.makeMenu();
-        menu.popup(currentWindow);
-    },
-    // doContextMenu: function(event, eventKey, arg) {
-    // 	log.msg("Blink1Status.doContextMenu: eventKey:",eventKey, "arg:",arg);
-    // 	//this.props.onEdit(eventKey, this.props.idx, arg);
-    // },
-    makeMenu: function() {
-        var mymenu = new Menu();
-        // mymenu.append( new MenuItem({label:'copy', click: self.doContextMenu.bind(null,null, 'copyiftttkey', null)}) );
+        // var menu = this.makeMenu();
+        var mymenu = new Menu(); // OS-specific pop-up menu
         mymenu.append( new MenuItem({label:'Copy IFTTT Key', role:'copy'} ));
-        // mymenu.append( new MenuItem({label:'Edit Host Id', click: this.doEditHostId} ));
-        return mymenu;
-    },
-    render: function() {
+        mymenu.popup(currentWindow);
+    }
+    render() {
         // console.log("blink1Status.render: ", this.state.blink1Color);
         var currentPattern = this.state.currentPattern;
         if( !currentPattern ) { currentPattern = '-'; }
@@ -138,7 +142,6 @@ var Blink1Status = React.createClass({
         );
     }
 
+}
 
-});
-
-module.exports = Blink1Status;
+// no exports, we declared as export default className
