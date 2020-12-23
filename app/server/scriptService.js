@@ -118,7 +118,7 @@ var ScriptService = {
         }
         else if( rule.type === 'url' ) {
             var url = rule.path;
-            needle.get(url, {decode: false, parse: false}, function(err, response) {
+            needle.get(url, {decode: false, parse: false, follow_max:5}, function(err, response) {
                 // FIXME: do error handling like: net error, bad response, etc.
                 if( err ) {
                     log.msg("ScriptService.runRule: error fetching url",err, response);
@@ -216,7 +216,7 @@ var ScriptService = {
                 if( this.playPattern( patt_name, rule.name, rule.blink1Id ) ) {
                     Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:patt_name});
                 }
-                else { 
+                else {
                     Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'no pattern '+str});
                 }
             }
