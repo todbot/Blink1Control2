@@ -1,7 +1,5 @@
 "use strict";
 
-var moment = require('moment');
-
 var React = require('react');
 
 // var Grid = require('react-bootstrap').Grid;
@@ -19,6 +17,9 @@ var Radio = require('react-bootstrap').Radio;
 var Switch = require('react-bootstrap-switch');
 
 var Blink1SerialOption = require('./blink1SerialOption');
+
+var timefmt = new Intl.DateTimeFormat("en" , {timeStyle: "medium"});  // instead of moment
+
 
 var TimeForm = React.createClass({
     propTypes: {
@@ -56,10 +57,10 @@ var TimeForm = React.createClass({
         var state = this.state;
         // adjust countdown time to be proper time in the future
         if( state.alarmType === 'countdown' ) {
-            var newTime = moment(); // now
-            newTime = newTime.add(state.alarmMinutes,'minutes');
-            state.alarmHours = newTime.hours();
-            state.alarmMinutes = newTime.minutes();
+          var newTime = new Date();
+          newTime.setMinutes( newTime.getMinutes() + state.alarmMinutes );
+          state.alarmHours = newTime.hours();
+          state.alarmMinutes = newTime.minutes();
         }
         this.props.onSave(state);
     },

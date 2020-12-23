@@ -5,7 +5,7 @@ var React = require('react');
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
 
-var moment = require('moment');
+var timefmt = new Intl.DateTimeFormat("en" , {timeStyle: "medium"});  // instead of moment
 
 var Eventer = require('../../eventer');
 
@@ -62,6 +62,7 @@ var ToolTableList = React.createClass({
                     <td>{lastVal}</td>
                     <td><Button bsSize="xsmall" style={{border:'none'}} onClick={this.props.onEditRule.bind(null,index)} >
                         <i className="fa fa-pencil"></i></Button></td>
+                    <td></td>
                 </tr>
             );
 //			style={{textOverflow:'ellipsis',overflow:'hidden',whiteSpace:'nowrap'}}
@@ -136,9 +137,7 @@ var ToolTableList = React.createClass({
             var lastEvent = '-not-seen-recently-';
             if( eventsForMe.length ) {
                 var myEvent = eventsForMe[eventsForMe.length-1];
-                // lastEvent = moment(myEvent.date).fromNow() + ': ' + myEvent.text;
-                // lastEvent = <span><i> {moment(myEvent.date).format('LTS') } </i>: {myEvent.text} </span>;
-                lastEvent = <span>{myEvent.text} <i style={{fontSize:'90%'}}><br/> @ {moment(myEvent.date).format('LTS') } </i></span>;
+                lastEvent = <span>{myEvent.text} <i style={{fontSize:'90%'}}><br/> @ { timefmt.format(myEvent.date) } </i></span>;
             }
             return lastEvent;
         };
@@ -157,6 +156,7 @@ var ToolTableList = React.createClass({
                             <th style={{width:130}}>Pattern</th>
                             <th style={{width:150}}>Last event</th>
                             <th style={{width: 30}}> </th>
+                            <th style={{width: 10}}> </th>
                         </tr>
                     </thead>
                     <tbody>

@@ -11,7 +11,7 @@ const BrowserWindow = require('electron').remote.BrowserWindow;
 var log = require('../../logger');
 var Eventer = require('../../eventer');
 
-var moment = require('moment');
+var timefmt = new Intl.DateTimeFormat("en" , {timeStyle: "medium"});  // instead of moment
 
 var logWindow;
 
@@ -62,7 +62,7 @@ export default class Blink1ControlView extends React.Component {
             info += '<table>';
             info += '<tr><th>date</th><th>type</th><th>source</th><th>id</th><th>text</th></tr>';
             events.map( function(e) {
-                var humantime = moment(e.date).format('LTS');
+                var humantime = timefmt.format(e.date);
                 info += '<tr><td>' + humantime + '</td><td>' + e.type +
                 '</td><td>' + e.source + '</td><td>' + e.id + '</td><td>'+ e.text+'</td></tr>';
             });
@@ -90,7 +90,7 @@ export default class Blink1ControlView extends React.Component {
         // var revevents = this.state.events.concat().reverse();
         const revevents = this.state.events.slice(0).reverse();
         var createEventLine = function(event,index) {
-            var humantime = moment(event.date).format('LTS');
+            var humantime = timefmt.format(event.date);
             var source = event.source;
             var id     = event.id;
             var text   = event.text;
