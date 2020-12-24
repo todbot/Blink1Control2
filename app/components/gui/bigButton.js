@@ -1,8 +1,8 @@
 "use strict";
 
-var React = require('react');
+import React from 'react';
 
-var Button = require('react-bootstrap').Button;
+import { Button } from 'react-bootstrap';
 
 var remote = require('electron').remote;
 var Menu = remote.Menu;
@@ -15,32 +15,19 @@ var log = require('../../logger');
 var currentWindow = remote.getCurrentWindow();
 
 
-var BigButton = React.createClass({
-  propTypes: {
-    idx: React.PropTypes.number,
-    name: React.PropTypes.string.isRequired,
-    type: React.PropTypes.string.isRequired,
-    iconClass: React.PropTypes.string,
-    color: React.PropTypes.string,
-    onClick: React.PropTypes.func,
-    onEdit: React.PropTypes.func,
-    onEditName: React.PropTypes.func,
-    patterns: React.PropTypes.array,
-    serials: React.PropTypes.array,
-    serial: React.PropTypes.string
-  },
-  getInitialState: function() {
-    return {
-      // tempname: this.props.name  just for
-    };
-    // return {name: this.props.name, editName:false};
-  },
-  componentDidMount: function() {
-    // log.msg("BigButton.componentDidMount type:",this.props.type);
-    // if( this.props.type !== 'sys' ) { this.menu = this.makeMenu(); }
-  },
-  // Make serials menu
-  makeSerialsMenu: function() {
+class BigButton extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { };
+
+    this.makeSerialsMenu = this.makeSerialsMenu.bind(this);
+    this.makeMenu = this.makeMenu.bind(this);
+    this.showEditName = this.showEditName.bind(this);
+    this.showContextMenu = this.showContextMenu.bind(this);
+    this.doContextMenu = this.doContextMenu.bind(this);
+  }
+
+  makeSerialsMenu() {
     var self = this;
     var serialsmenu = null;
     if( this.props.serials && this.props.serials.length > 0 ) {
@@ -54,8 +41,9 @@ var BigButton = React.createClass({
       });
     }
     return serialsmenu;
-  },
-  makeMenu: function() {
+  }
+
+  makeMenu() {
     // log.msg("BigButton.makeMenu: props:",this.props);
     var self = this;
     var idx = self.props.idx;
@@ -83,23 +71,26 @@ var BigButton = React.createClass({
     menu.append(new MenuItem({ label:'Rename Button',
       click: self.showEditName }));
     return menu;
-  },
-  showEditName: function() {
+  }
+
+  showEditName() {
     this.props.onEditName();
-  },
-  showContextMenu: function(evt) {
+  }
+
+  showContextMenu(evt) {
     // log.msg("BigButton:showContextMenu2: menu:",a,"b:",b,"c:",c);
     evt.preventDefault(); // don't send click further down
     if( this.props.type === 'sys' ) { return; } // no context for sys buttons
     var menu = this.makeMenu();
     menu.popup(currentWindow);
-  },
-  doContextMenu: function(event, eventKey, arg) {
+  }
+
+  doContextMenu(event, eventKey, arg) {
     log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx);
     this.props.onEdit(eventKey, this.props.idx, arg);
-  },
+  }
 
-  render: function() {
+  render() {
     //var buttonStyle = { width: 72, height: 72, padding: 3, margin: 5, textShadow:'none'  };
     var buttonStyle = { width:'100%', textShadow:'none'  };
     // var tstyle = { height: 28, border:'1px solid red', color: 'grey', fontSize: "0.8em", wordWrap:'break-word', whiteSpace:'normal'  };
@@ -157,6 +148,20 @@ var BigButton = React.createClass({
       </div>
     );
   }
-});
+}
 
-module.exports = BigButton;
+BigButton.propTypes = {
+  idx: React.PropTypes.number,
+  name: React.PropTypes.string.isRequired,
+  type: React.PropTypes.string.isRequired,
+  iconClass: React.PropTypes.string,
+  color: React.PropTypes.string,
+  onClick: React.PropTypes.func,
+  onEdit: React.PropTypes.func,
+  onEditName: React.PropTypes.func,
+  patterns: React.PropTypes.array,
+  serials: React.PropTypes.array,
+  serial: React.PropTypes.string
+};
+
+export default BigButton;

@@ -1,20 +1,21 @@
 "use strict";
 
-// import React from 'react';
-var React = require('react');
+import React from 'react';
 
-var Col = require('react-bootstrap').Col;
-var Row = require('react-bootstrap').Row;
-var Modal = require('react-bootstrap').Modal;
-var ButtonInput = require('react-bootstrap').ButtonInput;
-var Button = require('react-bootstrap').Button;
+import { Col } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { ButtonInput } from 'react-bootstrap';
 
-var Form = require('react-bootstrap').Form;
-var FormControl = require('react-bootstrap').FormControl;
-var FormGroup = require('react-bootstrap').FormGroup;
-var ControlLabel = require('react-bootstrap').ControlLabel;
-var Radio = require('react-bootstrap').Radio;
-var Checkbox = require('react-bootstrap').Checkbox;
+import { Form } from 'react-bootstrap';
+import { FormControl } from 'react-bootstrap';
+import { FormGroup } from 'react-bootstrap';
+import { ControlLabel } from 'react-bootstrap';
+import { Radio } from 'react-bootstrap';
+import { Checkbox } from 'react-bootstrap';
+
+import Blink1SerialOption from './blink1SerialOption';
 
 var isAccelerator = require("electron-is-accelerator");
 
@@ -27,184 +28,190 @@ var conf = require('../../configuration');
 var log = require('../../logger');
 var Eventer = require('../../eventer');
 
-var Blink1SerialOption = require('./blink1SerialOption');
-
 var app = require('electron').remote.app;
 var path = require('path');
 
-const propTypes = {
-};
 
-var PreferencesModal = React.createClass({
-  propTypes: {
-    show: React.PropTypes.bool,
-    blink1Serials:  React.PropTypes.array
-  },
-  getInitialState: function() {
-    return this.loadSettings();
-  },
+class PreferencesModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = this.loadSettings();
+
+    this.updateStartAtLogin = this.updateStartAtLogin.bind(this);
+    this.close = this.close.bind(this);
+    this.cancel = this.cancel.bind(this);
+    this.handleBlink1SerialChange = this.handleBlink1SerialChange.bind(this);
+    this.handleBlink1NonComputerSet = this.handleBlink1NonComputerSet.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+  }
+
   // doing this so we get guaranteed fresh config
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps(nextProps) {
     // if (!this.props.show) {
     if( !this.props.show && nextProps.show ) {
       var settings = this.loadSettings();
       this.setState(settings);
     }
-},
-loadSettings: function() {
-  var patterns = PatternsService.getAllPatterns();
-  var settings = {
-    hideDockIcon:     conf.readSettings('startup:hideDockIcon') || false,
-    startMinimized:   conf.readSettings('startup:startMinimized') || false,
-    startAtLogin:     conf.readSettings('startup:startAtLogin') || false,
-    startupPattern:   conf.readSettings('startup:startupPattern') || "", // FIXME: not used yet
-    shortcutPrefix:   conf.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift',
-    shortcutResetKey: conf.readSettings('startup:shortcutResetKey') || 'R',
-    enableGamma:      conf.readSettings('blink1Service:enableGamma') || false,
-    hostId: Blink1Service.getHostId(),
-    blink1ToUse:      conf.readSettings('blink1Service:blink1ToUse') || "0", // 0 == use first avail
-    allowMultiBlink1: conf.readSettings('blink1Service:allowMulti') || false,
-    apiServerEnable:  conf.readSettings('apiServer:enabled') || false,
-    apiServerPort:    conf.readSettings('apiServer:port') || 8934,
-    apiServerHost:    conf.readSettings('apiServer:host') || 'localhost',
-    proxyEnable:      conf.readSettings('proxy:enable') || false,
-    proxyHost:        conf.readSettings('proxy:host') || 'localhost',
-    proxyPort:        conf.readSettings('proxy:port') || 8080,
-    proxyUser:        conf.readSettings('proxy:username') || '',
-    proxyPass:        conf.readSettings('proxy:password') || '',
-    playingSerialize: conf.readSettings('patternsService:playingSerialize') || false,
-    patterns: patterns,
-    patternId: 'whiteflashes',
-    nonComputerPattern: patterns[0].id,
-    errorMsg: ''
-  };
-  return settings;
-},
-
-saveSettings: function() {
-  if (!Blink1Service.setHostId(this.state.hostId)) {
-    this.setState({errormsg: 'HostId must be 8-digit hexadecimal'});
-    return false;
   }
 
-  conf.saveSettingsMem('startup:hideDockIcon', this.state.hideDockIcon);
-  conf.saveSettingsMem('startup:startMinimized', this.state.startMinimized);
-  conf.saveSettingsMem('startup:startAtLogin', this.state.startAtLogin);
-  // conf.saveSettings('startup:startupPattern', this.state.startupPattern);
-  conf.saveSettingsMem('startup:shortcutPrefix', this.state.shortcutPrefix);
-  conf.saveSettingsMem('startup:shortcutResetKey', this.state.shortcutResetKey);
-  conf.saveSettingsMem('blink1Service:enableGamma', this.state.enableGamma);
-  conf.saveSettingsMem('blink1Service:blink1ToUse', this.state.blink1ToUse);
-  conf.saveSettingsMem('blink1Service:allowMulti', this.state.allowMultiBlink1);
-  conf.saveSettingsMem('apiServer:enabled', this.state.apiServerEnable);
-  conf.saveSettingsMem('apiServer:port', this.state.apiServerPort);
-  conf.saveSettingsMem('apiServer:host', this.state.apiServerHost);
-  conf.saveSettingsMem('proxy:enable', this.state.proxyEnable);
-  conf.saveSettingsMem('proxy:host', this.state.proxyHost);
-  conf.saveSettingsMem('proxy:port', this.state.proxyPort);
-  conf.saveSettingsMem('proxy:username', this.state.proxyUser);
-  conf.saveSettingsMem('proxy:password', this.state.proxyPass);
-  conf.saveSettingsMem('patternsService:playingSerialize', this.state.playingSerialize);
-  conf.saveSettingsSync(); // save settings to disk
+  loadSettings() {
+    var patterns = PatternsService.getAllPatterns();
+    var settings = {
+      hideDockIcon:     conf.readSettings('startup:hideDockIcon') || false,
+      startMinimized:   conf.readSettings('startup:startMinimized') || false,
+      startAtLogin:     conf.readSettings('startup:startAtLogin') || false,
+      startupPattern:   conf.readSettings('startup:startupPattern') || "", // FIXME: not used yet
+      shortcutPrefix:   conf.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift',
+      shortcutResetKey: conf.readSettings('startup:shortcutResetKey') || 'R',
+      enableGamma:      conf.readSettings('blink1Service:enableGamma') || false,
+      hostId: Blink1Service.getHostId(),
+      blink1ToUse:      conf.readSettings('blink1Service:blink1ToUse') || "0", // 0 == use first avail
+      allowMultiBlink1: conf.readSettings('blink1Service:allowMulti') || false,
+      apiServerEnable:  conf.readSettings('apiServer:enabled') || false,
+      apiServerPort:    conf.readSettings('apiServer:port') || 8934,
+      apiServerHost:    conf.readSettings('apiServer:host') || 'localhost',
+      proxyEnable:      conf.readSettings('proxy:enable') || false,
+      proxyHost:        conf.readSettings('proxy:host') || 'localhost',
+      proxyPort:        conf.readSettings('proxy:port') || 8080,
+      proxyUser:        conf.readSettings('proxy:username') || '',
+      proxyPass:        conf.readSettings('proxy:password') || '',
+      playingSerialize: conf.readSettings('patternsService:playingSerialize') || false,
+      patterns: patterns,
+      patternId: 'whiteflashes',
+      nonComputerPattern: patterns[0].id,
+      errorMsg: ''
+    };
+    return settings;
+  }
 
-  Blink1Service.reloadConfig();
-  ApiServer.reloadConfig();
-  PatternsService.reloadConfig();
+  saveSettings() {
+    if (!Blink1Service.setHostId(this.state.hostId)) {
+      this.setState({errormsg: 'HostId must be 8-digit hexadecimal'});
+      return false;
+    }
 
-  MenuMaker.setupMainMenu(); // FIXME: find way to do spot edit of shortcut keys?
-  MenuMaker.updateTrayMenu();
+    conf.saveSettingsMem('startup:hideDockIcon', this.state.hideDockIcon);
+    conf.saveSettingsMem('startup:startMinimized', this.state.startMinimized);
+    conf.saveSettingsMem('startup:startAtLogin', this.state.startAtLogin);
+    // conf.saveSettings('startup:startupPattern', this.state.startupPattern);
+    conf.saveSettingsMem('startup:shortcutPrefix', this.state.shortcutPrefix);
+    conf.saveSettingsMem('startup:shortcutResetKey', this.state.shortcutResetKey);
+    conf.saveSettingsMem('blink1Service:enableGamma', this.state.enableGamma);
+    conf.saveSettingsMem('blink1Service:blink1ToUse', this.state.blink1ToUse);
+    conf.saveSettingsMem('blink1Service:allowMulti', this.state.allowMultiBlink1);
+    conf.saveSettingsMem('apiServer:enabled', this.state.apiServerEnable);
+    conf.saveSettingsMem('apiServer:port', this.state.apiServerPort);
+    conf.saveSettingsMem('apiServer:host', this.state.apiServerHost);
+    conf.saveSettingsMem('proxy:enable', this.state.proxyEnable);
+    conf.saveSettingsMem('proxy:host', this.state.proxyHost);
+    conf.saveSettingsMem('proxy:port', this.state.proxyPort);
+    conf.saveSettingsMem('proxy:username', this.state.proxyUser);
+    conf.saveSettingsMem('proxy:password', this.state.proxyPass);
+    conf.saveSettingsMem('patternsService:playingSerialize', this.state.playingSerialize);
+    conf.saveSettingsSync(); // save settings to disk
 
-  this.updateStartAtLogin();
+    Blink1Service.reloadConfig();
+    ApiServer.reloadConfig();
+    PatternsService.reloadConfig();
 
-  if (process.platform === 'darwin') {
-    if (this.state.hideDockIcon) {
-      app.dock.hide();
-    } else {
-      app.dock.show();
+    MenuMaker.setupMainMenu(); // FIXME: find way to do spot edit of shortcut keys?
+    MenuMaker.updateTrayMenu();
+
+    this.updateStartAtLogin();
+
+    if (process.platform === 'darwin') {
+      if (this.state.hideDockIcon) {
+        app.dock.hide();
+      } else {
+        app.dock.show();
+      }
+    }
+
+    // FIXME: a hack to get ToolTable to refetch allowMulti pref
+    Eventer.addStatus({type: 'info', source: 'preferences', text: 'settings updated'});
+
+    return true;
+  }
+
+  updateStartAtLogin() {
+    // log.msg("PreferencesModal.updateStartAtLogin:",this.state.startAtLogin);
+    app.setLoginItemSettings({
+      openAtLogin: this.state.startAtLogin,
+    });
+  }
+
+  close() {
+    if( this.saveSettings() ) {
+      this.props.onSave(this.state);
     }
   }
 
-  // FIXME: a hack to get ToolTable to refetch allowMulti pref
-  Eventer.addStatus({type: 'info', source: 'preferences', text: 'settings updated'});
+  cancel() {
+    this.props.onCancel();
+  }
 
-  return true;
-},
+  handleBlink1SerialChange(serial) {
+    log.msg("handleBlink1SerialChange: ", serial);
+    PatternsService.playPatternFrom('prefs', '~blink:#888888-3', serial);
+    this.setState({blink1ToUse: serial});
+  }
 
-updateStartAtLogin: function() {
-  // log.msg("PreferencesModal.updateStartAtLogin:",this.state.startAtLogin);
-  app.setLoginItemSettings({
-    openAtLogin: this.state.startAtLogin,
-  });
-},
-
-close: function() {
-  if( this.saveSettings() ) {
-    this.props.onSave(this.state);
-  }
-},
-cancel: function() {
-  this.props.onCancel();
-},
-handleBlink1SerialChange: function(serial) {
-  log.msg("handleBlink1SerialChange: ", serial);
-  PatternsService.playPatternFrom('prefs', '~blink:#888888-3', serial);
-  this.setState({blink1ToUse: serial});
-},
-handleBlink1NonComputerSet: function(event) {
-  var choice = event.target.value
-  log.msg("handleBlink1NonComputerSet: ",choice, ",", this.state.nonComputerPattern );
-  var err = '';
-  if( choice === 'off' ) {
-    log.msg("settting OFF");
-    var patt = PatternsService.newPatternFromString( 'offpatt', '0,#000000,0.0,0');
-    err = Blink1Service.writePatternToBlink1(patt,true,0);
-  }
-  else if( choice === 'default' ) {
-    log.msg("settting default:",Blink1Service.defaultPatternStr);
-    var patt = PatternsService.newPatternFromString('default', Blink1Service.defaultPatternStr);
-    err = Blink1Service.writePatternToBlink1(patt,true,0);
-  }
-   else if ( choice === 'pattern' ) {
-    var patt = PatternsService.getPatternById(this.state.nonComputerPattern);
-    log.msg("setting pattern:",patt);
-    err = Blink1Service.writePatternToBlink1(patt,true,0);
-  }
-  err = ( !err ) ? "success" : err;
-  this.setState({errorMsg: err});
-},
-handleInputChange: function(event) {
-  var target = event.target;
-  var value = target.type === 'checkbox' ? target.checked : target.value;
-  var name = target.name;
-  if( name == 'shortcutResetKey' && value != '') {
-    var accel = this.state.shortcutPrefix +"+"+ value;
-    log.msg("accel:",accel);
-    if( !isAccelerator(accel) ) {
-      this.setState({errorMsg: "Cannot use '"+value+"' as shortcut key"});
-      return;
+  handleBlink1NonComputerSet(event) {
+    var choice = event.target.value
+    log.msg("handleBlink1NonComputerSet: ",choice, ",", this.state.nonComputerPattern );
+    var err = '';
+    if( choice === 'off' ) {
+      log.msg("settting OFF");
+      var patt = PatternsService.newPatternFromString( 'offpatt', '0,#000000,0.0,0');
+      err = Blink1Service.writePatternToBlink1(patt,true,0);
     }
+    else if( choice === 'default' ) {
+      log.msg("settting default:",Blink1Service.defaultPatternStr);
+      var patt = PatternsService.newPatternFromString('default', Blink1Service.defaultPatternStr);
+      err = Blink1Service.writePatternToBlink1(patt,true,0);
+    }
+     else if ( choice === 'pattern' ) {
+      var patt = PatternsService.getPatternById(this.state.nonComputerPattern);
+      log.msg("setting pattern:",patt);
+      err = Blink1Service.writePatternToBlink1(patt,true,0);
+    }
+    err = ( !err ) ? "success" : err;
+    this.setState({errorMsg: err});
   }
-  this.setState({[name]: value});
-},
 
-render: function() {
-  var createPatternOption = function(patt, idx) {
-    return (<option key={idx} value={patt.id}>{patt.name}</option>);
-  };
-  var createShortcutPrefixOption = function(item, idx) {
-    return (<option key={idx} value={item.what}>{item.what2}</option>);
-  };
-  var isMac = (process.platform === 'darwin');
-  // var showIfMac = (isMac) ? '':'hidden';
-  var cmdKeyStr = (isMac) ? 'Cmd' : 'Ctrl';
-  var sectStyle = {
-    border: '1px solid #ddd',
-    paddingLeft: 15,
-    paddingBottom: 10
-  };
-  var errorSectStyle = { paddingLeft: 15, color:'red'};
+  handleInputChange(event) {
+    var target = event.target;
+    var value = target.type === 'checkbox' ? target.checked : target.value;
+    var name = target.name;
+    if( name == 'shortcutResetKey' && value != '') {
+      var accel = this.state.shortcutPrefix +"+"+ value;
+      log.msg("accel:",accel);
+      if( !isAccelerator(accel) ) {
+        this.setState({errorMsg: "Cannot use '"+value+"' as shortcut key"});
+        return;
+      }
+    }
+    this.setState({[name]: value});
+  }
 
-  return (
+  render() {
+    var createPatternOption = function(patt, idx) {
+      return (<option key={idx} value={patt.id}>{patt.name}</option>);
+    };
+    var createShortcutPrefixOption = function(item, idx) {
+      return (<option key={idx} value={item.what}>{item.what2}</option>);
+    };
+    var isMac = (process.platform === 'darwin');
+    // var showIfMac = (isMac) ? '':'hidden';
+    var cmdKeyStr = (isMac) ? 'Cmd' : 'Ctrl';
+    var sectStyle = {
+      border: '1px solid #ddd',
+      paddingLeft: 15,
+      paddingBottom: 10
+    };
+    var errorSectStyle = { paddingLeft: 15, color:'red'};
+
+    return (
     <div>
       <Modal show={this.props.show} onHide={this.close} bsSize="large">
         <Modal.Header>
@@ -377,9 +384,16 @@ render: function() {
       </div>
     );
   }
-});
+}
 
-module.exports = PreferencesModal;
+
+PreferencesModal.propTypes = {
+  show: React.PropTypes.bool,
+  blink1Serials:  React.PropTypes.array
+};
+
+export default PreferencesModal;
+
 
 // </div> style={{border:'1px solid #ddd', paddingLeft:15, opacity:0.5 }} >
 /*

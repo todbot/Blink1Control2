@@ -165,4 +165,3 @@ class ToolTableList extends React.Component {
 }
 
 export default ToolTableList;
-// module.exports = ToolTableList;
