@@ -1,24 +1,28 @@
 "use strict";
 
-var React = require('react');
+import React from 'react';
 
-var Tabs = require('react-bootstrap').Tabs;
-var Tab = require('react-bootstrap').Tab;
-var Button = require('react-bootstrap').Button;
+import { Tabs } from 'react-bootstrap';
+import { Tab } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-var BigButtonSet = require('./bigButtonSet');
-var ToolTable = require('./toolTable');
+import BigButtonSet from './bigButtonSet';
+import ToolTable from './toolTable';
 
-var ipcRenderer = require('electron').ipcRenderer;
+import { ipcRenderer } from 'electron';
 
 
-var Blink1TabViews = React.createClass({
+export default class Blink1TabViews extends React.Component {
+  constructor(props)  {
+    super(props);
+    this.openHelpWindow = this.openHelpWindow.bind(this);
+  }
 
-  openHelpWindow: function() {
+  openHelpWindow() {
     ipcRenderer.send('openHelpWindow');
-  },
+  }
 
-  render: function() {
+  render() {
     var tabstyle = {height: 215, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"};
     return (
       <div style={{width:705}}>
@@ -38,6 +42,5 @@ var Blink1TabViews = React.createClass({
       </div>
     );
   }
-});
 
-module.exports = Blink1TabViews;
+}

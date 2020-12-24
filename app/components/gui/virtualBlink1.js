@@ -46,7 +46,7 @@ var VirtualBlink1 = React.createClass({
         Blink1Service.setCurrentBlink1Id(id);
     },
     handleClick: function() {
-        Blink1Service.reloadConfig();
+        Blink1Service.reloadConfig(); // rescan
     },
 
     blink1Id: 0,

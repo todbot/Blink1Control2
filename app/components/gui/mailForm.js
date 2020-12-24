@@ -1,47 +1,49 @@
 "use strict";
 
-var React = require('react');
+import React from 'react';
 
-var Grid = require('react-bootstrap').Grid;
-var Col = require('react-bootstrap').Col;
-var Row = require('react-bootstrap').Row;
-var Modal = require('react-bootstrap').Modal;
-var Button = require('react-bootstrap').Button;
+import { Grid } from 'react-bootstrap';
+import { Col } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-var Form = require('react-bootstrap').Form;
-var FormControl = require('react-bootstrap').FormControl;
-var FormGroup = require('react-bootstrap').FormGroup;
-var ControlLabel = require('react-bootstrap').ControlLabel;
-var Radio = require('react-bootstrap').Radio;
-var Checkbox = require('react-bootstrap').Checkbox;
-var InputGroup = require('react-bootstrap').InputGroup;
+import { Form } from 'react-bootstrap';
+import { FormControl } from 'react-bootstrap';
+import { FormGroup } from 'react-bootstrap';
+import { ControlLabel } from 'react-bootstrap';
+import { Radio } from 'react-bootstrap';
+import { Checkbox } from 'react-bootstrap';
+import { InputGroup } from 'react-bootstrap';
 
-var Switch = require('react-bootstrap-switch');
+import Switch from 'react-bootstrap-switch';
 
 var log = require('../../logger');
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
-var MailForm = React.createClass({
-    propTypes: {
-        rule: React.PropTypes.object.isRequired,
-        allowMultiBlink1: React.PropTypes.bool,
-        patterns: React.PropTypes.array,
-        onSave: React.PropTypes.func,
-        onCancel: React.PropTypes.func,
-        onDelete: React.PropTypes.func,
-        onCopy: React.PropTypes.func
-    },
+class MailForm extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        useSSL: true
+      };
+
+      this.handleBlink1SerialChange = this.handleBlink1SerialChange.bind(this);
+      this.handleClose = this.handleClose.bind(this);
+      this.onMailTypeClick = this.onMailTypeClick.bind(this);
+      this.handleInputChange = this.handleInputChange.bind(this);
+    }
+
     // given a rule, return a text description
-    getDescription: function(rule) {
+    getDescription(rule) {
         return rule.username +':'+rule.triggerType+':'+rule.triggerVal;
-    },
-    getInitialState: function() {
-        return {};// empty state, will be set in componentWillReceiveProps()
-    },
-    componentWillReceiveProps: function(nextProps) {
+    }
+
+    componentWillReceiveProps(nextProps) {
         var rule = nextProps.rule;
-        // log.msg("mailForm: rule:",rule);
+        var useSSL = rule.useSSL == undefined ? true : rule.useSSL;
+        log.msg("mailForm: rule:",rule);
         this.setState({
             type: 'mail',
             enabled: rule.enabled || false,
@@ -52,19 +54,20 @@ var MailForm = React.createClass({
             port: rule.port || 993,
             username: rule.username || '',
             password: rule.password || '' ,
-            useSSL: rule.useSSL,
+            useSSL: useSSL,
             actionType: 'play-pattern',
             triggerType: rule.triggerType || 'unread',
             triggerVal: rule.triggerVal || '1' ,
             triggerOff: rule.triggerOff || false,
             errormsg: ''
         });
-    },
+    }
 
-    handleBlink1SerialChange: function(blink1Id) {
+    handleBlink1SerialChange(blink1Id) {
         this.setState({blink1Id: blink1Id});
-    },
-    handleClose: function() {
+    }
+
+    handleClose() {
         // console.log("CLOSING: state=",this.state);
         if( !this.state.mailtype ) {
             this.setState({errormsg: "mailtype not set!"});
@@ -79,26 +82,25 @@ var MailForm = React.createClass({
             return;
         }
         this.props.onSave(this.state);
-    },
-    onMailTypeClick: function(evt) {
+    }
+
+    onMailTypeClick(evt) {
         var mailtype = evt.target.value;
         log.msg("mailForm.onMailTypeClick ",mailtype);//,evt);
         if( mailtype === 'GMAIL' ) {
             this.setState({host:'imap.gmail.com', port:993, useSSL:true});
         }
         this.setState({mailtype:mailtype});
-    },
-    // handleTriggerChange: function(evt,type) {
-    //     console.log("type:",type,evt.target);
-    //     // this.setState({triggerType:type, triggerVal:evt.target.value});
-    // },
-    handleInputChange: function(event) {
+    }
+
+    handleInputChange(event) {
         var target = event.target;
         var value = target.type === 'checkbox' ? target.checked : target.value;
         var name = target.name;
         this.setState({ [name]: value });
-    },
-    render: function() {
+    }
+
+    render() {
         var self = this;
         var patterns = this.props.patterns;
         var createPatternOption = function(item, idx) {
@@ -269,67 +271,17 @@ var MailForm = React.createClass({
 
         );
     }
-});
-
-module.exports = MailForm;
-
-// <Col xs={6} >
-//     <span><b> Play pattern when </b></span>
-//
-//     <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
-//         style={{}}
-//         type="number" label="Unread email count >="
-//         value={this.state.triggerType==='unread' ? (isNaN(this.state.triggerVal) ? 1 : this.state.triggerVal) : ''}
-//         onChange={this.onTriggerValClick} name="unread"
-//         addonBefore={<input type="radio" value='unread'
-//         checked={this.state.triggerType==='unread'} onChange={this.onTriggerTypeClick} />} />
-//
-//     <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
-//         type="text" label="Subject contains" name="subject"
-//         value={this.state.triggerType==='subject' ? this.state.triggerVal : ''}
-//         onChange={this.onTriggerValClick}
-//         addonBefore={<input type="radio" value='subject'
-//         checked={this.state.triggerType==='subject'} onChange={this.onTriggerTypeClick}/>} />
-//
-//     <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
-//         type="text" label="Sender contains" name="sender"
-//         value={this.state.triggerType==='sender' ? this.state.triggerVal : ''}
-//         onChange={this.onTriggerValClick}
-//         addonBefore={<input type="radio" value='sender'
-//         checked={this.state.triggerType==='sender'} onChange={this.onTriggerTypeClick}/>} />
-//
-//     <span><b> Pattern </b></span>
-//
-//     <Input labelClassName="col-xs-5" wrapperClassName="col-xs-5" bsSize="small"
-//         type="select" label="Pattern"
-//         value={this.state.patternId} onChange={this.handlePatternIdChange} >
-//         {patterns.map( createPatternOption )}
-//     </Input>
-//
-//     <Input labelClassName="col-xs-10" wrapperClassName="col-xs-offset-3 col-xs-9" bsSize="small"
-//         type="checkbox" label="Turn blink(1) off when no match"
-//         name="triggerOff" checked={this.state.triggerOff} onChange={this.handleInputChange} />
-//
-//         {!this.props.allowMultiBlink1 ? null :
-//             <Blink1SerialOption label="blink(1) to use" defaultText="-use default-"
-//                 labelClassName="col-xs-3 col-xs-offset-2" wrapperClassName="col-xs-5"
-//                 serial={this.state.blink1Id} onChange={this.handleBlink1SerialChange}/>}
-// </Col>
-// </Row>
+}
 
 
+MailForm.propTypes = {
+  rule: React.PropTypes.object.isRequired,
+  allowMultiBlink1: React.PropTypes.bool,
+  patterns: React.PropTypes.array,
+  onSave: React.PropTypes.func,
+  onCancel: React.PropTypes.func,
+  onDelete: React.PropTypes.func,
+  onCopy: React.PropTypes.func
+};
 
-// var makeDisplayTriggerVal = function(triggerType, triggerVal) {
-//     var val = triggerVal || '';
-//     //value={this.state.triggerType==='unread' ? this.state.triggerVal : ''}
-//     if( triggerType==='unread' ) {
-//         val = isNaN(triggerVal) ? '1' : triggerVal;
-//     }
-//     //value={this.state.triggerType==='subject' ? this.state.triggerVal : ''}
-//     else if( triggerType === 'sender' ) {
-//         val = isNaN(triggerVal) ? 'Mr Sender';
-//     }
-//     else if( ) {
-//
-//     }
-// };
+export default MailForm;

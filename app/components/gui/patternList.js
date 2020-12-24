@@ -1,55 +1,61 @@
 "use strict";
 
-var React = require('react');
-//var update = require('react-addons-update');
+import React from 'react';
+import { Table } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { ButtonToolbar } from 'react-bootstrap';
 
+import PatternView from './patternView';
 
-var Table = require('react-bootstrap').Table;
-var Button = require('react-bootstrap').Button;
-var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
+import PatternsService from '../../server/patternsService';
 
-var PatternView = require('./patternView');
+import log  from '../../logger';
 
-var PatternsService = require('../../server/patternsService');
-//var Blink1Service = require('../../server/blink1Service');
+export default class Blink1ControlView extends React.Component {
 
-var log = require('../../logger');
+    constructor(props)  {
+      super(props);
+      log.msg("patternList: getInitialState!");
+      this.state = {
+        patterns: PatternsService.getAllPatterns()
+      }
+      this.updatePatternState = this.updatePatternState.bind(this);
+      this.onAddPattern = this.onAddPattern.bind(this);
+      this.onStopAllPatterns = this.onStopAllPatterns.bind(this);
+      this.onStopAllPatterns = this.onStopAllPatterns.bind(this);
+      this.copyPattern = this.copyPattern.bind(this);
+      this.deletePattern = this.deletePattern.bind(this);
+      this.onPatternUpdated = this.onPatternUpdated.bind(this);
+    }
 
-var PatternList = React.createClass({
-    //mixins: [
-    //	require('react-onclickoutside')
-    //],
-
-    getInitialState: function() {
-        log.msg("patternList: getInitialState!");
-        return {
-            patterns: PatternsService.getAllPatterns()
-        };
-    },
-    componentDidMount: function() {
+    componentDidMount() {
         PatternsService.addChangeListener( this.updatePatternState, "patternList" );
-    }, // FIXME: Surely there's a better way to do this
-    componentWillUnmount: function() {
+    } // FIXME: Surely there's a better way to do this
+
+    componentWillUnmount() {
         PatternsService.removeChangeListener( "patternList" );
-    },
+    }
+
     /** Callback to PatternsService.addChangeListener */
-    updatePatternState: function(allpatterns) {
+    updatePatternState(allpatterns) {
         var patts = allpatterns;
         // log.msg("PatternList.updatePatternState");
         this.setState( {patterns: patts } );
-    },
+    }
 
-    onAddPattern: function() {
+    onAddPattern() {
         log.msg("PatternList.onAddPattern");
         var p = PatternsService.newPattern();
         p.id = 0; // force id regen
         PatternsService.savePattern( p );
-    },
-    onStopAllPatterns: function() {
+    }
+
+    onStopAllPatterns() {
         log.msg("PatternList.onStopAllPatterns");
         PatternsService.stopAllPatterns();
-    },
-    copyPattern: function(patternid) {
+    }
+
+    copyPattern(patternid) {
         log.msg("PatternList.copyPattern:", patternid);
         var p = PatternsService.getPatternById( patternid );
         p.id = 0; // unset to regen for Api // FIXME:!!!
@@ -58,19 +64,19 @@ var PatternList = React.createClass({
         p.locked = false;
         PatternsService.savePattern( p );
         // this.setState( {editing: true, : p.id } );
-    },
-    deletePattern: function(patternid) {
+    }
+    deletePattern(patternid) {
         log.msg("PatternList.deletePattern:", patternid);
         // this.setState( {editing: false} );
         PatternsService.deletePattern( patternid );
-    },
+    }
 
-    onPatternUpdated: function(pattern) {
+    onPatternUpdated(pattern) {
         log.msg("PatternList.onPatternUpdated:", pattern);
         PatternsService.savePattern(pattern);
-    },
+    }
 
-    render: function() {
+    render() {
         // log.msg("patternList.render",this.state.patterns);
 
         var createPatternRow = function(patt, idx) {
@@ -103,6 +109,4 @@ var PatternList = React.createClass({
     }
 
 
-});
-
-module.exports = PatternList;
+}

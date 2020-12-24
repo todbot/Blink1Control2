@@ -1,39 +1,38 @@
 "use strict";
 
-var React = require('react');
+import React from 'react';
 
-var Grid = require('react-bootstrap').Grid;
-var Col = require('react-bootstrap').Col;
-var Row = require('react-bootstrap').Row;
-var Modal = require('react-bootstrap').Modal;
-var Button = require('react-bootstrap').Button;
+import { Grid } from 'react-bootstrap';
+import { Col } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-var Form = require('react-bootstrap').Form;
-var FormControl = require('react-bootstrap').FormControl;
-var FormGroup = require('react-bootstrap').FormGroup;
-var ControlLabel = require('react-bootstrap').ControlLabel;
-var Radio = require('react-bootstrap').Radio;
+import { Form } from 'react-bootstrap';
+import { FormControl } from 'react-bootstrap';
+import { FormGroup } from 'react-bootstrap';
+import { ControlLabel } from 'react-bootstrap';
+import { Radio } from 'react-bootstrap';
 
-var Switch = require('react-bootstrap-switch');
+import Switch from 'react-bootstrap-switch';
+
+import Blink1SerialOption from './blink1SerialOption';
 
 var log = require('../../logger');
 
-var Blink1SerialOption = require('./blink1SerialOption');
 
+class SkypeForm extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+      }
+      this.handleClose = this.handleClose.bind(this);
+      this.handleTriggerType = this.handleTriggerType.bind(this);
+      this.handleBlink1SerialChange = this.handleBlink1SerialChange.bind(this);
+      this.handleInputChange = this.handleInputChange.bind(this);
+    }
 
-var SkypeForm = React.createClass({
-    propTypes: {
-        rule: React.PropTypes.object.isRequired,
-        patterns: React.PropTypes.array,
-        onSave: React.PropTypes.func,
-        onCancel: React.PropTypes.func,
-        onDelete: React.PropTypes.func,
-        onCopy: React.PropTypes.func
-    },
-    getInitialState: function() {
-        return {};// empty state, will be set in componentWillReceiveProps()
-    },
-    componentWillReceiveProps: function(nextProps) {
+    componentWillReceiveProps(nextProps) {
         var rule = nextProps.rule;
         this.setState({
             type:'skype',
@@ -46,31 +45,33 @@ var SkypeForm = React.createClass({
             triggerType: rule.triggerType || 'any',
             triggerVal: rule.triggerVal || '1' ,
         });
-    },
+    }
 
-    handleClose: function() {
-        console.log("CLOSING: state=",this.state);
+    handleClose() {
         if( !this.state.username || !this.state.password ) {
             this.setState({errormsg: "username or password not set!"});
             return;
         }
         this.props.onSave(this.state);
-    },
-    handleTriggerType: function(evt) {
-        log.msg("mailForm.handleTriggerType ",evt.target.value);
+    }
+
+    handleTriggerType(evt) {
+        log.msg("skypeform.handleTriggerType ",evt.target.value);
         this.setState({triggerType: evt.target.value});
-    },
-    handleBlink1SerialChange: function(blink1Id) {
+    }
+
+    handleBlink1SerialChange(blink1Id) {
         this.setState({blink1Id: blink1Id});
-    },
-    handleInputChange: function(event) {
+    }
+
+    handleInputChange(event) {
         var target = event.target;
         var value = target.type === 'checkbox' ? target.checked : target.value;
         var name = target.name;
         this.setState({ [name]: value });
-    },
+    }
 
-    render: function() {
+    render() {
         var self = this;
         // var patterns = this.props.patterns;
         var createPatternOption = function(item, idx) {
@@ -160,6 +161,16 @@ var SkypeForm = React.createClass({
             </div>
         );
     }
-});
+}
 
-module.exports = SkypeForm;
+SkypeForm.propTypes = {
+  rule: React.PropTypes.object.isRequired,
+  patterns: React.PropTypes.array,
+  onSave: React.PropTypes.func,
+  onCancel: React.PropTypes.func,
+  onDelete: React.PropTypes.func,
+  onCopy: React.PropTypes.func
+};
+
+export default SkypeForm;
+//module.exports = SkypeForm;

@@ -11,7 +11,7 @@ const BrowserWindow = require('electron').remote.BrowserWindow;
 var log = require('../../logger');
 var Eventer = require('../../eventer');
 
-var timefmt = new Intl.DateTimeFormat("en" , {timeStyle: "medium"});  // instead of moment
+const timefmt = new Intl.DateTimeFormat("en" , {timeStyle: "medium"});  // instead of moment
 
 var logWindow;
 

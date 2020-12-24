@@ -2,12 +2,6 @@
 
 import React from 'react';
 
-// var React = require('react');
-// var Panel = require('react-bootstrap').Panel;
-// var Grid = require('react-bootstrap').Grid;
-// var Row = require('react-bootstrap').Row;
-// var Col = require('react-bootstrap').Col;
-
 import { Panel } from 'react-bootstrap';
 import { Grid } from 'react-bootstrap';
 import { Row } from 'react-bootstrap';
@@ -19,13 +13,6 @@ import PatternList from './patternList';
 import Blink1TabViews from './blink1TabViews';
 import Blink1ColorPicker from './blink1ColorPicker';
 
-// var Blink1Status = require('./blink1Status');
-// var EventList = require('./eventList');
-// var PatternList = require('./patternList');
-// var Blink1TabViews = require('./blink1TabViews');
-// var Blink1ColorPicker = require('./blink1ColorPicker');
-
-//var Blink1ControlView = React.createClass({
 export default class Blink1ControlView extends React.Component {
 
   render() {

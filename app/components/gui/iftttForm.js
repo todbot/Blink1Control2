@@ -1,36 +1,29 @@
 "use strict";
 
-var React = require('react');
+import React from 'react';
+import { Col } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
+import { FormControl } from 'react-bootstrap';
+import { FormGroup } from 'react-bootstrap';
+import { ControlLabel } from 'react-bootstrap';
+import Switch from 'react-bootstrap-switch';
 
-var Col = require('react-bootstrap').Col;
-var Row = require('react-bootstrap').Row;
-var Modal = require('react-bootstrap').Modal;
-var Button = require('react-bootstrap').Button;
+import Blink1SerialOption from './blink1SerialOption';
 
-var Form = require('react-bootstrap').Form;
-var FormControl = require('react-bootstrap').FormControl;
-var FormGroup = require('react-bootstrap').FormGroup;
-var ControlLabel = require('react-bootstrap').ControlLabel;
+class IftttForm extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = { };
+      this.handleClose = this.handleClose.bind(this);
+      this.handleBlink1SerialChange = this.handleBlink1SerialChange.bind(this);
+      this.handleInputChange = this.handleInputChange.bind(this);
+    }
 
-var Switch = require('react-bootstrap-switch');
-
-var Blink1SerialOption = require('./blink1SerialOption');
-
-var IftttForm = React.createClass({
-    propTypes: {
-        rule: React.PropTypes.object.isRequired,
-        allowMultiBlink1: React.PropTypes.bool,
-        patterns: React.PropTypes.array,
-        onSave: React.PropTypes.func,
-        onCancel: React.PropTypes.func,
-        onDelete: React.PropTypes.func,
-        onCopy: React.PropTypes.func
-    },
-    getInitialState: function() {
-        return {};
-    },
     // FIXME: why do this instead of getInitialState?  because need props to load state
-    componentWillReceiveProps: function(nextProps) {
+    componentWillReceiveProps(nextProps) {
         var rule = nextProps.rule;
         this.setState({
             type: 'ifttt',
@@ -40,23 +33,25 @@ var IftttForm = React.createClass({
             patternId: rule.patternId || nextProps.patterns[0].id || '',
             blink1Id: rule.blink1Id || "0"
          }); // FIXME: why
-    },
-    handleClose: function() {
+    }
+
+    handleClose() {
         this.props.onSave(this.state);
-    },
-    handleBlink1SerialChange: function(blink1Id) {
+    }
+
+    handleBlink1SerialChange(blink1Id) {
         console.log("blink1Id:",blink1Id);
         this.setState({blink1Id: blink1Id});
-    },
-    handleInputChange: function(event) {
+    }
+
+    handleInputChange(event) {
         var target = event.target;
         var value = target.type === 'checkbox' ? target.checked : target.value;
         var name = target.name;
         this.setState({ [name]: value });
-    },
+    }
 
-    render: function() {
-        var self = this;
+    render() {
 
         var createPatternOption = function(item, idx) {
           return ( <option key={idx} value={item.id}>{item.name}</option> );
@@ -115,6 +110,18 @@ var IftttForm = React.createClass({
           </div>
       );
     }
-});
+};
 
-module.exports = IftttForm;
+IftttForm.propTypes = {
+    rule: React.PropTypes.object.isRequired,
+    allowMultiBlink1: React.PropTypes.bool,
+    patterns: React.PropTypes.array,
+    onSave: React.PropTypes.func,
+    onCancel: React.PropTypes.func,
+    onDelete: React.PropTypes.func,
+    onCopy: React.PropTypes.func
+};
+
+
+export default IftttForm;
+// module.exports = IftttForm;

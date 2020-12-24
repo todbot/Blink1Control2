@@ -1,11 +1,10 @@
 "use strict";
 
-var React = require('react');
+import React from 'react';
+import { Table } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-var Table = require('react-bootstrap').Table;
-var Button = require('react-bootstrap').Button;
-
-var timefmt = new Intl.DateTimeFormat("en" , {timeStyle: "medium"});  // instead of moment
+const timefmt = new Intl.DateTimeFormat("en" , {timeStyle: "medium"});  // instead of moment
 
 var Eventer = require('../../eventer');
 
@@ -13,35 +12,30 @@ var PatternsService = require('../../server/patternsService');
 
 var log = require('../../logger');
 
-var ToolTableList = React.createClass({
+class ToolTableList extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+        events: []
+      };
+      this.updateStatus = this.updateStatus.bind(this);
+  }
 
-    propTypes: {
-    	rules: React.PropTypes.array.isRequired,
-        // events: React.PropTypes.array.isRequired,
-        showForm: React.PropTypes.string.isRequired,
-        onEditRule: React.PropTypes.func.isRequired
-    },
+  componentDidMount() {
+      Eventer.on('newStatus', this.updateStatus);
+  }
 
-    getInitialState: function() {
-        return {
-            events: []
-        }
-    },
+  // callback called by event service
+  updateStatus(statuses) {
+      var events = statuses; //log.getEvents();
 
-    componentDidMount: function() {
-        Eventer.on('newStatus', this.updateStatus);
-    },
-    // callback called by event service
-    updateStatus: function(statuses) {
-        var events = statuses; //log.getEvents();
+      if( this.props.showForm ) { return; } //i.e. don't change when we're in edit mode
 
-        if( this.props.showForm ) { return; } //i.e. don't change when we're in edit mode
+      this.setState({events: events});
 
-        this.setState({events: events});
+  }
 
-    },
-
-    render: function() {
+  render() {
         var patterns = PatternsService.getAllPatterns();
         var events = this.state.events;
 
@@ -93,14 +87,16 @@ var ToolTableList = React.createClass({
                 desc = rule.username + ':' + rule.triggerType;
             }
             else if( rule.type === 'time' ) {
-                if( rule.alarmType === 'countdown' ) {
-                    desc = 'countdown to ' + rule.alarmHours +':'+ rule.alarmMinutes;
-                }
-                else if( rule.alarmType === 'hourly' ) {
-                    desc = rule.alarmType + ' @ ' + rule.alarmMinutes + ' minutes';
-                } else {
-                    desc = rule.alarmType + ' @ ' + rule.alarmHours + ':' + rule.alarmMinutes + ' ' + rule.alarmTimeMode;
-                }
+              const mins_str = (rule.alarmMinutes < 10) ? '0'+rule.alarmMinutes : rule.alarmMinutes;
+              if( rule.alarmType === 'countdown' ) {
+                  //desc = 'countdown to ' + rule.alarmHours +':'+ rule.alarmMinutes;
+                  desc = 'countdown to ' + rule.alarmHours +':'+ mins_str
+              }
+              else if( rule.alarmType === 'hourly' ) {
+                  desc = rule.alarmType + ' @ ' + rule.alarmMinutes + ' minutes';
+              } else {
+                  desc = rule.alarmType + ' @ ' + rule.alarmHours + ':' + mins_str + ' ' + rule.alarmTimeMode;
+              }
             }
             else if( rule.type === 'mqtt' ) {
                 desc = rule.topic + "@" + rule.url;
@@ -166,6 +162,7 @@ var ToolTableList = React.createClass({
             </div>
         );
     }
-});
+}
 
-module.exports = ToolTableList;
+export default ToolTableList;
+// module.exports = ToolTableList;

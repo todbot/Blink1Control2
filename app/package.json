@@ -23,7 +23,7 @@
     "moment": "^2.17.1",
     "mqtt": "^4.2.1",
     "nconf": "^0.10.0",
-    "needle": "^1.5.1",
+    "needle": "^2.5.2",
     "node-blink1": "^0.5.1",
     "simplecrypt": "^0.1.0",
     "skyweb": "^0.4.3",

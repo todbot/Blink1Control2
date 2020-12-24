@@ -11,11 +11,11 @@ const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 const currentWindow = remote.getCurrentWindow();
 
-var Blink1Service = require('../../server/blink1Service');
-var PatternsService = require('../../server/patternsService');
-var VirtualBlink1 = require('./virtualBlink1');
+import Blink1Service from '../../server/blink1Service';
+import PatternsService from '../../server/patternsService';
+import VirtualBlink1 from './virtualBlink1';
 
-var PreferencesModal = require('./preferencesModal');
+import PreferencesModal from './preferencesModal';
 
 var log = require('../../logger');
 

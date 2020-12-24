@@ -1,44 +1,43 @@
 "use strict";
 
-var React = require('react');
+import React from 'react';
 
-// var Grid = require('react-bootstrap').Grid;
-var Col = require('react-bootstrap').Col;
-var Row = require('react-bootstrap').Row;
-var Modal = require('react-bootstrap').Modal;
-var Button = require('react-bootstrap').Button;
+import { Col } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-var Form = require('react-bootstrap').Form;
-var FormControl = require('react-bootstrap').FormControl;
-var FormGroup = require('react-bootstrap').FormGroup;
-var ControlLabel = require('react-bootstrap').ControlLabel;
-var Radio = require('react-bootstrap').Radio;
+import { Form } from 'react-bootstrap';
+import { FormControl } from 'react-bootstrap';
+import { FormGroup } from 'react-bootstrap';
+import { ControlLabel } from 'react-bootstrap';
+import { Radio } from 'react-bootstrap';
 
-var Switch = require('react-bootstrap-switch');
+import Switch from 'react-bootstrap-switch';
 
-var Blink1SerialOption = require('./blink1SerialOption');
+import Blink1SerialOption from './blink1SerialOption';
 
-var timefmt = new Intl.DateTimeFormat("en" , {timeStyle: "medium"});  // instead of moment
+const timefmt = new Intl.DateTimeFormat("en" , {timeStyle: "medium"});  // instead of moment
 
+class TimeForm extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = { };
+      this.handleClose = this.handleClose.bind(this);
+      this.handleBlink1SerialChange = this.handleBlink1SerialChange.bind(this);
+      this.handleChangeHours = this.handleChangeHours.bind(this);
+      this.handleChangeMinutes = this.handleChangeMinutes.bind(this);
+      this.setHourly = this.setHourly.bind(this);
+      this.setDaily = this.setDaily.bind(this);
+      this.setCountdown = this.setCountdown.bind(this);
+      this.setAlarmTimeMode = this.setAlarmTimeMode.bind(this);
+      this.handleInputChange = this.handleInputChange.bind(this);
+    }
 
-var TimeForm = React.createClass({
-    propTypes: {
-        rule: React.PropTypes.object.isRequired,
-        allowMultiBlink1: React.PropTypes.bool,
-        patterns: React.PropTypes.array,
-        onSave: React.PropTypes.func,
-        onCancel: React.PropTypes.func,
-        onDelete: React.PropTypes.func,
-        onCopy: React.PropTypes.func
-    },
-    getInitialState: function() {
-        return {
-        };
-    },
     // Why am I doing this here?
     // because model is first created (with bad/old data), hangs out invisible,
     // then is shown (and gets new props)
-    componentWillReceiveProps: function(nextProps) {
+    componentWillReceiveProps(nextProps) {
         var rule = nextProps.rule;
         this.setState({
             type: 'time',
@@ -52,56 +51,63 @@ var TimeForm = React.createClass({
             patternId: rule.patternId || nextProps.patterns[0].id || '',
             blink1Id: rule.blink1Id || "0"
          });
-    },
-    handleClose: function() {
-        var state = this.state;
-        // adjust countdown time to be proper time in the future
-        if( state.alarmType === 'countdown' ) {
+    }
+
+    handleClose() {
+        var state = this.state;  // adjust countdown time to be proper time in the future
+        if( this.state.alarmType === 'countdown' ) {
           var newTime = new Date();
           newTime.setMinutes( newTime.getMinutes() + state.alarmMinutes );
           state.alarmHours = newTime.hours();
           state.alarmMinutes = newTime.minutes();
         }
+        console.log("STATE:",state);
         this.props.onSave(state);
-    },
-    handleBlink1SerialChange: function(blink1Id) {
+    }
+
+    handleBlink1SerialChange(blink1Id) {
         this.setState({blink1Id: blink1Id});
-    },
-    handleChangeHours: function(event) {
+    }
+
+    handleChangeHours(event) {
         var number = parseInt(event.target.value) || 0;
         // number = ( number < 0 ) ? 23 : (number>23) ? 0 : number;
         this.setState({alarmHours: number});
-    },
-    handleChangeMinutes: function(event) {
-        var number = parseInt(event.target.value) || 0;
-        // console.log("mins: ", event.target.value, number);
-        // number = ( number < 0 ) ? 59 : (number>59) ? 0 : number;
+    }
+
+    handleChangeMinutes(event) {
+        var nstr = event.target.value;
+        var number = parseInt(nstr.substring(nstr.length-2, nstr.length)) || 0; // last two digits
         this.setState({alarmMinutes: number});
-    },
-    setHourly: function() {
+    }
+
+    setHourly() {
         this.setState({alarmType:'hourly'});
-    },
-    setDaily: function() {
+    }
+
+    setDaily() {
         this.setState({alarmType:'daily'});
-    },
-    setCountdown: function() {
+    }
+
+    setCountdown() {
         this.setState({alarmType:'countdown'});
-    },
-    setAlarmTimeMode: function(d) {
+    }
+
+    setAlarmTimeMode(d) {
         // console.log('setAlarmTimeMode:',d);
         // console.log("setAlarmTimeMode:",d.target.value);
         var val = d.target.value;
         this.setState({alarmTimeMode: val});
-    },
-    handleInputChange: function(event) {
+    }
+
+    handleInputChange(event) {
         var target = event.target;
         var value = target.type === 'checkbox' ? target.checked : target.value;
         var name = target.name;
         this.setState({ [name]: value });
-    },
+    }
 
-    render: function() {
-        var self = this;
+    render() {
 
         var createPatternOption = function(item, idx) {
           return ( <option key={idx} value={item.id}>{item.name}</option> );
@@ -156,7 +162,7 @@ var TimeForm = React.createClass({
                                     <span style={numStyle}> every day at:</span>
                                     <input type="number" min={1} max={12} step={1} size={2} style={numStyle}
                                         value={altype==='daily'?hrs:''} onChange={this.handleChangeHours} /> :
-                                    <input type="number" min={0} max={59} step={1} size={2} style={numStyle}
+                                    <input type="number" min={3} max={59} step={1} size={2} pattern="[0-9]*" style={numStyle}
                                         value={altype==='daily'?mins:''} onChange={this.handleChangeMinutes} />
                                     <input type="radio" name="am" value="am"
                                         checked={almode==='am'} onChange={this.setAlarmTimeMode}/>
@@ -216,56 +222,17 @@ var TimeForm = React.createClass({
           </div>
       );
     }
-});
+}
 
-module.exports = TimeForm;
+TimeForm.propTypes = {
+    rule: React.PropTypes.object.isRequired,
+    allowMultiBlink1: React.PropTypes.bool,
+    patterns: React.PropTypes.array,
+    onSave: React.PropTypes.func,
+    onCancel: React.PropTypes.func,
+    onDelete: React.PropTypes.func,
+    onCopy: React.PropTypes.func
+};
 
-//         <Input>
-//             <div className="form-inline" onClick={this.setHourly}>
-//                 <div className="radio-inline">
-//                     <input type="radio" name="hourly" value="hourly"
-//                         checked={altype==='hourly'} onChange={this.setHourly} />
-//                     every hour at the:
-//                 </div>
-//                 <input type="number" min={0} max={59} step={1} size={2} style={numStyle}
-//                         value={altype==='hourly'?mins:''} onChange={this.handleChangeMinutes} />
-//                 minute mark
-//             </div>
-//         </Input>
-//         <Input>
-//             <div className="form-inline" onClick={this.setDaily}>
-//                 <div className="radio-inline" >
-//                     <input type="radio" name="daily" value="daily"
-//                         checked={altype==='daily'} onChange={this.setDaily} />
-//                     every day at:
-//                 </div>
-//                 <input type="number" min={1} max={12} step={1} size={2}
-//                     style={{textAlign:'right'}}
-//                     value={altype==='daily' ? hrs : ''} onChange={this.handleChangeHours}/> :
-//                 <input type="number" min={0} max={59} step={1} size={2}
-//                     style={{textAlign:'right', marginRight:10}}
-//                     value={altype==='daily'?mins:''} onChange={this.handleChangeMinutes}/>
-//                 <div className="radio-inline" >
-//                     <input type="radio" name="am" value="am"
-//                         checked={almode==='am'} onChange={this.setAlarmTimeMode}/> am
-//                 </div>
-//                 <div className="radio-inline" >
-//                     <input type="radio" name="pm" value="pm"
-//                         checked={almode==='pm'} onChange={this.setAlarmTimeMode}/> pm
-//                 </div>
-//             </div>
-//         </Input>
-//         <Input>
-//             <div className="form-inline" onClick={this.setCountdown}>
-//                 <div className="radio-inline" >
-//                     <input type="radio" name="countdown" value="countdown"
-//                         checked={altype==='countdown'} onChange={this.setCountdown} />
-//                     elapsed time :
-//                 </div>
-//                 <input type="number" min={0} max={59} step={1} size={2}
-//                     value={altype==='countdown'?mins:''} onChange={this.handleChangeMinutes} />
-//                 minutes (one-time, non-repeating)
-//             </div>
-//         </Input>
-//     </Col>
-// </Row>
+export default TimeForm;
+// module.exports = TimeForm;

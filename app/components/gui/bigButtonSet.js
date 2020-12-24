@@ -1,24 +1,22 @@
 "use strict";
 
-var React = require('react');
+import React from 'react';
 
-var Modal = require('react-bootstrap').Modal;
-var Button = require('react-bootstrap').Button;
+import { Modal } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
+import { FormControl } from 'react-bootstrap';
+import { FormGroup } from 'react-bootstrap';
+import { ButtonToolbar } from 'react-bootstrap';
 
-var Form = require('react-bootstrap').Form;
-var FormControl = require('react-bootstrap').FormControl;
-var FormGroup = require('react-bootstrap').FormGroup;
+import BigButton from './bigButton';
 
 var config = require('../../configuration');
 var log = require('../../logger');
 var Eventer = require('../../eventer');
 
-var Blink1Service = require('../../server/blink1Service');
-var PatternsService = require('../../server/patternsService');
-
-var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
-
-var BigButton = require('./bigButton');
+import Blink1Service from '../../server/blink1Service';
+import PatternsService from '../../server/patternsService';
 
 
 var buttonsUserDefault = [
@@ -29,9 +27,10 @@ var buttonsUserDefault = [
   { name: "Out of Office", type: "color", color: "#FFBF00", ledn: 0 }
 ];
 
-var BigButtonSet = React.createClass({
-  getInitialState: function() {
-    // var self = this;
+export default class Blink1TabViews extends React.Component {
+  constructor(props)  {
+    super(props);
+
     var buttonsUser = config.readSettings('bigButtons');
     if( !buttonsUser ) {
       buttonsUser = buttonsUserDefault;
@@ -39,7 +38,7 @@ var BigButtonSet = React.createClass({
     Eventer.on('playBigButtonUser', this.playBigButtonUser );
     Eventer.on('playBigButtonSys', this.playBigButtonSys );
 
-    return {
+    this.state = {
       buttonsSys: [
         { name: "Color Cycle",  type: "sys", iconClass:"fa fa-spinner fa-2x" },
         { name: "Mood Light",   type: "sys", iconClass:"fa fa-asterisk fa-2x" },
@@ -53,13 +52,27 @@ var BigButtonSet = React.createClass({
       tempname: '',
       tmpidx:-1
     };
-  },
-  saveButtons: function(buttonsUserNew) {
+
+    this.saveButtons = this.saveButtons.bind(this);
+    this.addBigButton = this.addBigButton.bind(this);
+    this.onEdit = this.onEdit.bind(this);
+    this.handleEditName = this.handleEditName.bind(this);
+    this.handleEditClose = this.handleEditClose.bind(this);
+    this.hideEditMenu = this.hideEditMenu.bind(this);
+    this.setBlink1Color = this.setBlink1Color.bind(this);
+    this.playBigButtonUser = this.playBigButtonUser.bind(this);
+    this.playBigButtonSys = this.playBigButtonSys.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+
+  }
+
+  saveButtons(buttonsUserNew) {
     this.setState( {buttonsUser: buttonsUserNew });
     config.saveSettings("bigButtons", buttonsUserNew);
     Eventer.emit('bigButtonsUpdated');
-  },
-  addBigButton: function() { // FIXME: this is hacky
+  }
+
+  addBigButton() { // FIXME: this is hacky
     var blink1id = Blink1Service.getCurrentBlink1Id();
     var newbut = {
       name: "Big Button "+this.state.buttonsUser.length,
@@ -71,8 +84,9 @@ var BigButtonSet = React.createClass({
     log.msg("addBigButton: ", newbut);
     var newbuttons = this.state.buttonsUser.concat( newbut );
     this.saveButtons( newbuttons );
-  },
-  onEdit: function(cmd, idx, arg) {
+  }
+
+  onEdit(cmd, idx, arg) {
     var mybuttons = this.state.buttonsUser.concat(); // clone;
     // var mybuttons = Object.assign({}, this.state.buttonsUser );
     if( cmd === 'delete' ) {
@@ -123,37 +137,41 @@ var BigButtonSet = React.createClass({
       mybuttons[idx].name = arg;
     }
     this.saveButtons( mybuttons );
-  },
-  handleEditName: function(idx) {
+  }
+
+  handleEditName(idx) {
     var button = this.state.buttonsUser[idx];
     this.setState({showEditMenu:true, tempname: button.name, tempidx:idx});
-  },
-  handleEditClose: function(e) {
+  }
+
+  handleEditClose(e) {
     e.preventDefault(); // prevent Enter key from reloading page
     // log.msg("BigButtonSet.handleEditNameClose:",this.state.tempname, this.state.tempidx);
     this.onEdit('rename', this.state.tempidx, this.state.tempname);
     this.hideEditMenu();
-  },
-  hideEditMenu: function() {
+  }
+
+  hideEditMenu() {
     this.setState({showEditMenu:false});
-  },
+  }
 
   // internal function used by differnt kinds of buttons
-  setBlink1Color: function(color, ledn, blink1id) {
+  setBlink1Color(color, ledn, blink1id) {
     ledn = ledn || 0; // 0 means all
-    // if( blink1id === undefined ) { 
+    // if( blink1id === undefined ) {
     //   Blink1Service.getAllSerials().map( function(serial,idx) {
     //     Blink1Service.fadeToColor( 100, color, ledn, serial );  // FIXME: millis
     //   });
-    // } else { 
+    // } else {
     Blink1Service.fadeToColor( 100, color, ledn, blink1id );  // FIXME: millis
     // }
-  },
+  }
+
   // playPattern: function(patternid) {
   //     PatternsService.playPatternFrom( patternid );
   // },
   // can be called outside of this class
-  playBigButtonUser: function(buttonindex,evt) {
+  playBigButtonUser(buttonindex,evt) {
     var button = this.state.buttonsUser[buttonindex];
     if( button ) {
       log.msg("bigButtonSet.playBigButtonUser:", buttonindex, button.name, button.blink1Id, button.ledn);
@@ -168,8 +186,9 @@ var BigButtonSet = React.createClass({
     else {
       log.msg("bigButtonSet.playBigButtonUser: no button ", buttonindex);
     }
-  },
-  playBigButtonSys: function(buttonname) {
+  }
+
+  playBigButtonSys(buttonname) {
     var button = this.state.buttonsSys.find( function(b) { return b.name === buttonname; });
     if( !button ) {
       log.msg("bigButtonSet.playBigButtonSys: no button ", buttonname);
@@ -198,19 +217,20 @@ var BigButtonSet = React.createClass({
       Blink1Service.toyStart('strobe');
     }
     Eventer.addStatus( {type:'trigger', source:'button', id:button.name, text:button.name} );
-  },
-  handleInputChange: function(event) {
+  }
+
+  handleInputChange(event) {
     var target = event.target;
     var value = target.type === 'checkbox' ? target.checked : target.value;
     var name = target.name;
     this.setState({ [name]: value });
-  },
+  }
 
-  render: function() {
+  render() {
     var self = this;
     var patterns = PatternsService.getAllPatterns();
     var serials = Blink1Service.getAllSerials();
-    
+
     var createBigButtonSys = function(button, index) { // FIXME: understand bind()
       return (
             <BigButton key={index} name={button.name} type='sys'  iconClass={button.iconClass}
@@ -259,6 +279,5 @@ var BigButtonSet = React.createClass({
       </div>
     );
   }
-});
 
-module.exports = BigButtonSet;
+}

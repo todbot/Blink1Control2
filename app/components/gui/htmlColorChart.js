@@ -3,16 +3,13 @@
 
 "use strict";
 
-// import React, { Component } from 'react';
-var React = require('react');
-
+import React from 'react';
 
 const htmlcolors = require('./htmlColorsList');
 
 // var colorChartPng = require('../../images/colorChart.png');
 const cw = 12; // cell width
 const ch = 13;  // cell height
-
 
 class HtmlColorChart extends React.Component {
     constructor(props) {
@@ -112,5 +109,5 @@ HtmlColorChart.propTypes = {
     currentColor: React.PropTypes.string
 };
 
-// export default HtmlColorChart;
-module.exports = HtmlColorChart;
+export default HtmlColorChart;
+// module.exports = HtmlColorChart;
