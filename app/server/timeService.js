@@ -37,8 +37,6 @@ var conf = require('../configuration');
 var log = require('../logger');
 var Eventer = require('../eventer');
 
-var moment = require('moment');
-
 var PatternsService = require('./patternsService');
 
 var intervalSecs = 1;
@@ -65,7 +63,7 @@ var TimeService = {
 
 		// this.rules.map( function(rule) {
 		// 	if( rule.alarmType === 'countdown' ) {
-	    //         var newTime = moment();
+	    //         var newTime = new Date(); // now
 	    //         // newTime = newTime.add(state.alarmHours,'hours');
 	    //         newTime = newTime.add(rule.alarmMinutes,'minutes');
 	    //         rule.alarmHours = newTime.hours();

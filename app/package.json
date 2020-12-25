@@ -20,7 +20,6 @@
     "express": "^4.16.4",
     "imap": "^0.8.19",
     "is-electron-renderer": "^2.0.1",
-    "moment": "^2.17.1",
     "mqtt": "^4.2.1",
     "nconf": "^0.10.0",
     "needle": "^2.5.2",

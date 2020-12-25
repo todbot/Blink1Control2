@@ -7,7 +7,6 @@
 
 var Imap = require('imap');
 var simplecrypt = require('simplecrypt');
-// var moment = require('moment');
 
 var log = require('../logger');
 var Eventer = require('../eventer');
@@ -55,7 +54,7 @@ ImapSearcher.prototype.searchMailDo = function() {
     }
     else { // 'unread' and anything else to guard against unknown criteria
         searchCriteria = ['UNSEEN'];
-        // searchCriteria = ['UNSEEN', ['SINCE', moment(self.startTime).format('MMMM DD, YYYY')]];
+        // searchCriteria = ['UNSEEN', ['SINCE', moooment(self.startTime).format('MMMM DD, YYYY')]];
     }
     if( self.imap === null ) {
         log.msg("ImapSearcher.searchMailDo: null imap object"); return;
