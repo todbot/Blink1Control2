@@ -33,11 +33,11 @@ class BigButton extends React.Component {
     if( this.props.serials && this.props.serials.length > 0 ) {
       serialsmenu = new Menu();
       serialsmenu.append( new MenuItem({label:'-use-default-',
-        click: self.doContextMenu.bind(null,null, 'setserial', 'default')}) );
+                            click: self.doContextMenu.bind(null,null, 'setserial', 'default')}) );
       this.props.serials.map( function(s) {
         serialsmenu.append( new MenuItem({label:s, type: 'radio',
-                                    click: self.doContextMenu.bind(null,null, 'setserial', s),
-                                    checked: (self.props.serial === s) }) );
+                            click: self.doContextMenu.bind(null,null, 'setserial', s),
+                            checked: (self.props.serial === s) }) );
       });
     }
     return serialsmenu;
