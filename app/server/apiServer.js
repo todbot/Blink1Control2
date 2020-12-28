@@ -100,6 +100,12 @@ app.get('/blink1/pattern(s)?', function(req,res) {
         patterns: PatternsService.getAllPatternsForOutput()
     });
 });
+app.get('/blink1/pattern/list', function(req,res) {
+    res.json({
+        status: "pattern results",
+        patterns: PatternsService.getAllPatternsForOutput()
+    });
+});
 app.get('/blink1/pattern/queue', function(req,res) {
     res.json({
         status: "pattern queue results",
