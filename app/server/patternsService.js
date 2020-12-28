@@ -81,30 +81,39 @@ var _fixId = function(pattern) {
 };
 
 // turn patternstring into fledgling {colors,repeats} partial pattern
-// only parses pattern string in format: repeats,color1,time,ledn1,time2,ledn2,...
-// FIXME: need to support non-ledn variant
-// FIXME: need to declare when parsing fails?
+// parses pattern string in format: repeats,color1,time1,ledn1,color2,time2,ledn2,...
+// or pattern string in format: repeats,color1,time1,color2,time2,...
+// or a mix
+// FIXME: need to report when parsing fails?
 var _parsePatternStr = function(patternstr) {
-    var pattparts = patternstr.split(/\s*,\s*/g);
-    //var len = pattparts[0];
-    var repeats = parseInt(pattparts[0]);
-    var colorlist = [];
-    for (var i = 1; i < pattparts.length; i += 3) {
-        var color = {
-            rgb: pattparts[i + 0],
-            time: Number(pattparts[i + 1]),
-            ledn: Number(pattparts[i + 2])
-        };
-        // FIXME: validate rgb
-        if (isNaN(color.time)) { color.time = 0.1; }
-        if (isNaN(color.ledn)) { color.ledn = 0; }
-        colorlist.push(color);
+  var pattparts = patternstr.split(/\s*,\s*/g);
+  var repeats = parseInt(pattparts[0]);
+  var colorlist = [];
+  var i = 1;
+  while( i < pattparts.length ) {
+    var color = {
+      rgb: tinycolor(pattparts[i+0]),
+      time: Number(pattparts[i+1]),
+      ledn: Number(pattparts[i+2])
     }
-    return {
-        colors: colorlist,
-        repeats: repeats
-    };
-};
+    if( isNaN(color.ledn) ){ // not led param
+      color.ledn = 0;
+      i+=2; // only skip ahead two to reuse pattparts[i+2]
+    } else {
+      i+=3;
+    }
+    if(isNaN(color.time)) { color.time = 0.1; }
+    if( color.rgb.isValid() ) {
+    } else {
+      color.rgb = tinycolor('#000000')
+    }
+    colorlist.push(color);
+  }
+  return {
+      colors: colorlist,
+      repeats: repeats
+  };
+}
 
 var _makePattern = function(template) {
     var patt = _parsePatternStr(template.patternstr);
@@ -617,3 +626,26 @@ var PatternsService = {
 // },
 
 module.exports = PatternsService;
+
+// only parses color pattern with ledn param
+// var _parsePatternStrOrig = function(patternstr) {
+//     var pattparts = patternstr.split(/\s*,\s*/g);
+//     //var len = pattparts[0];
+//     var repeats = parseInt(pattparts[0]);
+//     var colorlist = [];
+//     for (var i = 1; i < pattparts.length; i += 3) {
+//         var color = {
+//             rgb: pattparts[i + 0],
+//             time: Number(pattparts[i + 1]),
+//             ledn: Number(pattparts[i + 2])
+//         };
+//         // FIXME: validate rgb
+//         if (isNaN(color.time)) { color.time = 0.1; }
+//         if (isNaN(color.ledn)) { color.ledn = 0; }
+//         colorlist.push(color);
+//     }
+//     return {
+//         colors: colorlist,
+//         repeats: repeats
+//     };
+// };
