@@ -180,11 +180,13 @@ class PreferencesModal extends React.Component {
   }
 
   handleInputChange(event) {
-    var target = event.target;
+    const target = event.target;
     var value = target.type === 'checkbox' ? target.checked : target.value;
-    var name = target.name;
+    const name = target.name;
     if( name == 'shortcutResetKey' && value != '') {
-      var accel = this.state.shortcutPrefix +"+"+ value;
+      this.setState({errorMsg: ''});
+      value = value.toUpperCase();
+      const accel = this.state.shortcutPrefix +"+"+ value;
       log.msg("accel:",accel);
       if( !isAccelerator(accel) ) {
         this.setState({errorMsg: "Cannot use '"+value+"' as shortcut key"});
@@ -201,15 +203,14 @@ class PreferencesModal extends React.Component {
     var createShortcutPrefixOption = function(item, idx) {
       return (<option key={idx} value={item.what}>{item.what2}</option>);
     };
-    var isMac = (process.platform === 'darwin');
-    // var showIfMac = (isMac) ? '':'hidden';
-    var cmdKeyStr = (isMac) ? 'Cmd' : 'Ctrl';
-    var sectStyle = {
+    const isMac = (process.platform === 'darwin');
+    const cmdKeyStr = (isMac) ? 'Cmd' : 'Ctrl';
+    const sectStyle = {
       border: '1px solid #ddd',
       paddingLeft: 15,
       paddingBottom: 10
     };
-    var errorSectStyle = { paddingLeft: 15, color:'red'};
+    const errorSectStyle = { paddingLeft: 15, color:'red'};
 
     return (
     <div>
@@ -224,26 +225,27 @@ class PreferencesModal extends React.Component {
             <div style={sectStyle}>
               <h5><u> General </u></h5>
               <Form horizontal>
-                <Checkbox bsSize="small" title="On next restart, app is systray/menubar only"
+                <Checkbox  title="On next restart, app is systray/menubar only"
                   name="startMinimized" checked={this.state.startMinimized} onChange={this.handleInputChange}>
                   Start minimized
                 </Checkbox>
-                <Checkbox bsSize="small" title="Start app at login"
+                <Checkbox title="Start app at login"
                   name="startAtLogin" checked={this.state.startAtLogin} onChange={this.handleInputChange} >
                   Start at login
                 </Checkbox>
 
                 {isMac ?
-                  <Checkbox bsSize="small" title="Don't show app in Dock"
-                    name="hideDockIcon" checked={this.state.hideDockIcon} onChange={this.handleInputChange} >
-                    Hide Dock Icon
-                  </Checkbox> : <div/>}
+                <Checkbox title="Don't show app in Dock"
+                  name="hideDockIcon" checked={this.state.hideDockIcon} onChange={this.handleInputChange} >
+                  Hide Dock Icon
+                </Checkbox> : <div/>
+                }
 
-                <Checkbox bsSize="small" title="Use more accurate colors. When off, colors are brighter"
+                <Checkbox title="Use more accurate colors. When off, colors are brighter"
                   name="enableGamma" checked={this.state.enableGamma} onChange={this.handleInputChange} >
                   LED gamma-correction
                 </Checkbox>
-                <Checkbox bsSize="small" title="Only allow color patterns to play single-file, not at the same time"
+                <Checkbox title="Only allow color patterns to play single-file, not at the same time"
                   name="playingSerialize" checked={this.state.playingSerialize} onChange={this.handleInputChange} >
                   Pattern play serialize
                 </Checkbox>
@@ -257,7 +259,7 @@ class PreferencesModal extends React.Component {
                       Reset Alerts
                     </Col>
                     <Col xs={5}>
-                      <FormControl bsSize="small" componentClass="select"
+                      <FormControl componentClass="select"
                         name="shortcutPrefix" value={this.state.shortcutPrefix} onChange={this.handleInputChange} >
                         <option value="CommandOrControl+Shift">{cmdKeyStr}+Shift</option>
                         <option value="CommandOrControl">{cmdKeyStr}</option>
@@ -266,8 +268,8 @@ class PreferencesModal extends React.Component {
                       </FormControl>
                     </Col>
                     <Col xs={3}>
-                      <FormControl bsSize="small"
-                        type="text" label="" placeholder="" size="1"
+                      <FormControl
+                        type="text" label="" placeholder="" maxLength="1"
                         name="shortcutResetKey" value={this.state.shortcutResetKey} onChange={this.handleInputChange} />
                     </Col>
                   </Row>
@@ -339,8 +341,9 @@ class PreferencesModal extends React.Component {
               <Col md={4}  title="Set what the blink(1) does when powered but no computer">
                 <div style={sectStyle}>
                   <h5><u> blink(1) no-computer mode </u></h5>
-                  <small>Set what blink(1) does when powered but no computer controlling it, aka "nightlight mode".
-                  </small>
+                  <small><p>
+                    Set what blink(1) does when powered but no computer controlling it, aka "nightlight mode".
+                  </p></small>
 
                   <Form horizontal>
                     <FormGroup controlId="formNonComputerMode" bsSize="small">
@@ -385,7 +388,6 @@ class PreferencesModal extends React.Component {
     );
   }
 }
-
 
 PreferencesModal.propTypes = {
   show: React.PropTypes.bool,
