@@ -112,7 +112,7 @@ var handleUrl = function(e,url) {
 }
 
 // stolen from https://github.com/twolfson/google-music-electron/blob/master/lib/google-music-electron.js
-var openAboutWindow = function () {
+var openAboutWindow = function() {
   // DEV: aboutWindow will be garbage collection automatically
   var aboutWindow = new BrowserWindow({
     icon: path.join(__dirname, 'images/icons/blink1mk2-icon2-128px.png'),
@@ -195,9 +195,11 @@ app.on('ready', function () {
 
   var startMinimized = config.readSettings('startup:startMinimized');
   if( !startMinimized ) {
-    var splash = openAboutWindow();
+    var splash = openAboutWindow(true);
     setTimeout( function() {
-      splash.close();
+      if( !splash.isDestroyed() ) { 
+        splash.close();
+      }
       mainWindow.show();
     }, 3000 );
   }
