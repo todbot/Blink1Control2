@@ -125,7 +125,7 @@ var ScriptForm = React.createClass({
                                         <FormControl type="text" placeholder={pathplaceholder}
                                             name="path" value={this.state.path} onChange={this.handleInputChange} />
                                     :
-                                        <FormControl type="text" placeholder={pathplaceholder} readOnly
+                                        <FormControl type="text" placeholder={pathplaceholder}
                                             name="path" value={this.state.path} onClick={this.openFileDialog}/>
                                     }
                                 </Col>
