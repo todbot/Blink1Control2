@@ -25,7 +25,7 @@
   "scripts": {
     "startdev": "cross-env NODE_ENV=development npm run start",
     "start": "electron app",
-    "watch": "cross-env NODE_ENV=development webpack-dev-server --port 8080 --hot --inline",
+    "watch": "cross-env NODE_ENV=development webpack serve --port 8080 --hot --inline",
     "webpack": "cross-env NODE_ENV=production webpack -p",
     "pack": "npm run webpack",
     "dist:test": "electron-builder --dir",
@@ -103,11 +103,11 @@
   },
   "browserslist": "electron 3.0",
   "devDependencies": {
-    "@babel/cli": "^7.10.3",
-    "@babel/core": "^7.10.3",
-    "@babel/preset-env": "^7.10.3",
-    "@babel/preset-react": "^7.10.1",
-    "babel-loader": "^8.1.0",
+    "@babel/cli": "^7.13.16",
+    "@babel/core": "^7.14.0",
+    "@babel/preset-env": "^7.14.0",
+    "@babel/preset-react": "^7.13.13",
+    "babel-loader": "^8.2.2",
     "bootstrap": "^3.3.6",
     "cross-env": "^5.0.5",
     "css-loader": "^2.1.1",
@@ -119,7 +119,7 @@
     "font-awesome": "^4.5.0",
     "json-loader": "^0.5.7",
     "node-libs-browser": "^1.0.0",
-    "raw-loader": "^2.0.0",
+    "raw-loader": "^4.0.2",
     "react": "^15.3.2",
     "react-bootstrap": "^0.31.1",
     "react-bootstrap-switch": "^3.4.6",
@@ -127,9 +127,9 @@
     "react-fontawesome": "^0.3.3",
     "shebang-loader": "0.0.1",
     "style-loader": "^0.23.1",
-    "url-loader": "^1.1.2",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "url-loader": "^4.1.1",
+    "webpack": "^5.36.2",
+    "webpack-cli": "^4.6.0",
+    "webpack-dev-server": "^3.11.2"
   }
 }
