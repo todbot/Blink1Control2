@@ -1,0 +1,39 @@
+<script>
+// var pkg = require('./package.json');
+// var conf = require('./configuration');
+// var conffile = conf.getFilepath();
+const searchParams = new URLSearchParams(window.location.search);
+const params = Object.fromEntries(searchParams.entries());
+var conffile = params.conffile
+
+var version = params.version
+var aHomepage = '<a href="' + params.homepage + '">' + params.homepage + '</a>';
+var aBugs = '<a href="' + params.bugs + '">' + params.bugs + '</a>';
+
+var conffilelink = '<a href="file://' + conffile + '">' + conffile + '</a>';
+</script>
+
+<html>
+<body bgcolor="#f0f0f0">
+  <div style="background:#f0f0f0; text-align: center; font-size:85%; font-family: 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'">
+    <h2><img align=center width=64 src="./images/icons/blink1mk2-icon-128px.png"> Blink1Control2 </h2>
+    <p> for blink(1) USB RGB LED notification devices. <p>
+    <h3><a target="_blank" href="http://blink1.thingm.com/">blink1.thingm.com</a></h3>
+    <p>
+      Version:   <b><script>document.write(version)</script></b> <br/>
+    </p>
+    <p>
+      For latest version:    <script>document.write(aHomepage)</script><br/>
+      To report issues/bugs: <script>document.write(aBugs)</script><br/>
+    </p>
+    <p>
+      Config file: <script>document.write(conffilelink)</script>
+    </p>
+    <p>
+      Electron / Node / Chromium :
+      <script>document.write(process.versions.electron +' / '+ process.versions.node +' / '+ process.versions.chrome)</script>
+      : <a href="chrome://gpu/">chrome://gpu/</a>
+    </p>
+  </div>
+</body>
+</html>

@@ -66,9 +66,15 @@ Steps:
       ```
       security find-identity -v -p codesigning
       ```
+      
     - Which can then be used to sign command-line apps with:
       ```
       codesign -s (identity from above) /path/to/executable
+      ```
+
+    - Check if app was signed:
+      ```
+      codesign -vvvv -d /path/to/executable
       ```
 
     - In some cases, may need to sign native hared library with your developer credentials and copy it into the app:
@@ -80,16 +86,28 @@ Steps:
       electron-osx-sign dist/mac/electron-hid-toy.app  dist/mac/electron-hid-toy.app/Contents/MacOS/HID.node
       ```
 
+    - To see output from `electron-builder`:
+      ```
+      cross-env DEBUG=electron-builder npm run dist:draft
+      ```
+
+  
 
 - Windows signed apps:
-    - Get Code Signing cert.
-    - Export it from Firefox-ESR as .p12 file (which requires a password to encrypt)
+    - Get Code Signing cert. w/ Internet Explorer 11:
+      - Submit CSR to codesigning site, then it issues cert
+      - Internet Explorerer Prefs -> Internet Options -> Content -> Certificates ->
+        Pick certificate -> Export -> "Yes, export private key" -> Format "PKCS #12 (.PFX)" ->
+        Choose Password -> pick filename -> saves as .PFX file
+        See: https://support.comodo.com/index.php?/comodo/Knowledgebase/Article/View/1001/7/how-to-verify-your-code-signing-certificate-is-installed-windows
+    - Get Code Signing cert w/ Firefox-ESR  (not supported any more?)
+      - Export it from Firefox-ESR as .p12 file (which requires a password to encrypt)
     - Set env vars described in https://www.electron.build/code-signing#windows, e.g.:
       ```
-      $env:CSC_LINK="c:\users\biff\desktop\codesign-cert.p12"
+      $env:CSC_LINK="c:\users\biff\desktop\codesign-cert.p12" (or .pfx file)
       $env:CSC_KEY_PASSWORD="hunter2"
       ```
-    - Run `npm run dist`
+    - Run `npm run dist`  (or `npm run dist:draft` to sign but not publish to github)
 
 - For actual publishing, use github releases (default), which requires `GH_TOKEN` secure environment variable and:
     ```
