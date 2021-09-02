@@ -38,20 +38,7 @@ app.on('second-instance', function (event, argv, cwd) {
 //
 // now that we're ready to go, let's get started for real...
 //
-console.log("env:",process.env)
-//var pkg = require('./package.json');
-// const rootPath = require('electron-root-path').rootPath;
-// const pkglocation = path.join(rootPath, 'package.json');
-// const pkg = JSON.parse(fs.readFileSync(pkglocation, { encoding: 'utf8' }))
-
 var config = require('common/blink1control2config');
-
-// crashReporter.start({
-//   productName: pkg.productName,
-//   companyName: pkg.companyName,
-//   submitURL: 'http://thingm.com/blink1/blink1control2-crash-reporter', // FIXME:
-//   autoSubmit: true
-// });
 
 // turn off 'app-suspension' because it was causing bad timing in renderer
 // FIXME: check if this is still the case in Electron
@@ -118,9 +105,9 @@ var openAboutWindow = function() {
   aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
   aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
   var aboutUrl = new URL('file://' + path.join(__static, 'Sabout.html'));
-  aboutUrl.searchParams.append('version', process.env.npm_package_version);
-  aboutUrl.searchParams.append('homepage', process.env.npm_package_homepage);
-  aboutUrl.searchParams.append('bugs', process.env.npm_package_bugs_url);
+  aboutUrl.searchParams.append('version', PKG_VERSION);
+  aboutUrl.searchParams.append('homepage', PKG_HOMEPAGE);
+  aboutUrl.searchParams.append('bugs', PKG_BUGS);
   aboutUrl.searchParams.append('conffile', config.getFilepath());
   aboutWindow.loadURL( aboutUrl.toString() );
   return aboutWindow;

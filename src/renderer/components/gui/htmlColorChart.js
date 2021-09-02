@@ -6,6 +6,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import requireStatic from '@/requireStatic'  // for CSS url()s below
+
 const htmlcolors = require('./htmlColorsList');
 
 // var colorChartPng = require('../../images/colorChart.png');
@@ -89,9 +91,10 @@ class HtmlColorChart extends React.Component {
         }
         let {x,y} = this.getXYForColor( this.props.currentColor.toUpperCase() );
         // console.log("currColor:",this.props.currentColor, "xy:",x,y);
+        let chartUrl = requireStatic('images/colorChart.png')
         return (
               <div style={{position:'relative', display:'inline-block' }} >
-                <img width={600/2} height={390/2} src="images/colorChart.png" alt=""
+                <img width={600/2} height={390/2} src={requireStatic('images/colorChart.png')} alt=""
                   onMouseDown={this.handleColorClick.bind(this)}
                   onMouseMove={this.handleColorMove.bind(this)}
                   onMouseUp  ={this.handleColorUp.bind(this)}

@@ -17,7 +17,7 @@ var Blink1Service = require('../../server/blink1Service');
 var tinycolor = require('tinycolor2');
 var d3 = require('d3-timer');
 
-import requireStatic from '@/requireStatic'
+import requireStatic from '@/requireStatic'  // for CSS url()s below
 
 //var VirtualBlink1 = React.createClass({
 var VirtualBlink1 = createReactClass({
@@ -59,14 +59,9 @@ var VirtualBlink1 = createReactClass({
     stepMillis: 25,
 
     //
-    // FIXME FIXME FIXME:  this whole file is confused in its thinking
+    // FIXME:  this whole file is confused in its thinking
     //
     _colorFaderStart: function() {
-        // if( this.timer ) { clearTimeout(this.timer); }
-        // if( this.timer ) { this.timer.stop(); }
-        // if( !this.timer ) {
-        //     this.timer = d3.interval( this._colorFaderInterval, this.stepMillis );
-        // }
         this.faderMillis = 0;  // shouldb be 0;  // goes from 0 to currentMillis
         this.currentMillis = Blink1Service.getCurrentMillis() || this.stepMillis; // FIXME: HACK
         this.currentMillis = this.currentMillis / 2; // FIXME: to match what blink1service does
@@ -108,24 +103,17 @@ var VirtualBlink1 = createReactClass({
         var botLum = this.state.colors[1].toHsl().l;
         var topColor = tinycolor(this.state.colors[0]).setAlpha(topLum);
         var botColor = tinycolor(this.state.colors[1]).setAlpha(botLum); // was (Math.pow(botLum,0.5));
-        // var topColor = tinycolor(this.state.colors[0]).setAlpha(Math.pow(topLum,0.5));
-        // var botColor = tinycolor(this.state.colors[1]).setAlpha(Math.pow(botLum,0.5));
         var colorDesc = "Click for device rescan\nLED A:" +
         this.state.colors[0].toHexString() + "\nLED B:"+ this.state.colors[1].toHexString();
 
-        // console.log("VirtualBlink1: color0:",topColor.toRgbString());
         var topgradient =  // (this.state.colors[0].toHexString() === '#000000') ?
         "radial-gradient(160px 90px at 150px 50px," + topColor.toRgbString() + " 20%, rgba(255,255,255,0.2) 55% )";
         var botgradient = //(this.state.colors[1].toHexString() === '#000000') ? 'url()' :
         "radial-gradient(160px 90px at 150px 110px," + botColor.toRgbString() + " 20%, rgba(255,255,255,0.2) 55% )";
 
-        // "radial-gradient(160px 90px at 150px 110px," + this.state.colors[1].toRgbString() + " 0%, rgba(255,255,255,0.2) 55% )";
-        // linear-gradient(to bottom, rgba(30,87,153,1) 0%,rgba(66,124,183,0) 38%,rgba(125,185,232,0) 100%);
-
         var virtBlink1style = { width: 240, height: 150,
             margin: 0, padding: 0, marginTop:-15, // FIXME why do I need marginTop-15?
             border: '0px solid grey',
-            //background: this.props.blink1Color
             backgroundImage: [
                 topgradient,
                 "url(" + requireStatic('images/device-light-bg.png') + ")",
@@ -134,22 +122,7 @@ var VirtualBlink1 = createReactClass({
                 "url(" + requireStatic('images/device-light-bg-top.png') + ")",
                 botgradient
               ]
-            // backgroundImage: [
-            //     topgradient,
-            //     'url("~static/images/device-light-bg.png")',
-            //     // topgradient,
-            //     'url("~static/images/device-light-mask.png")',
-            //     // "url(images/device-preview.png)",
-            //     'url("~static/images/device-light-bg-bottom.png")',
-            //     'url("~static/images/device-light-bg-top.png")',
-            //     botgradient,
-            // ]
         };
-            //	<img style={img2style} src="images/device-light-bg.png" />
-            //	<img style={img3style} src="images/device-light-mask.png" />
-            // var img1style = { width: 240, height: 192 };
-            // var img2style = { width: 240, height: 192, position: "relative", top: 0 };
-            // var img3style = { width: 240, height: 192, position: "relative", top: 0 };
 
         var makeMiniBlink1 = function(serial,idx) {
             var colrs = Blink1Service.getCurrentColors(serial);
