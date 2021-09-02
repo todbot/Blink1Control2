@@ -110,7 +110,7 @@ export default class Blink1Status extends React.Component {
           <Panel style={{ width: 280, margin:5, padding:0 }}>
             <PreferencesModal show={this.state.showForm}
               onSave={this.saveForm} onCancel={this.cancelForm} blink1Serials={this.state.blink1Serials} />
-            <Panel.Heading style={{paddingTop:5, paddingBottom:5}}>
+            <Panel.Heading style={{paddingTop:1, paddingBottom:4}}>
               <Panel.Title>{header}</Panel.Title>
             </Panel.Heading>
             <Panel.Body style={{padding:0}}>
