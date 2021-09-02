@@ -1,48 +1,29 @@
-// See: https://medium.com/@TwitterArchiveEraser/notarize-electron-apps-7a5f988406db
 
-const fs = require('fs');
-const path = require('path');
-var electron_notarize = require('electron-notarize');
-
-const pkg = require('../package.json')
+//require('dotenv').config();  // we'll set env vars by hand
+const { notarize } = require('electron-notarize');
 
 const appleId = process.env.APPLEID;
 const appleIdPassword = process.env.APPLEIDPASS;
 const ascProvider = process.env.TEAM_SHORT_NAME;
 
-module.exports = async function (params) {
-    // Only notarize the app on Mac OS only.
-    if (process.platform !== 'darwin') {
-      return;
-    }
-    console.log('afterSign hook triggered', params);
-    if(!appleId) throw new Error("no $APPLEID environment variable set");
-    if(!appleIdPassword) throw new Error("no $APLEIDPASS environment variable set");
-    if(!ascProvider) throw new Error("No $TEAM_SHORT_NAME environment variable set");
+exports.default = async function notarizing(context) {
+  const { electronPlatformName, appOutDir } = context;
+  if (electronPlatformName !== 'darwin') {
+    return;
+  }
 
-    const appId = pkg.build.appId
-    if (!appId) throw new Error('no appId found in package.json')
-    const appPath = path.join(
-      params.appOutDir,
-      `${params.packager.appInfo.productFilename}.app`
-    )
-    if (!fs.existsSync(appPath)) {
-      throw new Error(`Cannot find application at: ${appPath}`)
-    }
+  // if(!appleId) throw new Error("no $APPLEID environment variable set");
+  // if(!appleIdPassword) throw new Error("no $APLEIDPASS environment variable set");
+  // if(!ascProvider) throw new Error("No $TEAM_SHORT_NAME environment variable set");
 
-    console.log(`Notarizing ${appId} found at ${appPath} with appleId ${appleId}`);
+  const appId = pkg.build.appId
 
-    try {
-        await electron_notarize.notarize({
-            appBundleId: appId,
-            appPath: appPath,
-            appleId: appleId,
-            appleIdPassword: appleIdPassword,
-            ascProvider: ascProvider
-        });
-    } catch (error) {
-        console.error(error);
-    }
-
-    console.log(`Done notarizing ${appId}`);
+  return await notarize({
+    // appBundleId: 'com.todbot.electron-blink1-toy',  // FIXME
+    appBundleId: appId,
+    appPath: `${appOutDir}/${appName}.app`,
+    appleId: process.env.APPLEID,
+    appleIdPassword: process.env.APPLEIDPASS,
+    ascProvider: process.env.TEAM_SHORT_NAME,
+  });
 };
