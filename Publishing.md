@@ -1,6 +1,8 @@
 ### Publishing Releases
 
-Steps:
+#### Steps:
+
+#### Old Steps:
 - Update version in `package.json` and `app/package.json` (they must match!)
 - Build release:
     ```
@@ -21,10 +23,13 @@ Steps:
     - Download each version, unzip / install / launch to test
 - Publish announcement
 
-#### Current build machines
-- Mac OS X 10.14.6 on Macbook Pro 2015
+#### build machines
+- Mac OS X 11 on MacBook Pro Intel 2015
+- Mac OS X 11 on MacBook Pro M1
 - Windows 10 Pro (in VM)
-- Ubuntu 18 (in VM)  (but must be 14.04 for earlier libc)
+- Ubuntu 20 (in VM)
+- Raspberry Pi 4
+- Test on 14.04  (for earlier libc?)
 
 
 
@@ -34,7 +39,7 @@ Steps:
     - Before running `npm run dist`, set three environment variables:
       ```
       export APPLEID="appleid@appleid.com" (but real appleId)
-      export APPLEIDPASSWD="app-specific-password" (generated from appleid.apple.com)
+      export APPLEIDPASS="app-specific-password" (generated from appleid.apple.com)
       export TEAM_SHORT_NAME="MyTeamShortName" (obtained from iTMSTransporter below)
       ```
 
@@ -66,7 +71,7 @@ Steps:
       ```
       security find-identity -v -p codesigning
       ```
-      
+
     - Which can then be used to sign command-line apps with:
       ```
       codesign -s (identity from above) /path/to/executable
@@ -91,7 +96,7 @@ Steps:
       cross-env DEBUG=electron-builder npm run dist:draft
       ```
 
-  
+
 
 - Windows signed apps:
     - Get Code Signing cert. w/ Internet Explorer 11:
