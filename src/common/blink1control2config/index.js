@@ -7,12 +7,6 @@ var app = null; //
 var fs = require('fs');
 var isRenderer = require('is-electron-renderer');
 
-// let rawdata = fs.readFileSync(path.resolve(__dirname, 'student.json'));
-// let student = JSON.parse(rawdata);
-// const rootPath = require('electron-root-path').rootPath;
-// const conflocation = path.join(rootPath, 'package.json');
-// var confdefaults = fs.readFileSync(conflocation, { encoding: 'utf8' });
-
 var confdefaults = require('./blink1control2-config-defaults.json');
 // var log = require('./logger');
 

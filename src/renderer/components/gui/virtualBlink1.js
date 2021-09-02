@@ -17,6 +17,8 @@ var Blink1Service = require('../../server/blink1Service');
 var tinycolor = require('tinycolor2');
 var d3 = require('d3-timer');
 
+import requireStatic from '@/requireStatic'
+
 //var VirtualBlink1 = React.createClass({
 var VirtualBlink1 = createReactClass({
     getInitialState: function() {
@@ -126,14 +128,22 @@ var VirtualBlink1 = createReactClass({
             //background: this.props.blink1Color
             backgroundImage: [
                 topgradient,
-                "url(images/device-light-bg.png)",
-                // topgradient,
-                "url(images/device-light-mask.png)",
-                // "url(images/device-preview.png)",
-                "url(images/device-light-bg-bottom.png)",
-                "url(images/device-light-bg-top.png)",
-                botgradient,
-            ]
+                "url(" + requireStatic('images/device-light-bg.png') + ")",
+                "url(" + requireStatic('images/device-light-mask.png') + ")",
+                "url(" + requireStatic('images/device-light-bg-bottom.png') + ")",
+                "url(" + requireStatic('images/device-light-bg-top.png') + ")",
+                botgradient
+              ]
+            // backgroundImage: [
+            //     topgradient,
+            //     'url("~static/images/device-light-bg.png")',
+            //     // topgradient,
+            //     'url("~static/images/device-light-mask.png")',
+            //     // "url(images/device-preview.png)",
+            //     'url("~static/images/device-light-bg-bottom.png")',
+            //     'url("~static/images/device-light-bg-top.png")',
+            //     botgradient,
+            // ]
         };
             //	<img style={img2style} src="images/device-light-bg.png" />
             //	<img style={img3style} src="images/device-light-mask.png" />

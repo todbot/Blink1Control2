@@ -7,10 +7,11 @@ var dialog = electron.dialog;
 
 var BrowserWindow = electron.BrowserWindow;
 var Menu = electron.Menu;
-var crashReporter = electron.crashReporter;
+//var crashReporter = electron.crashReporter;
 
 var path = require('path');
 var fs = require('fs');
+import { format as formatUrl } from 'url';
 
 var isAccelerator = require("electron-is-accelerator");
 
@@ -37,10 +38,11 @@ app.on('second-instance', function (event, argv, cwd) {
 //
 // now that we're ready to go, let's get started for real...
 //
-//var pkg = require('package.json');
-const rootPath = require('electron-root-path').rootPath;
-const pkglocation = path.join(rootPath, 'package.json');
-const pkg = JSON.parse(fs.readFileSync(pkglocation, { encoding: 'utf8' }))
+console.log("env:",process.env)
+//var pkg = require('./package.json');
+// const rootPath = require('electron-root-path').rootPath;
+// const pkglocation = path.join(rootPath, 'package.json');
+// const pkg = JSON.parse(fs.readFileSync(pkglocation, { encoding: 'utf8' }))
 
 var config = require('common/blink1control2config');
 
@@ -116,9 +118,9 @@ var openAboutWindow = function() {
   aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
   aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
   var aboutUrl = new URL('file://' + path.join(__static, 'Sabout.html'));
-  aboutUrl.searchParams.append('version', pkg.version);
-  aboutUrl.searchParams.append('homepage', pkg.homepage);
-  aboutUrl.searchParams.append('bugs', pkg.bugs);
+  aboutUrl.searchParams.append('version', process.env.npm_package_version);
+  aboutUrl.searchParams.append('homepage', process.env.npm_package_homepage);
+  aboutUrl.searchParams.append('bugs', process.env.npm_package_bugs_url);
   aboutUrl.searchParams.append('conffile', config.getFilepath());
   aboutWindow.loadURL( aboutUrl.toString() );
   return aboutWindow;
