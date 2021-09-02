@@ -35,9 +35,6 @@ export default class BigButtonSet extends React.Component {
     if( !buttonsUser ) {
       buttonsUser = buttonsUserDefault;
     }
-    Eventer.on('playBigButtonUser', this.playBigButtonUser );
-    Eventer.on('playBigButtonSys', this.playBigButtonSys );
-
     this.state = {
       buttonsSys: [
         { name: "Color Cycle",  type: "sys", iconClass:"fa fa-spinner fa-2x" },
@@ -63,6 +60,9 @@ export default class BigButtonSet extends React.Component {
     this.playBigButtonUser = this.playBigButtonUser.bind(this);
     this.playBigButtonSys = this.playBigButtonSys.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+
+    Eventer.on('playBigButtonUser', this.playBigButtonUser );
+    Eventer.on('playBigButtonSys', this.playBigButtonSys );
 
   }
 
