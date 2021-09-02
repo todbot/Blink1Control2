@@ -104,7 +104,7 @@ var openAboutWindow = function() {
   });
   aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
   aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
-  var aboutUrl = new URL('file://' + path.join(__static, 'Sabout.html'));
+  var aboutUrl = new URL('file://' + path.join(__static, 'about.html'));
   aboutUrl.searchParams.append('version', PKG_VERSION);
   aboutUrl.searchParams.append('homepage', PKG_HOMEPAGE);
   aboutUrl.searchParams.append('bugs', PKG_BUGS);

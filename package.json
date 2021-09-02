@@ -37,7 +37,7 @@
     }
   },
   "build": {
-    "appId": "com.todbot.electron-blink1-toy",
+    "appId": "com.todbot.blink1control2",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "afterSign": "pkg/notarize.js",
     "mac": {
@@ -50,8 +50,32 @@
       "entitlementsInherit": "./pkg/entitlements.mac.inherit.plist"
     },
     "win": {
-      "target": "zip",
-      "icon": "pkg/icon.ico"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+      "category": "Utility",
+      "target": [
+        "tar.gz",
+        "deb",
+        "appimage"
+      ]
     }
   },
   "dependencies": {
