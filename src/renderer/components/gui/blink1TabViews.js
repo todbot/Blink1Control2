@@ -23,7 +23,7 @@ export default class Blink1TabViews extends React.Component {
   }
 
   render() {
-    var tabstyle = {height: 215, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"};
+    var tabstyle = {height: 205, padding: 5, margin: 0, background: "#fff", border: "solid 1px #ddd"};
     return (
       <div style={{width:705}}>
         <div style={{float:'right'}}><Button bsStyle="link" onClick={this.openHelpWindow}>Help</Button></div>

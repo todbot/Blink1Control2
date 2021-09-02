@@ -107,10 +107,10 @@ export default class Blink1Status extends React.Component {
         var header = <h4>Device <button style={{float:'right' }} onClick={this.onPrefsClick}><i className="fa fa-gear" title="Open Preferences..."></i></button></h4>;
 
         return (
-          <Panel style={{ width: 280, height: 315, margin:5, padding:0 }}>
+          <Panel style={{ width: 280, margin:5, padding:0 }}>
             <PreferencesModal show={this.state.showForm}
               onSave={this.saveForm} onCancel={this.cancelForm} blink1Serials={this.state.blink1Serials} />
-            <Panel.Heading style={{}}>
+            <Panel.Heading style={{paddingTop:5, paddingBottom:5}}>
               <Panel.Title>{header}</Panel.Title>
             </Panel.Heading>
             <Panel.Body style={{padding:0}}>

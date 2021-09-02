@@ -83,9 +83,6 @@ class ToolTableList extends React.Component {
                 desc = rule.intervalSecs +'s:' + rule.path;
                 // desc = rule.path + ' @' +rule.intervalSecs +'s';
             }
-            else if( rule.type === 'skype' ) {
-                desc = rule.username + ':' + rule.triggerType;
-            }
             else if( rule.type === 'time' ) {
               const mins_str = (rule.alarmMinutes < 10) ? '0'+rule.alarmMinutes : rule.alarmMinutes;
               if( rule.alarmType === 'countdown' ) {

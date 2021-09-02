@@ -17,24 +17,27 @@ export default class Blink1ControlView extends React.Component {
 
   render() {
     const panelLstyle = {
-      width: 330, height: 375, margin: 0, marginTop:5, marginRight:5, padding: 0,
+      width: 330, height: 365, margin: 0, marginTop:5, marginRight:5, padding: 0,
       display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"};
     const panelRstyle = {
-      width: 370, height: 375, margin: 0, marginTop:5, marginRight:5, padding: 0,
+      width: 370, height: 365, margin: 0, marginTop:5, marginRight:5, padding: 0,
       display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"};
     const windowStyle = {
-      width: 1200, height: 700, background: "#f0f0f0", margin: 0, padding: 10, WebkitUserSelect: "none"
+      height: "100%", width:"100%",
+      overflow: "hidden",
+      background: "#f0f0f0", margin: 0, padding: 5, paddingRight:0, WebkitUserSelect: "none"
+      // width: 1020, height: 650,
+      // overflow: "auto",
     }
 
     return (
-      <div style={windowStyle}>
-        <div style={{padding:0, margin:0}}>
-          <Row>
-            <Col md={3}>
+      <Grid style={windowStyle}>
+          <Row style={{padding:0,margin:0}}>
+            <Col md={3} style={{width:290, padding:0,margin:0}}>
               <Blink1Status />
               <EventList />
             </Col>
-            <Col md={9}>
+            <Col md={8} style={{width:720, padding:0,margin:0, float:"right"}}>
               <Grid fluid>
                 <Row>
                   <Blink1TabViews />
@@ -60,8 +63,7 @@ export default class Blink1ControlView extends React.Component {
               </Grid>
             </Col>
           </Row>
-        </div>
-      </div>
+      </Grid>
     );
   }
 

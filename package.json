@@ -101,7 +101,6 @@
     "react-bootstrap-switch": "^15.5.3",
     "react-dom": "^16.14.0",
     "simplecrypt": "^0.1.0",
-    "skyweb": "^0.4.3",
     "source-map-support": "^0.5.19",
     "tinycolor2": "^1.4.2"
   },

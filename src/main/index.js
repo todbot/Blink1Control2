@@ -216,9 +216,10 @@ app.on('ready', function () {
     icon: path.join(__dirname, 'static/images/icons/blink1mk2-icon2-128px.png'),
     title: "Blink1Control2",
     maximizable: false,
-    width: 1040,
-    height: 700 + ((process.platform !== 'darwin') ? 20 : 0),
-    resizable: isDevelopment && showDebug,
+    width: 1020,
+    height: 650 + 20 + ((process.platform !== 'darwin') ? 20 : 0),
+    resizable: true,
+    // resizable: isDevelopment && showDebug,
     show: false, // show later based on config
     webPreferences: {
       nodeIntegration: true,

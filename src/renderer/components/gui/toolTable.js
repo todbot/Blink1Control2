@@ -23,7 +23,6 @@ var PatternsService = require('../../server/patternsService');
 var IftttService = require('../../server/iftttService');
 var MailService = require('../../server/mailService');
 var ScriptService = require('../../server/scriptService');
-var SkypeService = require('../../server/skypeService');
 var TimeService = require('../../server/timeService');
 var MqttService = require('../../server/mqttService');
 
@@ -31,7 +30,6 @@ import IftttForm from './iftttForm';
 import TimeForm from './timeForm';
 import ScriptForm from './scriptForm';
 import MailForm from './mailForm';
-import SkypeForm from './skypeForm';
 import MqttForm  from './mqttForm';
 
 import ToolTableList from './toolTableList';
@@ -98,9 +96,6 @@ class ToolTable extends React.Component {
         }
         else if( rule.type === 'file' ) {
             ScriptService.reloadConfig();
-        }
-        else if( rule.type === 'skype' ) {
-            SkypeService.reloadConfig();
         }
         else if( rule.type === 'time' ) {
             TimeService.reloadConfig();
@@ -220,12 +215,6 @@ class ToolTable extends React.Component {
                     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
-                <SkypeForm show={this.state.showForm==='skype'}
-                    workingIndex={this.state.workingIndex}
-                    rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
-                    onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
-                    onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
-
                 <TimeForm show={this.state.showForm==='time'}
                     workingIndex={this.state.workingIndex}
                     rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
@@ -251,7 +240,6 @@ class ToolTable extends React.Component {
                         <MenuItem eventKey="script"><i className="fa fa-code"></i> Add Script</MenuItem>
                         <MenuItem eventKey="url"><i className="fa fa-cloud"></i> Add URL</MenuItem>
                         <MenuItem eventKey="file"><i className="fa fa-file"></i> Add File</MenuItem>
-                        <MenuItem eventKey="skype"><i className="fa fa-skype"></i> Add Skype</MenuItem>
                         <MenuItem eventKey="time"><i className="fa fa-clock-o"></i> Add Alarm</MenuItem>
                         <MenuItem eventKey="mqtt"><i className="fa fa-clock-o"></i> Add MQTT</MenuItem>
                     </DropdownButton>
