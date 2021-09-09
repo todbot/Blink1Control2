@@ -99,7 +99,7 @@ class IftttForm extends React.Component {
                                 <Button bsSize="small"  onClick={this.props.onCopy} style={{float:'left'}}>Copy</Button>
                           </Col>
                           <Col xs={3}>
-                              <Switch bsSize="mini" labelText='enabled'
+                              <Switch bsSize="small" labelText='enabled'
                                   state={this.state.enabled} onChange={(el,enabled)=> this.setState({enabled})} />
                           </Col>
                           <Col xs={4}>

@@ -92,7 +92,7 @@
     "font-awesome": "^4.7.0",
     "imap": "^0.8.19",
     "is-electron-renderer": "^2.0.1",
-    "mqtt": "^4.2.1",
+    "mqtt": "^4.2.8",
     "nconf": "^0.10.0",
     "needle": "^2.5.2",
     "node-blink1": "^0.5.1",

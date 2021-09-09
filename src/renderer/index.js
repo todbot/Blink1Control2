@@ -4,7 +4,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap/dist/css/bootstrap-theme.min.css';
 import 'font-awesome/css/font-awesome.min.css';
-//fooimport 'react-bootstrap-switch/dist/css/bootstrap3/react-bootstrap-switch.min.css';
+import 'react-bootstrap-switch/dist/css/bootstrap3/react-bootstrap-switch.min.css'
 
 import React from 'react';
 import ReactDOM from 'react-dom';

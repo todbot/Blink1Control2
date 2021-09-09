@@ -95,7 +95,7 @@ class MqttForm extends React.Component {
                           <FormGroup controlId="formHost" bsSize="small">
                               <Col sm={3} componentClass={ControlLabel}> MQTT URL </Col>
                               <Col sm={6}>
-                                  <FormControl type="text" placeholder="e.g. mqtts://io.adafruit.com/"
+                                  <FormControl type="text" placeholder="e.g. mqtts://io.adafruit.com:8833/"
                                       name="url" value={this.state.url} onChange={this.handleInputChange} />
                               </Col>
                           </FormGroup>

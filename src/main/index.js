@@ -21,7 +21,13 @@ var isDevelopment = process.env.NODE_ENV === 'development';
 
 var mainWindow = null;
 
-console.log("isDevelopment:",isDevelopment);
+// if( isDevelopment ) {
+//   const appName = 'Blink1Control2';  // FIXME: hack
+//   app.setName(appName);
+//   const appData = app.getPath('appData');
+//   app.setPath('userData', path.join(appData, appName));
+// }
+console.log("isDevelopment:",isDevelopment, "appName:", app.getName());
 
 // Electron 4, check only one app can run at a time
 app.requestSingleInstanceLock()
