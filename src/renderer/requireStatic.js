@@ -10,9 +10,15 @@ import * as url from 'url'
  * @param {string} resourcePath - filepath relative to `/static`
  * @return {string} - filepath that can be required
  */
+// export default function requireStatic(resourcePath) {
+//   if (process.env.NODE_ENV === 'production') {
+//     return path.resolve(__static, resourcePath)
+//   }
+//   return url.resolve(window.location.origin, resourcePath)
+// }
 export default function requireStatic(resourcePath) {
-  if (process.env.NODE_ENV === 'production') {
-    return path.resolve(__static, resourcePath)
+  if (process.env.NODE_ENV === 'development') {
+    return url.resolve(window.location.origin, resourcePath)
   }
-  return url.resolve(window.location.origin, resourcePath)
+  return path.resolve(__static, resourcePath)
 }

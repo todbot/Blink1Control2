@@ -11,6 +11,8 @@ var Blink1Service = require('../../server/blink1Service');
 
 import HtmlColorChart from './htmlColorChart';
 
+import requireStatic from '@/requireStatic'  // for CSS url()s below
+
 export default class Blink1ColorPicker extends React.Component {
   constructor(props)  {
     super(props);
@@ -146,11 +148,14 @@ export default class Blink1ColorPicker extends React.Component {
 
             <ButtonGroup vertical className="col-sm-4">
               <Button onClick={this.setLedN.bind(this, 0)} active={this.state.ledn===0}
-                  bsSize="small" style={{padding:2,textAlign:'left'}} ><img width={20} height={14} src="images/iconLedAB.png" /> LED AB </Button>
+                  bsSize="small" style={{padding:2,textAlign:'left'}} ><img width={20} height={14}
+                  src={requireStatic('images/iconLedAB.png')} /> LED AB </Button>
               <Button onClick={this.setLedN.bind(this, 1)} active={this.state.ledn===1}
-                  bsSize="small" style={{padding:2,textAlign:'left'}} ><img width={20} height={14} src="images/iconLedA.png" /> LED A </Button>
+                  bsSize="small" style={{padding:2,textAlign:'left'}} ><img width={20} height={14}
+                  src={requireStatic('images/iconLedA.png')} /> LED A </Button>
               <Button onClick={this.setLedN.bind(this, 2)} active={this.state.ledn===2}
-                  bsSize="small" style={{padding:2,textAlign:'left'}} ><img width={20} height={14} src="images/iconLedB.png" /> LED B  </Button>
+                  bsSize="small" style={{padding:2,textAlign:'left'}} ><img width={20} height={14}
+                  src={requireStatic('images/iconLedB.png')} /> LED B  </Button>
             </ButtonGroup>
 
             <table className="col-sm-4" style={{ border:'0px solid #ddd'}}>
