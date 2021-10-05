@@ -34,6 +34,8 @@ import MqttForm  from './mqttForm';
 
 import ToolTableList from './toolTableList';
 
+import requireStatic from '@/requireStatic'  // for CSS url()s below
+
 
 class ToolTable extends React.Component {
     constructor(props)  {
@@ -235,7 +237,7 @@ class ToolTable extends React.Component {
 
                 <div style={{position: "absolute", bottom: 0}}>
                     <DropdownButton bsSize="small" bsStyle="primary" onSelect={this.handleAddRule} id="addRule" title={<span><i className="fa fa-plus"></i> add event source</span>}>
-                        <MenuItem eventKey="ifttt"><img width={15} height={15} src="images/ifttt.png" /> Add IFTTT </MenuItem>
+                        <MenuItem eventKey="ifttt"><img width={15} height={15} src={requireStatic('images/ifttt.png')} /> Add IFTTT </MenuItem>
                         <MenuItem eventKey="mail"><i className="fa fa-envelope"></i> Add Mail </MenuItem>
                         <MenuItem eventKey="script"><i className="fa fa-code"></i> Add Script</MenuItem>
                         <MenuItem eventKey="url"><i className="fa fa-cloud"></i> Add URL</MenuItem>
