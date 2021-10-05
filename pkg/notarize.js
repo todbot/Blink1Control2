@@ -1,3 +1,4 @@
+const pkg = require('../package.json')
 
 //require('dotenv').config();  // we'll set env vars by hand
 const { notarize } = require('electron-notarize');
@@ -15,8 +16,9 @@ exports.default = async function notarizing(context) {
   // if(!appleId) throw new Error("no $APPLEID environment variable set");
   // if(!appleIdPassword) throw new Error("no $APLEIDPASS environment variable set");
   // if(!ascProvider) throw new Error("No $TEAM_SHORT_NAME environment variable set");
-
+  const appName = context.packager.appInfo.productFilename;
   const appId = pkg.build.appId
+  console.log("appName:", appName, "appId:", appId);
 
   return await notarize({
     // appBundleId: 'com.todbot.electron-blink1-toy',  // FIXME
