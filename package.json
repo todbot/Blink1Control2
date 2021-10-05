@@ -26,7 +26,7 @@
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
     "dist": "yarn compile && electron-builder",
-    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null",
+    "dist:dir": "yarn compile && electron-builder --dir -c.compression=store -c.mac.identity=null",
     "clean": "rimraf node_modules package-lock.json yarn.lock yarn-error.log"
   },
   "electronWebpack": {
@@ -42,7 +42,7 @@
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "afterSign": "pkg/notarize.js",
     "mac": {
-      "target": "zip",
+      "target": ["zip", "dmg"],
       "category": "public.app-category.utilities",
       "icon": "pkg/icon.icns",
       "hardenedRuntime": true,

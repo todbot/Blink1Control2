@@ -229,6 +229,7 @@ app.on('ready', function () {
     show: false, // show later based on config
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       enableRemoteModule: true,
       backgroundThrottling: false
     }

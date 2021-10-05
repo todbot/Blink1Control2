@@ -12,13 +12,17 @@ exports.default = async function notarizing(context) {
   if (electronPlatformName !== 'darwin') {
     return;
   }
+  if ( process.env.npm_lifecycle_event == 'dist:dir' ) {
+    console.log("notarize: not notarizing for 'dist:dir' target");
+    return;
+  }
 
   // if(!appleId) throw new Error("no $APPLEID environment variable set");
   // if(!appleIdPassword) throw new Error("no $APLEIDPASS environment variable set");
   // if(!ascProvider) throw new Error("No $TEAM_SHORT_NAME environment variable set");
   const appName = context.packager.appInfo.productFilename;
   const appId = pkg.build.appId
-  console.log("appName:", appName, "appId:", appId);
+  console.log("notarize: appName:", appName, "appId:", appId);
 
   return await notarize({
     // appBundleId: 'com.todbot.electron-blink1-toy',  // FIXME
