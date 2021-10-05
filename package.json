@@ -67,7 +67,7 @@
           ]
         }
       ],
-      "icon": "build/icon.ico"
+      "icon": "pkg/icon.ico"
     },
     "linux": {
       "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
