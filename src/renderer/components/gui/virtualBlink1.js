@@ -111,7 +111,7 @@ var VirtualBlink1 = createReactClass({
         var botgradient = //(this.state.colors[1].toHexString() === '#000000') ? 'url()' :
         "radial-gradient(160px 90px at 150px 110px," + botColor.toRgbString() + " 20%, rgba(255,255,255,0.2) 55% )";
 
-        // big hack because Windows file urls in CSS strings aren't escaped
+        // big hack because Windows file urls in CSS strings aren't escaped 
         var devimg_bg   = requireStatic('images/device-light-bg.png')
         var devimg_mask = requireStatic('images/device-light-mask.png')
         var devimg_bot  = requireStatic('images/device-light-bg-bottom.png')
