@@ -111,18 +111,40 @@ var VirtualBlink1 = createReactClass({
         var botgradient = //(this.state.colors[1].toHexString() === '#000000') ? 'url()' :
         "radial-gradient(160px 90px at 150px 110px," + botColor.toRgbString() + " 20%, rgba(255,255,255,0.2) 55% )";
 
+        // big hack because Windows file urls in CSS strings aren't escaped
+        var devimg_bg   = requireStatic('images/device-light-bg.png')
+        var devimg_mask = requireStatic('images/device-light-mask.png')
+        var devimg_bot  = requireStatic('images/device-light-bg-bottom.png')
+        var devimg_top  = requireStatic('images/device-light-bg-top.png')
+        devimg_bg = devimg_bg.replace(/\\/g, "\\\\"); // escape for Windows paths
+        devimg_mask = devimg_mask.replace(/\\/g, "\\\\");
+        devimg_bot = devimg_bot.replace(/\\/g, "\\\\");
+        devimg_top = devimg_top.replace(/\\/g, "\\\\");
         var virtBlink1style = { width: 240, height: 150,
             margin: 0, padding: 0, marginTop:-15, // FIXME why do I need marginTop-15?
             border: '0px solid grey',
             backgroundImage: [
                 topgradient,
-                "url(" + requireStatic('images/device-light-bg.png') + ")",
-                "url(" + requireStatic('images/device-light-mask.png') + ")",
-                "url(" + requireStatic('images/device-light-bg-bottom.png') + ")",
-                "url(" + requireStatic('images/device-light-bg-top.png') + ")",
+                'url("' + devimg_bg +'")',
+                'url("' + devimg_mask +'")',
+                'url("' + devimg_bot +'")',
+                'url("' + devimg_top +'")',
                 botgradient
               ]
         };
+
+        // var virtBlink1style = { width: 240, height: 150,
+        //     margin: 0, padding: 0, marginTop:-15, // FIXME why do I need marginTop-15?
+        //     border: '0px solid grey',
+        //     backgroundImage: [
+        //         topgradient,
+        //         "url(" + requireStatic('images/device-light-bg.png') + ")",
+        //         "url(" + requireStatic('images/device-light-mask.png') + ")",
+        //         "url(" + requireStatic('images/device-light-bg-bottom.png') + ")",
+        //         "url(" + requireStatic('images/device-light-bg-top.png') + ")",
+        //         botgradient
+        //       ]
+        // };
 
         var makeMiniBlink1 = function(serial,idx) {
             var colrs = Blink1Service.getCurrentColors(serial);

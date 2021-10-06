@@ -222,7 +222,7 @@ app.on('ready', function () {
     icon: path.join(__dirname, 'static/images/icons/blink1mk2-icon2-128px.png'),
     title: "Blink1Control2",
     maximizable: false,
-    width: 1030,
+    width: 1035,  // was 1030 had to expand for Windows, can it be <1024?
     height: 650 + 20 + ((process.platform !== 'darwin') ? 30 : 0),
     // resizable: true,
     resizable: isDevelopment,
