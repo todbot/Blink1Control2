@@ -211,7 +211,7 @@ class TimeForm extends React.Component {
                           </Col>
                           <Col xs={3}>
                               <Switch bsSize="small" labelText='enabled'
-                                  state={this.state.enabled} onChange={(el,enabled)=> this.setState({enabled})} />
+                                  value={this.state.enabled} onChange={(el,enabled)=> this.setState({enabled})} />
                           </Col>
                           <Col xs={4}>
                                 <Button bsSize="small" onClick={this.props.onCancel}>Cancel</Button>

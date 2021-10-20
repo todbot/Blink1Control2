@@ -44,7 +44,7 @@ class MailForm extends React.Component {
     componentWillReceiveProps(nextProps) {
         var rule = nextProps.rule;
         var useSSL = rule.useSSL == undefined ? true : rule.useSSL;
-        log.msg("mailForm: rule:",rule);
+        // log.msg("mailForm: rule:",rule);
         this.setState({
             type: 'mail',
             enabled: rule.enabled || false,

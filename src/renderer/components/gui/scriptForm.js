@@ -91,6 +91,7 @@ class ScriptForm extends React.Component {
         var self = this;
         var type = this.state.type;
         var title,pathlabel, pathplaceholder;
+        log.msg("ScriptForm: STATE:", self.state.enabled, this.state.enabled )
         if( type === 'script' ) {
             title = "Script";
             pathlabel = "Script Path";
@@ -204,7 +205,7 @@ class ScriptForm extends React.Component {
                             </Col>
                             <Col xs={3}>
                                 <Switch bsSize="small" labelText='enabled'
-                                    state={this.state.enabled} onChange={(el,enabled)=> this.setState({enabled})} />
+                                    value={self.state.enabled} onChange={(el,enabled)=> this.setState({enabled})} />
                             </Col>
                             <Col xs={4}>
                                 <Button bsSize="small" onClick={this.props.onCancel}>Cancel</Button>

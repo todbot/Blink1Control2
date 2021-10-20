@@ -172,31 +172,32 @@ class ToolTable extends React.Component {
 
     render() {
       log.msg("ToolTableList.render");
-      // hmm is there a better way to do the following
+      // hmm is there a better way to do the following:
       // allowMulti if set and number of blink1s > 1
       // var allowMultiBlink1 = conf.readSettings("blink1Service:allowMulti") && (Blink1Service.isConnected() > 1);
       // var allowMultiBlink1 = (Blink1Service.isConnected() > 1) && conf.readSettings("blink1Service:allowMulti");
       var allowMultiBlink1 = (Blink1Service.isConnected() > 1) && this.state.allowMultiBlink1;
 
       var patterns = PatternsService.getAllPatterns();
-        // var events = this.state.events;
-        var workingRule = { name: 'new '+ this.state.showForm + ' rule '+ (this.state.rules.length+1),
+      // var events = this.state.events;
+      var workingRule = { name: 'new '+ this.state.showForm + ' rule '+ (this.state.rules.length+1),
                         type: this.state.showForm,
                         enabled: true,
-            }; // FIXME: make createBlankRule(type)
-        if( this.state.workingIndex !== -1 ) { // -1 means new rule, otherwise real rule
-            // clone so form works on a copy. FIXME: needed?
-            workingRule = Object.assign({}, this.state.rules[this.state.workingIndex] );
-        }
-        if( workingRule.password ) {
-            try {
-                workingRule.password = sc.decrypt( workingRule.password );
-            } catch(err) {
-                log.msg("toolTable: error decrypting passwd: ",err);
-            }
-        }
+      }; // FIXME: make createBlankRule(type)
 
-        return (
+      if( this.state.workingIndex !== -1 ) { // -1 means new rule, otherwise real rule
+          // clone so form works on a copy. FIXME: needed?
+          workingRule = Object.assign({}, this.state.rules[this.state.workingIndex] );
+      }
+      if( workingRule.password ) {
+          try {
+              workingRule.password = sc.decrypt( workingRule.password );
+          } catch(err) {
+              log.msg("toolTable: error decrypting passwd: ",err); // could be just no passwd
+          }
+      }
+
+      return (
             <div style={{position: "relative", height: 200, cursor:'default'}}>
 
                 <ScriptForm show={this.state.showForm==='script' || this.state.showForm==='file' || this.state.showForm === 'url' }
@@ -224,10 +225,10 @@ class ToolTable extends React.Component {
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
                 <MqttForm show={this.state.showForm==='mqtt'}
-                        workingIndex={this.state.workingIndex}
-                        rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
-                        onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
-                        onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
+                    workingIndex={this.state.workingIndex}
+                    rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
+                    onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
+                    onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
                 <ToolTableList
                     rules={this.state.rules}

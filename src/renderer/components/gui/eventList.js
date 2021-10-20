@@ -107,8 +107,8 @@ export default class EventList extends React.Component {
                 <Button bsSize='xsmall' style={{float:'right' }} onClick={this.clearEvents}>Clear</Button>
             </h4> ;
         return (
-            <Panel style={{ width: 280, height: 305, margin:5, padding:0}}>
-            <Panel.Heading style={{padding:5, margin:0}}>
+            <Panel style={{ width: 280, height: 320, margin:5, padding:0}}>
+            <Panel.Heading style={{paddingTop:1, paddingBottom:4}}>
               <Panel.Title>{header}</Panel.Title>
             </Panel.Heading>
             <Panel.Body style={{padding:0}}>

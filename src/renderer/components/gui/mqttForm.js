@@ -18,6 +18,7 @@ import Switch from 'react-bootstrap-switch';
 
 import Blink1SerialOption from './blink1SerialOption';
 
+var log = require('../../logger');
 
 class MqttForm extends React.Component {
     constructor(props) {
@@ -28,10 +29,10 @@ class MqttForm extends React.Component {
       this.handleBlink1SerialChange = this.handleBlink1SerialChange.bind(this);
       this.handleInputChange = this.handleInputChange.bind(this);
     }
-
     // FIXME: why am I doing this?
     componentWillReceiveProps(nextProps) {
         var rule = nextProps.rule;
+        log.msg("mqttForm: rule:",rule);
         this.setState({
             type: 'mqtt',
             enabled: rule.enabled,
@@ -139,7 +140,7 @@ class MqttForm extends React.Component {
                           </Col>
                           <Col xs={3}>
                                 <Switch bsSize="small" labelText="Enable"
-                                    state={this.state.enabled} onChange={function(s){self.setState({enabled:s});}} />
+                                    value={this.state.enabled} onChange={(el,enabled)=> this.setState({enabled})} />
                           </Col>
                           <Col xs={4}>
                                 <Button bsSize="small" onClick={this.props.onCancel}>Cancel</Button>
