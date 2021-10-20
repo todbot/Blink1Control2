@@ -24,11 +24,50 @@ export default class Blink1ControlView extends React.Component {
       display: "inline-block", boxSizing: 'border-box', verticalAlign: "top"};
     const windowStyle = {
       height: "100%", width:"100%",
-      overflow: "hidden",
+      //overflow: "hidden",
       background: "#f0f0f0", margin: 0, padding: 5, paddingRight:0, WebkitUserSelect: "none"
       // width: 1020, height: 650,
       // overflow: "auto",
     }
+
+    // return (
+    //   <div style={windowStyle}>
+    //
+    //     <div style={{padding:0,margin:0}}>
+    //       <div style={{width:290, padding:0,margin:0}} >
+    //         <Blink1Status />
+    //         <EventList />
+    //       </div>
+    //       <div style={{width:720, padding:0,margin:0, float:"right"}}>
+    //         <div>
+    //           <div>
+    //             <Blink1TabViews />
+    //           </div>
+    //           <div>
+    //             <Panel style={panelLstyle}>
+    //               <Panel.Heading>
+    //                 <Panel.Title > Color Picker </Panel.Title>
+    //               </Panel.Heading>
+    //               <Panel.Body>
+    //                   <Blink1ColorPicker />
+    //               </Panel.Body>
+    //             </Panel>
+    //             <Panel style={panelRstyle}>
+    //               <Panel.Heading>
+    //                 <Panel.Title > Color Patterns </Panel.Title>
+    //               </Panel.Heading>
+    //               <Panel.Body>
+    //                  <PatternList />
+    //               </Panel.Body>
+    //             </Panel>
+    //           </div>
+    //         </div>
+    //       </div>
+    //
+    //     </div>
+    //
+    //   </div>
+    // )
 
     return (
       <Grid style={windowStyle}>
@@ -37,7 +76,7 @@ export default class Blink1ControlView extends React.Component {
               <Blink1Status />
               <EventList />
             </Col>
-            <Col md={8} style={{width:720, padding:0,margin:0, float:"right"}}>
+            <Col md={8} style={{width:720, padding:0,margin:0,float:"left"}}>
               <Grid fluid>
                 <Row>
                   <Blink1TabViews />
