@@ -121,7 +121,7 @@ var openAboutWindow = function () {
     autoHideMenuBar: true,
     height: 375,
     width: 500,
-    webPreferences: { nodeIntegration: true }
+    webPreferences: { nodeIntegration: true, contextIsolation: false, enableRemoteModule: true }
   });
   aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
   aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
@@ -242,6 +242,8 @@ app.on('ready', function () {
     show: false, // show later based on config
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true,
       backgroundThrottling: false
     }
   });
