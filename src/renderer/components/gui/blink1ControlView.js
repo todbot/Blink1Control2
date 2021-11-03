@@ -70,8 +70,8 @@ export default class Blink1ControlView extends React.Component {
     // )
 
     return (
-      <Grid style={windowStyle}>
-          <Row style={{padding:0,margin:0}}>
+      <Grid style={windowStyle} >
+          <Row style={{padding:0,margin:0}} className="row flex-no-wrap">
             <Col md={3} style={{width:290, padding:0,margin:0}}>
               <Blink1Status />
               <EventList />
