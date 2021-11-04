@@ -57,13 +57,12 @@ var ScriptForm = React.createClass({
         }
         this.props.onSave(this.state);
     },
-    openFileDialog: function() {
+    openFileDialog: async function() {
         var self = this;
-        dialog.showOpenDialog(function (filenames) {
-            if (filenames === undefined) { return; }
-            var filename = filenames[0];
-            self.setState({path: filename});
-        });
+        const result = await dialog.showOpenDialog();
+        if( result.filePaths[0] ) {
+            self.setState({path: result.filePaths[0]});
+        }
     },
     handleActionType: function(e) {
         var actionType = e.target.value;
