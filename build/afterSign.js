@@ -9,10 +9,11 @@ const pkg = require('../package.json')
 const appleId = process.env.APPLEID;
 const appleIdPassword = process.env.APPLEIDPASSWD;
 const ascProvider = process.env.TEAM_SHORT_NAME;  //'TodKurt38983785';  // FIXME
+const ELECTRON_SKIP_NOTARIZATION = process.env.ELECTRON_SKIP_NOTARIZATION
 
 module.exports = async function (params) {
     // Only notarize the app on Mac OS only.
-    if (process.platform !== 'darwin') {
+    if (process.platform !== 'darwin' || ELECTRON_SKIP_NOTARIZATION === 'true') {
       return;
     }
     console.log('afterSign hook triggered', params);
