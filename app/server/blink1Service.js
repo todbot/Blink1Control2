@@ -359,12 +359,12 @@ var Blink1Service = {
      */
     idToBlink1Index: function(blink1id) {
         var blink1idx = 0; // default to first blink1
-        if( blink1id === undefined || blink1id === '' ) {
-            if( this.conf.blink1ToUse ) {
-                blink1id = this.conf.blink1ToUse;
-            } else {
-                blink1id = (currentBlink1Id) ? currentBlink1Id : 0; // 0 = common case
-            }
+        if( ! blink1id && blink1id !== 0 ) {  // blink1id not defined
+          if( this.conf.blink1ToUse ) {
+              blink1id = this.conf.blink1ToUse;
+          } else {
+              blink1id = (currentBlink1Id) ? currentBlink1Id : 0; // 0 = common case
+          }
         }
         // it's an array index (also early-exist for common 0 case)
         if( blink1id >= 0 && blink1id < blink1s.length ) {
