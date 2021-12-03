@@ -31,8 +31,8 @@ var PatternView = React.createClass({
         log.msg('PatternView.onNameChange field,value', field, value);
         var pattern = this.state.pattern;
         pattern.name = value;
+        pattern.id = PatternsService.generateId(pattern);  // regenerate id on name change
         this.setState( {pattern: pattern});
-        // this.props.onPatternUpdated(pattern);
     },
     onAddSwatch: function() {
         // var colors = this.state.pattern.colors;

@@ -272,6 +272,12 @@ var PatternsService = {
         }
         this.savePatterns();
     },
+    /** Regenerate an id from pattern name. Used when a pattern name is renamed during editing */
+    generateId: function(pattern) {
+      log.msg("PatternsService.generateId", JSON.stringify(pattern));
+      var id = _generateId(pattern);
+      return id;
+    },
     /** Create a minimal pattern and return it. Does NOT insert into patterns array */
     newPattern: function(name, color) {
         if (!name) {
@@ -347,6 +353,9 @@ var PatternsService = {
         self.getAllPatterns().forEach( function(pattern) {
             if( pattern.id !== pattid ) { return; }
             pattern.playing = false;
+
+            var color = pattern.colors[pattern.colors.length-1];  // play last color on stop
+            Blink1Service.fadeToColor(color.time*1000, color.rgb, color.ledn, blink1Id);
 
             if( pattern.timer ) {
                 clearTimeout(pattern.timer);  // pattern.timer.stop()
@@ -424,7 +433,7 @@ var PatternsService = {
         }
         // then, look for special meta-pattern
         else if (pattid.startsWith('~')) {
-          log.msg('TESTING pattern string:'+pattid);
+          log.msg('PatternsService.playPatternFrom: meta pattern string: '+pattid);
             if (pattid === '~off') {
                 log.msg("PatternsService: playing special '~off' pattern");
                 PatternsService.stopAllPatterns();
@@ -457,7 +466,7 @@ var PatternsService = {
             }
             else if (pattid.startsWith('~pattern-stop:') ) { // FIXME: use regex yo
                 patternstr = pattid.substring(pattid.lastIndexOf(':') + 1);
-                return PatternsService.stopPattern(patternstr);
+                return PatternsService.stopPatternFrom(source, patternstr, blink1Id);
             }
             else if( pattid.startsWith('~pattern-play:') ) {
                 pattid = pattid.substring(pattid.lastIndexOf(':') + 1); // play happens later
