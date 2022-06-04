@@ -20,9 +20,14 @@ var mainWindow = null;
 
 console.log("isDevelopment:",isDevelopment);
 
-// Electron 4, check only one app can run at a time
-app.requestSingleInstanceLock()
-app.on('second-instance', function (event, argv, cwd) {
+const instanceLock = app.requestSingleInstanceLock()
+
+if (!instanceLock) {
+  app.quit();
+  return;
+}
+else {
+  app.on('second-instance', function (event, argv, cwd) {
     if(mainWindow) {
         if(mainWindow.isMinimized()) {
             mainWindow.restore();
@@ -30,23 +35,8 @@ app.on('second-instance', function (event, argv, cwd) {
         mainWindow.show();
         mainWindow.focus();
     }
-})
-// Pre Electron-4
-// // If someone tried to run a second instance, we should focus our window.
-// // Really only applicable on Windows, maybe Linux
-// var shouldQuitMultiInstance = app.makeSingleInstance((argv, workingDirectory) => {
-//     if(mainWindow) {
-//         if(mainWindow.isMinimized()) {
-//             mainWindow.restore();
-//         }
-//         mainWindow.show();
-//         mainWindow.focus();
-//     }
-// });
-// if(shouldQuitMultiInstance) {
-//   app.exit(); // was app.quit(), but that doesn't exit early enough any more
-// }
-
+  })
+}
 
 //
 // now that we're ready to go, let's get started for real...
