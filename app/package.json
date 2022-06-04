@@ -21,7 +21,7 @@
     "imap": "^0.8.19",
     "is-electron-renderer": "^2.0.1",
     "moment": "^2.17.1",
-    "nconf": "^0.10.0",
+    "nconf": "^0.11.4",
     "needle": "^1.5.1",
     "node-blink1": "^0.5.1",
     "simplecrypt": "^0.1.0",
