@@ -33,6 +33,7 @@
     "dist": "electron-builder --publish=always",
     "release": "electron-builder",
     "dist:win32bit": "electron-builder --ia32 --win --publish=never",
+    "dist:raspi": "electron-builder  --dir --armv7l --linux deb --publish=always",
     "clean": "rimraf app/node_modules node_modules package-lock.json app/package-lock.json",
     "env": "env",
     "postinstall": "electron-builder install-app-deps",
