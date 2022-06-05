@@ -8,9 +8,9 @@ Blink1Control2 is the current version, written in Electron, Node.js, and React.
 
 
 ### Downloads
-There are pre-built app downloads for Mac OS X, Windows, and Linux in the [releases area](https://github.com/todbot/Blink1Control2/releases).
+There are pre-built app downloads for Mac OS X, Windows, Linux, and Raspberry Pi in the [releases area](https://github.com/todbot/Blink1Control2/releases).
 
-* [Download for Mac, Windows, and Linux](https://github.com/todbot/Blink1Control2/releases).
+* [Download for Mac, Windows, Linux x86, and RaspberryPi](https://github.com/todbot/Blink1Control2/releases)
 
 ### Setup steps (for development)
 
@@ -57,9 +57,9 @@ sudo apt install libgnome-keyring-dev icnsutils xz-utils rpm bsdtar libusb-1.0.0
 
 #### Raspberry Pi
 
-As above for Linux, and if building from source:
+As above for Linux, with a bit extra:
 
-```
+```sh
 sudo apt install --no-install-recommends -y ruby-full bsdtar rpm libopenjp2-tools
 sudo gem install fpm -v 1.10.1
 export USE_SYSTEM_FPM="true"

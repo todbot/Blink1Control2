@@ -34,13 +34,13 @@ Steps:
     - Before running `npm run dist`, set three environment variables:
       ```
       export APPLEID="appleid@appleid.com" (but real appleId)
-      export APPLEIDPASSWD="app-specific-password" (generated from appleid.apple.com)
+      export APPLEIDPASS="app-specific-password" (generated from appleid.apple.com)
       export TEAM_SHORT_NAME="MyTeamShortName" (obtained from iTMSTransporter below)
       ```
 
     - To get 'short name' ("ascProvider" to electron-notarize):
       ```
-      /Applications/Transporter.app/Contents/itms/bin/iTMSTransporter -m provider -u $APPLEID -p $APPLEIDPASSWD
+      /Applications/Transporter.app/Contents/itms/bin/iTMSTransporter -m provider -u $APPLEID -p $APPLEIDPASS
       ```
     - To get appId / bundleId, do one of:
       ```
@@ -83,7 +83,6 @@ Steps:
 
 - Windows signed apps:
     - Get Code Signing cert.
-    - Export it from Firefox-ESR as .p12 file (which requires a password to encrypt)
     - Set env vars described in https://www.electron.build/code-signing#windows, e.g.:
       ```
       $env:CSC_LINK="c:\users\biff\desktop\codesign-cert.p12"
