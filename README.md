@@ -49,15 +49,23 @@ Then unplug and replug the blink(1) device.
 
 Install the following pre-requisites:
 
-- libgnome-keyring-dev
-- icnsutils
-- xz-utils
-- rpm
-- bsdtar
-- libusb-1.0.0-dev
-- libudev-dev
+```sh
+sudo apt install libgnome-keyring-dev icnsutils xz-utils rpm bsdtar libusb-1.0.0-dev libudev-dev
+```
 
 (see: https://github.com/electron-userland/electron-builder/issues/1407)
+
+#### Raspberry Pi
+
+As above for Linux, and if building from source:
+
+```
+sudo apt install --no-install-recommends -y ruby-full bsdtar rpm libopenjp2-tools
+sudo gem install fpm -v 1.10.1
+export USE_SYSTEM_FPM="true"
+npm install
+npm run dist:raspi
+```
 
 ### Other info
 - [Publishing.md](Publishing.md) for info on publishing binaries
