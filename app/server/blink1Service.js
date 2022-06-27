@@ -122,14 +122,15 @@ var Blink1Service = {
     /**
       * Add a blink1 to the device list.
       * @constructor
-      * @param {string} serialnumber - serialnumber of blink1 to add
+      * @param {string} serialnumber - serialnumber of blink1 to add, will be converted to uppercase if needed
       */
     _addDevice: function(serialnumber) {
         log.msg("Blink1Service._addDevice:", serialnumber);
-        var olddev = blink1s.find( (blink1) => blink1.serial===serialnumber );
+        serialnumber = serialnumber.toUpperCase()
+        var olddev = blink1s.find( (blink1) => blink1.serial===serialnumber);
         if( !olddev ) {
             log.msg("Blink1Service._addDevice: new serial ", serialnumber);
-            blink1s.push( { serial: serialnumber, device: null } );
+            blink1s.push( { serial: serialnumber, device: null } ); // standardize that serials are uppercase
         }
         // set up all devices at once
         // we wait 500msec because it was failing without it (USB HID delay?)
@@ -140,10 +141,14 @@ var Blink1Service = {
     _setupFoundDevices: function() {
         var self = this;
         log.msg("Blink1Service._setupFoundDevices", blink1s, "conf: ", self.conf);
-        blink1s.map( function(b1) {
-            if( !b1.device ) {
-                log.msg("Blink1Service._setupFoundDevices: opening ",b1.serial);
-                b1.device = new Blink1(b1.serial);
+        blink1s.map( function(b) {
+            if( !b.device ) {
+                log.msg("Blink1Service._setupFoundDevices: opening ",b.serial);
+                var dev = new Blink1(b.serial.toLowerCase());
+                if( !dev ) { 
+                    dev = new Blink1(b.serial);
+                }
+                b.device = dev
             }
         });
 
@@ -159,7 +164,7 @@ var Blink1Service = {
     _removeDevice: function(serialnumber) {
         log.msg("Blink1Service._removeDevice: current devices:", blink1s);
         blink1s = blink1s.filter( (blink1) => {
-            if( blink1.serial === serialnumber ) {
+            if( blink1.serial.toUpperCase() === serialnumber ) {
                 if( blink1.device ) { blink1.device.close(); blink1.device==null; }
                 return false; // remove it
             }
@@ -230,7 +235,7 @@ var Blink1Service = {
      * @return {Array} array of blink1 serialnumbers
      */
     getAllSerials: function() {
-        return blink1s.map(function(b1) { return b1.serial; });
+        return blink1s.map(function(b) { return b.serial; });
     },
     // FIXME: support multiple blink1s
     /**
@@ -373,7 +378,7 @@ var Blink1Service = {
         // otherwise it's a blink1 serialnumber, so search for it
         blink1id = blink1id.toString().toUpperCase();
         blink1s.map( function(b,idx) {
-            if( blink1id === b.serial ) {
+            if( blink1id.toUpperCase() === b.serial ) {
                 blink1idx = idx;
             }
         });
