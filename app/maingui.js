@@ -16,10 +16,7 @@ var ReactDOM = require('react-dom');
 
 var ipcRenderer = require('electron').ipcRenderer;
 
-console.log("MAIN GOUUI")
-
 var conf = require('./configuration');
-console.log("POOOP")
 var log = require('./logger');
 
 var MenuMaker = require('./menuMaker');

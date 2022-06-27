@@ -115,7 +115,7 @@ var ScriptForm = React.createClass({
                             </FormGroup>
                             <FormGroup controlId="formPath" >
                                 <Col sm={3} componentClass={ControlLabel}> {pathlabel}  </Col>
-                                <Col sm={8}>
+                                <Col sm={8} title="Click to change path">
                                     {type==='url'  ?
                                         <FormControl type="text" placeholder={pathplaceholder}
                                             name="path" value={this.state.path} onChange={this.handleInputChange} />

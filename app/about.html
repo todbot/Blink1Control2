@@ -4,8 +4,6 @@ const { app } = require('@electron/remote')
 const conf_dir = app.getPath('userData');
 const conf_file = conf_dir + '/blink1control2-config.json';
 
-console.log("pkg:",pkg)
-
 var aHomepage = '<a href="' + pkg.homepage + '">' + pkg.homepage + '</a>';
 var aBugs = '<a href="' + pkg.bugs + '">' + pkg.bugs + '</a>';
 
