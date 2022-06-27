@@ -4,16 +4,13 @@ var React = require('react');
 
 var Button = require('react-bootstrap').Button;
 
-var remote = require('electron').remote;
-var Menu = remote.Menu;
-var MenuItem = remote.MenuItem;
+const Menu = require('@electron/remote').Menu
+const MenuItem = require('@electron/remote').MenuItem
+const currentWindow = require('@electron/remote').getCurrentWindow();
 
 var tinycolor = require('tinycolor2');
 
 var log = require('../../logger');
-
-var currentWindow = remote.getCurrentWindow();
-
 
 var BigButton = React.createClass({
   propTypes: {

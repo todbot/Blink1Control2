@@ -10,12 +10,13 @@ var isRenderer = require('is-electron-renderer');
 var confdefaults = require('./blink1control2-config-defaults.json');
 // var log = require('./logger');
 
+// const { nconf, app }  = require('@electron/remote')
+
 // make sure we only use 'nconf' from non-renderer process
 // because nconf uses yargs which makes webpack choke
 if( isRenderer ) {
-    var remote = require('electron').remote;
-    nconf = remote.require('nconf');
-    app = remote.app;
+    nconf = require('@electron/remote').require('nconf')
+    app = require('@electron/remote').app
 }
 else {
     nconf = require('nconf');
@@ -58,10 +59,10 @@ var Config = {
         nconf.load();
         return nconf.get(settingKey);
     },
-    getFilepath: function() {
-        return conf_file;
-        // return nconf.stores.file.file;  //FIXME: seems weird
-    },
+    // getFilepath: function() {
+    //     return conf_file;
+    //     // return nconf.stores.file.file;  //FIXME: seems weird
+    // },
     // getUserDataHome: function() {
     //     var userDataHome = app.getPath('userData');
     //     return userDataHome;

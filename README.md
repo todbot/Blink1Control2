@@ -50,7 +50,7 @@ Then unplug and replug the blink(1) device.
 Install the following pre-requisites:
 
 ```sh
-sudo apt install libgnome-keyring-dev icnsutils xz-utils rpm bsdtar libusb-1.0.0-dev libudev-dev
+sudo apt install pkg-config libgnome-keyring-dev icnsutils xz-utils rpm bsdtar libusb-1.0-0-dev libudev-dev
 ```
 
 (see: https://github.com/electron-userland/electron-builder/issues/1407)

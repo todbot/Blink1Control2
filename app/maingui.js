@@ -14,14 +14,12 @@ require('../node_modules/react-bootstrap-switch/dist/css/bootstrap3/react-bootst
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-// console.log("NOD_ENV:",process.env.NODE_ENV);
-
-// var Perf = require('react-addons-perf');
-
 var ipcRenderer = require('electron').ipcRenderer;
 
+console.log("MAIN GOUUI")
 
 var conf = require('./configuration');
+console.log("POOOP")
 var log = require('./logger');
 
 var MenuMaker = require('./menuMaker');

@@ -1,9 +1,13 @@
 "use strict";
 
-var remote = require('electron').remote;
-var Menu = remote.Menu;
-var Tray = remote.Tray;
-var app = remote.app;
+const Menu = require('@electron/remote').Menu
+const Tray = require('@electron/remote').Tray
+const app  = require('@electron/remote').app
+
+// var remote = require('electron').remote;
+// var Menu = remote.Menu;
+// var Tray = remote.Tray;
+// var app = remote.app;
 var ipcRenderer = require('electron').ipcRenderer;
 
 var config = require('./configuration');

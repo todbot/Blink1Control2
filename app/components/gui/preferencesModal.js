@@ -29,7 +29,7 @@ var Eventer = require('../../eventer');
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
-var app = require('electron').remote.app;
+var app = require('@electron/remote').app;
 var path = require('path');
 
 const propTypes = {

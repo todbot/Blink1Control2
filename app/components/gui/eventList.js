@@ -6,7 +6,7 @@ var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
 var Button = require('react-bootstrap').Button;
 
-var BrowserWindow = require('electron').remote.BrowserWindow;
+const BrowserWindow = require('@electron/remote').BrowserWindow;
 
 var log = require('../../logger');
 var Eventer = require('../../eventer');
