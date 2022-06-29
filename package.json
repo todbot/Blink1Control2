@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.2.7",
+  "version": "2.2.8",
   "author": "ThingM <blink1@thingm.com> (https://blink1.thingm.com/)",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "keywords": [
@@ -126,7 +126,7 @@
     "cross-env": "^5.0.5",
     "css-loader": "^2.1.1",
     "devtron": "^1.4.0",
-    "electron": "^12.2.2",
+    "electron": "^18.3.5",
     "electron-builder": "^23.0.3",
     "electron-notarize": "^1.0.0",
     "file-loader": "^3.0.1",

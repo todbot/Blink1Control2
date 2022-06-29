@@ -5,10 +5,9 @@ var Panel = require('react-bootstrap').Panel;
 var Well = require('react-bootstrap').Well;
 
 var ipcRenderer = require('electron').ipcRenderer;
-var remote = require('electron').remote;
-var Menu = remote.Menu;
-var MenuItem = remote.MenuItem;
-var currentWindow = remote.getCurrentWindow();
+const Menu = require('@electron/remote').Menu
+const MenuItem = require('@electron/remote').MenuItem
+const currentWindow = require('@electron/remote').getCurrentWindow();
 
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');

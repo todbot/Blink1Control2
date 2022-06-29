@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.2.7",
+  "version": "2.2.8",
   "author": "ThingM <blink1@thingm.com> (https://blink1.thingm.com/)",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "productName": "Blink1Control2",
@@ -11,6 +11,7 @@
   "license": "ISC",
   "main": "main.js",
   "dependencies": {
+    "@electron/remote": "^2.0.8",
     "d3-timer": "^1.0.10",
     "debug": "^2.2.0",
     "electron-is-accelerator": "^0.2.0",

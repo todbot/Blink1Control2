@@ -1,12 +1,13 @@
 <script>
-var pkg = require('./package.json');
-var conf = require('./configuration');
-var conffile = conf.getFilepath();
+const pkg = require('./package.json');
+const { app } = require('@electron/remote')
+const conf_dir = app.getPath('userData');
+const conf_file = conf_dir + '/blink1control2-config.json';
 
 var aHomepage = '<a href="' + pkg.homepage + '">' + pkg.homepage + '</a>';
 var aBugs = '<a href="' + pkg.bugs + '">' + pkg.bugs + '</a>';
 
-var conffilelink = '<a href="file://' + conffile + '">' + conffile + '</a>';
+var conffilelink = '<a href="file://' + conf_file + '">' + conf_file + '</a>';
 </script>
 
 <html>

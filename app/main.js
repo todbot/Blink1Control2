@@ -14,9 +14,12 @@ var isAccelerator = require("electron-is-accelerator");
 
 var updater = require('./updater');
 
+require('@electron/remote/main').initialize()
+
 var isDevelopment = process.env.NODE_ENV === 'development';
 
 var mainWindow = null;
+
 
 console.log("isDevelopment:",isDevelopment);
 
@@ -43,6 +46,9 @@ else {
 //
 var pkg = require('./package.json');
 var config = require('./configuration');
+
+//console.log("PKG: ", pkg);
+console.log("config: ", config);
 
 crashReporter.start({
   productName: pkg.productName,
@@ -111,8 +117,13 @@ var openAboutWindow = function () {
     autoHideMenuBar: true,
     height: 375,
     width: 500,
-    webPreferences: { nodeIntegration: true, contextIsolation: false, enableRemoteModule: true }
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    }
   });
+  require("@electron/remote/main").enable(aboutWindow.webContents);
+  //aboutWindow.webContents.openDevTools({mode:'detach'});
   aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
   aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
   aboutWindow.loadURL( 'file://' + __dirname + '/about.html') //+autoUpdateMsg );
@@ -233,10 +244,11 @@ app.on('ready', function () {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      enableRemoteModule: true,
       backgroundThrottling: false
     }
   });
+  require("@electron/remote/main").enable(mainWindow.webContents);
+
   mainWindow.loadURL(loadurl);
   if(isDevelopment) {
     mainWindow.webContents.openDevTools({mode:'detach'});
