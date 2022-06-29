@@ -123,7 +123,7 @@ var openAboutWindow = function () {
     }
   });
   require("@electron/remote/main").enable(aboutWindow.webContents);
-  // aboutWindow.webContents.openDevTools({mode:'detach'});
+  //aboutWindow.webContents.openDevTools({mode:'detach'});
   aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
   aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
   aboutWindow.loadURL( 'file://' + __dirname + '/about.html') //+autoUpdateMsg );
@@ -250,9 +250,9 @@ app.on('ready', function () {
   require("@electron/remote/main").enable(mainWindow.webContents);
 
   mainWindow.loadURL(loadurl);
-  // if(isDevelopment) {
+  if(isDevelopment) {
     mainWindow.webContents.openDevTools({mode:'detach'});
-  // }
+  }
 
   // mainWindow.setMenu(null);  // remove default menu
   mainWindow.on('close', function (e) {
