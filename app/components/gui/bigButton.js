@@ -42,8 +42,9 @@ var BigButton = React.createClass({
     var serialsmenu = null;
     if( this.props.serials && this.props.serials.length > 0 ) {
       serialsmenu = new Menu();
-      serialsmenu.append( new MenuItem({label:'-use-default-',
-        click: self.doContextMenu.bind(null,null, 'setserial', 'default')}) );
+      serialsmenu.append( new MenuItem({label:'default', type: 'radio',
+                                    click: self.doContextMenu.bind(null,null, 'setserial', 'default'),
+                                    checked: this.props.serial==='default'|| this.props.serial===''}) );
       this.props.serials.map( function(s) {
         serialsmenu.append( new MenuItem({label:s, type: 'radio',
                                     click: self.doContextMenu.bind(null,null, 'setserial', s),
