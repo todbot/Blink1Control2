@@ -29,7 +29,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Blink1Control2-linux
-          path: dist/Blink1Control2*{deb,tar.gz,AppImage}
+          path: |
+            dist/Blink1Control2*deb
+            dist/Blink1Control2*tar.gz
+            dist/Blink1Control2*AppImage
 
   # publish-npm:
   #   needs: build
