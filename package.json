@@ -25,7 +25,7 @@
   "scripts": {
     "startdev": "cross-env NODE_ENV=development npm run start",
     "start": "electron app",
-    "watch": "cross-env NODE_ENV=development webpack-dev-server --port 8080 --hot --inline",
+    "watch": "cross-env NODE_ENV=development webpack-dev-server --port 8080 --hot",
     "webpack": "cross-env NODE_ENV=production webpack -p",
     "pack": "npm run webpack",
     "dist:test": "electron-builder --dir",
@@ -121,6 +121,7 @@
     "@babel/core": "^7.10.3",
     "@babel/preset-env": "^7.10.3",
     "@babel/preset-react": "^7.10.1",
+    "@webpack-cli/serve": "^1.7.0",
     "babel-loader": "^8.1.0",
     "bootstrap": "^3.3.6",
     "cross-env": "^5.0.5",
@@ -143,7 +144,7 @@
     "style-loader": "^0.23.1",
     "url-loader": "^1.1.2",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.9.3"
   }
 }
