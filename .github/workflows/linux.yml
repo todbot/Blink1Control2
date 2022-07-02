@@ -23,6 +23,12 @@ jobs:
       - run: npm run pack
       - run: npm run dist:draft
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Blink1Control2-linux
+          path: dist/Blink1Control2*{deb,tar.gz,AppImage}
+
   # publish-npm:
   #   needs: build
   #   runs-on: ubuntu-latest
