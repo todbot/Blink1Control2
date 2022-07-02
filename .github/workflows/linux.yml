@@ -21,7 +21,7 @@ jobs:
          sudo apt install -y pkg-config libudev-dev libusb-1.0-0-dev
       - run: npm install
       - run: npm run pack
-      - run: npm run dist
+      - run: npm run dist:draft
 
   # publish-npm:
   #   needs: build
