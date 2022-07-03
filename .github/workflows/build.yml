@@ -1,4 +1,5 @@
-name: Build
+name: Build all platforms
+# continue-on-error: true
 
 on: [push, pull_request]
 
@@ -8,8 +9,8 @@ jobs:
 
     strategy:
       matrix:
-        # os: [macos-latest, windows-latest, ubuntu-latest]
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest, windows-latest, ubuntu-latest]
+        # os: [macos-latest, ubuntu-latest]
         # os: [ubuntu-latest]
 
     steps:
