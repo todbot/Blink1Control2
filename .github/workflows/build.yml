@@ -35,6 +35,7 @@ jobs:
           ELECTRON_SKIP_NOTARIZATION=true npm run dist:draft
 
       - name: Check files
+        if: runner.os == 'Linux'
         run: ls -alR --ignore=\.git --ignore=node_modules
 
       - name: Upload artifacts
