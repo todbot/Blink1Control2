@@ -9,7 +9,8 @@ jobs:
     strategy:
       matrix:
         # os: [macos-latest, windows-latest, ubuntu-latest]
-        os: [ubuntu-latest]
+        os: [macos-latest, ubuntu-latest]
+        # os: [ubuntu-latest]
 
     steps:
       - name: Check out Git repository
@@ -31,7 +32,7 @@ jobs:
         run: |
           npm install
           npm run pack
-          npm run dist:draft
+          ELECTRON_SKIP_NOTARIZATION=true npm run dist:draft
 
       - name: Check files
         run: ls -alR --ignore=\.git --ignore=node_modules
@@ -39,8 +40,10 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Blink1Control2-linux
+          name: Blink1Control2-${{ matrix.os }}
           path: |
+            dist/Blink1Control2*zip
+            dist/Blink1Control2*dmg
             dist/Blink1Control2*deb
             dist/Blink1Control2*tar.gz
             dist/Blink1Control2*AppImage
