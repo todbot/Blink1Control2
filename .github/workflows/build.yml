@@ -1,5 +1,5 @@
 name: Build all platforms
-# continue-on-error: true
+continue-on-error: true
 
 on: [push, pull_request]
 
@@ -33,7 +33,7 @@ jobs:
         run: |
           npm install
           npm run pack
-          ELECTRON_SKIP_NOTARIZATION=true npm run dist:draft
+          npm run dist:draft
 
       - name: Check files
         if: runner.os == 'Linux'

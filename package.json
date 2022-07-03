@@ -29,7 +29,7 @@
     "webpack": "cross-env NODE_ENV=production webpack --mode production",
     "pack": "npm run webpack",
     "dist:test": "electron-builder --dir",
-    "dist:draft": "electron-builder --publish=never",
+    "dist:draft": "cross-env ELECTRON_SKIP_NOTARIZATION=true electron-builder --publish=never",
     "dist": "electron-builder --publish=always",
     "release": "electron-builder",
     "dist:win32bit": "electron-builder --ia32 --win --publish=never",
