@@ -75,10 +75,10 @@ var IftttService = {
             };
             conf.saveSettings('eventServices:iftttService', this.config);
         }
-        // if( this.config.baseUrl.startsWith("http" ) ) {
-        //     this.config.baseUrl = this.config.baseUrl.replace("http:", "https:");  // only allow HTTPS
-        //     conf.saveSettings('eventServices:iftttService', this.config);
-        // }
+        if( this.config.baseUrl.startsWith("http" ) ) {
+            this.config.baseUrl = this.config.baseUrl.replace("http:", "https:");  // only allow HTTPS
+            conf.saveSettings('eventServices:iftttService', this.config);
+        }
 
         var allrules = conf.readSettings('eventRules') || [];
         this.rules = allrules.filter( function(r){return r.type === 'ifttt';} );
