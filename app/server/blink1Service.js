@@ -133,7 +133,7 @@ var Blink1Service = {
             blink1s.push( { serial: serialnumber, device: null } ); // standardize that serials are uppercase
         }
         // set up all devices at once
-        // we wait 500msec because it was failing without it (USB HID delay?)
+        // we wait 500msec because of USB HID enumeration delay
         setTimeout(() =>  {
           this._setupFoundDevices();
         }, 500);
@@ -144,11 +144,13 @@ var Blink1Service = {
         blink1s.map( function(b) {
             if( !b.device ) {
                 log.msg("Blink1Service._setupFoundDevices: opening ",b.serial);
-                var dev = new Blink1(b.serial.toLowerCase());
-                if( !dev ) { 
-                    dev = new Blink1(b.serial);
+                try {
+                    var dev = new Blink1(b.serial.toLowerCase());
+                    b.device = dev
+                } catch(err) { // not lowercase (mk3), so treat serial bare
+                    var dev = new Blink1(b.serial);
+                    b.device = dev
                 }
-                b.device = dev
             }
         });
 
@@ -357,8 +359,6 @@ var Blink1Service = {
     /**
      * Lookup blink1id (blink1 serial number) and map to an index in blink1s array
      *  If 'blink1ToUse' is set, and blink1id is undefined or 0, use blink1ToUse
-     *  FIXME: Should use conf.blink1Service.blink1ToUse
-     *  FIXME: should convert serial to index
      * @param  {number|String} blink1id array id (0-maxblink1s) or 8-digit blink1serial
      * @return {number}        known-good index into blink1s array or 0
      */
@@ -371,7 +371,7 @@ var Blink1Service = {
               blink1id = (currentBlink1Id) ? currentBlink1Id : 0; // 0 = common case
           }
         }
-        // it's an array index (also early-exist for common 0 case)
+        // it's an array index (also early-exit for common 0 case)
         if( blink1id >= 0 && blink1id < blink1s.length ) {
             return blink1id;
         }
