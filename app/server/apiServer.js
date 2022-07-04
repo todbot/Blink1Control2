@@ -35,8 +35,16 @@ app.get('/blink1(/id)?', function(req,res) {
         status: "blink1 id"
     });
 });
+app.get('/blink1/enumerate', function(req,res) {
+    Blink1Service.reloadConfig();
+    res.json({
+        blink1_serialnums: Blink1Service.getAllSerials(),
+        blink1_id: Blink1Service.getIftttKey(),
+        status: "blink1 enumerate"
+    });
+});
 app.get('/blink1/off', function(req,res) {
-    var blink1_id = Number(req.query.blink1_id);
+    var blink1_id = req.query.blink1_id;
     PatternsService.stopAllPatterns();
     Blink1Service.fadeToColor(0.1, '#000000', 0, blink1_id); // turn off everyone
     res.json({
@@ -55,9 +63,8 @@ app.get('/blink1/fadeToRGB', function(req, res) {
     var color = tinycolor(req.query.rgb);
     var secs = Number(req.query.time) || 0.1;
     var ledn = Number(req.query.ledn) || 0;
-    var blink1_id = Number(req.query.blink1_id);  // undefined means all blink1 devices
-
-    // var blink1_id = req.query.blink1_id || '';
+    var blink1_id = req.query.blink1_id;
+    console.log("*** fadeToRGB", blink1_id, req.query.blink1_id, color);
     var status = "success";
 
     if( color.isValid() ) {
@@ -80,7 +87,7 @@ app.get('/blink1/fadeToRGB', function(req, res) {
 app.get('/blink1/lastColor', function(req, res) {
   var status = "success";
   var ledn = Number(req.query.ledn) || 0;
-  var blink1_id = Number(req.query.blink1_id) || 0;  // undefined means all blink1 devices
+  var blink1_id = req.query.blink1_id;
 
   var color = Blink1Service.getCurrentColor(blink1_id, ledn);
 
@@ -111,7 +118,7 @@ app.get('/blink1/pattern/queue', function(req,res) {
 app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
     var status = 'pattern '+req.params.type+': no pattern with that name';
     var patt_name = req.query.pname || req.query.name || '';
-    var blink1_id = req.query.blink1_id || 0;
+    var blink1_id = req.query.blink1_id;
 
     if( req.params.type === 'play' ) {
         if( patt_name ) {
