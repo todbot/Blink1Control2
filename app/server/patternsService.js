@@ -225,14 +225,13 @@ var PatternsService = {
     getPatternById: function(id) {
         var pattern = this.getAllPatterns().find( (patt) => patt.id===id );
         return Object.assign({}, pattern); // why are we giving a copy?
-        // return lodash.cloneDeep(pattern);  // FIXME: DANGER WHY WAS THIS A DEEP CLONE?
     },
     // for apiServer
     formatPatternForOutput: function(patt) {
         if (!patt) { return null; }
         patt.pattern = _generatePatternStr(patt);
-        var {name,id,pattern,locked} = patt; // FIXME: is there a one-line equiv?
-        return { name,id,pattern,locked };
+        var {name,id,pattern,repeats,playing,locked} = patt; // FIXME: is there a one-line equiv?
+        return { name,id,pattern,repeats,playing,locked };
     },
     // for apiServer
     formatPatternsForOutput: function(patts) {
@@ -315,7 +314,6 @@ var PatternsService = {
     stopAllPatterns: function() {
         this.getAllPatterns().forEach( function(pattern) {
             if (pattern.playing) {
-                // console.log("    stopping ",pattern.name);
                 pattern.playing = false;
                 if(pattern.timer) {
                     //pattern.timer.stop();
