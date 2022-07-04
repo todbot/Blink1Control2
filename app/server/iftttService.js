@@ -71,13 +71,18 @@ var IftttService = {
                 service: 'iftttService',
                 intervalSecs: 10,
                 enabled: true,
-                baseUrl: 'http://api.thingm.com/blink1/eventsall/'
+                baseUrl: 'https://api.thingm.com/blink1/eventsall/'
             };
             conf.saveSettings('eventServices:iftttService', this.config);
         }
+        // if( this.config.baseUrl.startsWith("http" ) ) {
+        //     this.config.baseUrl = this.config.baseUrl.replace("http:", "https:");  // only allow HTTPS
+        //     conf.saveSettings('eventServices:iftttService', this.config);
+        // }
+
         var allrules = conf.readSettings('eventRules') || [];
         this.rules = allrules.filter( function(r){return r.type === 'ifttt';} );
-        log.msg("IftttService.reloadConfig. rules=", this.rules);
+        log.msg("IftttService.reloadConfig. baseUrl=",this.config.baseUrl, " rules=", this.rules);
     },
     // getRules: function() {
     // 	log.msg("IftttService.getRules, rules:",this.rules);
@@ -129,7 +134,7 @@ var IftttService = {
         //if( rules.length === 0 ) { return; } // no rules, don't waste effort
         var url = this.config.baseUrl + self.iftttKey;
         //
-        var opts = {};
+        var opts = { follow: 2 }; // follow up to two redirects
         // var proxyurl = self.makeProxyUrl();
         // if( proxyurl ) {
         // 	opts.proxy = proxyurl;
