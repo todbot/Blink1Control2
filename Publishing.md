@@ -38,6 +38,28 @@ Steps:
       export TEAM_SHORT_NAME="MyTeamShortName" (obtained from iTMSTransporter below)
       ```
 
+
+- Windows signed apps:
+    - Get Code Signing cert.
+    - Set env vars described in https://www.electron.build/code-signing#windows, e.g.:
+      ```
+      $env:CSC_LINK="c:\users\biff\desktop\projects\codesign\thingm_corporation_2022.p12"
+      $env:CSC_KEY_PASSWORD="hunter2"  # no not really
+      $env:GH_TOKEN=ghp_abcdabcd12341234
+      ```
+    - Run `npm run dist`
+
+- For actual publishing, use github releases (default), which requires `GH_TOKEN` secure environment variable and:
+    ```
+    "build": {
+      "publish": {
+        "provider": "github"
+       }
+     }
+    ```
+
+- Older Mac signing notes:
+
     - To get 'short name' ("ascProvider" to electron-notarize):
       ```
       /Applications/Transporter.app/Contents/itms/bin/iTMSTransporter -m provider -u $APPLEID -p $APPLEIDPASS
@@ -78,22 +100,6 @@ Steps:
       cp node_modules/node-hid/build/Release/HID.node dist/mac/
       electron-hid-toy.app/Contents/MacOS
       electron-osx-sign dist/mac/electron-hid-toy.app  dist/mac/electron-hid-toy.app/Contents/MacOS/HID.node
-      ```
 
 
-- Windows signed apps:
-    - Get Code Signing cert.
-    - Set env vars described in https://www.electron.build/code-signing#windows, e.g.:
-      ```
-      $env:CSC_LINK="c:\users\biff\desktop\codesign-cert.p12"
-      $env:CSC_KEY_PASSWORD=hunter2
-      ```
-    - Run `npm run dist`
 
-- For actual publishing, use github releases (default), which requires `GH_TOKEN` secure environment variable and:
-    ```
-    "build": {
-      "publish": {
-        "provider": "github"
-      }
-    }
