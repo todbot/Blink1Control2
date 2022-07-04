@@ -80,7 +80,7 @@ var _fixId = function(pattern) {
     return pattern;
 };
 
-// turn patternstring into fledgling {colors,repeats} partial pattern
+// Turn patternstring into fledgling {colors,repeats} partial pattern
 // only parses pattern string in format: repeats,color1,time,ledn1,time2,ledn2,...
 // FIXME: need to support non-ledn variant
 // FIXME: need to declare when parsing fails?
@@ -89,11 +89,13 @@ var _parsePatternStr = function(patternstr) {
     //var len = pattparts[0];
     var repeats = parseInt(pattparts[0]);
     var colorlist = [];
-    for (var i = 1; i < pattparts.length; i += 3) {
+    var isLedNStyle = Number.isInteger( (pattparts.length-1)/3 );
+    var stride = (isLedNStyle) ? 3 : 2;
+    for (var i = 1; i < pattparts.length; i += stride) {
         var color = {
             rgb: pattparts[i + 0],
             time: Number(pattparts[i + 1]),
-            ledn: Number(pattparts[i + 2])
+            ledn: isLedNStyle ? Number(pattparts[i + 2]) : 0,
         };
         // FIXME: validate rgb
         if (isNaN(color.time)) { color.time = 0.1; }
