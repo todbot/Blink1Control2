@@ -84,7 +84,7 @@
         "service": "iftttService",
         "intervalSecs": 10,
         "enabled": true,
-        "baseUrl": "http://api.thingm.com/blink1/eventsall/"
+        "baseUrl": "https://api.thingm.com/blink1/eventsall/"
       }
   },
   "proxy": {
