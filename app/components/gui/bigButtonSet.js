@@ -22,11 +22,11 @@ var BigButton = require('./bigButton');
 
 
 var buttonsUserDefault = [
-  { name: "Available", type: "color", color: "#00FF00", ledn: 0 },
-  { name: "Busy", type: "color", color: "#ffFF00", ledn: 0},
-  { name: "Away", type: "color", color: "#ff0000", ledn: 0 },
-  { name: "Meeting", type: "color", color: "#0000ff", ledn: 0 },
-  { name: "Out of Office", type: "color", color: "#FFBF00", ledn: 0 }
+  { name: "Available", type: "color", color: "#00FF00", millis: 100, ledn: 0 },
+  { name: "Busy", type: "color", color: "#ffFF00", millis: 100, ledn: 0},
+  { name: "Away", type: "color", color: "#ff0000", millis: 100, ledn: 0 },
+  { name: "Meeting", type: "color", color: "#0000ff", millis: 100, ledn: 0 },
+  { name: "Out of Office", type: "color", color: "#FFBF00", millis:100, ledn: 0 }
 ];
 
 var BigButtonSet = React.createClass({
@@ -38,6 +38,9 @@ var BigButtonSet = React.createClass({
     }
     Eventer.on('playBigButtonUser', this.playBigButtonUser );
     Eventer.on('playBigButtonSys', this.playBigButtonSys );
+
+    // fill out 'millis' field on any buttons that don't have it
+    buttonsUser = buttonsUser.map((b) => { if( b.millis == undefined) { b.millis = 100;} return b});
 
     return {
       buttonsSys: [
@@ -66,6 +69,7 @@ var BigButtonSet = React.createClass({
       type: "color",
       color: Blink1Service.getCurrentColor(blink1id).toHexString(),
       ledn: Blink1Service.getCurrentLedN(blink1id),
+      millis: Blink1Service.getCurrentMillis(blink1id),
       blink1Id: blink1id
     };
     log.msg("addBigButton: ", newbut);
@@ -91,6 +95,7 @@ var BigButtonSet = React.createClass({
         type:'color',
         color: Blink1Service.getCurrentColor().toHexString(),
         ledn: Blink1Service.getCurrentLedN(),
+        millis: Blink1Service.getCurrentMillis(),
         blink1Id: Blink1Service.getCurrentBlink1Id()
       };
     }
@@ -103,6 +108,7 @@ var BigButtonSet = React.createClass({
         type: button.type,
         color: button.color,
         patternId: button.patternId,
+        millis: button.millis,
         ledn: button.ledn,
         blink1Id: arg
       };
@@ -139,14 +145,14 @@ var BigButtonSet = React.createClass({
   },
 
   // internal function used by differnt kinds of buttons
-  setBlink1Color: function(color, ledn, blink1id) {
+  setBlink1Color: function(color, millis, ledn, blink1id) {
     ledn = ledn || 0; // 0 means all
     // if( blink1id === undefined ) { 
     //   Blink1Service.getAllSerials().map( function(serial,idx) {
     //     Blink1Service.fadeToColor( 100, color, ledn, serial );  // FIXME: millis
     //   });
     // } else { 
-    Blink1Service.fadeToColor( 100, color, ledn, blink1id );  // FIXME: millis
+    Blink1Service.fadeToColor( millis, color, ledn, blink1id );
     // }
   },
   // playPattern: function(patternid) {
@@ -158,7 +164,7 @@ var BigButtonSet = React.createClass({
     if( button ) {
       log.msg("bigButtonSet.playBigButtonUser:", buttonindex, button.name, button.blink1Id, button.ledn);
       if( button.type === 'color' ) {
-        this.setBlink1Color( button.color, button.ledn, button.blink1Id ); // FIXME: what about blink1id
+        this.setBlink1Color( button.color, button.millis, button.ledn, button.blink1Id ); 
       }
       else if( button.type === 'pattern' ) {
         PatternsService.playPatternFrom( button.name, button.patternId, button.blink1Id );
@@ -220,7 +226,7 @@ var BigButtonSet = React.createClass({
     var createBigButtonUser = function(button, index) { // FIXME: understand bind()
       return (
             <BigButton key={index} idx={index} name={button.name} type={button.type}
-                color={button.color} patterns={patterns} serials={serials} serial={button.blink1Id}
+                color={button.color} millis={button.millis} patterns={patterns} serials={serials} serial={button.blink1Id}
                 onClick={this.playBigButtonUser.bind(this,index)}
                 onEdit={this.onEdit} onEditName={this.handleEditName.bind(this,index)}
                 />

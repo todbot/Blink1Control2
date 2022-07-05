@@ -19,6 +19,7 @@ var BigButton = React.createClass({
     type: React.PropTypes.string.isRequired,
     iconClass: React.PropTypes.string,
     color: React.PropTypes.string,
+    millis: React.PropTypes.number,
     onClick: React.PropTypes.func,
     onEdit: React.PropTypes.func,
     onEditName: React.PropTypes.func,
