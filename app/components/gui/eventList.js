@@ -32,7 +32,7 @@ var EventList = React.createClass({
         // log.msg("status: ",statuses);
         var events = statuses;
         events = events.filter( function(e) {
-            return e.type === 'trigger' || e.type === 'triggerOff';
+            return e.type === 'trigger' || e.type === 'triggerOff' ||  (e.type === 'info' && e.source === 'api');
         });
         this.setState({events:events});
     },
