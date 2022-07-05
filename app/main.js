@@ -20,8 +20,7 @@ var isDevelopment = process.env.NODE_ENV === 'development';
 
 var mainWindow = null;
 
-
-console.log("isDevelopment:",isDevelopment);
+if(isDevelopment) { console.log("Development Mode"); }
 
 const instanceLock = app.requestSingleInstanceLock()
 
@@ -47,8 +46,7 @@ else {
 var pkg = require('./package.json');
 var config = require('./configuration');
 
-//console.log("PKG: ", pkg);
-console.log("config: ", config);
+//console.log("config: ", config);
 
 crashReporter.start({
   productName: pkg.productName,
@@ -84,7 +82,7 @@ app.commandLine.appendSwitch('disable-background-timer-throttling');
 var isQuitting = false;
 
 var quit = function() {
-  console.log("Blink1Control2: quit. quitting...",isQuitting);
+  //console.log("Blink1Control2: quit. sent quit to renderer?",isQuitting);
   if( !isQuitting ) {
     mainWindow.webContents.send('quitting', 'blink1control2');
   }
@@ -93,7 +91,7 @@ var quit = function() {
 };
 
 app.on('window-all-closed', function () {
-  console.log("Blink1Control2:  app.window-all-closed");
+  //console.log("Blink1Control2:  app.window-all-closed");
   if (process.platform !== 'darwin') {
     quit();
   }
@@ -212,19 +210,19 @@ app.on('ready', function () {
   var globalShortcutPrefix = config.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift';
   var resetKey = config.readSettings('startup:shortcutResetKey') || 'R';
   var resetShortcut = globalShortcutPrefix + '+' + resetKey;
-  console.log("global shortcut:", resetShortcut);
+  //console.log("global shortcut:", resetShortcut);
 
   if( isAccelerator( resetShortcut)) {
     var ret = globalShortcut.register(resetShortcut, function() {
-      //   console.log('resetShortcut is pressed');
+      //console.log('resetShortcut is pressed');
         mainWindow.webContents.send('resetAlerts');
     });
     if (!ret) { console.log('globalShortcut registration failed');  }
     // Check whether a shortcut is registered.
-    console.log("globalShortcut key registered:", globalShortcut.isRegistered(resetShortcut));
+    //console.log("globalShortcut key registered:", globalShortcut.isRegistered(resetShortcut));
   }
   else {
-    console.log("ignoring bad globalShortcutkey: ",resetShortcut);
+    //console.log("ignoring bad globalShortcutkey: ",resetShortcut);
   }
 
   var loadurl = 'file://' + __dirname + '/index-prod.html';
@@ -256,7 +254,7 @@ app.on('ready', function () {
 
   // mainWindow.setMenu(null);  // remove default menu
   mainWindow.on('close', function (e) {
-    console.log("Blink1Control2: mainWindow.close:");
+    //console.log("Blink1Control2: mainWindow.close:");
     if( !isQuitting ) {
       mainWindow.hide();
       return e.preventDefault();
@@ -264,24 +262,24 @@ app.on('ready', function () {
   });
 
   mainWindow.on('closed', function () {
-    console.log("Blink1Control2: mainWindow.closed");
+    //console.log("Blink1Control2: mainWindow.closed");
     quit();
     mainWindow = null;
   });
 
   mainWindow.on('minimize', function() {
-    console.log("Blink1Control2: mainWindow.minimize");
+    //console.log("Blink1Control2: mainWindow.minimize");
     mainWindow.hide();
   });
 
   mainWindow.webContents.on('new-window', function(e, url) {
-    console.log("Blink1Control2: mainWindow.new-window");
+    //console.log("Blink1Control2: mainWindow.new-window");
     e.preventDefault();
       electron.shell.openExternal(url);
   });
 
   app.on('will-quit', function() {
-    console.log("Blink1Control2: app will-quit");
+    //console.log("Blink1Control2: app will-quit");
   });
   app.on('activate', function() {
     mainWindow.show();
@@ -291,7 +289,7 @@ app.on('ready', function () {
   /* 'before-quit' is emitted when Electron receives
    * the signal to exit and wants to start closing windows */
   app.on('before-quit', function() {
-      console.log("Blink1Control2: mainWindow.before-quit");
+      //console.log("Blink1Control2: mainWindow.before-quit");
       isQuitting = true;
   });
 
