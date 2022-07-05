@@ -149,7 +149,7 @@ var Blink1ColorPicker = React.createClass({
                           </table>
                           <div className="col-sm-4">
                             time (sec):
-                            <input type="number" className="input" min={0.1} max={10.0} step={0.1} size={3}
+                            <input type="number" className="input" min={0.0} max={10.0} step={0.1} size={3}
                                 value={this.state.secs} onChange={this.handleChangeSecs} />
                             {deviceCombo}
                           </div>
