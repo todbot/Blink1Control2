@@ -6,7 +6,7 @@ env:
   MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
   MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
   APPLEID: ${{ secrets.MACOS_APPLEID }}
-  APPLEID_PASSWD: ${{ secrets.MACOS_APPLEIDPASSWD }}
+  APPLEIDPASSWD: ${{ secrets.MACOS_APPLEIDPASSWD }}
   TEAM_SHORT_NAME: ${{ secrets.MACOS_TEAM_SHORT_NAME }}
   # see https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
   # see https://shipshape.io/blog/signing-electron-apps-with-github-actions/
@@ -61,6 +61,10 @@ jobs:
           npm install
           npm run pack
           npm run dist:draft
+
+      - name: Notarize
+        run: |
+          npm run dist:nopub
 
       - name: Publish
         #if: github.event.release.action == 'created'
