@@ -2,16 +2,13 @@
 "use strict";
 
 var Skyweb = require('skyweb');
-var simplecrypt = require('simplecrypt');
 
+var utils = require('../utils');
 var conf = require('../configuration');
 var log = require('../logger');
 var Eventer = require('../eventer');
 
 var PatternsService = require('./patternsService');
-
-// FIXME: use non-deprected (and better) crypto system
-var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control',method:"aes-192-ecb"});
 
 
 var SkypeService = {
@@ -49,7 +46,7 @@ var SkypeService = {
         }
         var pass = '';
         try {
-            pass = sc.decrypt( rule.password );
+            pass = utils.decrypt( self.config.passwordHash );
         } catch(err) {
             log.msg('SkypeService: bad password for rule',rule.name);
             return;
