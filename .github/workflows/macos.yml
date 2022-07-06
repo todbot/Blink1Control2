@@ -63,18 +63,17 @@ jobs:
           npm run dist:draft
 
       - name: Publish
-        if: github.event.release.action == 'created'
+        #if: github.event.release.action == 'created'
         run: |
           npm run dist
 
       - name: Check files
-        if: runner.os == 'Linux'
         run: ls -alR --ignore=\.git --ignore=node_modules
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Blink1Control2-${{ matrix.os }}
+          name: Blink1Control2-${{ runner.os }}
           path: |
             dist/Blink1Control2*zip
             dist/Blink1Control2*dmg
