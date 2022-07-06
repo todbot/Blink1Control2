@@ -6,7 +6,7 @@ env:
   WINDOWS_CERTIFICATE_P12: ${{ secrets.WINDOWS_CERTIFICATE_P12 }}
   CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PWD }}
   CSC_LINK: "C:\win-certificate.p12"
-  #GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
   # see https://shipshape.io/blog/signing-electron-apps-with-github-actions/
 
 # Controls when the action will run. Triggers the workflow

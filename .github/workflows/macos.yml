@@ -8,7 +8,7 @@ env:
   APPLEID: ${{ secrets.MACOS_APPLEID }}
   APPLEIDPASSWD: ${{ secrets.MACOS_APPLEIDPASSWD }}
   TEAM_SHORT_NAME: ${{ secrets.MACOS_TEAM_SHORT_NAME }}
-  #GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
   # see https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
   # see https://shipshape.io/blog/signing-electron-apps-with-github-actions/
 
