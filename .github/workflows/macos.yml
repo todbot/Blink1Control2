@@ -65,8 +65,8 @@ jobs:
         run: |
           npm run dist
 
-      - name: Check files
-        run: ls -alR --ignore=\.git --ignore=node_modules
+#      - name: Check files
+#        run: ls -alR --ignore=\.git --ignore=node_modules
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
