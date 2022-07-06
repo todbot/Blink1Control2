@@ -1,0 +1,84 @@
+# Build macOS, optionally sign
+
+name: macos
+
+env:
+  MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+  MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+  APPLEID: ${{ secrets.MACOS_APPLEID }}
+  APPLEID_PASSWD: ${{ secrets.MACOS_APPLEIDPASSWD }}
+  TEAM_SHORT_NAME: ${{ secrets.MACOS_TEAM_SHORT_NAME }}
+  # see https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
+  # see https://shipshape.io/blog/signing-electron-apps-with-github-actions/
+
+# Controls when the action will run. Triggers the workflow
+# on push or pull request events but only for the main branch
+on:
+  push:
+  pull_request:
+  release:
+    types: [created]
+
+# A workflow run is made of jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    runs-on: macos-latest
+
+    # Steps represent a sequence of tasks executed as part of the job
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Setup prerequisites
+        run: echo "no prereqs to set up"
+
+      - name: Install Node.js and NPM
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+
+      - name: Codesign setup for macOS
+        #if: runner.os == 'macOS' && github.event_name == 'release'
+        run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+          security create-keychain -p actions build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p actions build.keychain
+          security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k actions build.keychain
+
+          # echo $MACOS_CERTIFICATE | base64 —decode > certificate.p12
+          # security create-keychain -p hunter2 build.keychain
+          # security default-keychain -s build.keychain
+          # security unlock-keychain -p hunter2 build.keychain
+          # security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          # security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k hunter2 build.keychain
+
+      - name: Build
+        run: |
+          npm install
+          npm run pack
+          npm run dist:draft
+
+      - name: Publish
+        if: github.event.release.action == 'created'
+        run: |
+          npm run dist
+
+      - name: Check files
+        if: runner.os == 'Linux'
+        run: ls -alR --ignore=\.git --ignore=node_modules
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Blink1Control2-${{ matrix.os }}
+          path: |
+            dist/Blink1Control2*zip
+            dist/Blink1Control2*dmg
+            dist/Blink1Control2*deb
+            dist/Blink1Control2*tar.gz
+            dist/Blink1Control2*AppImage
+            dist/Blink1Control2*exe

@@ -9,9 +9,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        # os: [macos-latest, windows-latest, ubuntu-latest]
         # os: [macos-latest, ubuntu-latest]
-        # os: [ubuntu-latest]
+        os: [ubuntu-latest]
 
     steps:
       - name: Check out Git repository
