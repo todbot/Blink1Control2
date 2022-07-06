@@ -10,8 +10,6 @@ var isRenderer = require('is-electron-renderer');
 var confdefaults = require('./blink1control2-config-defaults.json');
 // var log = require('./logger');
 
-// const { nconf, app }  = require('@electron/remote')
-
 // make sure we only use 'nconf' from non-renderer process
 // because nconf uses yargs which makes webpack choke
 if( isRenderer ) {
