@@ -1,15 +1,12 @@
 # Build macOS, optionally sign
 
-name: macos
+name: windows
 
 env:
-  MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-  MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-  APPLEID: ${{ secrets.MACOS_APPLEID }}
-  APPLEIDPASSWD: ${{ secrets.MACOS_APPLEIDPASSWD }}
-  TEAM_SHORT_NAME: ${{ secrets.MACOS_TEAM_SHORT_NAME }}
+  WINDOWS_CERTIFICATE_P12: ${{ secrets.WINDOWS_CERTIFICATE_P12 }}
+  CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PWD }}
+  CSC_LINK: "win-certificate.p12"
   #GH_TOKEN: ${{ secrets.GH_TOKEN }}
-  # see https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
   # see https://shipshape.io/blog/signing-electron-apps-with-github-actions/
 
 # Controls when the action will run. Triggers the workflow
@@ -24,7 +21,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    runs-on: macos-latest
+    runs-on: windows-latest
 
     # Steps represent a sequence of tasks executed as part of the job
     steps:
@@ -40,14 +37,13 @@ jobs:
           node-version: 16
           cache: npm
 
-      - name: Codesign setup for macOS
-        run: |
-          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
-          security create-keychain -p actions build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p actions build.keychain
-          security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple: -s -k actions build.keychain
+      - name: Codesign setup for Windows
+        #if: matrix.os == 'windows-latest' && startsWith(github.ref, 'refs/tags/')
+        id: write_file
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: 'win-certificate.p12'
+          encodedString: ${{ secrets.WINDOWS_CERTIFICATE_P12 }}
 
       - name: Build
         run: |
@@ -55,18 +51,14 @@ jobs:
           npm run pack
           npm run dist:draft
 
-      - name: Notarize
-        run: |
-          npm run dist:nopub
-
       - name: Publish
         continue-on-error: true
         if: github.event.release.action == 'created'
         run: |
           npm run dist
 
-      - name: Check files
-        run: ls -alR --ignore=\.git --ignore=node_modules
+      #- name: Check files
+      #  run: ls -alR --ignore=\.git --ignore=node_modules
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3

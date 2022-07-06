@@ -1,49 +1,64 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# Build Linux
 
-name: Node.js CI
+name: linux
 
+env:
+  #GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+# Controls when the action will run. Triggers the workflow
+# on push or pull request events but only for the main branch
 on:
   push:
-    branches: [ "main-es5" ]
   pull_request:
-    branches: [ "main-es5" ]
+  release:
+    types: [created]
 
+# A workflow run is made of jobs that can run sequentially or in parallel
 jobs:
+  # This workflow contains a single job called "build"
   build:
     runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks executed as part of the job
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Setup prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install pkg-config libudev-dev libusb-1.0-0-dev
+
+      - name: Install Node.js and NPM
+        uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: |
-         sudo apt install -y pkg-config libudev-dev libusb-1.0-0-dev
-      - run: npm install
-      - run: npm run pack
-      - run: npm run dist:draft
+          cache: npm
 
-      - run: ls -alR --ignore=\.git --ignore=node_modules
+      - name: Build
+        run: |
+          npm install
+          npm run pack
+          npm run dist:draft
+
+      - name: Publish
+        continue-on-error: true
+        if: github.event.release.action == 'created'
+        run: |
+          npm run dist
+
+      - name: Check files
+        run: ls -alR --ignore=\.git --ignore=node_modules
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Blink1Control2-linux
+          name: Blink1Control2-${{ runner.os }}
           path: |
+            dist/Blink1Control2*zip
+            dist/Blink1Control2*dmg
             dist/Blink1Control2*deb
             dist/Blink1Control2*tar.gz
             dist/Blink1Control2*AppImage
-
-  # publish-npm:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 16
-  #         registry-url: https://registry.npmjs.org/
-  #     - run: npm ci
-  #     - run: npm publish
-  #       env:
-  #         NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+            dist/Blink1Control2*exe
