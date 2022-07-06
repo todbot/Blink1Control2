@@ -7,7 +7,9 @@ var MenuItem = require('react-bootstrap').MenuItem;
 
 var simplecrypt = require('simplecrypt');
 
+// 'sc' requirement should go away in 2.2.30
 var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control', method:"aes-192-ecb"});
+var utils = require('../../utils');
 
 var conf = require('../../configuration');
 var log = require('../../logger');
@@ -47,6 +49,19 @@ var ToolTable = React.createClass({
           rules = [];
           conf.saveSettings("eventRules", rules);
       }
+
+      var passwordsUpdated = false;
+      // convert & upgrade old style passwords to new style
+      rules.map(function(r) {
+        if( r.password && !r.passwordHash ) {
+            r.passwordHash = utils.encrypt(sc.decrypt( r.password ));
+            passwordsUpdated = true;
+        }
+      });
+      if( passwordsUpdated ) {
+        conf.saveSettings("eventRules", rules);
+      }
+
       // var events = Eventer.getStatuses();
       return {
           rules: rules,
@@ -98,7 +113,8 @@ var ToolTable = React.createClass({
         var rules = this.state.rules;
         var rulenew = data; //{type:data.type, name: data.name, patternId: data.patternId, lastTime:0, source:'n/a' }; // FIXME:
         if( rulenew.password ) {
-            rulenew.password = sc.encrypt( rulenew.password );
+            rulenew.passwordHash = utils.encrypt( rulenew.password );
+            delete rulenew.password;  // do not save cleartext password
         }
         if( rulenew.name ) {
             rulenew.name = rulenew.name.trim();
@@ -169,9 +185,9 @@ var ToolTable = React.createClass({
             // clone so form works on a copy. FIXME: needed?
             workingRule = Object.assign({}, this.state.rules[this.state.workingIndex] );
         }
-        if( workingRule.password ) {
+        if( workingRule.passwordHash ) {
             try {
-                workingRule.password = sc.decrypt( workingRule.password );
+                workingRule.password = utils.decrypt( workingRule.passwordHash );
             } catch(err) {
                 log.msg("toolTable: error decrypting passwd: ",err);
             }
