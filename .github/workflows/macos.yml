@@ -56,12 +56,13 @@ jobs:
           npm run dist:draft
 
       - name: Notarize
+        if: (github.event_name == 'release' && github.event.action == 'created')
         run: |
           npm run dist:nopub
 
       - name: Publish
         continue-on-error: true
-        if: github.event.release.action == 'created'
+        if: (github.event_name == 'release' && github.event.action == 'created')
         run: |
           npm run dist
 
