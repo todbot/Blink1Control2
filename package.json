@@ -48,7 +48,6 @@
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "publish": {
       "provider": "github",
-      "releaseType": "prerelease"
     },
     "mac": {
       "category": "public.app-category.utilities",
