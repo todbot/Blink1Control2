@@ -7,9 +7,9 @@ env:
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main-es5 ]
   pull_request:
-    branches: [ main ]
+    branches: [ main-es5 ]
   release:
     types:
       - created
