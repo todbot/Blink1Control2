@@ -47,7 +47,7 @@
     "npmRebuild": true,
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "publish": {
-      "provider": "github",
+      "provider": "github"
     },
     "mac": {
       "category": "public.app-category.utilities",
