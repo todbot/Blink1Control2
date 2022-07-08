@@ -5,13 +5,14 @@ name: linux
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-# Controls when the action will run. Triggers the workflow
-# on push or pull request events but only for the main branch
 on:
   push:
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
   release:
-    types: [created]
+    types:
+      - created
 
 # A workflow run is made of jobs that can run sequentially or in parallel
 jobs:
