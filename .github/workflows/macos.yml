@@ -12,15 +12,12 @@ env:
   # see https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
   # see https://shipshape.io/blog/signing-electron-apps-with-github-actions/
 
-# Controls when the action will run. Triggers the workflow
-# on push or pull request events but only for the main branch
 on:
   push:
   pull_request:
   release:
-    types: [created]
+    types: [published]  # publish a draft release to set github.event_name = 'release'
 
-# A workflow run is made of jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
@@ -56,13 +53,13 @@ jobs:
           npm run dist:draft
 
       - name: Notarize
-        if: (github.event_name == 'release' && github.event.action == 'created')
+        if: (github.event_name == 'release')  # or values = 'push' or 'pull_request'
         run: |
           npm run dist:nopub
 
       - name: Publish
         continue-on-error: true
-        if: (github.event_name == 'release' && github.event.action == 'created')
+        if: (github.event_name == 'release')  # or values = 'push' or 'pull_request'
         run: |
           npm run dist
 

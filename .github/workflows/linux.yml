@@ -9,9 +9,8 @@ on:
   push:
   pull_request:
   release:
-    types: [published]
+    types: [published]  # publish a draft release to set github.event_name = 'release'
 
-# A workflow run is made of jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
@@ -43,7 +42,8 @@ jobs:
 
       - name: Publish
         continue-on-error: true
-        if: (github.event_name == 'published')
+        #if: (github.event_name == 'release' && github.event.action == 'created')
+        if: (github.event_name == 'release')  # or values = 'push' or 'pull_request'
         run: |
           npm run dist
 
