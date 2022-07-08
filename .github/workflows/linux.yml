@@ -7,12 +7,9 @@ env:
 
 on:
   push:
-    branches: [ main-es5 ]
   pull_request:
-    branches: [ main-es5 ]
   release:
-    types:
-      - created
+    types: [published]
 
 # A workflow run is made of jobs that can run sequentially or in parallel
 jobs:
@@ -28,6 +25,7 @@ jobs:
       - name: Setup prerequisites
         if: runner.os == 'Linux'
         run: |
+          echo "event name: ${{ github.event_name }}"
           sudo apt update
           sudo apt install pkg-config libudev-dev libusb-1.0-0-dev
 
@@ -45,7 +43,7 @@ jobs:
 
       - name: Publish
         continue-on-error: true
-        if: (github.event_name == 'release' && github.event.action == 'created')
+        if: (github.event_name == 'published')
         run: |
           npm run dist
 
