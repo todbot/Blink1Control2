@@ -12,7 +12,8 @@ on:
   push:
   pull_request:
   release:
-    types: [published]  # publish a draft release to set github.event_name = 'release'
+    types: [created]
+    #types: [published]  # publish a draft release to set github.event_name = 'release'
 
 jobs:
   # This workflow contains a single job called "build"
@@ -50,7 +51,8 @@ jobs:
 
       - name: Publish
         continue-on-error: true
-        if: (github.event_name == 'release')  # or values = 'push' or 'pull_request'
+        if: "contains(github.event.head_commit.message, '[publish]')"
+        #if: (github.event_name == 'release')  # or values = 'push' or 'pull_request'
         run: |
           $env:CSC_LINK="${{ steps.write_file.outputs.filePath }}"
           npm run dist
@@ -69,3 +71,5 @@ jobs:
             dist/Blink1Control2*tar.gz
             dist/Blink1Control2*AppImage
             dist/Blink1Control2*exe
+            dist/Blink1Control2*blockmap
+            dist/latest*yml
