@@ -34,10 +34,10 @@ Steps:
     - Before running `npm run dist`, set three environment variables:
       ```
       export APPLEID="appleid@appleid.com" (but real appleId)
-      export APPLEIDPASS="app-specific-password" (generated from appleid.apple.com)
+      export APPLEIDPASSWD="app-specific-password" (generated from appleid.apple.com)
       export TEAM_SHORT_NAME="MyTeamShortName" (obtained from iTMSTransporter below)
+      export GH_TOKEN=ghp_abcdabcd12341234
       ```
-
 
 - Windows signed apps:
     - Get Code Signing cert.
@@ -58,48 +58,63 @@ Steps:
      }
     ```
 
-- Older Mac signing notes:
+- Mac signing notes:
 
-    - To get 'short name' ("ascProvider" to electron-notarize):
-      ```
-      /Applications/Transporter.app/Contents/itms/bin/iTMSTransporter -m provider -u $APPLEID -p $APPLEIDPASS
-      ```
-    - To get appId / bundleId, do one of:
-      ```
-      mdls -name kMDItemCFBundleIdentifier -r ~/Desktop/Blink1Control2-2.2.1.app`
-      osascript -e 'id of app "Blink1Control2-2.2.1"'
-      osascript -e "id of app \"`pwd`/dist/mac/Blink1Control2.app\""
-      ```
-      and that should return appId of "com.thingm.blink1control2"
+  - To get 'short name' ("ascProvider" to electron-notarize):
+    ```
+    /Applications/Transporter.app/Contents/itms/bin/iTMSTransporter -m provider -u $APPLEID -p $APPLEIDPASSWD
+    ```
+  - To get appId / bundleId, do one of:
+    ```
+    mdls -name kMDItemCFBundleIdentifier -r ~/Desktop/Blink1Control2-2.2.1.app`
+    osascript -e 'id of app "Blink1Control2-2.2.1"'
+    osascript -e "id of app \"`pwd`/dist/mac/Blink1Control2.app\""
+    ```
+    and that should return appId of "com.thingm.blink1control2"
 
-    - Test if app is notarized:
-      ```
-      codesign --test-requirement="=notarized" --verify --verbose myapp.app
-      xcrun stapler validate myapp.app
-      ```
-      also see https://eclecticlight.co/2019/05/31/can-you-tell-whether-code-has-been-notarized/
+  - Test if app is notarized:
+    ```
+    codesign --test-requirement="=notarized" --verify --verbose myapp.app
+    xcrun stapler validate myapp.app
+    ```
+    also see https://eclecticlight.co/2019/05/31/can-you-tell-whether-code-has-been-notarized/
 
-    - To reset privacy database for particular app (to test Mac access dialogs):
-      ```
-      tccutil reset All com.thingm.blink1control2
-      ```
+  - To reset privacy database for particular app (to test Mac access dialogs):
+    ```
+    tccutil reset All com.thingm.blink1control2
+    ```
 
-    - To see valid signing identities
-      ```
-      security find-identity -v -p codesigning
-      ```
-    - Which can then be used to sign command-line apps with:
-      ```
-      codesign -s (identity from above) /path/to/executable
-      ```
+  - To see valid signing identities
+    ```
+    security find-identity -v -p codesigning
+    ```
+  - Which can then be used to sign command-line apps with:
+    ```
+    codesign -s (identity from above) /path/to/executable
+    ```
+  - Check codesigning:
+    ```
+    codesign -dv --verbose=4 ./dist/mac/Blink1Control2.app
+    ```
 
-    - In some cases, may need to sign native hared library with your developer credentials and copy it into the app:
+  - In some cases, may need to sign native hared library with your developer credentials and copy it into the app:
 
-      ```
-      npm install -g electron-osx-sign
-      cp node_modules/node-hid/build/Release/HID.node dist/mac/
-      electron-hid-toy.app/Contents/MacOS
-      electron-osx-sign dist/mac/electron-hid-toy.app  dist/mac/electron-hid-toy.app/Contents/MacOS/HID.node
+    ```
+    npm install -g electron-osx-sign
+    cp node_modules/node-hid/build/Release/HID.node dist/mac/
+    electron-hid-toy.app/Contents/MacOS
+    electron-osx-sign dist/mac/electron-hid-toy.app  dist/mac/electron-hid-toy.app/Contents/MacOS/HID.node
 
+- Windows signing notes:
 
+  - Sign by hand on command-line:
+    ```
+    SignTool sign /f MyCert.pfx /p MyPassword MyApp.exe
+    ```
+    See: https://docs.microsoft.com/en-us/windows/win32/seccrypto/using-signtool-to-sign-a-file
+    and https://docs.microsoft.com/en-us/dotnet/framework/tools/signtool-exe
+
+  - Electron-builder uses its own codesign:
+
+    Downloaded from https://github.com/electron-userland/electron-builder-binaries/releases/tag/winCodeSign-2.6.0
 
