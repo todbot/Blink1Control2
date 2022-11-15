@@ -75,7 +75,7 @@ app.get('/blink1/fadeToRGB', function(req, res) {
         status = Blink1Service.fadeToColor( secs*1000, color, ledn, blink1_id );
     }
     else {
-        status = "bad hex color specified " + req.query.rgb;
+        status = "bad hex color specified " + req.query.get('rgb');
     }
     res.json( {
         // blink1Connected: blink1 !== null,
@@ -90,8 +90,8 @@ app.get('/blink1/fadeToRGB', function(req, res) {
 
 app.get('/blink1/lastColor', function(req, res) {
   var status = "success";
-  var ledn = Number(req.query.ledn) || 0;
-  var blink1_id = req.query.blink1_id;
+  var ledn = Number(req.query.get('ledn')) || 0;
+  var blink1_id = req.query.get('blink1_id');
 
   var color = Blink1Service.getCurrentColor(blink1_id, ledn);
 
@@ -157,14 +157,20 @@ app.get('/blink1/pattern/add', function(req,res) {
     var status = 'pattern add: no pattern added';
     var patt_name = req.query.get('pname') || req.query.get('name') || '';
     var pattout = '';
-    if( ! patt_name && ! req.query.pattern ) {
+    if( ! patt_name && ! req.query.get('pattern') ) {
         status = "must specify 'name' and 'pattern' string";
     }
     else {
-        var patt = PatternsService.newPatternFromString( patt_name, req.query.pattern);
-        if( patt ) { PatternsService.savePattern(patt); }
-        pattout = PatternsService.formatPatternForOutput(patt);
-        status = "pattern add: pattern '"+patt_name+"' added";
+        var patt = PatternsService.newPatternFromString( patt_name, req.query.get('pattern'));
+        log.msg("patt:",patt, req.query.get('pattern'));
+        if( patt ) {
+          PatternsService.savePattern(patt);
+          pattout = PatternsService.formatPatternForOutput(patt);
+          status = "pattern add: pattern '"+patt_name+"' added";
+        }
+        else {
+          log.msg("PatternsService: bad pattern specified: ", patt_name);
+        }
     }
     res.json({
         pattern: pattout,
