@@ -30,7 +30,7 @@ var MailForm = require('./mailForm');
 var ScriptForm = require('./scriptForm');
 var SkypeForm = require('./skypeForm');
 var TimeForm = require('./timeForm');
-// var MqttForm = require('./mqttForm');
+var MqttForm = require('./mqttForm');
 
 var ToolTableList = require('./toolTableList');
 
@@ -105,7 +105,7 @@ var ToolTable = React.createClass({
             TimeService.reloadConfig();
         }
         else if( rule.type === 'mqtt' ) {
-            // MqttService.reloadConfig();
+            MqttService.reloadConfig();
         }
     },
     handleSaveForm: function(data) {
@@ -193,12 +193,6 @@ var ToolTable = React.createClass({
             }
         }
 
-        // <MqttForm show={this.state.showForm==='mqtt'}
-        //     workingIndex={this.state.workingIndex}
-        //     rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
-        //     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
-        //     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
-
         return (
             <div style={{position: "relative", height: 200, cursor:'default'}}>
 
@@ -215,6 +209,12 @@ var ToolTable = React.createClass({
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
                 <IftttForm show={this.state.showForm==='ifttt'}
+                    workingIndex={this.state.workingIndex}
+                    rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
+                    onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
+                    onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
+
+                <MqttForm show={this.state.showForm==='mqtt'}
                     workingIndex={this.state.workingIndex}
                     rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
                     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
@@ -245,6 +245,7 @@ var ToolTable = React.createClass({
                         <MenuItem eventKey="script"><i className="fa fa-code"></i> Add Script</MenuItem>
                         <MenuItem eventKey="url"><i className="fa fa-cloud"></i> Add URL</MenuItem>
                         <MenuItem eventKey="file"><i className="fa fa-file"></i> Add File</MenuItem>
+                        <MenuItem eventKey="mqtt"><i className="fa fa-share-alt"></i> Add MQTT</MenuItem>
                         <MenuItem eventKey="skype"><i className="fa fa-skype"></i> Add Skype</MenuItem>
                         <MenuItem eventKey="time"><i className="fa fa-clock-o"></i> Add Alarm</MenuItem>
                     </DropdownButton>
