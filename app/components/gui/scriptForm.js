@@ -109,7 +109,7 @@ var ScriptForm = React.createClass({
                             <FormGroup controlId="formName" title="rule name in IFTTT config">
                                 <Col sm={3} componentClass={ControlLabel}>  Rule Name  </Col>
                                 <Col sm={8}>
-                                    <FormControl type="text" placeholder="Name of rule on IFTTT"
+                                    <FormControl type="text" placeholder="Name of rule"
                                         name="name" value={this.state.name} onChange={this.handleInputChange} />
                                 </Col>
                             </FormGroup>
