@@ -79,6 +79,11 @@
         "type": "skype",
         "enabled": true
       },
+      "slackService": {
+        "service": "slackService",
+        "type": "slack",
+        "enabled": true
+      },
       "iftttService": {
         "type": "ifttt",
         "service": "iftttService",

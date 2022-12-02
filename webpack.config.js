@@ -19,7 +19,9 @@ var config = {
     "express": 'commonjs express',
     "node-hid": 'commonjs node-hid',
     'nconf': 'commonjs nconf',
-    'xml2js': 'commonjs xml2js' // this is to keep webpack from complaing about optional dep of 'needle'
+    'xml2js': 'commonjs xml2js', // this is to keep webpack from complaing about optional dep of 'needle'
+    'utf-8-validate': 'commonjs utf-8-validate',
+    'bufferutil': 'commonjs bufferutil'
   },
   plugins: [
     // new webpack.HotModuleReplacementPlugin({multiStep:true}),

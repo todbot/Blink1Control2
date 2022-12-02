@@ -44,9 +44,9 @@ NOTE: consider this historical info. most of these are out-of-date as of Nov 201
 
 ### General Program structure
 - Event Source --> Color Pattern --> blink(1) changes color
-- The user creates an "event source" to fetch events from outside of Blink1Control2 (say, IFTTT, IMAP, a URL,  etc).  
+- The user creates an "event source" to fetch events from outside of Blink1Control2 (say, IFTTT, IMAP, a URL,  etc).
   - Each event source runs async from the others. Some sources may periodically poll their source for changes.
-- Event source triggers a "color pattern" to play.  
+- Event source triggers a "color pattern" to play.
   - This color pattern is normally a pre-defined color pattern in the color patterns list.
 - Multiple event sources can be active concurrently
 - Multiple color patterns can play concurrently (* note: maybe add priorities or stack option)
@@ -89,7 +89,7 @@ NOTE: consider this historical info. most of these are out-of-date as of Nov 201
 - `src/components/gui/toolTable.js` loads forms, ask them to format themselves for tables (not really, should ask Service maybe?)
 - Each event source has its own config in `config.eventServices{}` by name of service (e.g. `iftttService`)
 
-### Event log API  
+### Event log API
 - Event sources are responsible to triggering patterns via PatternsService or colors via Blink1Service (FIXME: change this?)
 - Event sources also log events via `logger.addEvent(event)`
 - Events logged via addEvent are used for human-display by ToolTable and RecentEvents
@@ -108,7 +108,7 @@ NOTE: consider this historical info. most of these are out-of-date as of Nov 201
 - `scanForDevices()` is only done on app start, if no devices, or on device removal
     - thus adding a device will not automatically detect if one is already plugged in
 - When devices are found, they are opened and added to device list
-- Device removal is detected by attempting to command device and failing.  
+- Device removal is detected by attempting to command device and failing.
     - (this was done because `usb-detection` package had issues in 2015, it was updated recently. check if it works)
 - Devices are sorted in device list by serialnumber string
 - Lowest-numbered serialnumber wins "default device"
@@ -155,3 +155,15 @@ NOTE: consider this historical info. most of these are out-of-date as of Nov 201
 #### Building on Windows
 - Use standard Powershell with git installed and "windows-build-tools"
   as described here: https://github.com/node-hid/node-hid#compiling-from-source
+
+#### Slack Integration
+
+The Slack integration requires a [Classic App](https://api.slack.com/apps?new_classic_app=1).
+Should see a `(Classic)` in the pop-up window. This is important because only the Classic App has
+access to RTM ( Real Time Messaging ). Without it, this integration will not work, because we
+aren't using Events.
+
+Once the App is created, it's important to add Permissions. Add `channel:read`. Once that's done
+the only thing remaining is adding a Bot User here: `https://api.slack.com/apps/<ID>/app-home?`.
+Note that `<ID>` is the ID of your App. Once the Bot is invited into the channel, keywords watch
+should work.

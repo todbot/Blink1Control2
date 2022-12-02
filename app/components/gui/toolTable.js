@@ -22,6 +22,7 @@ var IftttService = require('../../server/iftttService');
 var MailService = require('../../server/mailService');
 var ScriptService = require('../../server/scriptService');
 var SkypeService = require('../../server/skypeService');
+var SlackService = require('../../server/slackService');
 var TimeService = require('../../server/timeService');
 var MqttService = require('../../server/mqttService');
 
@@ -29,6 +30,7 @@ var IftttForm = require('./iftttForm');
 var MailForm = require('./mailForm');
 var ScriptForm = require('./scriptForm');
 var SkypeForm = require('./skypeForm');
+var SlackForm = require('./slackForm');
 var TimeForm = require('./timeForm');
 var MqttForm = require('./mqttForm');
 
@@ -100,6 +102,9 @@ var ToolTable = React.createClass({
         }
         else if( rule.type === 'skype' ) {
             SkypeService.reloadConfig();
+        }
+        else if( rule.type === 'slack' ) {
+            SlackService.reloadConfig();
         }
         else if( rule.type === 'time' ) {
             TimeService.reloadConfig();
@@ -226,6 +231,12 @@ var ToolTable = React.createClass({
                     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
+                <SlackForm show={this.state.showForm==='slack'}
+                    workingIndex={this.state.workingIndex}
+                    rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
+                    onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
+                    onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
+
                 <TimeForm show={this.state.showForm==='time'}
                     workingIndex={this.state.workingIndex}
                     rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
@@ -247,6 +258,7 @@ var ToolTable = React.createClass({
                         <MenuItem eventKey="file"><i className="fa fa-file"></i> Add File</MenuItem>
                         <MenuItem eventKey="mqtt"><i className="fa fa-share-alt"></i> Add MQTT</MenuItem>
                         <MenuItem eventKey="skype"><i className="fa fa-skype"></i> Add Skype</MenuItem>
+                        <MenuItem eventKey="slack"><i className="fa fa-slack"></i> Add Slack</MenuItem>
                         <MenuItem eventKey="time"><i className="fa fa-clock-o"></i> Add Alarm</MenuItem>
                     </DropdownButton>
                 </div>

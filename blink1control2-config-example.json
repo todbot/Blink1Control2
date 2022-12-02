@@ -75,6 +75,11 @@
       "service": "skypeService",
       "type": "skype",
       "enabled": false
+    },
+    "slackService": {
+      "service": "slackService",
+      "type": "slack",
+      "enabled": false
     }
   },
   "eventRules": [
