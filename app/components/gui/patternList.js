@@ -10,9 +10,6 @@ var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 
 var PatternView = require('./patternView');
 
-var PatternsService = require('../../server/patternsService');
-//var Blink1Service = require('../../server/blink1Service');
-
 var log = require('../../logger');
 
 var PatternList = React.createClass({
@@ -23,14 +20,14 @@ var PatternList = React.createClass({
     getInitialState: function() {
         log.msg("patternList: getInitialState!");
         return {
-            patterns: PatternsService.getAllPatterns()
+            patterns: window.electronAPI.patterns.getAllPatterns()
         };
     },
     componentDidMount: function() {
-        PatternsService.addChangeListener( this.updatePatternState, "patternList" );
+        window.electronAPI.patterns.addChangeListener(this.updatePatternState, "patternList");
     }, // FIXME: Surely there's a better way to do this
     componentWillUnmount: function() {
-        PatternsService.removeChangeListener( "patternList" );
+        window.electronAPI.patterns.removeChangeListener("patternList");
     },
     /** Callback to PatternsService.addChangeListener */
     updatePatternState: function(allpatterns) {
@@ -41,33 +38,32 @@ var PatternList = React.createClass({
 
     onAddPattern: function() {
         log.msg("PatternList.onAddPattern");
-        var p = PatternsService.newPattern();
-        p.id = 0; // force id regen
-        PatternsService.savePattern( p );
+        window.electronAPI.patterns.newPattern().then(function(p) {
+            p.id = 0; // force id regen
+            window.electronAPI.patterns.savePattern(p);
+        });
     },
     onStopAllPatterns: function() {
         log.msg("PatternList.onStopAllPatterns");
-        PatternsService.stopAllPatterns();
+        window.electronAPI.patterns.stopAllPatterns();
     },
     copyPattern: function(patternid) {
         log.msg("PatternList.copyPattern:", patternid);
-        var p = PatternsService.getPatternById( patternid );
+        var p = window.electronAPI.patterns.getPatternById(patternid);
         p.id = 0; // unset to regen for Api // FIXME:!!!
         p.name = p.name + " (copy)";
         p.system = false;
         p.locked = false;
-        PatternsService.savePattern( p );
-        // this.setState( {editing: true, : p.id } );
+        window.electronAPI.patterns.savePattern(p);
     },
     deletePattern: function(patternid) {
         log.msg("PatternList.deletePattern:", patternid);
-        // this.setState( {editing: false} );
-        PatternsService.deletePattern( patternid );
+        window.electronAPI.patterns.deletePattern(patternid);
     },
 
     onPatternUpdated: function(pattern) {
         log.msg("PatternList.onPatternUpdated:", pattern);
-        PatternsService.savePattern(pattern);
+        window.electronAPI.patterns.savePattern(pattern);
     },
 
     render: function() {

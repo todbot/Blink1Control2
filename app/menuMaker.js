@@ -1,20 +1,12 @@
 "use strict";
 
-var ipcRenderer = require('electron').ipcRenderer;
-
-var config = require('./configuration');
 var log = require('./logger');
-var Eventer = require('./eventer');
-var Blink1Service = require('./server/blink1Service');
-
-var appData = ipcRenderer.sendSync('getAppData');
-var myname = appData.appName;
 
 var MenuMaker = {
 
     getShortcutReset: function() {
-        var globalShortcutPrefix = config.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift';
-        var resetKey = config.readSettings('startup:shortcutResetKey') || 'R';
+        var globalShortcutPrefix = window.electronAPI.config.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift';
+        var resetKey = window.electronAPI.config.readSettings('startup:shortcutResetKey') || 'R';
         return globalShortcutPrefix + '+' + resetKey;
     },
 
@@ -23,7 +15,7 @@ var MenuMaker = {
      * Clicks are dispatched back to renderer via existing 'playBigButtonUser' channel.
      */
     createBigButtonMenu: function(withAccelerators) {
-        var bigButtonsConfig = config.readSettings('bigButtons') || [];
+        var bigButtonsConfig = window.electronAPI.config.readSettings('bigButtons') || [];
         return bigButtonsConfig.map(function(bb, idx) {
             return {
                 label: "Set: " + bb.name,
@@ -36,10 +28,11 @@ var MenuMaker = {
     updateTrayMenu: function() {
         log.msg("MenuMaker.updateTrayMenu");
         var resetShortcut = MenuMaker.getShortcutReset();
+        var myname = window.electronAPI.app.name;
 
         var trayTemplate = [
-            { label: 'Blink1Control2 is running', enabled: false },
-            { label: 'status: ' + Blink1Service.getStatusString(), enabled: false },
+            { label: myname + ' is running', enabled: false },
+            { label: 'status: ' + window.electronAPI.blink1.getStatusString(), enabled: false },
             { type: 'separator' }
         ].concat(MenuMaker.createBigButtonMenu()).concat([
             { type: 'separator' },
@@ -60,37 +53,41 @@ var MenuMaker = {
               clickSpec: { target: 'main', action: 'quitnow' } }
         ]);
 
-        ipcRenderer.send('updateTrayMenu', { trayTemplate: trayTemplate, dockTemplate: dockTemplate });
+        window.electronAPI.menu.updateTrayMenu({ trayTemplate: trayTemplate, dockTemplate: dockTemplate });
     },
 
     setupTrayMenu: function() {
         var iconPath;
-        if (process.platform === 'win32') {
-            iconPath = appData.appPath + '/images/icons/blink1mk2-icon2-128px.ico';
+        if (window.electronAPI.app.platform === 'win32') {
+            iconPath = window.electronAPI.app.appPath + '/images/icons/blink1mk2-icon2-128px.ico';
         } else {
-            iconPath = appData.appPath + '/images/icons/blink1mk2-icon-16px.png';
+            iconPath = window.electronAPI.app.appPath + '/images/icons/blink1mk2-icon-16px.png';
         }
-        ipcRenderer.send('setupTray', { iconPath: iconPath, tooltip: myname + ' is running...' });
+        window.electronAPI.menu.setupTray({
+            iconPath: iconPath,
+            tooltip: window.electronAPI.app.name + ' is running...'
+        });
 
         // delete tray object to eliminate duplicates on reload
         window.onbeforeunload = function() {
             console.log("killing tray");
-            ipcRenderer.send('destroyTray');
+            window.electronAPI.menu.destroyTray();
         };
 
         this.updateTrayMenu();
 
-        Eventer.on('deviceUpdated', this.updateTrayMenu);
-        Eventer.on('bigButtonsUpdated', this.updateTrayMenu);
+        window.electronAPI.bus.on('deviceUpdated', MenuMaker.updateTrayMenu);
+        window.electronAPI.bus.on('bigButtonsUpdated', MenuMaker.updateTrayMenu);
 
-        if (process.platform === 'win32') {
-            ipcRenderer.on('trayClick', function() {
-                ipcRenderer.send('openMainWindow');
+        if (window.electronAPI.app.platform === 'win32') {
+            window.electronAPI.menu.onTrayClick(function() {
+                window.electronAPI.app.send('openMainWindow');
             });
         }
     },
 
     setupMainMenu: function() {
+        var myname = window.electronAPI.app.name;
         var resetShortcut = MenuMaker.getShortcutReset();
         var bigButtonMenu = MenuMaker.createBigButtonMenu(true);
 
@@ -168,15 +165,14 @@ var MenuMaker = {
         ];
 
         var template;
-        if (process.platform === 'darwin') {
+        if (window.electronAPI.app.platform === 'darwin') {
             template = templateAppMac.concat(templateEdit, templateControl);
         } else {
             template = templateApp.concat(templateEdit, templateControl);
         }
 
-        ipcRenderer.send('setApplicationMenu', template);
-    }
-
+        window.electronAPI.menu.setApplicationMenu(template);
+    },
 };
 
 module.exports = MenuMaker;

@@ -6,10 +6,7 @@ var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
 var Button = require('react-bootstrap').Button;
 
-var ipcRenderer = require('electron').ipcRenderer;
-
 var log = require('../../logger');
-var Eventer = require('../../eventer');
 
 var moment = require('moment');
 
@@ -24,7 +21,7 @@ var EventList = React.createClass({
         };
     },
     componentDidMount: function() {
-        Eventer.on('newStatus', this.updateStatus);
+        window.electronAPI.bus.on('newStatus', this.updateStatus);
     },
     updateStatus: function(statuses) {
         // log.msg("status: ",statuses);
@@ -36,7 +33,7 @@ var EventList = React.createClass({
     },
 
     clearEvents: function() {
-        Eventer.clearStatuses(); // FIXME: only clear display, not log?
+        window.electronAPI.eventer.clearStatuses(); // FIXME: only clear display, not log?
         this.setState({events: []});
     },
 
@@ -64,7 +61,7 @@ var EventList = React.createClass({
             });
             info += '</table>';
         }
-        ipcRenderer.send('openLogWindow', info);
+        window.electronAPI.menu.send('openLogWindow', info);
     },
     render: function() {
         // var revevents = this.state.events.concat().reverse();

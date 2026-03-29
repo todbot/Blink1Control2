@@ -4,8 +4,6 @@ var React = require('react');
 
 var Button = require('react-bootstrap').Button;
 
-var ipcRenderer = require('electron').ipcRenderer;
-
 var tinycolor = require('tinycolor2');
 
 var log = require('../../logger');
@@ -72,14 +70,14 @@ var BigButton = React.createClass({
     if (this.props.type === 'sys') { return; } // no context for sys buttons
     var self = this;
     var menuId = 'bigbutton-' + this.props.idx + '-' + Date.now();
-    ipcRenderer.once('contextMenuResult:' + menuId, function(event, action, arg) {
+    window.electronAPI.menu.onContextMenuResult(menuId, function(action, arg) {
       if (action === 'showEditName') {
         self.showEditName();
       } else {
         self.doContextMenu(null, action, arg);
       }
     });
-    ipcRenderer.send('showContextMenu', { menuId: menuId, template: self.buildSerializableMenu() });
+    window.electronAPI.menu.showContextMenu({ menuId: menuId, template: self.buildSerializableMenu() });
   },
   doContextMenu: function(event, eventKey, arg) {
     log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx);

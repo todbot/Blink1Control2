@@ -10,8 +10,6 @@ var FormControl = require('react-bootstrap').FormControl;
 var FormGroup = require('react-bootstrap').FormGroup;
 var ControlLabel = require('react-bootstrap').ControlLabel;
 
-var Blink1Service = require('../../server/blink1Service');
-
 var Blink1SerialOption = React.createClass({
     propTypes: {
         label: React.PropTypes.string,
@@ -39,7 +37,7 @@ var Blink1SerialOption = React.createClass({
         var createBlink1SerialOption = function(item,idx) {
             return ( <option key={idx} value={item}>{item}</option> );
         };
-        var serials = Blink1Service.getAllSerials();
+        var serials = window.electronAPI.blink1.getAllSerials();
         serials = serials.slice(); //copy so we can add defaultText
         serials.unshift( this.props.defaultText );
 

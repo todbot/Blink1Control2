@@ -28,6 +28,7 @@ var maxBlink1s = 4;
 var maxLEDsPerBlink1 = 2; // 18
 
 var listeners = [];  // callback listeners
+var _sendState = null; // set from main.js after window is ready
 
 /**
  * blink1 devices currently opened.
@@ -588,6 +589,49 @@ var Blink1Service = {
     notifyChange: function() {
         // log.msg("Blink1Service.notifyChange:",listeners);
         listeners.forEach( (listener) => { if(listener.callback) listener.callback() } );
+        if (_sendState) _sendState(Blink1Service._getState());
+    },
+    setSendState: function(fn) {
+        _sendState = fn;
+        if (fn) fn(Blink1Service._getState()); // push initial state immediately
+    },
+    _getState: function() {
+        var self = this;
+        var colorPerSerial = {};
+        var millisPerSerial = {};
+        var lednPerSerial = {};
+        var colorsPerSerial = {};
+        blink1s.forEach(function(b) {
+            var idx = self.idToBlink1Index(b.serial);
+            var ledn = currentState[idx].ledn;
+            var colorLedn = (ledn > 0) ? ledn - 1 : 0;
+            colorPerSerial[b.serial] = (currentState[idx].colors[colorLedn] || tinycolor('#000000')).toHexString();
+            millisPerSerial[b.serial] = currentState[idx].millis;
+            lednPerSerial[b.serial] = ledn;
+            colorsPerSerial[b.serial] = currentState[idx].colors.map(function(c) { return c.toHexString(); });
+        });
+        var defaultColor = self.getCurrentColor() ? self.getCurrentColor().toHexString() : '#000000';
+        colorPerSerial[''] = defaultColor;
+        millisPerSerial[''] = self.getCurrentMillis() || 100;
+        lednPerSerial[''] = self.getCurrentLedN() || 0;
+        colorsPerSerial[''] = (currentState[0] ? currentState[0].colors.map(function(c) { return c.toHexString(); }) : ['#000000', '#000000']);
+        return {
+            currentColor:         defaultColor,
+            currentColorPerSerial: colorPerSerial,
+            currentMillis:        millisPerSerial[''],
+            currentMillisPerSerial: millisPerSerial,
+            currentLedn:          lednPerSerial[''],
+            currentLednPerSerial: lednPerSerial,
+            currentColorsPerSerial: colorsPerSerial,
+            statusStr:            self.getStatusString(),
+            allSerials:           self.getAllSerials(),
+            serialNumberForDisplay: self.serialNumberForDisplay(),
+            currentBlink1Id:      currentBlink1Id,
+            iftttKey:             self.getIftttKey(),
+            hostId:               self.getHostId(),
+            defaultPatternStr:    defaultPatternStr,
+            isConnected:          self.isConnected(),
+        };
     },
 
 

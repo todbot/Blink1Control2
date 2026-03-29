@@ -11,19 +11,7 @@ var simplecrypt = require('simplecrypt');
 var sc = simplecrypt({salt:'boopdeeboop',password:'blink1control', method:"aes-192-ecb"});
 var utils = require('../../utils');
 
-var conf = require('../../configuration');
 var log = require('../../logger');
-
-var utils = require('../../utils');
-
-var Blink1Service = require('../../server/blink1Service');
-var PatternsService = require('../../server/patternsService');
-var IftttService = require('../../server/iftttService');
-var MailService = require('../../server/mailService');
-var ScriptService = require('../../server/scriptService');
-var SkypeService = require('../../server/skypeService');
-var TimeService = require('../../server/timeService');
-var MqttService = require('../../server/mqttService');
 
 var IftttForm = require('./iftttForm');
 var MailForm = require('./mailForm');
@@ -37,9 +25,9 @@ var ToolTableList = require('./toolTableList');
 
 var ToolTable = React.createClass({
   getInitialState: function() {
-    // var rules = conf.readSettings('eventRules');
-    var rules = JSON.parse(JSON.stringify( conf.readSettings('eventRules') ) ); // deep copy to avoid ipcRenderer.sendSync
-    var allowMultiBlink1 = conf.readSettings("blink1Service:allowMulti");
+    // var rules = window.electronAPI.config.readSettings('eventRules');
+    var rules = JSON.parse(JSON.stringify( window.electronAPI.config.readSettings('eventRules') ) ); // deep copy
+    var allowMultiBlink1 = window.electronAPI.config.readSettings("blink1Service:allowMulti");
       // do rules sanity check
       if( !rules ||
           rules.length===0 ||
@@ -47,7 +35,7 @@ var ToolTable = React.createClass({
       ) {
           log.msg("ToolTable.getInitialState: no rules or bad rules, setting to empty");
           rules = [];
-          conf.saveSettings("eventRules", rules);
+          window.electronAPI.config.saveSettings("eventRules", rules);
       }
 
       var passwordsUpdated = false;
@@ -59,7 +47,7 @@ var ToolTable = React.createClass({
         }
       });
       if( passwordsUpdated ) {
-        conf.saveSettings("eventRules", rules);
+        window.electronAPI.config.saveSettings("eventRules", rules);
       }
 
       // var events = Eventer.getStatuses();
@@ -74,39 +62,16 @@ var ToolTable = React.createClass({
     saveRules: function(rules) {
         log.msg("ToolTable.saveRules");
         this.setState({rules: rules});  // FIXME:
-        conf.saveSettings("eventRules", rules);
+        window.electronAPI.config.saveSettings("eventRules", rules);
     },
     // based on rulenew, feed appropriate service new rule
     // FIXME: these "reloadConfig()" should really restart only new/changed rule
-    updateService(rule) {
+    updateService: function(rule) {
         if( !rule || !rule.type ) {
             log.msg("ToolTable.updateService: bad rule ",rule);
             return;
         }
-        if( rule.type === 'ifttt' ) {
-            IftttService.reloadConfig();
-        }
-        else if( rule.type === 'mail' ) {
-            MailService.reloadConfig();
-        }
-        else if( rule.type === 'script' ) {
-            ScriptService.reloadConfig();
-        }
-        else if( rule.type === 'url' ) {
-            ScriptService.reloadConfig();
-        }
-        else if( rule.type === 'file' ) {
-            ScriptService.reloadConfig();
-        }
-        else if( rule.type === 'skype' ) {
-            SkypeService.reloadConfig();
-        }
-        else if( rule.type === 'time' ) {
-            TimeService.reloadConfig();
-        }
-        else if( rule.type === 'mqtt' ) {
-            MqttService.reloadConfig();
-        }
+        window.electronAPI.eventServices.reloadConfig(rule.type);
     },
     handleSaveForm: function(data) {
         log.msg("ToolTable.handleSaveForm:",data, "workingIndex:", this.state.workingIndex);
@@ -171,11 +136,9 @@ var ToolTable = React.createClass({
       log.msg("ToolTableList.render");
       // hmm is there a better way to do the following
       // allowMulti if set and number of blink1s > 1
-      // var allowMultiBlink1 = conf.readSettings("blink1Service:allowMulti") && (Blink1Service.isConnected() > 1);
-      // var allowMultiBlink1 = (Blink1Service.isConnected() > 1) && conf.readSettings("blink1Service:allowMulti");
-      var allowMultiBlink1 = (Blink1Service.isConnected() > 1) && this.state.allowMultiBlink1;
+      var allowMultiBlink1 = (window.electronAPI.blink1.isConnected() > 1) && this.state.allowMultiBlink1;
 
-      var patterns = PatternsService.getAllPatterns();
+      var patterns = window.electronAPI.patterns.getAllPatterns();
         // var events = this.state.events;
         var workingRule = { name: 'new '+ this.state.showForm + ' rule '+ (this.state.rules.length+1),
                         type: this.state.showForm,

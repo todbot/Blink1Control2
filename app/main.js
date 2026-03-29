@@ -14,6 +14,23 @@ var isAccelerator = require("electron-is-accelerator");
 
 var updater = require('./updater');
 
+// ── Services (run in main process) ───────────────────────────────
+var config = require('./configuration');
+// Populate global.logconfig before any service requires logger
+global.logconfig = config.readSettings('logger') || {};
+
+var Eventer = require('./eventer');
+var MenuMaker = require('./menuMaker');
+var Blink1Service = require('./server/blink1Service');
+var PatternsService = require('./server/patternsService');
+var ApiServer = require('./server/apiServer');
+var IftttService = require('./server/iftttService');
+var MailService = require('./server/mailService');
+var SkypeService = require('./server/skypeService');
+var ScriptService = require('./server/scriptService');
+var TimeService = require('./server/timeService');
+var MqttService = require('./server/mqttService');
+
 var isDevelopment = process.env.NODE_ENV === 'development';
 
 var mainWindow = null;
@@ -135,10 +152,7 @@ function buildContextMenuTemplate(template, sender, menuId) {
 }
 
 var quit = function() {
-  //console.log("Blink1Control2: quit. sent quit to renderer?",isQuitting);
-  if( !isQuitting ) {
-    mainWindow.webContents.send('quitting', 'blink1control2');
-  }
+  Blink1Service.off();
   isQuitting = true;
   app.quit();
 };
@@ -309,9 +323,10 @@ app.on('ready', function () {
     resizable: isDevelopment && showDebug,
     show: false, // show later based on config
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      backgroundThrottling: false
+      nodeIntegration: false,
+      contextIsolation: true,
+      backgroundThrottling: false,
+      preload: path.join(__dirname, 'preload.js'),
     }
   });
   mainWindow.loadURL(loadurl);
@@ -454,6 +469,105 @@ app.on('ready', function () {
   });
   ipcMain.on('checkForUpdates', function() {
     updater.checkForUpdates();
-  })
+  });
+
+  // ── Service startup ──────────────────────────────────────────────
+  // Wire services to push state to renderer whenever they change
+  Blink1Service.setSendState(function(state) {
+    if (mainWindow) mainWindow.webContents.send('blink1:state', state);
+  });
+  PatternsService.setSendState(function(state) {
+    if (mainWindow) mainWindow.webContents.send('patterns:state', state);
+  });
+
+  // Forward Eventer events that renderer components consume
+  Eventer.on('newStatus', function(statuses) {
+    if (mainWindow) mainWindow.webContents.send('eventer:newStatus', statuses);
+  });
+  Eventer.on('deviceUpdated', function() {
+    if (mainWindow) mainWindow.webContents.send('bus:event', 'deviceUpdated');
+  });
+
+  MenuMaker.setupMainMenu();
+  MenuMaker.setupTrayMenu();
+
+  Blink1Service.start();
+  ApiServer.start();
+  PatternsService.initialize();
+
+  setTimeout(function() {
+    IftttService.start();
+    MailService.start();
+    SkypeService.start();
+    ScriptService.start();
+    TimeService.start();
+    MqttService.start();
+  }, 2000);
+
+  // Run startup pattern after a short delay
+  setTimeout(function() {
+    Blink1Service.off();
+    var startupPattern = config.readSettings('startup:startupPattern');
+    if (startupPattern) {
+      PatternsService.playPatternFrom('startup', startupPattern);
+    }
+  }, 1000);
+
+  // ── Blink1 IPC handlers ──────────────────────────────────────────
+  ipcMain.on('blink1:fadeToColor', function(event, millis, color, ledn, id) {
+    Blink1Service.fadeToColor(millis, color, ledn, id);
+  });
+  ipcMain.on('blink1:off', function() { Blink1Service.off(); });
+  ipcMain.on('blink1:toyStart', function(event, mode) { Blink1Service.toyStart(mode); });
+  ipcMain.on('blink1:setCurrentBlink1Id', function(event, id) { Blink1Service.setCurrentBlink1Id(id); });
+  ipcMain.on('blink1:setCurrentLedN', function(event, n, id) { Blink1Service.setCurrentLedN(n, id); });
+  ipcMain.on('blink1:setCurrentMillis', function(event, m, id) { Blink1Service.setCurrentMillis(m, id); });
+  ipcMain.on('blink1:reloadConfig', function() { Blink1Service.reloadConfig(); });
+  ipcMain.handle('blink1:setHostId', function(event, id) { return Blink1Service.setHostId(id); });
+  ipcMain.handle('blink1:writePatternToBlink1', function(event, patt, save, serial) {
+    return Blink1Service.writePatternToBlink1(patt, save, serial);
+  });
+
+  // ── PatternsService IPC handlers ─────────────────────────────────
+  ipcMain.on('patterns:playPatternFrom', function(event, source, id, blink1id) {
+    PatternsService.playPatternFrom(source, id, blink1id);
+  });
+  ipcMain.on('patterns:stopPattern', function(event, id) { PatternsService.stopPattern(id); });
+  ipcMain.on('patterns:stopAllPatterns', function() { PatternsService.stopAllPatterns(); });
+  ipcMain.on('patterns:savePattern', function(event, p) { PatternsService.savePattern(p); });
+  ipcMain.on('patterns:deletePattern', function(event, id) { PatternsService.deletePattern(id); });
+  ipcMain.on('patterns:reloadConfig', function() { PatternsService.reloadConfig(); });
+  ipcMain.on('patterns:setInEditing', function(event, val) { PatternsService.setInEditing(val); });
+  ipcMain.handle('patterns:newPattern', function() { return PatternsService.newPattern(); });
+  ipcMain.handle('patterns:newPatternFromString', function(event, name, str) {
+    return PatternsService.newPatternFromString(name, str);
+  });
+
+  // ── Event services IPC handler ───────────────────────────────────
+  ipcMain.on('eventServices:reloadConfig', function(event, serviceType) {
+    if      (serviceType === 'ifttt')                           IftttService.reloadConfig();
+    else if (serviceType === 'mail')                            MailService.reloadConfig();
+    else if (serviceType === 'script' || serviceType === 'url'
+          || serviceType === 'file')                            ScriptService.reloadConfig();
+    else if (serviceType === 'skype')                           SkypeService.reloadConfig();
+    else if (serviceType === 'time')                            TimeService.reloadConfig();
+    else if (serviceType === 'mqtt')                            MqttService.reloadConfig();
+    else if (serviceType === 'apiServer')                       ApiServer.reloadConfig();
+  });
+
+  // ── Eventer IPC handlers ─────────────────────────────────────────
+  ipcMain.on('eventer:addStatus', function(event, status) { Eventer.addStatus(status); });
+  ipcMain.on('eventer:clearStatuses', function() { Eventer.clearStatuses(); });
+
+  // ── Bus events from renderer ─────────────────────────────────────
+  ipcMain.on('bus:emit', function(event, busEvent, data) {
+    // Currently no bus events from renderer need main-process handling
+  });
+
+  // ── Config reload IPC (menu-driven) ─────────────────────────────
+  ipcMain.on('reloadConfig:blink1Service', function() {
+    Blink1Service.reloadConfig();
+  });
 
 });
+

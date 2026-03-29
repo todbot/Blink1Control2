@@ -4,10 +4,6 @@ var React = require('react');
 var Panel = require('react-bootstrap').Panel;
 var Well = require('react-bootstrap').Well;
 
-var ipcRenderer = require('electron').ipcRenderer;
-
-var Blink1Service = require('../../server/blink1Service');
-var PatternsService = require('../../server/patternsService');
 var VirtualBlink1 = require('./virtualBlink1');
 
 // var PreferencesModal = require('./preferencesModal');
@@ -18,39 +14,43 @@ var log = require('../../logger');
 var Blink1Status = React.createClass({
 
     getInitialState: function() {
+        var b1state = window.electronAPI.blink1.getState();
+        var pstate = window.electronAPI.patterns.getState();
         return {
-            blink1Color: Blink1Service.getCurrentColor(),
-            statusStr: Blink1Service.getStatusString(),
-            serialNumber: Blink1Service.serialNumberForDisplay(),
-            blink1Serials: Blink1Service.getAllSerials(),
-            iftttKey: Blink1Service.getIftttKey(),
-            currentPattern: '-',
+            blink1Color: b1state.currentColor,
+            statusStr: b1state.statusStr,
+            serialNumber: b1state.serialNumberForDisplay,
+            blink1Serials: b1state.allSerials,
+            iftttKey: b1state.iftttKey,
+            currentPattern: pstate.playingPatternName || '-',
+            currentSource: pstate.playingPatternSource || '-',
             showForm: false
         };
     },
     componentDidMount: function() {
         var self = this;
-        Blink1Service.addChangeListener( this.updateColorState, "blink1Status" );
-        PatternsService.addChangeListener( this.updatePatternState, "blink1Status" );
-
-        ipcRenderer.on('showPreferences', function( /*event,arg*/ ) {
+        window.electronAPI.blink1.addChangeListener(this.updateColorState, "blink1Status");
+        window.electronAPI.patterns.addChangeListener(this.updatePatternState, "blink1Status");
+        window.electronAPI.bus.on('showPreferences', function() {
             self.setState({showForm: true});
         });
-
     },
-    updateColorState: function(/*currentColor,  colors,ledn */) {
+    updateColorState: function() {
+        var b1state = window.electronAPI.blink1.getState();
         this.setState({
-                        blink1ColorLast: Blink1Service.getCurrentColor(),//currentColor,
-                        statusStr: Blink1Service.getStatusString(),
-                        serialNumber: Blink1Service.serialNumberForDisplay(),
-                        blink1Serials: Blink1Service.getAllSerials(),
-                        iftttKey: Blink1Service.getIftttKey()
-                    });
+            blink1ColorLast: b1state.currentColor,
+            statusStr: b1state.statusStr,
+            serialNumber: b1state.serialNumberForDisplay,
+            blink1Serials: b1state.allSerials,
+            iftttKey: b1state.iftttKey
+        });
     },
     updatePatternState: function() {
-        this.setState( {
-            currentPattern: PatternsService.getPlayingPatternName(),
-            currentSource: PatternsService.getPlayingPatternSource() });
+        var pstate = window.electronAPI.patterns.getState();
+        this.setState({
+            currentPattern: pstate.playingPatternName,
+            currentSource: pstate.playingPatternSource
+        });
     },
 
     onIftttKeyClick: function() {
@@ -68,7 +68,7 @@ var Blink1Status = React.createClass({
     },
     showIfttContextMenu: function(event) {
         log.msg("Blink1Status.showIfttContextMenu: ", event);
-        ipcRenderer.send('showContextMenu', {
+        window.electronAPI.menu.showContextMenu({
             menuId: 'ifttt-' + Date.now(),
             template: [{ label: 'Copy IFTTT Key', role: 'copy' }]
         });

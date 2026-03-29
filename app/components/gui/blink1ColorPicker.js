@@ -6,7 +6,6 @@ var Button = require('react-bootstrap').Button;
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
 
 var log = require('../../logger');
-var Blink1Service = require('../../server/blink1Service');
 
 var HtmlColorChart = require('./htmlColorChart');
 var tinycolor = require('tinycolor2');
@@ -27,23 +26,24 @@ var Blink1ColorPicker = React.createClass({
     },
     componentDidMount: function() {
         // log.msg("Blink1ColorPicker.componentDidMount",this.state.color);
-        Blink1Service.addChangeListener( this.updateCurrentColor, "blink1ColorPicker" );
+        window.electronAPI.blink1.addChangeListener(this.updateCurrentColor, "blink1ColorPicker");
     },
     /**  Callback for Blink1Service notifyChange */
     updateCurrentColor: function() {
-        var blink1Id = Blink1Service.getCurrentBlink1Id();
-        var colr = Blink1Service.getCurrentColor( blink1Id );
-        var secs = Blink1Service.getCurrentMillis( blink1Id ) / 1000;
-        var ledn = Blink1Service.getCurrentLedN( blink1Id );
+        var b1state = window.electronAPI.blink1.getState();
+        var blink1Id = b1state.currentBlink1Id;
+        var colr = tinycolor(window.electronAPI.blink1.getCurrentColor(blink1Id));
+        var secs = window.electronAPI.blink1.getCurrentMillis(blink1Id) / 1000;
+        var ledn = window.electronAPI.blink1.getCurrentLedN(blink1Id);
         var crgb = colr.toRgb();
         // log.msg("Blink1ColorPicker.updateCurrentColor, currentColor",colr.toHexString(), "ledn:",ledn, "blink1Id:",blink1Id);
-        this.setState( {
+        this.setState({
             color: colr.toHexString(),
             colorHex: colr.toHexString().toUpperCase(),
             ledn: ledn,
             r: crgb.r, g: crgb.g, b: crgb.b,
-            secs:secs,
-             blink1Id: blink1Id
+            secs: secs,
+            blink1Id: blink1Id
         });
     },
     // called by HtmlColorChart  why are there two?
@@ -54,19 +54,19 @@ var Blink1ColorPicker = React.createClass({
     // called by colorpicker & handleChange{R,G,B}
     setColor: function(color) {
         // console.log("colorpicker.setColor",color.hex, this.state.ledn, this.state.blink1Idx);
-        Blink1Service.fadeToColor( this.state.secs*1000, color, this.state.ledn, this.state.blink1Id ); // FIXME: time
+        window.electronAPI.blink1.fadeToColor(this.state.secs*1000, color, this.state.ledn, this.state.blink1Id);
         // and the above will call 'fetchBlink1Color' anyway
         // there must be a better way to do this
     },
     // called by ledn buttons
     setLedN: function(n) {
-        Blink1Service.setCurrentLedN(n); // doesn't trigger an updateCurrentColor?
+        window.electronAPI.blink1.setCurrentLedN(n); // doesn't trigger an updateCurrentColor?
         this.setState({ledn: n});
     },
     handleChangeSecs: function(event) {
         var secs = event.target.value;  // FIXME
         secs = ( secs < 0 ) ? 0 : (secs>10) ? 10 : secs;
-        Blink1Service.setCurrentMillis(secs*1000); // doesn't trigger an updateCurrentColor?
+        window.electronAPI.blink1.setCurrentMillis(secs*1000); // doesn't trigger an updateCurrentColor?
         this.setState({secs: secs});
     },
     handleChangeR: function(event) {
@@ -101,11 +101,11 @@ var Blink1ColorPicker = React.createClass({
     },
     handleBlink1IdChange: function(evt) {
         var id = evt.target.value;
-        Blink1Service.setCurrentBlink1Id(id);
-        this.setState( {blink1Id: id});
+        window.electronAPI.blink1.setCurrentBlink1Id(id);
+        this.setState({blink1Id: id});
     },
     render: function() {
-        var serials = Blink1Service.getAllSerials();
+        var serials = window.electronAPI.blink1.getAllSerials();
         var makeBlink1IdOption = function(serial,idx) {
             return <option value={serial} key={idx}>{serial}</option>;
         };

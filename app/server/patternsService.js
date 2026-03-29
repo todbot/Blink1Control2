@@ -66,6 +66,7 @@ var playingPatternSource = '';
 var playingBlink1Id = '';
 
 var listeners = [];
+var _sendState = null; // set from main.js after window is ready
 
 var _generateId = function(pattern) {
     var simplename = pattern.name.toLowerCase().replace(/\W+/g, '');
@@ -601,7 +602,22 @@ var PatternsService = {
         var self = this;
         var allpatts = self.getAllPatterns();
         listeners.forEach( (listener) => { if(listener.callback) listener.callback(allpatts) } );
-    }
+        if (_sendState) _sendState(PatternsService._getState());
+    },
+    setSendState: function(fn) {
+        _sendState = fn;
+        if (fn) fn(PatternsService._getState()); // push initial state immediately
+    },
+    setInEditing: function(val) {
+        this.inEditing = val;
+    },
+    _getState: function() {
+        return {
+            allPatterns:          this.getAllPatterns(),
+            playingPatternName:   this.getPlayingPatternName(),
+            playingPatternSource: this.getPlayingPatternSource(),
+        };
+    },
 
 };
 

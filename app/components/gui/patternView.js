@@ -2,9 +2,6 @@
 
 var React = require('react');
 
-var Blink1Service = require('../../server/blink1Service');
-var PatternsService = require('../../server/patternsService');
-
 var Button = require('react-bootstrap').Button;
 var MenuItem = require('react-bootstrap').MenuItem;
 var DropdownButton = require('react-bootstrap').DropdownButton;
@@ -31,7 +28,7 @@ var PatternView = React.createClass({
         log.msg('PatternView.onNameChange field,value', field, value);
         var pattern = this.state.pattern;
         pattern.name = value;
-        pattern.id = PatternsService.generateId(pattern);  // regenerate id on name change
+        pattern.id = window.electronAPI.patterns.generateId(pattern);  // regenerate id on name change
         this.setState( {pattern: pattern});
     },
     onAddSwatch: function() {
@@ -39,10 +36,11 @@ var PatternView = React.createClass({
         var pattern = this.state.pattern;
         log.msg('PatternView.addSwatch prev colors',pattern.colors);
         //this.props.onAddSwatch(this.props.pattern.id);
+        var b1state = window.electronAPI.blink1.getState();
         var newcolor = {
-            rgb: Blink1Service.getCurrentColor().toHexString(),
-            time: Blink1Service.getCurrentMillis() / 1000, // FIXME
-            ledn: Blink1Service.getCurrentLedN()
+            rgb: b1state.currentColor,
+            time: b1state.currentMillis / 1000, // FIXME
+            ledn: b1state.currentLedn
         };
         // var colors = pattern.colors
         pattern.colors.push( newcolor );
@@ -65,16 +63,16 @@ var PatternView = React.createClass({
         this.setState({pattern: pattern, editing: false});
         log.msg("PatternView.onPlayStopPattern", pattern.id, pattern.playing);
         if( pattern.playing ) {
-            PatternsService.playPatternFrom( 'patternView', pattern.id);
+            window.electronAPI.patterns.playPatternFrom('patternView', pattern.id);
         }
         else {
-            PatternsService.stopPattern(pattern.id);
+            window.electronAPI.patterns.stopPattern(pattern.id);
         }
     },
-    onSwatchDoubleClick(coloridx) {
+    onSwatchDoubleClick: function(coloridx) {
         log.msg("PatternView.onSwatchDOUBLEClick", this.props.pattern.id, "swatch:",coloridx);
         var acolor = this.state.pattern.colors[coloridx];
-        Blink1Service.fadeToColor( acolor.time*1000, acolor.rgb, acolor.ledn );
+        window.electronAPI.blink1.fadeToColor(acolor.time*1000, acolor.rgb, acolor.ledn);
     },
     onSwatchClick: function(coloridx) {
         log.msg("PatternView.onSwatchClick", this.props.pattern.id, "swatch:",coloridx);
@@ -88,25 +86,23 @@ var PatternView = React.createClass({
                 // function called when state is actually updated
                 // see https://stackoverflow.com/questions/29490581/react-state-not-updated
                 function() {
-                    Blink1Service.fadeToColor( acolor.time*1000, acolor.rgb, acolor.ledn );
+                    window.electronAPI.blink1.fadeToColor(acolor.time*1000, acolor.rgb, acolor.ledn);
                 });
             // which cause "onColorChanged()" to get called ?
         }
         else {
             // log.msg("color: ", pattern.colors[coloridx]);
-            Blink1Service.fadeToColor( acolor.time*1000, acolor.rgb, acolor.ledn );
+            window.electronAPI.blink1.fadeToColor(acolor.time*1000, acolor.rgb, acolor.ledn);
         }
     },
     // callback for Blink1Service
     onColorChanged: function() {
-        // log.msg("PatternView.onColorChanged, editing:",this.state.editing,"activeSwatch:",this.state.activeSwatch,
-        // 		"color:", Blink1Service.getCurrentColor().toHexString());
         if( this.state.editing ) {
-            // var color = pattern.colors[this.state.activeSwatch];
+            var b1state = window.electronAPI.blink1.getState();
             var newcolor = {
-                rgb: Blink1Service.getCurrentColor().toHexString(),
-                time: Blink1Service.getCurrentMillis() / 1000, // FIXME
-                ledn: Blink1Service.getCurrentLedN()
+                rgb: b1state.currentColor,
+                time: b1state.currentMillis / 1000, // FIXME
+                ledn: b1state.currentLedn
             };
             var pattern = this.state.pattern;
             pattern.colors[this.state.activeSwatch] = newcolor;
@@ -117,19 +113,19 @@ var PatternView = React.createClass({
         log.msg("PatternView.onEditPattern");
         var pattern = this.state.pattern;
         if( pattern.playing ) {
-            PatternsService.stopPattern(pattern.id);
+            window.electronAPI.patterns.stopPattern(pattern.id);
         }
         // FIXME: this addChangeListener is to watch for color picker changes. sigh
-        Blink1Service.addChangeListener( this.onColorChanged, "patternView" );
-        PatternsService.inEditing = true;
-        this.setState( {editing: true });
+        window.electronAPI.blink1.addChangeListener(this.onColorChanged, "patternView");
+        window.electronAPI.patterns.setInEditing(true);
+        this.setState({editing: true});
     },
     onEditDone: function() {
         log.msg("PatternView.onEditDone");
-        this.setState( {editing: false, activeSwatch:-1 });
+        this.setState({editing: false, activeSwatch:-1});
         var pattern = this.state.pattern;
-        Blink1Service.removeChangeListener( "patternView" ); // FIXME HACK
-        PatternsService.inEditing = false;
+        window.electronAPI.blink1.removeChangeListener("patternView"); // FIXME HACK
+        window.electronAPI.patterns.setInEditing(false);
         this.props.onPatternUpdated(pattern);
     },
     onLockPattern: function() {

@@ -7,10 +7,6 @@ var Button = require('react-bootstrap').Button;
 
 var moment = require('moment');
 
-var Eventer = require('../../eventer');
-
-var PatternsService = require('../../server/patternsService');
-
 var log = require('../../logger');
 
 var ToolTableList = React.createClass({
@@ -29,7 +25,7 @@ var ToolTableList = React.createClass({
     },
 
     componentDidMount: function() {
-        Eventer.on('newStatus', this.updateStatus);
+        window.electronAPI.bus.on('newStatus', this.updateStatus);
     },
     // callback called by event service
     updateStatus: function(statuses) {
@@ -42,7 +38,7 @@ var ToolTableList = React.createClass({
     },
 
     render: function() {
-        var patterns = PatternsService.getAllPatterns();
+        var patterns = window.electronAPI.patterns.getAllPatterns();
         var events = this.state.events;
 
         var createRow = function(rule, index) {
@@ -110,7 +106,7 @@ var ToolTableList = React.createClass({
             // log.msg("toolTable.render: makePattern:",rule);
             var pattstr = 'unknown';
             if( rule.actionType === 'play-pattern' ) {
-                pattstr = PatternsService.getNameForId( rule.patternId );  // just text
+                pattstr = window.electronAPI.patterns.getNameForId(rule.patternId);  // just text
                 if( !pattstr ) { // if pattern not found
                     pattstr = 'bad pattern';
                    }

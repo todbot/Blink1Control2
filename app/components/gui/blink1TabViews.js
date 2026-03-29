@@ -9,13 +9,10 @@ var Button = require('react-bootstrap').Button;
 var BigButtonSet = require('./bigButtonSet');
 var ToolTable = require('./toolTable');
 
-var ipcRenderer = require('electron').ipcRenderer;
-
-
 var Blink1TabViews = React.createClass({
 
   openHelpWindow: function() {
-    ipcRenderer.send('openHelpWindow');
+    window.electronAPI.menu.send('openHelpWindow');
   },
 
   render: function() {

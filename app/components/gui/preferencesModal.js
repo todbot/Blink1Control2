@@ -18,19 +18,11 @@ var Checkbox = require('react-bootstrap').Checkbox;
 
 var isAccelerator = require("electron-is-accelerator");
 
-var PatternsService = require('../../server/patternsService');
-var Blink1Service   = require('../../server/blink1Service');
-var ApiServer   = require('../../server/apiServer');
 var MenuMaker = require('../../menuMaker');
 
-var conf = require('../../configuration');
 var log = require('../../logger');
-var Eventer = require('../../eventer');
 
 var Blink1SerialOption = require('./blink1SerialOption');
-
-var ipcRenderer = require('electron').ipcRenderer;
-var path = require('path');
 
 const propTypes = {
 };
@@ -52,7 +44,8 @@ var PreferencesModal = React.createClass({
     }
 },
 loadSettings: function() {
-  var patterns = PatternsService.getAllPatterns();
+  var conf = window.electronAPI.config;
+  var patterns = window.electronAPI.patterns.getAllPatterns();
   var settings = {
     hideDockIcon:     conf.readSettings('startup:hideDockIcon') || false,
     startMinimized:   conf.readSettings('startup:startMinimized') || false,
@@ -61,7 +54,7 @@ loadSettings: function() {
     shortcutPrefix:   conf.readSettings('startup:shortcutPrefix') || 'CommandOrControl+Shift',
     shortcutResetKey: conf.readSettings('startup:shortcutResetKey') || 'R',
     enableGamma:      conf.readSettings('blink1Service:enableGamma') || false,
-    hostId: Blink1Service.getHostId(),
+    hostId: window.electronAPI.blink1.getHostId(),
     blink1ToUse:      conf.readSettings('blink1Service:blink1ToUse') || "0", // 0 == use first avail
     allowMultiBlink1: conf.readSettings('blink1Service:allowMulti') || false,
     apiServerEnable:  conf.readSettings('apiServer:enabled') || false,
@@ -82,88 +75,100 @@ loadSettings: function() {
 },
 
 saveSettings: function() {
-  if (!Blink1Service.setHostId(this.state.hostId)) {
-    this.setState({errormsg: 'HostId must be 8-digit hexadecimal'});
-    return false;
-  }
+  var self = this;
+  var conf = window.electronAPI.config;
+  return window.electronAPI.blink1.setHostId(this.state.hostId).then(function(ok) {
+    if (!ok) {
+      self.setState({errormsg: 'HostId must be 8-digit hexadecimal'});
+      return false;
+    }
 
-  conf.saveSettingsMem('startup:hideDockIcon', this.state.hideDockIcon);
-  conf.saveSettingsMem('startup:startMinimized', this.state.startMinimized);
-  conf.saveSettingsMem('startup:startAtLogin', this.state.startAtLogin);
-  // conf.saveSettings('startup:startupPattern', this.state.startupPattern);
-  conf.saveSettingsMem('startup:shortcutPrefix', this.state.shortcutPrefix);
-  conf.saveSettingsMem('startup:shortcutResetKey', this.state.shortcutResetKey);
-  conf.saveSettingsMem('blink1Service:enableGamma', this.state.enableGamma);
-  conf.saveSettingsMem('blink1Service:blink1ToUse', this.state.blink1ToUse);
-  conf.saveSettingsMem('blink1Service:allowMulti', this.state.allowMultiBlink1);
-  conf.saveSettingsMem('apiServer:enabled', this.state.apiServerEnable);
-  conf.saveSettingsMem('apiServer:port', this.state.apiServerPort);
-  conf.saveSettingsMem('apiServer:host', this.state.apiServerHost);
-  conf.saveSettingsMem('proxy:enable', this.state.proxyEnable);
-  conf.saveSettingsMem('proxy:host', this.state.proxyHost);
-  conf.saveSettingsMem('proxy:port', this.state.proxyPort);
-  conf.saveSettingsMem('proxy:username', this.state.proxyUser);
-  conf.saveSettingsMem('proxy:password', this.state.proxyPass);
-  conf.saveSettingsMem('patternsService:playingSerialize', this.state.playingSerialize);
-  conf.saveSettingsSync(); // save settings to disk
+    conf.saveSettingsMem('startup:hideDockIcon', self.state.hideDockIcon);
+    conf.saveSettingsMem('startup:startMinimized', self.state.startMinimized);
+    conf.saveSettingsMem('startup:startAtLogin', self.state.startAtLogin);
+    // conf.saveSettings('startup:startupPattern', self.state.startupPattern);
+    conf.saveSettingsMem('startup:shortcutPrefix', self.state.shortcutPrefix);
+    conf.saveSettingsMem('startup:shortcutResetKey', self.state.shortcutResetKey);
+    conf.saveSettingsMem('blink1Service:enableGamma', self.state.enableGamma);
+    conf.saveSettingsMem('blink1Service:blink1ToUse', self.state.blink1ToUse);
+    conf.saveSettingsMem('blink1Service:allowMulti', self.state.allowMultiBlink1);
+    conf.saveSettingsMem('apiServer:enabled', self.state.apiServerEnable);
+    conf.saveSettingsMem('apiServer:port', self.state.apiServerPort);
+    conf.saveSettingsMem('apiServer:host', self.state.apiServerHost);
+    conf.saveSettingsMem('proxy:enable', self.state.proxyEnable);
+    conf.saveSettingsMem('proxy:host', self.state.proxyHost);
+    conf.saveSettingsMem('proxy:port', self.state.proxyPort);
+    conf.saveSettingsMem('proxy:username', self.state.proxyUser);
+    conf.saveSettingsMem('proxy:password', self.state.proxyPass);
+    conf.saveSettingsMem('patternsService:playingSerialize', self.state.playingSerialize);
+    conf.saveSettingsSync(); // save settings to disk
 
-  Blink1Service.reloadConfig();
-  ApiServer.reloadConfig();
-  PatternsService.reloadConfig();
+    window.electronAPI.blink1.reloadConfig();
+    window.electronAPI.eventServices.reloadConfig('apiServer');
+    window.electronAPI.patterns.reloadConfig();
 
-  MenuMaker.setupMainMenu(); // FIXME: find way to do spot edit of shortcut keys?
-  MenuMaker.updateTrayMenu();
+    MenuMaker.setupMainMenu(); // FIXME: find way to do spot edit of shortcut keys?
+    MenuMaker.updateTrayMenu();
 
-  this.updateStartAtLogin();
+    self.updateStartAtLogin();
 
-  if (process.platform === 'darwin') {
-    ipcRenderer.send(this.state.hideDockIcon ? 'dockHide' : 'dockShow');
-  }
+    if (window.electronAPI.app.platform === 'darwin') {
+      window.electronAPI.app.send(self.state.hideDockIcon ? 'dockHide' : 'dockShow');
+    }
 
-  // FIXME: a hack to get ToolTable to refetch allowMulti pref
-  Eventer.addStatus({type: 'info', source: 'preferences', text: 'settings updated'});
+    // FIXME: a hack to get ToolTable to refetch allowMulti pref
+    window.electronAPI.eventer.addStatus({type: 'info', source: 'preferences', text: 'settings updated'});
 
-  return true;
+    return true;
+  });
 },
 
 updateStartAtLogin: function() {
-  ipcRenderer.send('setLoginItemSettings', { openAtLogin: this.state.startAtLogin });
+  window.electronAPI.app.send('setLoginItemSettings', { openAtLogin: this.state.startAtLogin });
 },
 
 close: function() {
-  if( this.saveSettings() ) {
-    this.props.onSave(this.state);
-  }
+  var self = this;
+  this.saveSettings().then(function(ok) {
+    if (ok) { self.props.onSave(self.state); }
+  });
 },
 cancel: function() {
   this.props.onCancel();
 },
 handleBlink1SerialChange: function(serial) {
   log.msg("handleBlink1SerialChange: ", serial);
-  PatternsService.playPatternFrom('prefs', '~blink:#888888-3', serial);
+  window.electronAPI.patterns.playPatternFrom('prefs', '~blink:#888888-3', serial);
   this.setState({blink1ToUse: serial});
 },
 handleBlink1NonComputerSet: function(event) {
-  var choice = event.target.value
-  log.msg("handleBlink1NonComputerSet: ",choice, ",", this.state.nonComputerPattern );
-  var err = '';
+  var self = this;
+  var choice = event.target.value;
+  log.msg("handleBlink1NonComputerSet: ",choice, ",", this.state.nonComputerPattern);
   if( choice === 'off' ) {
     log.msg("settting OFF");
-    var patt = PatternsService.newPatternFromString( 'offpatt', '0,#000000,0.0,0');
-    err = Blink1Service.writePatternToBlink1(patt,true,0);
+    window.electronAPI.patterns.newPatternFromString('offpatt', '0,#000000,0.0,0').then(function(patt) {
+      return window.electronAPI.blink1.writePatternToBlink1(patt, true, 0);
+    }).then(function(err) {
+      self.setState({errorMsg: err ? err : 'success'});
+    });
   }
   else if( choice === 'default' ) {
-    log.msg("settting default:",Blink1Service.defaultPatternStr);
-    var patt = PatternsService.newPatternFromString('default', Blink1Service.defaultPatternStr);
-    err = Blink1Service.writePatternToBlink1(patt,true,0);
+    var defaultPatternStr = window.electronAPI.blink1.getState().defaultPatternStr;
+    log.msg("settting default:", defaultPatternStr);
+    window.electronAPI.patterns.newPatternFromString('default', defaultPatternStr).then(function(patt) {
+      return window.electronAPI.blink1.writePatternToBlink1(patt, true, 0);
+    }).then(function(err) {
+      self.setState({errorMsg: err ? err : 'success'});
+    });
   }
-   else if ( choice === 'pattern' ) {
-    var patt = PatternsService.getPatternById(this.state.nonComputerPattern);
-    log.msg("setting pattern:",patt);
-    err = Blink1Service.writePatternToBlink1(patt,true,0);
+  else if ( choice === 'pattern' ) {
+    var patt = window.electronAPI.patterns.getPatternById(this.state.nonComputerPattern);
+    log.msg("setting pattern:", patt);
+    window.electronAPI.blink1.writePatternToBlink1(patt, true, 0).then(function(err) {
+      self.setState({errorMsg: err ? err : 'success'});
+    });
   }
-  err = ( !err ) ? "success" : err;
-  this.setState({errorMsg: err});
 },
 handleInputChange: function(event) {
   var target = event.target;
@@ -187,7 +192,7 @@ render: function() {
   var createShortcutPrefixOption = function(item, idx) {
     return (<option key={idx} value={item.what}>{item.what2}</option>);
   };
-  var isMac = (process.platform === 'darwin');
+  var isMac = (window.electronAPI.app.platform === 'darwin');
   // var showIfMac = (isMac) ? '':'hidden';
   var cmdKeyStr = (isMac) ? 'Cmd' : 'Ctrl';
   var sectStyle = {

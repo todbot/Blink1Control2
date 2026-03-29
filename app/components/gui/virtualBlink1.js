@@ -12,7 +12,6 @@
 var React = require('react');
 
 var log = require('../../logger');
-var Blink1Service = require('../../server/blink1Service');
 
 var tinycolor = require('tinycolor2');
 var d3 = require('d3-timer');
@@ -31,22 +30,22 @@ var VirtualBlink1 = React.createClass({
         };
     },
     componentDidMount: function() {
-        Blink1Service.addChangeListener( this.fetchBlink1Color, "virtualBlink1" );
+        window.electronAPI.blink1.addChangeListener(this.fetchBlink1Color, "virtualBlink1");
     },
     // callback to Blink1Service
     fetchBlink1Color: function() {
         // log.msg("virtualBlink1.fetchBlink1Color");
         this.lastColors = this.state.colors;
-        // this.ledn = Blink1Service.getCurrentLedN();  // FIXME: need this??
-        this.blink1Id = Blink1Service.getCurrentBlink1Id();
-        this.nextColors = Blink1Service.getCurrentColors( this.blink1Id );
+        // this.ledn = window.electronAPI.blink1.getCurrentLedN();  // FIXME: need this??
+        this.blink1Id = window.electronAPI.blink1.getState().currentBlink1Id;
+        this.nextColors = window.electronAPI.blink1.getCurrentColors(this.blink1Id).map(function(c) { return tinycolor(c); });
         this._colorFaderStart();
     },
     handleBlink1IdChange: function(id) {
-        Blink1Service.setCurrentBlink1Id(id);
+        window.electronAPI.blink1.setCurrentBlink1Id(id);
     },
     handleClick: function() {
-        Blink1Service.reloadConfig();
+        window.electronAPI.blink1.reloadConfig();
     },
 
     blink1Id: 0,
@@ -67,7 +66,7 @@ var VirtualBlink1 = React.createClass({
         //     this.timer = d3.interval( this._colorFaderInterval, this.stepMillis );
         // }
         this.faderMillis = 0;  // shouldb be 0;  // goes from 0 to currentMillis
-        this.currentMillis = Blink1Service.getCurrentMillis() || this.stepMillis; // FIXME: HACK
+        this.currentMillis = window.electronAPI.blink1.getCurrentMillis() || this.stepMillis; // FIXME: HACK
         this.currentMillis = this.currentMillis / 2; // FIXME: to match what blink1service does
 
         var now = d3.now();
@@ -143,7 +142,7 @@ var VirtualBlink1 = React.createClass({
             // var img3style = { width: 240, height: 192, position: "relative", top: 0 };
 
         var makeMiniBlink1 = function(serial,idx) {
-            var colrs = Blink1Service.getCurrentColors(serial);
+            var colrs = window.electronAPI.blink1.getCurrentColors(serial).map(function(c) { return tinycolor(c); });
             var colrA = colrs[0];
             var colrB = colrs[1];
             // log.msg(idx+":"+serial+": ", colrA.toHexString(),colrB.toHexString());
@@ -163,7 +162,7 @@ var VirtualBlink1 = React.createClass({
             );
 
         };
-        var serials = Blink1Service.getAllSerials();
+        var serials = window.electronAPI.blink1.getAllSerials();
         var miniBlink1s = (serials.length > 1 ) ? serials.map(makeMiniBlink1, this) : null;
         return (
             <div style={{position:'relative', border:'0px solid green'}}>
