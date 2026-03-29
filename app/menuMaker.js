@@ -1,24 +1,14 @@
 "use strict";
 
-const Menu = require('@electron/remote').Menu
-const Tray = require('@electron/remote').Tray
-const app  = require('@electron/remote').app
-
-// var remote = require('electron').remote;
-// var Menu = remote.Menu;
-// var Tray = remote.Tray;
-// var app = remote.app;
 var ipcRenderer = require('electron').ipcRenderer;
 
 var config = require('./configuration');
 var log = require('./logger');
 var Eventer = require('./eventer');
-
 var Blink1Service = require('./server/blink1Service');
 
-var tray = null;
-
-var myname = app.getName();
+var appData = ipcRenderer.sendSync('getAppData');
+var myname = appData.appName;
 
 var MenuMaker = {
 
@@ -27,96 +17,65 @@ var MenuMaker = {
         var resetKey = config.readSettings('startup:shortcutResetKey') || 'R';
         return globalShortcutPrefix + '+' + resetKey;
     },
+
     /**
-     * Return an array of MenuItem templates
-     * @method createBigButtonMenu
-     * @return {Array}         MenuItem templates
+     * Return a serializable array of menu item templates for big buttons.
+     * Clicks are dispatched back to renderer via existing 'playBigButtonUser' channel.
      */
     createBigButtonMenu: function(withAccelerators) {
         var bigButtonsConfig = config.readSettings('bigButtons') || [];
-        var statusButtons = bigButtonsConfig.map( function(bb,idx) {
+        return bigButtonsConfig.map(function(bb, idx) {
             return {
                 label: "Set: " + bb.name,
-                accelerator: (withAccelerators) ? "CommandOrControl+" + (idx+1): null,
-                // FIXME: would be nice to have little swatch of button color
-                click: function(/*item*/) {
-                    Eventer.emit('playBigButtonUser', idx);
-                }
+                accelerator: withAccelerators ? "CommandOrControl+" + (idx + 1) : null,
+                clickSpec: { target: 'renderer', channel: 'playBigButtonUser', args: [idx] }
             };
-
         });
-        return statusButtons;
     },
 
     updateTrayMenu: function() {
         log.msg("MenuMaker.updateTrayMenu");
         var resetShortcut = MenuMaker.getShortcutReset();
 
-        var contextMenuTemplate = [
-            {  label: 'Blink1Control2 is running', enabled: false},
-            {  label: 'status: '+ Blink1Service.getStatusString(), enabled: false },
-            {  type:  'separator' }
-        ];
-        var bigButtonMenu = MenuMaker.createBigButtonMenu();
-        // Array.prototype.push.apply( contextMenuTemplate, bigButtonMenu );
-        contextMenuTemplate = contextMenuTemplate.concat( bigButtonMenu );
+        var trayTemplate = [
+            { label: 'Blink1Control2 is running', enabled: false },
+            { label: 'status: ' + Blink1Service.getStatusString(), enabled: false },
+            { type: 'separator' }
+        ].concat(MenuMaker.createBigButtonMenu()).concat([
+            { type: 'separator' },
+            { label: 'Off / Reset Alerts', accelerator: resetShortcut,
+              clickSpec: { target: 'renderer', channel: 'resetAlerts' } },
+            { type: 'separator' },
+            { label: 'Open Controls...',
+              clickSpec: { target: 'main', action: 'openMainWindow' } },
+            { type: 'separator' }
+        ]);
 
-        var contextMenuTemplateB = [
-            {  type: 'separator' },
-            {  label: 'Off / Reset Alerts',
-                accelerator: resetShortcut,
-                click: function() {
-                    Eventer.emit('playBigButtonSys', 'Off');
-                }
-            },
-            // {	label: 'Reset Alerts',
-            //     click: function() {
-            //         // FIXME: TBD
-            //     }
-            // },
-            {	type: 'separator' },
-            {	label: 'Open Controls...',
-                click: function() {
-                    ipcRenderer.send('openMainWindow');
-                }
-            },
-            {	type: 'separator' }
-        ];
-        var contextMenuTemplateC = [
-            {	label: 'Quit',
-                click: function() {
-                    ipcRenderer.send('quitnow');
-                }
-            }
-        ];
-        contextMenuTemplate = contextMenuTemplate.concat( contextMenuTemplateB );
-        // Array.prototype.push.apply( contextMenuTemplate, contextMenuTemplateB );
+        // Dock menu (macOS): same as tray but without Quit
+        var dockTemplate = trayTemplate.concat();
 
+        // Tray gets the Quit item too
+        trayTemplate = trayTemplate.concat([
+            { label: 'Quit',
+              clickSpec: { target: 'main', action: 'quitnow' } }
+        ]);
 
-        var contextMenu = Menu.buildFromTemplate( contextMenuTemplate );
-        if (process.platform === 'darwin') {
-            app.dock.setMenu( contextMenu ); // Make Dock have same context menu
-        }
-        // add on the Quit button for the Tray but not for the Dock menu above
-        contextMenu = Menu.buildFromTemplate( contextMenuTemplate.concat( contextMenuTemplateC ));
-        tray.setContextMenu( contextMenu );
+        ipcRenderer.send('updateTrayMenu', { trayTemplate: trayTemplate, dockTemplate: dockTemplate });
     },
 
     setupTrayMenu: function() {
-        // var self = this;
-        // console.log("resourcesPath:",process.resourcesPath, "appPath:",app.getAppPath());
-        if( process.platform === 'win32' ) {  // FIXME: make this icon better for Windows
-            tray = new Tray( app.getAppPath() + '/images/icons/blink1mk2-icon2-128px.ico' );
+        var iconPath;
+        if (process.platform === 'win32') {
+            iconPath = appData.appPath + '/images/icons/blink1mk2-icon2-128px.ico';
+        } else {
+            iconPath = appData.appPath + '/images/icons/blink1mk2-icon-16px.png';
         }
-        else {
-            tray = new Tray( app.getAppPath() + '/images/icons/blink1mk2-icon-16px.png' );
-        }
-        tray.setToolTip( myname + ' is running...');
+        ipcRenderer.send('setupTray', { iconPath: iconPath, tooltip: myname + ' is running...' });
 
         // delete tray object to eliminate duplicates on reload
-        window.onbeforeunload = function(/*e*/) {
+        window.onbeforeunload = function() {
             console.log("killing tray");
-            if(tray) { tray.destroy(); tray = null; }
+            ipcRenderer.send('destroyTray');
         };
 
         this.updateTrayMenu();
@@ -124,145 +83,98 @@ var MenuMaker = {
         Eventer.on('deviceUpdated', this.updateTrayMenu);
         Eventer.on('bigButtonsUpdated', this.updateTrayMenu);
 
-        if( process.platform === 'win32' ) {
-            tray.on('click', function() {
+        if (process.platform === 'win32') {
+            ipcRenderer.on('trayClick', function() {
                 ipcRenderer.send('openMainWindow');
             });
         }
-        // tray.on('right-click', function() { self.showTrayMenu(); });
-        // tray.on('double-click', function() { });
     },
 
     setupMainMenu: function() {
-
         var resetShortcut = MenuMaker.getShortcutReset();
-
         var bigButtonMenu = MenuMaker.createBigButtonMenu(true);
 
         var controlMenuTemplate = [
-            { label: 'Off / Reset Alerts', accelerator: resetShortcut, click: function() {
-                // mainWindow.webContents.send('resetAlerts');
-                Eventer.emit('playBigButtonSys', 'Off'); // FIXME: super fixme
-            }},
+            { label: 'Off / Reset Alerts', accelerator: resetShortcut,
+              clickSpec: { target: 'renderer', channel: 'resetAlerts' } },
             { type: 'separator' }
-        ];
+        ].concat(bigButtonMenu);
 
-        controlMenuTemplate = controlMenuTemplate.concat( bigButtonMenu );
-
-        // Mac-specific menu  (hide, unhide, etc. enables Command-Q )
+        // Mac-specific menu (hide, unhide, etc. enables Command-Q)
         var templateAppMac = [
-            {	label: myname,
-                submenu: [
-                    { label: 'About ' + myname,
-                        click: function() {
-                            ipcRenderer.send('openAboutWindow');
-                        }
-                    },
-                    { label: 'Check for Updates...',
-                      click: function(menuItem) {
-                        // console.log("MENUITEM:", menuItem);
-                        ipcRenderer.send('checkForUpdates');
-                      }
-                    },
-                    { type: 'separator' },
-                    { label: 'Preferences...', accelerator: "CommandOrControl+,",
-                        click: function() {
-                            ipcRenderer.send('openPreferences');
-                        }
-                    },
-                    { type: 'separator' },
-                    { role: 'hide' },
-                    { role: 'hideothers' },
-                    { role: 'unhide' },
-                    { type: 'separator' },
-                    { label: 'Open Controls...', accelerator: 'CommandOrControl+O',
-                        click: function() {
-                            ipcRenderer.send('openMainWindow');
-                        }
-                    },
-                    { label: 'Rescan for devices',
-                        click: function() {
-                            console.log("rescan menu click");
-                            Blink1Service.reloadConfig();
-                        }
-                    },
-                    { type: 'separator' },
-                    { role: 'toggledevtools',label: 'Toggle Dev Tools' },
-                    { type: 'separator' },
-                    { role: 'close' },
-                    { type: 'separator' },
-                    { label: "Quit", accelerator: "CommandOrControl+Q",
-                        click: function() {
-                             ipcRenderer.send('quitnow');
-                        }
-                    }
-                ]
+            { label: myname,
+              submenu: [
+                { label: 'About ' + myname,
+                  clickSpec: { target: 'main', action: 'openAboutWindow' } },
+                { label: 'Check for Updates...',
+                  clickSpec: { target: 'main', action: 'checkForUpdates' } },
+                { type: 'separator' },
+                { label: 'Preferences...', accelerator: 'CommandOrControl+,',
+                  clickSpec: { target: 'main', action: 'openPreferences' } },
+                { type: 'separator' },
+                { role: 'hide' },
+                { role: 'hideothers' },
+                { role: 'unhide' },
+                { type: 'separator' },
+                { label: 'Open Controls...', accelerator: 'CommandOrControl+O',
+                  clickSpec: { target: 'main', action: 'openMainWindow' } },
+                { label: 'Rescan for devices',
+                  clickSpec: { target: 'renderer', channel: 'reloadConfig:blink1Service' } },
+                { type: 'separator' },
+                { role: 'toggledevtools', label: 'Toggle Dev Tools' },
+                { type: 'separator' },
+                { role: 'close' },
+                { type: 'separator' },
+                { label: 'Quit', accelerator: 'CommandOrControl+Q',
+                  clickSpec: { target: 'main', action: 'quitnow' } }
+              ]
             }
         ];
 
         var templateApp = [
-            {	label: 'File',
-                submenu: [
-                    { label: 'About ' + myname,
-                        click: function() {
-                            ipcRenderer.send('openAboutWindow');
-                        }
-                    },
-                    { label: 'Check for updates',
-                      click: function() {
-                        ipcRenderer.send('checkForUpdates');
-                      }
-                    },
-                    { type: 'separator' },
-                    { label: 'Preferences...', accelerator: "CommandOrControl+,",
-                        click: function() {
-                            ipcRenderer.send('openPreferences');
-                        }
-                    },
-                    { role: 'toggledevtools', label: 'Toggle Dev Tools' },
-                    { type: 'separator' },
-                    { role: 'close' },
-                    { type: 'separator' },
-                    { label: "Quit", accelerator: "CommandOrControl+Q",
-                        click: function() {
-                             ipcRenderer.send('quitnow');
-                        }
-                    }
-                ]
+            { label: 'File',
+              submenu: [
+                { label: 'About ' + myname,
+                  clickSpec: { target: 'main', action: 'openAboutWindow' } },
+                { label: 'Check for updates',
+                  clickSpec: { target: 'main', action: 'checkForUpdates' } },
+                { type: 'separator' },
+                { label: 'Preferences...', accelerator: 'CommandOrControl+,',
+                  clickSpec: { target: 'main', action: 'openPreferences' } },
+                { role: 'toggledevtools', label: 'Toggle Dev Tools' },
+                { type: 'separator' },
+                { role: 'close' },
+                { type: 'separator' },
+                { label: 'Quit', accelerator: 'CommandOrControl+Q',
+                  clickSpec: { target: 'main', action: 'quitnow' } }
+              ]
             }
         ];
 
         var templateEdit = [
-            {	label: "Edit",
-                submenu: [
-                    // { label: "Undo", accelerator: "CmdOrCtrl+Z", role: "undo" },
-                    // { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", role: "redo" },
-                    // { type: 'separator' },
-                    { role: "cut" },
-                    { role: "copy" },
-                    { role: "paste" },
-                    { role: "delete" },
-                    { role: "selectall" }
-                ]
-            },
-        ];
-        var templateControl = [
-            { label: "Control",
-                submenu: controlMenuTemplate
+            { label: 'Edit',
+              submenu: [
+                { role: 'cut' },
+                { role: 'copy' },
+                { role: 'paste' },
+                { role: 'delete' },
+                { role: 'selectall' }
+              ]
             }
         ];
 
-        var template = [];
-        if( process.platform === 'darwin' ) {
-            template = templateAppMac.concat(templateEdit,templateControl);
-        }
-        else {
-            template = templateApp.concat(templateEdit,templateControl);
-        }
-        // console.log("template = ", template);
+        var templateControl = [
+            { label: 'Control', submenu: controlMenuTemplate }
+        ];
 
-        Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+        var template;
+        if (process.platform === 'darwin') {
+            template = templateAppMac.concat(templateEdit, templateControl);
+        } else {
+            template = templateApp.concat(templateEdit, templateControl);
+        }
 
+        ipcRenderer.send('setApplicationMenu', template);
     }
 
 };

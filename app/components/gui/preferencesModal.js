@@ -29,7 +29,7 @@ var Eventer = require('../../eventer');
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
-var app = require('@electron/remote').app;
+var ipcRenderer = require('electron').ipcRenderer;
 var path = require('path');
 
 const propTypes = {
@@ -117,11 +117,7 @@ saveSettings: function() {
   this.updateStartAtLogin();
 
   if (process.platform === 'darwin') {
-    if (this.state.hideDockIcon) {
-      app.dock.hide();
-    } else {
-      app.dock.show();
-    }
+    ipcRenderer.send(this.state.hideDockIcon ? 'dockHide' : 'dockShow');
   }
 
   // FIXME: a hack to get ToolTable to refetch allowMulti pref
@@ -131,10 +127,7 @@ saveSettings: function() {
 },
 
 updateStartAtLogin: function() {
-  // log.msg("PreferencesModal.updateStartAtLogin:",this.state.startAtLogin);
-  app.setLoginItemSettings({
-    openAtLogin: this.state.startAtLogin,
-  });
+  ipcRenderer.send('setLoginItemSettings', { openAtLogin: this.state.startAtLogin });
 },
 
 close: function() {

@@ -17,7 +17,7 @@ var Checkbox = require('react-bootstrap').Checkbox;
 
 var Switch = require('react-bootstrap-switch');
 
-var dialog = require('@electron/remote').dialog;
+var ipcRenderer = require('electron').ipcRenderer;
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
@@ -59,8 +59,8 @@ var ScriptForm = React.createClass({
     },
     openFileDialog: async function() {
         var self = this;
-        const result = await dialog.showOpenDialog( { properties: ['openFile']} );
-        if( result.filePaths[0] ) {
+        const result = await ipcRenderer.invoke('showOpenDialog', { properties: ['openFile'] });
+        if (result.filePaths && result.filePaths[0]) {
             self.setState({path: result.filePaths[0]});
         }
     },

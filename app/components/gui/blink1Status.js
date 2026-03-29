@@ -5,9 +5,6 @@ var Panel = require('react-bootstrap').Panel;
 var Well = require('react-bootstrap').Well;
 
 var ipcRenderer = require('electron').ipcRenderer;
-const Menu = require('@electron/remote').Menu
-const MenuItem = require('@electron/remote').MenuItem
-const currentWindow = require('@electron/remote').getCurrentWindow();
 
 var Blink1Service = require('../../server/blink1Service');
 var PatternsService = require('../../server/patternsService');
@@ -40,7 +37,6 @@ var Blink1Status = React.createClass({
             self.setState({showForm: true});
         });
 
-        this.makeMenu();
     },
     updateColorState: function(/*currentColor,  colors,ledn */) {
         this.setState({
@@ -71,20 +67,11 @@ var Blink1Status = React.createClass({
         this.setState({ showForm: false });
     },
     showIfttContextMenu: function(event) {
-        log.msg("Blink1Status.showIfttContextMenu: ",event);
-        var menu = this.makeMenu();
-        menu.popup(currentWindow);
-    },
-    // doContextMenu: function(event, eventKey, arg) {
-    // 	log.msg("Blink1Status.doContextMenu: eventKey:",eventKey, "arg:",arg);
-    // 	//this.props.onEdit(eventKey, this.props.idx, arg);
-    // },
-    makeMenu: function() {
-        var mymenu = new Menu();
-        // mymenu.append( new MenuItem({label:'copy', click: self.doContextMenu.bind(null,null, 'copyiftttkey', null)}) );
-        mymenu.append( new MenuItem({label:'Copy IFTTT Key', role:'copy'} ));
-        // mymenu.append( new MenuItem({label:'Edit Host Id', click: this.doEditHostId} ));
-        return mymenu;
+        log.msg("Blink1Status.showIfttContextMenu: ", event);
+        ipcRenderer.send('showContextMenu', {
+            menuId: 'ifttt-' + Date.now(),
+            template: [{ label: 'Copy IFTTT Key', role: 'copy' }]
+        });
     },
     render: function() {
         // console.log("blink1Status.render: ", this.state.blink1Color);

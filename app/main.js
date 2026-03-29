@@ -14,8 +14,6 @@ var isAccelerator = require("electron-is-accelerator");
 
 var updater = require('./updater');
 
-require('@electron/remote/main').initialize()
-
 var isDevelopment = process.env.NODE_ENV === 'development';
 
 var mainWindow = null;
@@ -52,7 +50,6 @@ crashReporter.start({
   productName: pkg.productName,
   companyName: pkg.companyName,
   submitURL: 'http://thingm.com/blink1/blink1control2-crash-reporter', // FIXME:
-  autoSubmit: true
 });
 
 // turn off 'app-suspension' because it was causing bad timing in renderer
@@ -80,6 +77,62 @@ app.commandLine.appendSwitch('disable-background-timer-throttling');
 
 
 var isQuitting = false;
+var tray = null;
+var logWindow = null;
+
+// Map of action names callable from serialized menu clickSpec.target='main'
+var mainActions = {};
+
+// Build an Electron Menu template from a serializable template.
+// clickSpec: { target:'main', action:'name' } OR { target:'renderer', channel:'ipc-chan', args:[] }
+function buildMenuFromTemplate(template, sender) {
+    return template.map(function(item) {
+        if (!item) return item;
+        var built = {};
+        Object.keys(item).forEach(function(k) {
+            if (k === 'clickSpec') {
+                var spec = item.clickSpec;
+                if (spec.target === 'main') {
+                    built.click = (function(action) {
+                        return function() { mainActions[action] && mainActions[action](); };
+                    })(spec.action);
+                } else {
+                    built.click = (function(channel, args) {
+                        return function() { sender.send.apply(sender, [channel].concat(args || [])); };
+                    })(spec.channel, spec.args);
+                }
+            } else if (k === 'submenu' && Array.isArray(item.submenu)) {
+                built.submenu = buildMenuFromTemplate(item.submenu, sender);
+            } else {
+                built[k] = item[k];
+            }
+        });
+        return built;
+    });
+}
+
+// Build context menu template from serializable items that carry action/arg fields.
+// Clicks send 'contextMenuResult:<menuId>' back to the renderer.
+function buildContextMenuTemplate(template, sender, menuId) {
+    return template.map(function(item) {
+        if (!item) return item;
+        var built = {};
+        Object.keys(item).forEach(function(k) {
+            if (k === 'action' || k === 'arg') return;
+            if (k === 'submenu' && Array.isArray(item.submenu)) {
+                built.submenu = buildContextMenuTemplate(item.submenu, sender, menuId);
+                return;
+            }
+            built[k] = item[k];
+        });
+        if ('action' in item) {
+            built.click = (function(action, arg) {
+                return function() { sender.send('contextMenuResult:' + menuId, action, arg); };
+            })(item.action, item.arg);
+        }
+        return built;
+    });
+}
 
 var quit = function() {
   //console.log("Blink1Control2: quit. sent quit to renderer?",isQuitting);
@@ -120,7 +173,6 @@ var openAboutWindow = function () {
       contextIsolation: false,
     }
   });
-  require("@electron/remote/main").enable(aboutWindow.webContents);
   //aboutWindow.webContents.openDevTools({mode:'detach'});
   aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
   aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
@@ -178,6 +230,23 @@ var openHelpWindow = function() {
 //
 // the main deal
 //
+var openLogWindow = function(html) {
+  if (logWindow) {
+    logWindow.show();
+  } else {
+    logWindow = new BrowserWindow({
+      title: 'Blink1Control2 Event List',
+      alwaysOnTop: true,
+      autoHideMenuBar: true,
+      height: 300,
+      width: 400,
+      webPreferences: { contextIsolation: true }
+    });
+    logWindow.on('closed', function() { logWindow = null; });
+  }
+  logWindow.loadURL('data:text/html,' + html);
+};
+
 app.on('ready', function () {
 
     // autoUpdater.autoDownload = false;
@@ -245,8 +314,6 @@ app.on('ready', function () {
       backgroundThrottling: false
     }
   });
-  require("@electron/remote/main").enable(mainWindow.webContents);
-
   mainWindow.loadURL(loadurl);
   if(isDevelopment) {
     mainWindow.webContents.openDevTools({mode:'detach'});
@@ -291,6 +358,80 @@ app.on('ready', function () {
   app.on('before-quit', function() {
       //console.log("Blink1Control2: mainWindow.before-quit");
       isQuitting = true;
+  });
+
+  // Populate mainActions now that all action functions are defined
+  mainActions.openMainWindow   = openMainWindow;
+  mainActions.openAboutWindow  = openAboutWindow;
+  mainActions.openPreferences  = openPreferences;
+  mainActions.openDevTools     = openDevTools;
+  mainActions.openHelpWindow   = openHelpWindow;
+  mainActions.quitnow          = quit;
+  mainActions.checkForUpdates  = function() { updater.checkForUpdates(); };
+
+  // Synchronous data request from renderer (used at module init time by configuration.js, about.html)
+  ipcMain.on('getAppData', function(event) {
+    event.returnValue = {
+      userData: app.getPath('userData'),
+      appPath:  app.getAppPath(),
+      appName:  app.getName()
+    };
+  });
+
+  // Log window (from eventList.js)
+  ipcMain.on('openLogWindow', function(event, html) {
+    openLogWindow(html);
+  });
+
+  // File open dialog (from scriptForm.js)
+  ipcMain.handle('showOpenDialog', async function(event, options) {
+    return dialog.showOpenDialog(options);
+  });
+
+  // Context menus (from bigButton.js, blink1Status.js)
+  ipcMain.on('showContextMenu', function(event, data) {
+    var menu = Menu.buildFromTemplate(
+      buildContextMenuTemplate(data.template, event.sender, data.menuId)
+    );
+    menu.popup({ window: BrowserWindow.fromWebContents(event.sender) });
+  });
+
+  // Application menu (from menuMaker.js)
+  ipcMain.on('setApplicationMenu', function(event, template) {
+    Menu.setApplicationMenu(Menu.buildFromTemplate(buildMenuFromTemplate(template, event.sender)));
+  });
+
+  // Tray (from menuMaker.js)
+  ipcMain.on('setupTray', function(event, data) {
+    if (tray) { tray.destroy(); }
+    var Tray = electron.Tray;
+    tray = new Tray(data.iconPath);
+    tray.setToolTip(data.tooltip);
+    if (process.platform === 'win32') {
+      tray.on('click', function() { event.sender.send('trayClick'); });
+    }
+  });
+  ipcMain.on('updateTrayMenu', function(event, data) {
+    if (!tray) return;
+    var trayMenu = Menu.buildFromTemplate(buildMenuFromTemplate(data.trayTemplate, event.sender));
+    if (process.platform === 'darwin' && data.dockTemplate) {
+      app.dock.setMenu(Menu.buildFromTemplate(buildMenuFromTemplate(data.dockTemplate, event.sender)));
+    }
+    tray.setContextMenu(trayMenu);
+  });
+  ipcMain.on('destroyTray', function() {
+    if (tray) { tray.destroy(); tray = null; }
+  });
+
+  // Preferences / dock actions (from preferencesModal.js)
+  ipcMain.on('dockHide', function() {
+    if (process.platform === 'darwin') { app.dock.hide(); }
+  });
+  ipcMain.on('dockShow', function() {
+    if (process.platform === 'darwin') { app.dock.show(); }
+  });
+  ipcMain.on('setLoginItemSettings', function(event, settings) {
+    app.setLoginItemSettings(settings);
   });
 
   ipcMain.on('openMainWindow', function() {

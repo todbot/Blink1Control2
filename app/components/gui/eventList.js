@@ -6,14 +6,12 @@ var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
 var Button = require('react-bootstrap').Button;
 
-const BrowserWindow = require('@electron/remote').BrowserWindow;
+var ipcRenderer = require('electron').ipcRenderer;
 
 var log = require('../../logger');
 var Eventer = require('../../eventer');
 
 var moment = require('moment');
-
-var logWindow;
 
 var EventList = React.createClass({
     propTypes: {
@@ -66,22 +64,7 @@ var EventList = React.createClass({
             });
             info += '</table>';
         }
-        if( logWindow ) {
-            logWindow.show();
-        } else {
-            logWindow = new BrowserWindow({
-                    title: 'Blink1Control2 Event List',
-                    alwaysOnTop: true,
-                    autoHideMenuBar: true,
-                    height: 300,
-                    width: 400
-                    // icon: assets['icon-32'],
-                });
-            logWindow.on("closed", function() {
-                logWindow = null;
-            });
-        }
-        logWindow.loadURL( 'data:text/html,' + info);
+        ipcRenderer.send('openLogWindow', info);
     },
     render: function() {
         // var revevents = this.state.events.concat().reverse();

@@ -4,9 +4,7 @@ var React = require('react');
 
 var Button = require('react-bootstrap').Button;
 
-const Menu = require('@electron/remote').Menu
-const MenuItem = require('@electron/remote').MenuItem
-const currentWindow = require('@electron/remote').getCurrentWindow();
+var ipcRenderer = require('electron').ipcRenderer;
 
 var tinycolor = require('tinycolor2');
 
@@ -35,63 +33,53 @@ var BigButton = React.createClass({
   },
   componentDidMount: function() {
     // log.msg("BigButton.componentDidMount type:",this.props.type);
-    // if( this.props.type !== 'sys' ) { this.menu = this.makeMenu(); }
   },
-  // Make serials menu
-  makeSerialsMenu: function() {
-    var self = this;
-    var serialsmenu = null;
-    if( this.props.serials && this.props.serials.length > 0 ) {
-      serialsmenu = new Menu();
-      serialsmenu.append( new MenuItem({label:'default', type: 'radio',
-                                    click: self.doContextMenu.bind(null,null, 'setserial', 'default'),
-                                    checked: this.props.serial==='default'|| this.props.serial===''}) );
-      this.props.serials.map( function(s) {
-        serialsmenu.append( new MenuItem({label:s, type: 'radio',
-                                    click: self.doContextMenu.bind(null,null, 'setserial', s),
-                                    checked: (self.props.serial === s) }) );
-      });
-    }
-    return serialsmenu;
-  },
-  makeMenu: function() {
-    // log.msg("BigButton.makeMenu: props:",this.props);
+  buildSerializableMenu: function() {
     var self = this;
     var idx = self.props.idx;
-    var menu = new Menu();
+    var items = [];
 
-    // Make pattern menu
-    var pattmenu = new Menu();
-    this.props.patterns.map( function(p) {
-      pattmenu.append( new MenuItem({label:p.name, click: self.doContextMenu.bind(null,null, 'setpattern', p.id)}) );
+    items.push({ label: 'Set to current color', action: 'setcolor', arg: idx });
+
+    var patternSubmenu = this.props.patterns.map(function(p) {
+      return { label: p.name, action: 'setpattern', arg: p.id };
     });
+    items.push({ label: 'Set to pattern', submenu: patternSubmenu });
 
-    menu.append(new MenuItem({ label:'Set to current color',
-      click: self.doContextMenu.bind(null,null, 'setcolor', idx)})); // fixme
-    menu.append(new MenuItem({ label:'Set to pattern',
-      submenu: pattmenu} )); // click: self.doContextMenu.bind(null,null, 'setpattern', idx)})); // fixme
-    var serialsmenu = self.makeSerialsMenu();
-    if( serialsmenu ) {
-      menu.append(new MenuItem({ label:'Assign to device',
-        submenu: serialsmenu} ));
+    if (this.props.serials && this.props.serials.length > 0) {
+      var serialItems = [
+        { label: 'default', type: 'radio', action: 'setserial', arg: 'default',
+          checked: this.props.serial === 'default' || this.props.serial === '' }
+      ];
+      this.props.serials.forEach(function(s) {
+        serialItems.push({ label: s, type: 'radio', action: 'setserial', arg: s,
+          checked: self.props.serial === s });
+      });
+      items.push({ label: 'Assign to device', submenu: serialItems });
     }
-    menu.append(new MenuItem({ label:'Move button left',
-      click: self.doContextMenu.bind(null,null, 'moveleft', idx)})); // fixme
-    menu.append(new MenuItem({ label:'Delete button',
-      click: self.doContextMenu.bind(null,null, 'delete', idx)})); // fixme
-    menu.append(new MenuItem({ label:'Rename Button',
-      click: self.showEditName }));
-    return menu;
+
+    items.push({ label: 'Move button left', action: 'moveleft', arg: idx });
+    items.push({ label: 'Delete button', action: 'delete', arg: idx });
+    items.push({ label: 'Rename Button', action: 'showEditName', arg: null });
+
+    return items;
   },
   showEditName: function() {
     this.props.onEditName();
   },
   showContextMenu: function(evt) {
-    // log.msg("BigButton:showContextMenu2: menu:",a,"b:",b,"c:",c);
     evt.preventDefault(); // don't send click further down
-    if( this.props.type === 'sys' ) { return; } // no context for sys buttons
-    var menu = this.makeMenu();
-    menu.popup(currentWindow);
+    if (this.props.type === 'sys') { return; } // no context for sys buttons
+    var self = this;
+    var menuId = 'bigbutton-' + this.props.idx + '-' + Date.now();
+    ipcRenderer.once('contextMenuResult:' + menuId, function(event, action, arg) {
+      if (action === 'showEditName') {
+        self.showEditName();
+      } else {
+        self.doContextMenu(null, action, arg);
+      }
+    });
+    ipcRenderer.send('showContextMenu', { menuId: menuId, template: self.buildSerializableMenu() });
   },
   doContextMenu: function(event, eventKey, arg) {
     log.msg("BigButton.doContextMenu: eventKey:",eventKey, "arg:",arg, "idx:",this.props.idx);

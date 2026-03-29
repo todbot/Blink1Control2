@@ -107,6 +107,10 @@ ipcRenderer.on('reloadConfig', function( event,arg ) {
         ApiServer.reloadConfig();
     }
 });
+ipcRenderer.on('reloadConfig:blink1Service', function() {
+    log.msg("reloadConfig:blink1Service");
+    Blink1Service.reloadConfig();
+});
 
 // used by Main because menus are there
 ipcRenderer.on('resetAlerts', function( /*event,arg*/ ) {

@@ -1,7 +1,7 @@
 <script>
 const pkg = require('./package.json');
-const { app } = require('@electron/remote')
-const conf_dir = app.getPath('userData');
+const { ipcRenderer } = require('electron');
+const conf_dir = ipcRenderer.sendSync('getAppData').userData;
 const conf_file = conf_dir + '/blink1control2-config.json';
 
 var aHomepage = '<a href="' + pkg.homepage + '">' + pkg.homepage + '</a>';
