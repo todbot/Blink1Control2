@@ -314,6 +314,16 @@ app.on('ready', function () {
   }
   console.log("loadurl:"+loadurl);
 
+  // Synchronous data request from renderer (used at module init time by configuration.js, about.html)
+  // Must be registered before BrowserWindow is created so the preload script can call it.
+  ipcMain.on('getAppData', function(event) {
+    event.returnValue = {
+      userData: app.getPath('userData'),
+      appPath:  app.getAppPath(),
+      appName:  app.getName()
+    };
+  });
+
   mainWindow = new BrowserWindow({
     icon: path.join(__dirname, 'images/icons/blink1mk2-icon2-128px.png'),
     title: "Blink1Control2",
@@ -383,15 +393,6 @@ app.on('ready', function () {
   mainActions.openHelpWindow   = openHelpWindow;
   mainActions.quitnow          = quit;
   mainActions.checkForUpdates  = function() { updater.checkForUpdates(); };
-
-  // Synchronous data request from renderer (used at module init time by configuration.js, about.html)
-  ipcMain.on('getAppData', function(event) {
-    event.returnValue = {
-      userData: app.getPath('userData'),
-      appPath:  app.getAppPath(),
-      appName:  app.getName()
-    };
-  });
 
   // Log window (from eventList.js)
   ipcMain.on('openLogWindow', function(event, html) {
