@@ -46,7 +46,7 @@ var MailForm = React.createClass({
             type: 'mail',
             enabled: rule.enabled || false,
             name: rule.name || 'new rule',
-            patternId: rule.patternId || this.props.patterns[0].id || '',
+            patternId: rule.patternId || (this.props.patterns.length ? this.props.patterns[0].id : '') || '',
             mailtype: rule.mailtype || 'IMAP',  // default it
             host: rule.host || '',
             port: rule.port || 993,

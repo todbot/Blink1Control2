@@ -2,10 +2,10 @@
 var webpack = require('webpack');
 var path = require('path');
 
-var DEV_PORT = 9090;
+var DEV_PORT = require('./devPort');
 
 var config = {
-  target: 'electron-renderer',
+  target: 'web',
   context: path.join(__dirname, '/app'),
   // entry: path.join(__dirname, './src/maingui.js'),
   // entry: __dirname + '/src' + './maingui.js',
@@ -61,7 +61,7 @@ var config = {
 };
 
 if( process.env.NODE_ENV === 'development' ) {
-    config.devServer = { port: DEV_PORT };
+    config.devServer = { port: DEV_PORT, static: path.join(__dirname, 'app') };
     config.output.publicPath = 'http://localhost:' + DEV_PORT + '/build/';
 } else {
     config.output.publicPath= './build/';

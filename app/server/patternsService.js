@@ -612,8 +612,15 @@ var PatternsService = {
         this.inEditing = val;
     },
     _getState: function() {
+        var allPatterns = this.getAllPatterns().map(function(p) {
+            var out = {};
+            Object.keys(p).forEach(function(k) {
+                if (k !== 'timer') out[k] = p[k];
+            });
+            return out;
+        });
         return {
-            allPatterns:          this.getAllPatterns(),
+            allPatterns:          allPatterns,
             playingPatternName:   this.getPlayingPatternName(),
             playingPatternSource: this.getPlayingPatternSource(),
         };

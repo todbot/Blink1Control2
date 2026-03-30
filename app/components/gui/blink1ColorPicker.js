@@ -54,7 +54,7 @@ var Blink1ColorPicker = React.createClass({
     // called by colorpicker & handleChange{R,G,B}
     setColor: function(color) {
         // console.log("colorpicker.setColor",color.hex, this.state.ledn, this.state.blink1Idx);
-        window.electronAPI.blink1.fadeToColor(this.state.secs*1000, color, this.state.ledn, this.state.blink1Id);
+        window.electronAPI.blink1.fadeToColor(this.state.secs*1000, color.toHexString(), this.state.ledn, this.state.blink1Id);
         // and the above will call 'fetchBlink1Color' anyway
         // there must be a better way to do this
     },

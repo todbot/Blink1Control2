@@ -68,7 +68,7 @@ loadSettings: function() {
     playingSerialize: conf.readSettings('patternsService:playingSerialize') || false,
     patterns: patterns,
     patternId: 'whiteflashes',
-    nonComputerPattern: patterns[0].id,
+    nonComputerPattern: patterns.length ? patterns[0].id : '',
     errorMsg: ''
   };
   return settings;

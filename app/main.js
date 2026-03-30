@@ -13,6 +13,7 @@ var path = require('path');
 var isAccelerator = require("electron-is-accelerator");
 
 var updater = require('./updater');
+var DEV_PORT = require('../devPort');
 
 // ── Services (run in main process) ───────────────────────────────
 var config = require('./configuration');
@@ -20,7 +21,6 @@ var config = require('./configuration');
 global.logconfig = config.readSettings('logger') || {};
 
 var Eventer = require('./eventer');
-var MenuMaker = require('./menuMaker');
 var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
 var ApiServer = require('./server/apiServer');
@@ -310,7 +310,7 @@ app.on('ready', function () {
 
   var loadurl = 'file://' + __dirname + '/index-prod.html';
   if( isDevelopment ) {
-    loadurl = 'file://' + __dirname + '/index-dev.html';
+    loadurl = 'http://localhost:' + DEV_PORT + '/index-dev.html';
   }
   console.log("loadurl:"+loadurl);
 
@@ -335,6 +335,7 @@ app.on('ready', function () {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      sandbox: false,
       backgroundThrottling: false,
       preload: path.join(__dirname, 'preload.js'),
     }
@@ -473,7 +474,12 @@ app.on('ready', function () {
   });
 
   // ── Service startup ──────────────────────────────────────────────
-  // Wire services to push state to renderer whenever they change
+  Blink1Service.start();
+  ApiServer.start();
+  PatternsService.initialize();
+
+  // Wire services to push state to renderer whenever they change.
+  // Called after initialize() so the initial push includes populated data.
   Blink1Service.setSendState(function(state) {
     if (mainWindow) mainWindow.webContents.send('blink1:state', state);
   });
@@ -489,12 +495,11 @@ app.on('ready', function () {
     if (mainWindow) mainWindow.webContents.send('bus:event', 'deviceUpdated');
   });
 
-  MenuMaker.setupMainMenu();
-  MenuMaker.setupTrayMenu();
-
-  Blink1Service.start();
-  ApiServer.start();
-  PatternsService.initialize();
+  // Re-push current state once the renderer has fully loaded
+  mainWindow.webContents.on('did-finish-load', function() {
+    mainWindow.webContents.send('blink1:state', Blink1Service._getState());
+    mainWindow.webContents.send('patterns:state', PatternsService._getState());
+  });
 
   setTimeout(function() {
     IftttService.start();

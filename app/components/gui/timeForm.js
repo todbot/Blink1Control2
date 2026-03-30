@@ -48,7 +48,7 @@ var TimeForm = React.createClass({
             alarmMinutes: rule.alarmMinutes || 15,
             alarmTimeMode: rule.alarmTimeMode || 'am', // 'pm' or '24'
             actionType: 'play-pattern',
-            patternId: rule.patternId || nextProps.patterns[0].id || '',
+            patternId: rule.patternId || (nextProps.patterns.length ? nextProps.patterns[0].id : '') || '',
             blink1Id: rule.blink1Id || "0"
          });
     },

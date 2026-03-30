@@ -42,7 +42,7 @@ var SkypeForm = React.createClass({
             username: rule.username || '',
             password: rule.password || '',
             actionType: 'play-pattern',
-            patternId: rule.patternId || nextProps.patterns[0].id || '',
+            patternId: rule.patternId || (nextProps.patterns.length ? nextProps.patterns[0].id : '') || '',
             triggerType: rule.triggerType || 'any',
             triggerVal: rule.triggerVal || '1' ,
         });
