@@ -4,7 +4,50 @@
 Random notes / documentation while developing the app
 ===
 
-NOTE: consider this historical info. most of these are out-of-date as of Nov 2017
+### Electron Modernization — Phase 3 Complete (2026-03-29)
+
+Phases 1–3 of the Electron modernization (see `recommendations.md`) are done.
+Tested working on macOS 15 and Ubuntu 24 with Electron 34.
+
+**What changed:**
+
+- All singleton services (`Blink1Service`, `PatternsService`, `ApiServer`, all event services)
+  moved from renderer (`maingui.js`) to main process (`main.js`)
+- `app/preload.js` created: exposes `window.electronAPI` via `contextBridge`
+- `mainWindow` now uses `contextIsolation: true`, `nodeIntegration: false`, `sandbox: false`
+  (`sandbox: false` needed so preload can `require()` Node modules like `./configuration`)
+- `@electron/remote` fully removed
+- webpack `target` changed from `'electron-renderer'` to `'web'`
+  (renderer has no `nodeIntegration`; Node built-ins are now bundled as polyfills)
+- Dev server port centralized in `devPort.js` (single source of truth, currently 9090);
+  `index-dev.html` is now loaded as `http://localhost:9090/index-dev.html` (not a `file://` URL)
+- `maingui.js` is now thin: CSS/font requires, `MenuMaker` calls, React root render only
+
+**Key IPC architecture:**
+
+- Services push state to renderer via `mainWindow.webContents.send('blink1:state', ...)` and `'patterns:state'`
+- `setSendState()` is called *after* `initialize()` so the first push has populated data
+- `mainWindow.webContents.on('did-finish-load')` re-pushes current state to handle the
+  timing race where the renderer loads after services have already initialized
+- `isQuitting` guard on all `webContents.send()` calls prevents "object destroyed" errors on quit
+
+**IPC serialization rules — things that must be converted before crossing IPC:**
+
+- `tinycolor` objects → call `.toHexString()` in the renderer before `ipcRenderer.send()`
+- `setTimeout` Timeout handles → strip from objects in `_getState()` (done in `patternsService._getState`)
+- Any class instance → serialize to plain JSON-compatible value first
+
+**Startup timing guard:**
+
+Several form components (`mailForm`, `iftttForm`, `skypeForm`, `timeForm`, `preferencesModal`)
+access `patterns[0].id` at init time. Guard all such accesses:
+```js
+patterns.length ? patterns[0].id : ''
+```
+
+---
+
+NOTE: consider notes below as historical info. most of these are out-of-date as of Nov 2017
 
 ### App capability changes / To-do's
 - TODO: Entirely rethink color pattern architecture
