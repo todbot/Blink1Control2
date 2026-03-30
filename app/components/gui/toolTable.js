@@ -4,9 +4,6 @@ var React = require('react');
 var createReactClass = require('create-react-class');
 var PropTypes = require('prop-types');
 
-var DropdownButton = require('react-bootstrap').DropdownButton;
-var MenuItem = require('react-bootstrap').MenuItem;
-
 var simplecrypt = require('simplecrypt');
 
 // 'sc' requirement should go away in 2.2.30
@@ -59,6 +56,7 @@ var ToolTable = createReactClass({
           events: [],
           workingIndex:-1,
           showForm: "",
+          showAddMenu: false,
       };
   },
     saveRules: function(rules) {
@@ -204,16 +202,45 @@ var ToolTable = createReactClass({
                     onEditRule={this.handleEditRule} />
 
                 <div style={{position: "absolute", bottom: 0}}>
-                    <DropdownButton bsSize="small" bsStyle="primary" onSelect={this.handleAddRule} id="addRule" title={<span><i className="fa fa-plus"></i> add event source</span>}>
-                        <MenuItem eventKey="ifttt"><img width={15} height={15} src="images/ifttt.png" /> Add IFTTT </MenuItem>
-                        <MenuItem eventKey="mail"><i className="fa fa-envelope"></i> Add Mail </MenuItem>
-                        <MenuItem eventKey="script"><i className="fa fa-code"></i> Add Script</MenuItem>
-                        <MenuItem eventKey="url"><i className="fa fa-cloud"></i> Add URL</MenuItem>
-                        <MenuItem eventKey="file"><i className="fa fa-file"></i> Add File</MenuItem>
-                        <MenuItem eventKey="mqtt"><i className="fa fa-share-alt"></i> Add MQTT</MenuItem>
-                        <MenuItem eventKey="skype"><i className="fa fa-skype"></i> Add Skype</MenuItem>
-                        <MenuItem eventKey="time"><i className="fa fa-clock-o"></i> Add Alarm</MenuItem>
-                    </DropdownButton>
+                    {this.state.showAddMenu && <div
+                        style={{position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:999}}
+                        onClick={() => this.setState({showAddMenu: false})} />}
+                    <div style={{position:'relative', display:'inline-block'}}>
+                        <button className="btn btn-primary btn-sm"
+                            onClick={(e) => { e.stopPropagation(); this.setState(function(s) { return {showAddMenu: !s.showAddMenu}; }); }}>
+                            <i className="fa fa-plus"></i> add event source <span className="caret"></span>
+                        </button>
+                        {this.state.showAddMenu &&
+                            <ul style={{position:'absolute', bottom:'100%', left:0, zIndex:1000, backgroundColor:'#fff',
+                                         border:'1px solid #ccc', borderRadius:3, padding:'4px 0', margin:'0 0 2px',
+                                         listStyle:'none', boxShadow:'0 2px 6px rgba(0,0,0,0.2)', minWidth:160}}>
+                                <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
+                                    onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('ifttt'); }}>
+                                    <img width={15} height={15} src="images/ifttt.png" /> Add IFTTT</li>
+                                <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
+                                    onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('mail'); }}>
+                                    <i className="fa fa-envelope"></i> Add Mail</li>
+                                <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
+                                    onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('script'); }}>
+                                    <i className="fa fa-code"></i> Add Script</li>
+                                <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
+                                    onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('url'); }}>
+                                    <i className="fa fa-cloud"></i> Add URL</li>
+                                <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
+                                    onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('file'); }}>
+                                    <i className="fa fa-file"></i> Add File</li>
+                                <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
+                                    onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('mqtt'); }}>
+                                    <i className="fa fa-share-alt"></i> Add MQTT</li>
+                                <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
+                                    onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('skype'); }}>
+                                    <i className="fa fa-skype"></i> Add Skype</li>
+                                <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
+                                    onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('time'); }}>
+                                    <i className="fa fa-clock-o"></i> Add Alarm</li>
+                            </ul>
+                        }
+                    </div>
                 </div>
             </div>
         );
