@@ -481,10 +481,10 @@ app.on('ready', function () {
   // Wire services to push state to renderer whenever they change.
   // Called after initialize() so the initial push includes populated data.
   Blink1Service.setSendState(function(state) {
-    if (mainWindow) mainWindow.webContents.send('blink1:state', state);
+    if (mainWindow && !isQuitting) mainWindow.webContents.send('blink1:state', state);
   });
   PatternsService.setSendState(function(state) {
-    if (mainWindow) mainWindow.webContents.send('patterns:state', state);
+    if (mainWindow && !isQuitting) mainWindow.webContents.send('patterns:state', state);
   });
 
   // Forward Eventer events that renderer components consume
