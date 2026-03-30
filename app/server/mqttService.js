@@ -15,6 +15,7 @@ var PatternsService = require('./patternsService');
 var MqttService = {
 	config: {},
 	rules: [],
+    clients: {},
     timer: null,
     // FIXME: "reloadConfig()" should really be "restartService" or something
     reloadConfig: function() {
@@ -92,18 +93,19 @@ var MqttService = {
               // Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:message.toString()} );
               //Eventer.addStatus( {type:'info', source:rule.type, id:rule.name, text:message.toString()} );
             });
-            rule.client = client;
+            self.clients[rule.name] = client;
         });
 
     },
     stop: function() {
       log.msg("MqttService.stop");
-      this.rules.forEach( function(rule) {
-          if( rule.client ) {
-              rule.client.end();
-              rule.client = null;
+      var self = this;
+      Object.keys(self.clients).forEach(function(name) {
+          if (self.clients[name]) {
+              self.clients[name].end();
           }
       });
+      self.clients = {};
     },
 
     playPattern: function(pattid,ruleid,blink1id) {
