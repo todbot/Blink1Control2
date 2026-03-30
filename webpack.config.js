@@ -2,7 +2,7 @@
 var webpack = require('webpack');
 var path = require('path');
 
-var DEV_PORT = require('./devPort');
+var DEV_PORT = require('./app/devPort');
 
 var config = {
   target: 'web',

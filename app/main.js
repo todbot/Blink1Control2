@@ -13,7 +13,7 @@ var path = require('path');
 var isAccelerator = require("electron-is-accelerator");
 
 var updater = require('./updater');
-var DEV_PORT = require('../devPort');
+var DEV_PORT = require('./devPort');
 
 // ── Services (run in main process) ───────────────────────────────
 var config = require('./configuration');
