@@ -31,9 +31,19 @@ function fetchLatestRelease(callback) {
     }).on('error', callback);
 }
 
-// Strip leading 'v' from a version tag for comparison
+// Strip leading 'v' and compare as semver [major, minor, patch]
 function normalize(v) {
     return (v || '').replace(/^v/, '');
+}
+
+function isNewer(latest, current) {
+    var a = latest.split('.').map(Number);
+    var b = current.split('.').map(Number);
+    for (var i = 0; i < 3; i++) {
+        if ((a[i] || 0) > (b[i] || 0)) return true;
+        if ((a[i] || 0) < (b[i] || 0)) return false;
+    }
+    return false;
 }
 
 function checkForUpdates() {
@@ -45,7 +55,7 @@ function checkForUpdates() {
         var current = normalize(app.getVersion());
         var latest  = normalize(latestTag);
 
-        if (latest && latest !== current) {
+        if (latest && isNewer(latest, current)) {
             dialog.showMessageBox({
                 type: 'info',
                 title: 'Update available',
