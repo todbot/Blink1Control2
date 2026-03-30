@@ -2,6 +2,8 @@
 var webpack = require('webpack');
 var path = require('path');
 
+var DEV_PORT = 9090;
+
 var config = {
   target: 'electron-renderer',
   context: path.join(__dirname, '/app'),
@@ -59,7 +61,8 @@ var config = {
 };
 
 if( process.env.NODE_ENV === 'development' ) {
-    config.output.publicPath = 'http://localhost:8080/build/';
+    config.devServer = { port: DEV_PORT };
+    config.output.publicPath = 'http://localhost:' + DEV_PORT + '/build/';
 } else {
     config.output.publicPath= './build/';
 }

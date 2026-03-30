@@ -49,8 +49,8 @@ var Blink1Service = require('./blink1Service');
 // var systemPatterns = require('./systemPatterns-mini').patterns;
 var systemPatterns = require('./systemPatterns').patterns;
 // FIXME: two var for same thing
-var patternsSystem; // The system patterns this service knows about
-var patternsUser; // The user generated patterns
+var patternsSystem = []; // The system patterns this service knows about
+var patternsUser = []; // The user generated patterns
 var patternsTemp = [];
 var playingQueue = [];  // [{pattern:<obj>, source:'ifttt', blink1Id:'2121ABAB'}]
 
