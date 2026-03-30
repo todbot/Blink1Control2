@@ -402,8 +402,9 @@ app.on('ready', function () {
   mainActions.openPreferences  = openPreferences;
   mainActions.openDevTools     = openDevTools;
   mainActions.openHelpWindow   = openHelpWindow;
-  mainActions.quitnow          = quit;
-  mainActions.checkForUpdates  = function() { updater.checkForUpdates(); };
+  mainActions.quitnow             = quit;
+  mainActions.checkForUpdates     = function() { updater.checkForUpdates(); };
+  mainActions.reloadBlink1Config  = function() { Blink1Service.reloadConfig(); };
 
   // Log window (from eventList.js)
   ipcMain.on('openLogWindow', function(event, html) {
@@ -543,30 +544,25 @@ app.on('ready', function () {
   });
 
   // ── Event services IPC handler ───────────────────────────────────
+  var eventServiceReload = {
+    'ifttt':    function() { IftttService.reloadConfig(); },
+    'mail':     function() { MailService.reloadConfig(); },
+    'script':   function() { ScriptService.reloadConfig(); },
+    'url':      function() { ScriptService.reloadConfig(); },
+    'file':     function() { ScriptService.reloadConfig(); },
+    'skype':    function() { SkypeService.reloadConfig(); },
+    'time':     function() { TimeService.reloadConfig(); },
+    'mqtt':     function() { MqttService.reloadConfig(); },
+    'apiServer':function() { ApiServer.reloadConfig(); },
+    'blink1':   function() { Blink1Service.reloadConfig(); },
+  };
   ipcMain.on('eventServices:reloadConfig', function(event, serviceType) {
-    if      (serviceType === 'ifttt')                           IftttService.reloadConfig();
-    else if (serviceType === 'mail')                            MailService.reloadConfig();
-    else if (serviceType === 'script' || serviceType === 'url'
-          || serviceType === 'file')                            ScriptService.reloadConfig();
-    else if (serviceType === 'skype')                           SkypeService.reloadConfig();
-    else if (serviceType === 'time')                            TimeService.reloadConfig();
-    else if (serviceType === 'mqtt')                            MqttService.reloadConfig();
-    else if (serviceType === 'apiServer')                       ApiServer.reloadConfig();
+    if (eventServiceReload[serviceType]) eventServiceReload[serviceType]();
   });
 
   // ── Eventer IPC handlers ─────────────────────────────────────────
   ipcMain.on('eventer:addStatus', function(event, status) { Eventer.addStatus(status); });
   ipcMain.on('eventer:clearStatuses', function() { Eventer.clearStatuses(); });
-
-  // ── Bus events from renderer ─────────────────────────────────────
-  ipcMain.on('bus:emit', function(event, busEvent, data) {
-    // Currently no bus events from renderer need main-process handling
-  });
-
-  // ── Config reload IPC (menu-driven) ─────────────────────────────
-  ipcMain.on('reloadConfig:blink1Service', function() {
-    Blink1Service.reloadConfig();
-  });
 
 });
 

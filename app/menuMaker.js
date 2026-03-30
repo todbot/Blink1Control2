@@ -116,7 +116,7 @@ var MenuMaker = {
                 { label: 'Open Controls...', accelerator: 'CommandOrControl+O',
                   clickSpec: { target: 'main', action: 'openMainWindow' } },
                 { label: 'Rescan for devices',
-                  clickSpec: { target: 'renderer', channel: 'reloadConfig:blink1Service' } },
+                  clickSpec: { target: 'main', action: 'reloadBlink1Config' } },
                 { type: 'separator' },
                 { role: 'toggledevtools', label: 'Toggle Dev Tools' },
                 { type: 'separator' },
