@@ -10,6 +10,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var log = require('../../logger');
 
@@ -18,7 +20,7 @@ var d3 = require('d3-timer');
 
 // var blackc = tinycolor('#000000');
 
-var VirtualBlink1 = React.createClass({
+var VirtualBlink1 = createReactClass({
     getInitialState: function() {
         return {
             // colors: ['#ff00ff', '#00ffff', 0,0,  0,0,0,0, 0,0,0,0 ], // FIXME: should be blink1service.getCurrentColors()

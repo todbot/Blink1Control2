@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 var Panel = require('react-bootstrap').Panel;
 var Grid = require('react-bootstrap').Grid;
 var Row = require('react-bootstrap').Row;
@@ -15,7 +17,7 @@ var Blink1TabViews = require('./blink1TabViews');
 var Blink1ColorPicker = require('./blink1ColorPicker');
 
 class Blink1ControlView extends React.Component {
-//var Blink1ControlView = React.createClass({
+//var Blink1ControlView = createReactClass({
 
   render() {
     var panelLstyle = {

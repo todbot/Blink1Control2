@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var Button = require('react-bootstrap').Button;
 
@@ -8,20 +10,20 @@ var tinycolor = require('tinycolor2');
 
 var log = require('../../logger');
 
-var BigButton = React.createClass({
+var BigButton = createReactClass({
   propTypes: {
-    idx: React.PropTypes.number,
-    name: React.PropTypes.string.isRequired,
-    type: React.PropTypes.string.isRequired,
-    iconClass: React.PropTypes.string,
-    color: React.PropTypes.string,
-    millis: React.PropTypes.number,
-    onClick: React.PropTypes.func,
-    onEdit: React.PropTypes.func,
-    onEditName: React.PropTypes.func,
-    patterns: React.PropTypes.array,
-    serials: React.PropTypes.array,
-    serial: React.PropTypes.string
+    idx: PropTypes.number,
+    name: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    iconClass: PropTypes.string,
+    color: PropTypes.string,
+    millis: PropTypes.number,
+    onClick: PropTypes.func,
+    onEdit: PropTypes.func,
+    onEditName: PropTypes.func,
+    patterns: PropTypes.array,
+    serials: PropTypes.array,
+    serial: PropTypes.string
   },
   getInitialState: function() {
     return {

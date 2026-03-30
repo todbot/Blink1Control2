@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var Modal = require('react-bootstrap').Modal;
 var Button = require('react-bootstrap').Button;
@@ -24,7 +26,7 @@ var buttonsUserDefault = [
   { name: "Out of Office", type: "color", color: "#FFBF00", millis:100, ledn: 0 }
 ];
 
-var BigButtonSet = React.createClass({
+var BigButtonSet = createReactClass({
   getInitialState: function() {
     var buttonsUser = window.electronAPI.config.readSettings('bigButtons');
     if( !buttonsUser ) {

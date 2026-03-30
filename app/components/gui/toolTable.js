@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
@@ -23,7 +25,7 @@ var MqttForm = require('./mqttForm');
 var ToolTableList = require('./toolTableList');
 
 
-var ToolTable = React.createClass({
+var ToolTable = createReactClass({
   getInitialState: function() {
     // var rules = window.electronAPI.config.readSettings('eventRules');
     var rules = JSON.parse(JSON.stringify( window.electronAPI.config.readSettings('eventRules') ) ); // deep copy

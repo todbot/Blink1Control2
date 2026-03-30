@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 var Panel = require('react-bootstrap').Panel;
 var ListGroup = require('react-bootstrap').ListGroup;
 var ListGroupItem = require('react-bootstrap').ListGroupItem;
@@ -10,10 +12,10 @@ var log = require('../../logger');
 
 var moment = require('moment');
 
-var EventList = React.createClass({
+var EventList = createReactClass({
     propTypes: {
-        //events: React.PropTypes.array.isRequired,
-        //onClear: React.PropTypes.func.isRequired
+        //events: PropTypes.array.isRequired,
+        //onClear: PropTypes.func.isRequired
     },
     getInitialState: function() {
         return {

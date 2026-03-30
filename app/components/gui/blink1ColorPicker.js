@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var Button = require('react-bootstrap').Button;
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
@@ -11,7 +13,7 @@ var HtmlColorChart = require('./htmlColorChart');
 var tinycolor = require('tinycolor2');
 
 
-var Blink1ColorPicker = React.createClass({
+var Blink1ColorPicker = createReactClass({
     getInitialState: function() {
         return {
             color: "#33dd33", // color is a hex string, not a tinycolor (had issues with using tinycolor here)

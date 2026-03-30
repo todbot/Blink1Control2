@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var Tabs = require('react-bootstrap').Tabs;
 var Tab = require('react-bootstrap').Tab;
@@ -9,7 +11,7 @@ var Button = require('react-bootstrap').Button;
 var BigButtonSet = require('./bigButtonSet');
 var ToolTable = require('./toolTable');
 
-var Blink1TabViews = React.createClass({
+var Blink1TabViews = createReactClass({
 
   openHelpWindow: function() {
     window.electronAPI.menu.send('openHelpWindow');

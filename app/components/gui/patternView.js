@@ -1,26 +1,36 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var Button = require('react-bootstrap').Button;
-var MenuItem = require('react-bootstrap').MenuItem;
-var DropdownButton = require('react-bootstrap').DropdownButton;
 
 var log = require('../../logger');
 
-var PatternView = React.createClass({
+var PatternView = createReactClass({
     propTypes: {
-        pattern: React.PropTypes.object.isRequired,
-        onPatternUpdated: React.PropTypes.func,
-        onCopyPattern: React.PropTypes.func,
-        onDeletePattern: React.PropTypes.func,
+        pattern: PropTypes.object.isRequired,
+        onPatternUpdated: PropTypes.func,
+        onCopyPattern: PropTypes.func,
+        onDeletePattern: PropTypes.func,
     },
     getInitialState: function() {
         return {
             activeSwatch: -1,
             pattern: this.props.pattern,  // this was a clone, why?
-            editing: false
+            editing: false,
+            showMenu: false
         };
+    },
+    onToggleMenu: function(e) {
+        e.stopPropagation();
+        this.setState(function(s) { return { showMenu: !s.showMenu }; });
+    },
+    onMenuSelect: function(handler, disabled) {
+        if (disabled) { return; }
+        this.setState({ showMenu: false });
+        handler();
     },
     onNameChange: function(event) {
         var field = event.target.name;
@@ -159,13 +169,33 @@ var PatternView = React.createClass({
 
         var littleButtStyle = {borderStyle:'none', background:'inherit', display:'inline', padding: 0, outline: 'none' };
 
+        var menuItemStyle = { padding: '4px 12px', cursor: 'pointer', whiteSpace: 'nowrap', listStyle: 'none' };
+        var menuItemDisabledStyle = Object.assign({}, menuItemStyle, { opacity: 0.4, cursor: 'default' });
         var editOptions =
-            <DropdownButton style={editButtStyle} title="" id={pid} pullRight >
-                <MenuItem eventKey="1" onSelect={this.onEditPattern} disabled={pattern.system || pattern.locked}><i className="fa fa-pencil"></i> Edit pattern</MenuItem>
-                <MenuItem eventKey="2" onSelect={this.onLockPattern} disabled={pattern.system}><i className={lockMenuIcon}></i> {lockMenuText}</MenuItem>
-                <MenuItem eventKey="3" onSelect={this.onCopyPattern}><i className="fa fa-copy"></i> Copy pattern</MenuItem>
-                <MenuItem eventKey="4" onSelect={this.onDeletePattern} disabled={pattern.locked}><i className="fa fa-remove"></i> Delete pattern</MenuItem>
-            </DropdownButton>;
+            <div style={{position:'relative'}}>
+                <button style={editButtStyle} onClick={this.onToggleMenu}><span className="caret"></span></button>
+                {this.state.showMenu && <div
+                    style={{position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:999}}
+                    onClick={() => this.setState({showMenu: false})} />}
+                {this.state.showMenu &&
+                    <ul style={{position:'absolute', right:0, zIndex:1000, backgroundColor:'#fff',
+                                 border:'1px solid #ccc', borderRadius:3, padding:'4px 0', margin:0,
+                                 boxShadow:'0 2px 6px rgba(0,0,0,0.2)'}}>
+                        <li style={pattern.system || pattern.locked ? menuItemDisabledStyle : menuItemStyle}
+                            onClick={() => this.onMenuSelect(this.onEditPattern, pattern.system || pattern.locked)}>
+                            <i className="fa fa-pencil"></i> Edit pattern</li>
+                        <li style={pattern.system ? menuItemDisabledStyle : menuItemStyle}
+                            onClick={() => this.onMenuSelect(this.onLockPattern, pattern.system)}>
+                            <i className={lockMenuIcon}></i> {lockMenuText}</li>
+                        <li style={menuItemStyle}
+                            onClick={() => this.onMenuSelect(this.onCopyPattern, false)}>
+                            <i className="fa fa-copy"></i> Copy pattern</li>
+                        <li style={pattern.locked ? menuItemDisabledStyle : menuItemStyle}
+                            onClick={() => this.onMenuSelect(this.onDeletePattern, pattern.locked)}>
+                            <i className="fa fa-remove"></i> Delete pattern</li>
+                    </ul>
+                }
+            </div>;
         if( isEditing ) {
             editOptions = <Button onClick={this.onEditDone} style={littleButtStyle}><i className="fa fa-check"></i></Button>;
         }

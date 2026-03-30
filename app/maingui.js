@@ -9,16 +9,19 @@ require('../node_modules/react-bootstrap-switch/dist/css/bootstrap3/react-bootst
 // end requires for webpack
 
 var React = require('react');
-var ReactDOM = require('react-dom');
+var { createRoot } = require('react-dom/client');
+var createReactClass = require('create-react-class');
+React.createClass = createReactClass; // shim for legacy deps (react-bootstrap-switch)
 
 var MenuMaker = require('./menuMaker');
 MenuMaker.setupMainMenu();
 MenuMaker.setupTrayMenu();
 
 var Blink1ControlView = require('./components/gui/blink1ControlView');
-var App = React.createClass({
+var App = createReactClass({
   render: function() {
     return ( <Blink1ControlView /> );
   }
 });
-ReactDOM.render( <App />, document.getElementById('app'));
+var root = createRoot(document.getElementById('app'));
+root.render(<App />);

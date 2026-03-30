@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 var Panel = require('react-bootstrap').Panel;
 var Well = require('react-bootstrap').Well;
 
@@ -11,7 +13,7 @@ var PreferencesModal = require('./preferencesModal');
 
 var log = require('../../logger');
 
-var Blink1Status = React.createClass({
+var Blink1Status = createReactClass({
 
     getInitialState: function() {
         var b1state = window.electronAPI.blink1.getState();

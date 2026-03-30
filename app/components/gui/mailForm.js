@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var Grid = require('react-bootstrap').Grid;
 var Col = require('react-bootstrap').Col;
@@ -22,15 +24,15 @@ var log = require('../../logger');
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
-var MailForm = React.createClass({
+var MailForm = createReactClass({
     propTypes: {
-        rule: React.PropTypes.object.isRequired,
-        allowMultiBlink1: React.PropTypes.bool,
-        patterns: React.PropTypes.array,
-        onSave: React.PropTypes.func,
-        onCancel: React.PropTypes.func,
-        onDelete: React.PropTypes.func,
-        onCopy: React.PropTypes.func
+        rule: PropTypes.object.isRequired,
+        allowMultiBlink1: PropTypes.bool,
+        patterns: PropTypes.array,
+        onSave: PropTypes.func,
+        onCancel: PropTypes.func,
+        onDelete: PropTypes.func,
+        onCopy: PropTypes.func
     },
     // given a rule, return a text description
     getDescription: function(rule) {

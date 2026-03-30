@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 //var update = require('react-addons-update');
 
 
@@ -12,7 +14,7 @@ var PatternView = require('./patternView');
 
 var log = require('../../logger');
 
-var PatternList = React.createClass({
+var PatternList = createReactClass({
     //mixins: [
     //	require('react-onclickoutside')
     //],

@@ -2,6 +2,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 var Grid = require('react-bootstrap').Grid;
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
@@ -20,15 +22,15 @@ var Switch = require('react-bootstrap-switch');
 
 var Blink1SerialOption = require('./blink1SerialOption');
 
-var ScriptForm = React.createClass({
+var ScriptForm = createReactClass({
     propTypes: {
-        rule: React.PropTypes.object.isRequired,
-        allowMultiBlink1: React.PropTypes.bool,
-        patterns: React.PropTypes.array,
-        onSave: React.PropTypes.func,
-        onCancel: React.PropTypes.func,
-        onDelete: React.PropTypes.func,
-        onCopy: React.PropTypes.func
+        rule: PropTypes.object.isRequired,
+        allowMultiBlink1: PropTypes.bool,
+        patterns: PropTypes.array,
+        onSave: PropTypes.func,
+        onCancel: PropTypes.func,
+        onDelete: PropTypes.func,
+        onCopy: PropTypes.func
     },
     getInitialState: function() {
         return {};

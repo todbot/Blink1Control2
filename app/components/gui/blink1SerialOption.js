@@ -4,21 +4,23 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var Col = require('react-bootstrap').Col;
 var FormControl = require('react-bootstrap').FormControl;
 var FormGroup = require('react-bootstrap').FormGroup;
 var ControlLabel = require('react-bootstrap').ControlLabel;
 
-var Blink1SerialOption = React.createClass({
+var Blink1SerialOption = createReactClass({
     propTypes: {
-        label: React.PropTypes.string,
-        labelColWidth: React.PropTypes.number,
-        controlColWidth: React.PropTypes.number,
-        bsSize: React.PropTypes.string,
-        defaultText: React.PropTypes.string,
-        serial: React.PropTypes.string,
-        onChange: React.PropTypes.func.isRequired
+        label: PropTypes.string,
+        labelColWidth: PropTypes.number,
+        controlColWidth: PropTypes.number,
+        bsSize: PropTypes.string,
+        defaultText: PropTypes.string,
+        serial: PropTypes.string,
+        onChange: PropTypes.func.isRequired
     },
     getInitialState: function() {
         return {

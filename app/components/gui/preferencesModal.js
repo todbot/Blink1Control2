@@ -2,6 +2,8 @@
 
 // import React from 'react';
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
@@ -27,10 +29,10 @@ var Blink1SerialOption = require('./blink1SerialOption');
 const propTypes = {
 };
 
-var PreferencesModal = React.createClass({
+var PreferencesModal = createReactClass({
   propTypes: {
-    show: React.PropTypes.bool,
-    blink1Serials:  React.PropTypes.array
+    show: PropTypes.bool,
+    blink1Serials:  PropTypes.array
   },
   getInitialState: function() {
     return this.loadSettings();

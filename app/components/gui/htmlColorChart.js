@@ -5,6 +5,7 @@
 
 // import React, { Component } from 'react';
 var React = require('react');
+var PropTypes = require('prop-types');
 
 
 const htmlcolors = require('./htmlColorsList');
@@ -108,8 +109,8 @@ class HtmlColorChart extends React.Component {
 }
 
 HtmlColorChart.propTypes = {
-    handleClick: React.PropTypes.func,
-    currentColor: React.PropTypes.string
+    handleClick: PropTypes.func,
+    currentColor: PropTypes.string
 };
 
 // export default HtmlColorChart;

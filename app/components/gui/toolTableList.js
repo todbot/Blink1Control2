@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 
 var Table = require('react-bootstrap').Table;
 var Button = require('react-bootstrap').Button;
@@ -9,13 +11,13 @@ var moment = require('moment');
 
 var log = require('../../logger');
 
-var ToolTableList = React.createClass({
+var ToolTableList = createReactClass({
 
     propTypes: {
-    	rules: React.PropTypes.array.isRequired,
-        // events: React.PropTypes.array.isRequired,
-        showForm: React.PropTypes.string.isRequired,
-        onEditRule: React.PropTypes.func.isRequired
+    	rules: PropTypes.array.isRequired,
+        // events: PropTypes.array.isRequired,
+        showForm: PropTypes.string.isRequired,
+        onEditRule: PropTypes.func.isRequired
     },
 
     getInitialState: function() {
