@@ -1,15 +1,3 @@
-<script>
-const pkg = require('./package.json');
-const { ipcRenderer } = require('electron');
-const conf_dir = ipcRenderer.sendSync('getAppData').userData;
-const conf_file = conf_dir + '/blink1control2-config.json';
-
-var aHomepage = '<a href="' + pkg.homepage + '">' + pkg.homepage + '</a>';
-var aBugs = '<a href="' + pkg.bugs + '">' + pkg.bugs + '</a>';
-
-var conffilelink = '<a href="file://' + conf_file + '">' + conf_file + '</a>';
-</script>
-
 <html>
 <body bgcolor="#f0f0f0">
   <div style="background:#f0f0f0; text-align: center; font-size:85%; font-family: 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'">
@@ -17,28 +5,26 @@ var conffilelink = '<a href="file://' + conf_file + '">' + conf_file + '</a>';
     <p> for blink(1) USB RGB LED notification devices. <p>
     <h3><a target="_blank" href="http://blink1.thingm.com/">blink1.thingm.com</a></h3>
     <p>
-      Version:   <script>document.write(pkg.version)</script> <br/>
+      Version: <span id="version"></span><br/>
     </p>
     <p>
-      For latest version:    <script>document.write(aHomepage)</script><br/>
-      To report issues/bugs: <script>document.write(aBugs)</script><br/>
+      For latest version:    <span id="homepage"></span><br/>
+      To report issues/bugs: <span id="bugs"></span><br/>
     </p>
     <p>
-      Config file: <script>document.write(conffilelink)</script>
+      Config file: <span id="userData"></span>
     </p>
     <p>
-      Electron / Node / Chromium :
-      <script>document.write(process.versions.electron +' / '+ process.versions.node +' / '+ process.versions.chrome)</script>
-      : <a href="chrome://gpu/">chrome://gpu/</a>
+      Electron / Node / Chromium : <span id="versions"></span>
     </p>
-    <div>
-      <script>
-    // document.write("Pooop:"+ v);
-    // // process.map( function(p) {
-    // //   document.write("<pre>",p,"</pre>");
-    // // });
-      </script>
-    </div>
   </div>
+  <script>
+    var p = new URLSearchParams(location.search);
+    document.getElementById('version').textContent = p.get('version');
+    document.getElementById('homepage').innerHTML = '<a href="' + p.get('homepage') + '">' + p.get('homepage') + '</a>';
+    document.getElementById('bugs').innerHTML = '<a href="' + p.get('bugs') + '">' + p.get('bugs') + '</a>';
+    document.getElementById('userData').innerHTML = '<a href="file://' + p.get('userData') + '">' + p.get('userData') + '</a>';
+    document.getElementById('versions').textContent = p.get('electron') + ' / ' + p.get('node') + ' / ' + p.get('chrome');
+  </script>
 </body>
 </html>

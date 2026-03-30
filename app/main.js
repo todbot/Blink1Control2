@@ -183,14 +183,24 @@ var openAboutWindow = function () {
     height: 375,
     width: 500,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
     }
   });
   //aboutWindow.webContents.openDevTools({mode:'detach'});
   aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
   aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
-  aboutWindow.loadURL( 'file://' + __dirname + '/about.html') //+autoUpdateMsg );
+  var pkg = require('./package.json');
+  var params = new URLSearchParams({
+    version:  pkg.version,
+    homepage: pkg.homepage,
+    bugs:     pkg.bugs,
+    userData: app.getPath('userData'),
+    electron: process.versions.electron,
+    node:     process.versions.node,
+    chrome:   process.versions.chrome,
+  });
+  aboutWindow.loadURL('file://' + __dirname + '/about.html?' + params.toString());
   return aboutWindow;
 };
 
@@ -215,7 +225,7 @@ var openHelpWindow = function() {
     center: true,
     height: 700,
     width: 800,
-    webPreferences: { nodeIntegration: true }
+    webPreferences: { nodeIntegration: false, contextIsolation: true }
   });
   helpWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
   helpWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
@@ -451,26 +461,9 @@ app.on('ready', function () {
     app.setLoginItemSettings(settings);
   });
 
-  ipcMain.on('openMainWindow', function() {
-    openMainWindow();
-  });
-  ipcMain.on('openAboutWindow', function() {
-    openAboutWindow();
-  });
-  ipcMain.on('openPreferences', function() {
-    openPreferences();
-  });
-  ipcMain.on('openDevTools', function() {
-    openDevTools();
-  });
+  // Called directly from blink1TabViews.js Help button
   ipcMain.on('openHelpWindow', function() {
     openHelpWindow();
-  });
-  ipcMain.on('quitnow', function() {
-    quit();
-  });
-  ipcMain.on('checkForUpdates', function() {
-    updater.checkForUpdates();
   });
 
   // ── Service startup ──────────────────────────────────────────────

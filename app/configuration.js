@@ -42,7 +42,6 @@ var Config = {
         nconf.save();
     },
     readSettings: function(settingKey) {
-        nconf.load();
         return nconf.get(settingKey);
     }
 };
