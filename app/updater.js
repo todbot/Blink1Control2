@@ -1,67 +1,71 @@
+'use strict';
 /**
  * updater.js
  *
- * Please use manual update only when it is really required, otherwise please use recommended non-intrusive auto update.
- *
- * Import steps:
- * 1. create `updater.js` for the code snippet
- * 2. require `updater.js` for menu implementation, and set `checkForUpdates` callback from `updater` for the click property of `Check Updates...` MenuItem.
+ * Minimal update checker: fetches the latest GitHub release and compares
+ * to the running version. Shows a dialog if a newer version is available.
+ * No code signing, no download, no update server required.
  */
-const { dialog } = require('electron')
-const { autoUpdater } = require('electron-updater')
-const log = require("electron-log")
 
-let updater = {}
-autoUpdater.autoDownload = false
+const { app, dialog, shell } = require('electron');
+const https = require('https');
 
-autoUpdater.on('error', (error) => {
-  // dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString())
-  var status = (error && error.status) ? error.status : '';
-  dialog.showErrorBox('Error: could not check for updates. ', status);
-})
+const RELEASES_API = 'https://api.github.com/repos/todbot/Blink1Control2/releases/latest';
+const RELEASES_PAGE = 'https://github.com/todbot/Blink1Control2/releases/latest';
 
-autoUpdater.on('update-available', () => {
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'Found Updates',
-    message: 'Found updates from Blink1Control2 github. Do you want update now?',
-    buttons: ['Sure', 'No']
-  }, (buttonIndex) => {
-    if (buttonIndex === 0) {
-      autoUpdater.downloadUpdate()
-    }
-    else {
-      updater.enabled = true
-      // updater = null
-    }
-  })
-})
-
-autoUpdater.on('update-not-available', () => {
-  dialog.showMessageBox({
-    title: 'No Updates',
-    message: 'Current version is up-to-date.'
-  })
-  updater.enabled = true
-  // updater = null
-})
-
-autoUpdater.on('update-downloaded', () => {
-  dialog.showMessageBox({
-    title: 'Install Updates',
-    message: 'Updates downloaded. Quit application to update...'
-  }, () => {
-    setImmediate(() => autoUpdater.quitAndInstall())
-  })
-})
-
-// export this to MenuItem click callback
-// function checkForUpdates (menuItem, focusedWindow, event) {
-function checkForUpdates() {
-    // updater = menuItem
-    updater.enabled = false
-    log.transports.file.level = "debug"
-    autoUpdater.logger = log
-    autoUpdater.checkForUpdates()
+function fetchLatestRelease(callback) {
+    const options = {
+        headers: { 'User-Agent': 'Blink1Control2-updater' }
+    };
+    https.get(RELEASES_API, options, function(res) {
+        var body = '';
+        res.on('data', function(chunk) { body += chunk; });
+        res.on('end', function() {
+            try {
+                var data = JSON.parse(body);
+                callback(null, data.tag_name);
+            } catch(e) {
+                callback(e);
+            }
+        });
+    }).on('error', callback);
 }
-module.exports.checkForUpdates = checkForUpdates
+
+// Strip leading 'v' from a version tag for comparison
+function normalize(v) {
+    return (v || '').replace(/^v/, '');
+}
+
+function checkForUpdates() {
+    fetchLatestRelease(function(err, latestTag) {
+        if (err) {
+            dialog.showErrorBox('Update check failed', err.message || String(err));
+            return;
+        }
+        var current = normalize(app.getVersion());
+        var latest  = normalize(latestTag);
+
+        if (latest && latest !== current) {
+            dialog.showMessageBox({
+                type: 'info',
+                title: 'Update available',
+                message: 'A new version of Blink1Control2 is available.',
+                detail: 'Current: v' + current + '\nLatest:  v' + latest,
+                buttons: ['Download', 'Later'],
+                defaultId: 0
+            }).then(function(result) {
+                if (result.response === 0) {
+                    shell.openExternal(RELEASES_PAGE);
+                }
+            });
+        } else {
+            dialog.showMessageBox({
+                type: 'info',
+                title: 'No updates',
+                message: 'Blink1Control2 v' + current + ' is up to date.'
+            });
+        }
+    });
+}
+
+module.exports.checkForUpdates = checkForUpdates;
