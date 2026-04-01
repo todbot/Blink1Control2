@@ -17,7 +17,13 @@ on:
   release:
     types: [created]
   # To trigger manually: go to Actions tab → macos → Run workflow
+  # Check "Notarize and publish" to do a full notarized build without a commit
   workflow_dispatch:
+    inputs:
+      notarize:
+        description: 'Notarize and publish'
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -54,12 +60,12 @@ jobs:
           npm run dist:draft
 
       - name: Notarize
-        if: "contains(github.event.head_commit.message, '[publish]')"
+        if: "contains(github.event.head_commit.message, '[publish]') || inputs.notarize"
         run: npm run dist:nopub
 
       - name: Publish
         continue-on-error: true
-        if: "contains(github.event.head_commit.message, '[publish]')"
+        if: "contains(github.event.head_commit.message, '[publish]') || inputs.notarize"
         run: npm run dist
 
       - name: Upload artifacts
