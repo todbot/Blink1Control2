@@ -8,22 +8,16 @@ env:
 on:
   push:
   pull_request:
-  #release:
-  #  types: [created]
-  #types: [published]  # publish a draft release to set github.event_name = 'release'
 
 jobs:
-  # This workflow contains a single job called "build"
   build:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks executed as part of the job
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup prerequisites
-        if: runner.os == 'Linux'
         run: |
           echo "event name: ${{ github.event_name }}"
           sudo apt update
@@ -32,12 +26,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install Node.js and NPM
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 20
           cache: npm
 
       - name: Build
@@ -49,24 +43,16 @@ jobs:
       - name: Publish
         continue-on-error: true
         if: "contains(github.event.head_commit.message, '[publish]')"
-        #if: (github.event_name == 'release' && github.event.action == 'created')
-        #if: (github.event_name == 'release')  # or values = 'push' or 'pull_request'
-        run: |
-          npm run dist
-
-      - name: Check files
-        run: ls -alR --ignore=\.git --ignore=node_modules
+        run: npm run dist
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Blink1Control2-${{ runner.os }}
           path: |
             dist/Blink1Control2*zip
-            dist/Blink1Control2*dmg
-            dist/Blink1Control2*deb
             dist/Blink1Control2*tar.gz
+            dist/Blink1Control2*deb
             dist/Blink1Control2*AppImage
-            dist/Blink1Control2*exe
             dist/Blink1Control2*blockmap
             dist/latest*yml
