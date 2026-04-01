@@ -16,6 +16,8 @@ on:
   pull_request:
   release:
     types: [created]
+  # To trigger manually: go to Actions tab → macos → Run workflow
+  workflow_dispatch:
 
 jobs:
   build:
