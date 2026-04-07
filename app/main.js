@@ -63,11 +63,7 @@ var config = require('./configuration');
 
 //console.log("config: ", config);
 
-crashReporter.start({
-  productName: pkg.productName,
-  companyName: pkg.companyName,
-  submitURL: 'http://thingm.com/blink1/blink1control2-crash-reporter', // FIXME:
-});
+crashReporter.start({ uploadToServer: false });
 
 // turn off 'app-suspension' because it was causing bad timing in renderer
 // FIXME: check if this is still the case in Electron
@@ -188,7 +184,7 @@ var openAboutWindow = function () {
     }
   });
   //aboutWindow.webContents.openDevTools({mode:'detach'});
-  aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
+  aboutWindow.webContents.setWindowOpenHandler(function(details) { electron.shell.openExternal(details.url); return { action: 'deny' }; });
   aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
   var pkg = require('./package.json');
   var params = new URLSearchParams({
@@ -227,7 +223,7 @@ var openHelpWindow = function() {
     width: 800,
     webPreferences: { nodeIntegration: false, contextIsolation: true }
   });
-  helpWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
+  helpWindow.webContents.setWindowOpenHandler(function(details) { electron.shell.openExternal(details.url); return { action: 'deny' }; });
   helpWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
   helpWindow.on("closed", function() {
     // helpWindow = null;
@@ -324,16 +320,6 @@ app.on('ready', function () {
   }
   console.log("loadurl:"+loadurl);
 
-  // Synchronous data request from renderer (used at module init time by configuration.js, about.html)
-  // Must be registered before BrowserWindow is created so the preload script can call it.
-  ipcMain.on('getAppData', function(event) {
-    event.returnValue = {
-      userData: app.getPath('userData'),
-      appPath:  app.getAppPath(),
-      appName:  app.getName()
-    };
-  });
-
   mainWindow = new BrowserWindow({
     icon: path.join(__dirname, 'images/icons/blink1mk2-icon2-128px.png'),
     title: "Blink1Control2",
@@ -348,6 +334,11 @@ app.on('ready', function () {
       sandbox: false,
       backgroundThrottling: false,
       preload: path.join(__dirname, 'preload.js'),
+      additionalArguments: ['--appData=' + JSON.stringify({
+        userData: app.getPath('userData'),
+        appPath:  app.getAppPath(),
+        appName:  app.getName()
+      })],
     }
   });
   mainWindow.loadURL(loadurl);
@@ -375,10 +366,9 @@ app.on('ready', function () {
     mainWindow.hide();
   });
 
-  mainWindow.webContents.on('new-window', function(e, url) {
-    //console.log("Blink1Control2: mainWindow.new-window");
-    e.preventDefault();
-      electron.shell.openExternal(url);
+  mainWindow.webContents.setWindowOpenHandler(function(details) {
+    electron.shell.openExternal(details.url);
+    return { action: 'deny' };
   });
 
   app.on('will-quit', function() {

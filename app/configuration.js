@@ -7,10 +7,11 @@ var fs = require('fs');
 
 var confdefaults = require('./blink1control2-config-defaults.json');
 
-// Get userData path: in renderer ask main via IPC; in main process use app directly
+// Get userData path: in preload/renderer read from additionalArguments; in main process use app directly
 var conf_dir;
 if (process.type === 'renderer') {
-    conf_dir = require('electron').ipcRenderer.sendSync('getAppData').userData;
+    var appDataArg = process.argv.find(function(a) { return a.startsWith('--appData='); });
+    conf_dir = appDataArg ? JSON.parse(appDataArg.slice('--appData='.length)).userData : '';
 } else {
     conf_dir = require('electron').app.getPath('userData');
 }

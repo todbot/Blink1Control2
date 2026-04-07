@@ -4,7 +4,8 @@ var { contextBridge, ipcRenderer } = require('electron');
 var conf = require('./configuration'); // has Node access in preload context
 
 // ── App data ─────────────────────────────────────────────────────
-var appData = ipcRenderer.sendSync('getAppData');
+var appDataArg = process.argv.find(function(a) { return a.startsWith('--appData='); });
+var appData = appDataArg ? JSON.parse(appDataArg.slice('--appData='.length)) : { userData: '', appPath: '', appName: '' };
 
 // ── State caches ──────────────────────────────────────────────────
 var blink1State = {
