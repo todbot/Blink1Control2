@@ -133,7 +133,7 @@
     "cross-env": "^7.0.3",
     "css-loader": "^2.1.1",
     "devtron": "^1.4.0",
-    "electron": "^34.0.0",
+    "electron": "^39.8.5",
     "electron-builder": "^25.0.0",
     "file-loader": "^3.0.1",
     "font-awesome": "^4.5.0",
