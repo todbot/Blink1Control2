@@ -16,6 +16,7 @@ var ScriptService = {
     config: {},
     rules: [],
     ruleTimers: [],
+    runningScripts: [],
     lastEvents:{},
     lastPatterns: {},
 
@@ -44,9 +45,10 @@ var ScriptService = {
     },
     stop: function() {
         log.msg("ScriptService.stop");
-        // stop previous timers
         this.ruleTimers.map( function(timer) { clearInterval(timer); } );
         this.ruleTimers = [];
+        this.runningScripts.map( function(child) { try { child.kill(); } catch(e) {} } );
+        this.runningScripts = [];
         this.lastEvents = {};
     },
     reloadConfig: function() {
@@ -83,15 +85,14 @@ var ScriptService = {
         if( rule.type === 'script' ) {
             var spawn = require('child_process').spawn;
             try {
-                var script = spawn( rule.path );
+                var script = spawn( rule.path, [], { shell: true } );
+                var stdoutBuf = '';
+                self.runningScripts.push(script);
                 script.on('error', function(error) {
                     Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:error.message});
                 });
                 script.stdout.on('data', function(data) {
-                    var str = data.toString();
-                    log.msg("ScriptService.runRule: str:",str,"last:",self.lastEvents[rule.name]);
-                    // self.handleEvent(rule,str);
-                    self.parse(rule,str);
+                    stdoutBuf += data.toString();
                 });
                 script.stderr.on('data', function(data) {
                     log.msg("ScriptService.runRule stderr data",data);
@@ -99,6 +100,10 @@ var ScriptService = {
                 });
                 script.on('close', function(code) {
                     log.msg("ScriptService.runRule close",code);
+                    self.runningScripts = self.runningScripts.filter(function(s) { return s !== script; });
+                    var str = stdoutBuf.replace(/\r/g, '');
+                    log.msg("ScriptService.runRule: str:",str,"last:",self.lastEvents[rule.name]);
+                    self.parse(rule, str);
                 });
             } catch(error) {
                 Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:error.message});
