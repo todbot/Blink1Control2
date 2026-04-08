@@ -232,18 +232,6 @@ var openHelpWindow = function() {
   helpWindow.loadURL( 'file://' + __dirname + '/help/index.html' );
 };
 
-// autoUpdater.on('checking-for-update', () => {
-//   console.log('Checking for update...');
-// });
-// autoUpdater.on('update-available', (info) => {
-//   console.log('Update available.');
-// });
-// autoUpdater.on('update-not-available', (info) => {
-//   console.log('Update not available.');
-// });
-// autoUpdater.on('error', (err) => {
-//   console.log('Error in auto-updater.');
-// });
 
 
 // ------------------------------------------------------------------------
@@ -268,13 +256,6 @@ var openLogWindow = function(html) {
 };
 
 app.on('ready', function () {
-
-    // autoUpdater.autoDownload = false;
-    // autoUpdater.checkForUpdates();
-
-  // if (!isDevelopment) {
-  //   launchAtStartup();
-  // }
 
   var hideDockIcon = config.readSettings('startup:hideDockIcon');
   if( hideDockIcon && process.platform === 'darwin' ) {
