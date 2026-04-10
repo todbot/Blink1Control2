@@ -17,18 +17,17 @@ var MqttService = {
 	rules: [],
     clients: {},
     timer: null,
-    // FIXME: "reloadConfig()" should really be "restartService" or something
     reloadConfig: function() {
         log.msg("MqttService.reloadConfig");
-        this.stop();
-        this.start();
+        var self = this;
+        self.stop(function() { self.start(); });
     },
     start: function() {
         var self = this;
 
         self.config = conf.readSettings('eventServices:mqttService');
-        if( !this.config ) {
-            log.msg("MqttService.reloadConfig: NO CONFIG");
+        if( !self.config ) {
+            log.msg("MqttService.start: NO CONFIG");
             self.config = {
                 type: 'mqtt',
                 service: 'mqttService',
@@ -37,13 +36,30 @@ var MqttService = {
             };
             conf.saveSettings('eventServices:mqttService', self.config);
         }
-        // var allrules = conf.readSettings('eventRules') || [];
+        self.config.maxStringLength = self.config.maxStringLength || 200;
+
         var allrules = conf.readSettings('eventRules') || [];
-        self.rules = allrules.filter( function(r){return r.type === 'mqtt';} );
+        self.rules = allrules.filter( function(r){ return r.type === 'mqtt' && r.enabled; } );
 
         self.rules.map( function(rule) {
             log.msg("MqttService.start: rule:", rule);
-            if( !rule.enabled ) { return; }
+
+            if( !rule.url ) {
+                log.msg('MqttService: rule "' + rule.name + '" has no broker URL, skipping');
+                Eventer.addStatus( {type:'error', source:'mqtt', id:rule.name, text:'no broker URL configured'} );
+                return;
+            }
+            if( !rule.topic ) {
+                log.msg('MqttService: rule "' + rule.name + '" has no topic, skipping');
+                Eventer.addStatus( {type:'error', source:'mqtt', id:rule.name, text:'no topic configured'} );
+                return;
+            }
+            if( self.clients[rule.name] ) {
+                log.msg('MqttService: duplicate rule name "' + rule.name + '", skipping');
+                Eventer.addStatus( {type:'error', source:'mqtt', id:rule.name, text:'duplicate rule name'} );
+                return;
+            }
+
             var pass = '';
             try {
                 if( rule.passwordHash !== '' ) {  // allow password-less login
@@ -52,17 +68,16 @@ var MqttService = {
             } catch(err) {
                 log.msg('MqttService: ERROR bad password for username', rule.username);
             }
-            // FIXME: impelement sanity checks
-            // if( !rule.url ) { }
-            // if !rule.topic ) { }
+
             var mqtt_config = {
               reconnectPeriod: self.config.reconnectPeriod
             };
             mqtt_config.username = rule.username;
             mqtt_config.password = pass;
             log.msg("MqttService.start: mqtt_config:", mqtt_config);
+
+            var errorLogged = false;
             var client = mqtt.connect( rule.url, mqtt_config );
-            self.errorLogged = false;  // reset
             client.on('connect', function () {
                 log.msg("MqttService.connected");
                 Eventer.addStatus( {type:'info', source:rule.type, id:rule.name, text:"connected"} );
@@ -73,7 +88,7 @@ var MqttService = {
             });
             client.on('close', function() {
               log.msg("MqttService.close");
-              if( !self.errorLogged ) {
+              if( !errorLogged ) {
                 Eventer.addStatus( {type:'info', source:rule.type, id:rule.name, text:"connection closed, bad auth?"} );
               }
             });
@@ -81,31 +96,34 @@ var MqttService = {
               log.msg("MqttService.end");
             });
             client.on('error', function(error) {
-              console.log("bAKKBKBKB",error);
-              log.msg('MqttService.error: error json',JSON.stringify(error), error.toString());
-              Eventer.addStatus( {type:'info', source:rule.type, id:rule.name, text:error.toString() } );
-              self.errorLogged = true;
+              log.msg('MqttService.error:', error.toString());
+              Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:error.toString() } );
+              errorLogged = true;
             });
             client.on('message', function (topic, message) {
               log.msg("MqttService: message: topic:", topic, "message:",message.toString());
-              // parse() will fill out Eventer.addStatus() for us
               self.parse(rule, message.toString());  // message is Buffer, thus .toString()
-              // Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:message.toString()} );
-              //Eventer.addStatus( {type:'info', source:rule.type, id:rule.name, text:message.toString()} );
             });
             self.clients[rule.name] = client;
         });
 
     },
-    stop: function() {
+    stop: function(callback) {
       log.msg("MqttService.stop");
       var self = this;
-      Object.keys(self.clients).forEach(function(name) {
-          if (self.clients[name]) {
-              self.clients[name].end();
-          }
-      });
+      var clients = Object.keys(self.clients).map(function(k) { return self.clients[k]; });
       self.clients = {};
+      if( clients.length === 0 ) {
+          if( callback ) { callback(); }
+          return;
+      }
+      var remaining = clients.length;
+      clients.forEach(function(client) {
+          client.end(false, {}, function() {
+              remaining--;
+              if( remaining === 0 && callback ) { callback(); }
+          });
+      });
     },
 
     playPattern: function(pattid,ruleid,blink1id) {
@@ -177,7 +195,7 @@ var MqttService = {
                     }
                 }
                 else {
-
+                    Eventer.addStatus( {type:'info', source:rule.type, id:rule.name, text:'no pattern or color in JSON'} );
                 }
             } catch(error) {
                 log.msg("error:", error)
