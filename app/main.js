@@ -382,6 +382,14 @@ app.on('ready', function () {
     openLogWindow(html);
   });
 
+  // Config write-through: keep main process nconf in sync with renderer saves.
+  // All services read conf.readSettings() from the main process nconf instance,
+  // which is separate from the preload's instance. Without this, reloadConfig()
+  // always sees stale config from app startup.
+  ipcMain.on('config:saveSettings',    function(event, key, value) { config.saveSettings(key, value); });
+  ipcMain.on('config:saveSettingsMem', function(event, key, value) { config.saveSettingsMem(key, value); });
+  ipcMain.on('config:saveSettingsSync', function()                  { config.saveSettingsSync(); });
+
   // File open dialog (from scriptForm.js)
   ipcMain.handle('showOpenDialog', async function(event, options) {
     return dialog.showOpenDialog(options);

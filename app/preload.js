@@ -179,9 +179,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     config: {
         readSettings:    function(key) { return conf.readSettings(key); },
-        saveSettings:    function(key, value) { conf.saveSettings(key, value); },
-        saveSettingsMem: function(key, value) { conf.saveSettingsMem(key, value); },
-        saveSettingsSync: function() { conf.saveSettingsSync(); },
+        saveSettings:    function(key, value) { conf.saveSettings(key, value); ipcRenderer.send('config:saveSettings', key, value); },
+        saveSettingsMem: function(key, value) { conf.saveSettingsMem(key, value); ipcRenderer.send('config:saveSettingsMem', key, value); },
+        saveSettingsSync: function() { conf.saveSettingsSync(); ipcRenderer.send('config:saveSettingsSync'); },
     },
 
     eventer: {
