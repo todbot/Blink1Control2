@@ -119,6 +119,7 @@ var MqttService = {
       }
       var remaining = clients.length;
       clients.forEach(function(client) {
+          client.removeAllListeners('message');  // stop processing messages immediately
           client.end(false, {}, function() {
               remaining--;
               if( remaining === 0 && callback ) { callback(); }
@@ -220,10 +221,15 @@ var MqttService = {
         }
         else { // parse-color
             matches = colorre.exec(str);
-            if( matches && matches) {
-                var colormatch = matches[2];
-                if( !colormatch ) { colormatch = matches[1]; }
-
+            var colormatch = null;
+            if( matches ) {
+                colormatch = matches[2] || matches[1];
+            } else {
+                // try the whole message as a named color (e.g. "red", "forestgreen")
+                var trimmed = tinycolor( str.trim() );
+                if( trimmed.isValid() ) { colormatch = str.trim(); }
+            }
+            if( colormatch ) {
                 var color = tinycolor( colormatch );
                 if( color.isValid() ) {
                     Eventer.addStatus( {type:'trigger', source:rule.type, id:rule.name, text:colormatch});
