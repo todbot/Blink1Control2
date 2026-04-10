@@ -10,9 +10,9 @@ var Utils = {
 	cheesyClone: function(o) {
 		return JSON.parse(JSON.stringify(o));
 	},
-	// cheapUid: function(len) {
-	// 	return Math.random().toString(36).substr(2, len);
-	// },
+	cheapUid: function(len) {
+		return Math.random().toString(36).substr(2, len);
+	},
 	generateId: function(name,len) {
 		return name.toLowerCase().replace(/\W+/g, '') +'-'+ this.cheapUid(len);
 	},
