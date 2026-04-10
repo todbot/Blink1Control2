@@ -387,6 +387,15 @@ app.on('ready', function () {
     return dialog.showOpenDialog(options);
   });
 
+  // Script/file/url test (from scriptForm.js)
+  ipcMain.handle('scriptService:test', function(event, rule) {
+    return new Promise(function(resolve) {
+      ScriptService.testRule(rule, function(error, output) {
+        resolve({ error: error, output: output });
+      });
+    });
+  });
+
   // Context menus (from bigButton.js, blink1Status.js)
   ipcMain.on('showContextMenu', function(event, data) {
     var menu = Menu.buildFromTemplate(

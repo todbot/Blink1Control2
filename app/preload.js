@@ -206,6 +206,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
         showOpenDialog: function(options) { return ipcRenderer.invoke('showOpenDialog', options); },
     },
 
+    scriptService: {
+        test: function(rule) { return ipcRenderer.invoke('scriptService:test', rule); },
+    },
+
     menu: {
         setApplicationMenu: function(template) { ipcRenderer.send('setApplicationMenu', template); },
         setupTray:          function(data) { ipcRenderer.send('setupTray', data); },

@@ -78,67 +78,81 @@ var ScriptService = {
     //   path: filepath to run
     //   actOnNew: true/false
     // }
+    // Core fetch: runs script/reads file/fetches URL, calls callback(error, output) once.
+    // For scripts, stderr data is forwarded to onStderr(data) if provided.
+    // Returns the child process for 'script' type so the caller can track it; null otherwise.
+    fetchRule: function(rule, callback, onStderr) {
+        var MAX_BYTES = 32 * 1024;
+        if( rule.type === 'script' ) {
+            var spawn = require('child_process').spawn;
+            var stdoutBuf = '';
+            var done = false;
+            var child = spawn(rule.path, [], { shell: true });
+            child.on('error', function(err) {
+                if( !done ) { done = true; callback(err.message, null); }
+            });
+            child.stdout.on('data', function(data) {
+                if( stdoutBuf.length < MAX_BYTES ) {
+                    stdoutBuf += data.toString();
+                }
+            });
+            child.stderr.on('data', function(data) {
+                if( onStderr ) { onStderr(data.toString()); }
+            });
+            child.on('close', function() {
+                if( !done ) { done = true; callback(null, stdoutBuf.slice(0, MAX_BYTES).replace(/\r/g, '')); }
+            });
+            return child;
+        }
+        else if( rule.type === 'file' ) {
+            var stream = fs.createReadStream(rule.path, {encoding: 'utf8', start: 0, end: MAX_BYTES - 1});
+            var fileBuf = '';
+            stream.on('data', function(chunk) { fileBuf += chunk; });
+            stream.on('error', function(err) { callback(err.message, null); });
+            stream.on('end', function() { callback(null, fileBuf); });
+        }
+        else if( rule.type === 'url' ) {
+            needle.get(rule.path, {decode: false, parse: false, follow_max: 5}, function(err, response) {
+                if( err ) { callback(err.message, null); }
+                else if( response.statusCode !== 200 ) { callback('HTTP ' + response.statusCode, null); }
+                else { callback(null, response.body.slice(0, MAX_BYTES).toString()); }
+            });
+        }
+        else {
+            callback('unknown rule type: ' + rule.type, null);
+        }
+        return null;
+    },
+
     runRule: function(rule) {
         var self = this;
         log.msg("ScriptService.runRule:",rule.name, rule.type, rule,"timer Ids:",self.ruleTimers);
-
-        if( rule.type === 'script' ) {
-            var spawn = require('child_process').spawn;
-            try {
-                var script = spawn( rule.path, [], { shell: true } );
-                var stdoutBuf = '';
-                self.runningScripts.push(script);
-                script.on('error', function(error) {
-                    Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:error.message});
-                });
-                script.stdout.on('data', function(data) {
-                    stdoutBuf += data.toString();
-                });
-                script.stderr.on('data', function(data) {
-                    log.msg("ScriptService.runRule stderr data",data);
-                    Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:'stderr:'+data });
-                });
-                script.on('close', function(code) {
-                    log.msg("ScriptService.runRule close",code);
-                    self.runningScripts = self.runningScripts.filter(function(s) { return s !== script; });
-                    var str = stdoutBuf.replace(/\r/g, '');
-                    log.msg("ScriptService.runRule: str:",str,"last:",self.lastEvents[rule.name]);
-                    self.parse(rule, str);
-                });
-            } catch(error) {
-                Eventer.addStatus( {type:'error', source:rule.type, id:rule.name, text:error.message});
-            }
-        }
-        else if( rule.type === 'file' ) {
-            fs.readFile( rule.path, 'utf8', function(err,data) {
-                // FIXME: put limit on size
-                // FIXME: check for no file
-                if(err) {
-                    Eventer.addStatus( {type:'error', source:'file', id:rule.name, text:err.message});
-                    return;
-                    // return log.error(err);
-                }
-                self.parse(rule,data);
-            });
-        }
-        else if( rule.type === 'url' ) {
-            var url = rule.path;
-            needle.get(url, {decode: false, parse: false, follow_max:5}, function(err, response) {
-                // FIXME: do error handling like: net error, bad response, etc.
+        try {
+            var child = self.fetchRule(rule, function(err, output) {
                 if( err ) {
-                    log.msg("ScriptService.runRule: error fetching url",err, response);
-                    Eventer.addStatus( {type:'error', source:'url', id:rule.name, text:err.message });
+                    Eventer.addStatus({type:'error', source:rule.type, id:rule.name, text:err});
                     return;
                 }
-                if( response.statusCode !== 200 ) { // badness
-                    Eventer.addStatus( {type:'error', source:'url', id:rule.name, text:response.statusMessage });
-                    return;
-                }
-                // otherwise continue as normal
-                self.parse( rule, response.body);
+                log.msg("ScriptService.runRule: output:",output,"last:",self.lastEvents[rule.name]);
+                self.parse(rule, output);
+            }, function(stderrData) {
+                log.msg("ScriptService.runRule stderr:",stderrData);
+                Eventer.addStatus({type:'error', source:rule.type, id:rule.name, text:'stderr:'+stderrData});
             });
+            if( child ) {
+                self.runningScripts.push(child);
+                child.on('close', function() {
+                    self.runningScripts = self.runningScripts.filter(function(s) { return s !== child; });
+                });
+            }
+        } catch(error) {
+            Eventer.addStatus({type:'error', source:rule.type, id:rule.name, text:error.message});
         }
+    },
 
+    // Run a rule once and return the raw output via callback(error, output), without parsing.
+    testRule: function(rule, callback) {
+        this.fetchRule(rule, callback);
     },
 
     playPattern: function(pattid,ruleid,blink1id) {
