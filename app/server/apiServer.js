@@ -4,12 +4,14 @@ var express   = require('express');
 var tinycolor = require('tinycolor2');
 
 var config = require('../configuration');
-var log = require('../logger');
-var Eventer = require('../eventer');
 var utils = require('../utils');
 
-var Blink1Service = require('./blink1Service');
-var PatternsService = require('./patternsService');
+// Injected service dependencies — set via apiServer.init(services).
+// Default to hardcoded requires for backward compatibility when init() is not called.
+var _log     = require('../logger');
+var _eventer = require('../eventer');
+var _blink1  = require('./blink1Service');
+var _patt    = require('./patternsService');
 
 var app = express();
 app.set('json spaces', 2);
@@ -19,8 +21,8 @@ app.set('json spaces', 2);
 });
 
 var myLogger = function (req, res, next) {
-  // log.msg("ApiServer", req.url);
-  Eventer.addStatus( {type:'info', source:'api', id:req.ip, text:req.url} );
+  // _log.msg("ApiServer", req.url);
+  _eventer.addStatus( {type:'info', source:'api', id:req.ip, text:req.url} );
   next();
 };
 app.use(myLogger);
@@ -48,23 +50,23 @@ app.get('/', function (req, res) {
 });
 app.get('/blink1(/id)?', function(req,res) {
     res.json({
-        blink1_serialnums: Blink1Service.getAllSerials(),
-        blink1_id: Blink1Service.getIftttKey(),
+        blink1_serialnums: _blink1.getAllSerials(),
+        blink1_id: _blink1.getIftttKey(),
         status: "blink1 id"
     });
 });
 app.get('/blink1/enumerate', function(req,res) {
-    Blink1Service.reloadConfig();
+    _blink1.reloadConfig();
     res.json({
-        blink1_serialnums: Blink1Service.getAllSerials(),
-        blink1_id: Blink1Service.getIftttKey(),
+        blink1_serialnums: _blink1.getAllSerials(),
+        blink1_id: _blink1.getIftttKey(),
         status: "blink1 enumerate"
     });
 });
 app.get('/blink1/off', function(req,res) {
     var blink1_id = getQueryBlink1Id(req);
-    PatternsService.stopAllPatterns();
-    Blink1Service.fadeToColor(100, '#000000', 0, blink1_id);
+    _patt.stopAllPatterns();
+    _blink1.fadeToColor(100, '#000000', 0, blink1_id);
     res.json({
         status: "blink1 off",
         rgb: '#000000'
@@ -72,8 +74,8 @@ app.get('/blink1/off', function(req,res) {
 });
 app.get('/blink1/on', function(req,res) {
     var blink1_id = getQueryBlink1Id(req);
-    PatternsService.stopAllPatterns();
-    Blink1Service.fadeToColor(100, '#ffffff', 0, blink1_id);
+    _patt.stopAllPatterns();
+    _blink1.fadeToColor(100, '#ffffff', 0, blink1_id);
     res.json({
         status: "blink1 on",
         rgb: '#ffffff'
@@ -94,8 +96,8 @@ app.get('/blink1/:color(red|green|blue|cyan|yellow|magenta)', function(req, res)
     var millis = getQueryMillis(req, 100);
     var ledn = Number(req.query.get('ledn')) || 0;
     var blink1_id = getQueryBlink1Id(req);
-    PatternsService.stopAllPatterns();
-    Blink1Service.fadeToColor(millis, hex, ledn, blink1_id);
+    _patt.stopAllPatterns();
+    _blink1.fadeToColor(millis, hex, ledn, blink1_id);
     res.json({ status: 'blink1 ' + req.params.color, rgb: hex });
 });
 
@@ -109,7 +111,7 @@ app.get('/blink1/blink', function(req, res) {
     var hex = color.toHexString();
     // ~blink:color-count-time(secs)
     var pattName = '~blink:' + hex + '-' + count + '-' + (millis / 1000);
-    PatternsService.playPatternFrom('api', pattName, blink1_id);
+    _patt.playPatternFrom('api', pattName, blink1_id);
     res.json({ status: 'blink1 blink', rgb: hex, count: count, millis: millis });
 });
 
@@ -119,7 +121,7 @@ app.get('/blink1/random', function(req, res) {
     var millis = getQueryMillis(req, 100);
     var ledn = Number(req.query.get('ledn')) || 0;
     var blink1_id = getQueryBlink1Id(req);
-    Blink1Service.fadeToColor(millis, hex, ledn, blink1_id);
+    _blink1.fadeToColor(millis, hex, ledn, blink1_id);
     res.json({ status: 'blink1 random', rgb: hex });
 });
 
@@ -131,13 +133,13 @@ app.get('/blink1/fadeToRGB', function(req, res) {
     var status = "success";
 
     if( color.isValid() ) {
-        status = Blink1Service.fadeToColor( millis, color, ledn, blink1_id );
+        status = _blink1.fadeToColor( millis, color, ledn, blink1_id );
     }
     else {
         status = "bad hex color specified " + req.query.get('rgb');
     }
     res.json( {
-        blink1_serialnums: Blink1Service.getAllSerials(),
+        blink1_serialnums: _blink1.getAllSerials(),
         lastColor: color.toHexString(),
         lastTime: millis / 1000,
         lastMillis: millis,
@@ -150,9 +152,9 @@ app.get('/blink1/fadeToRGB', function(req, res) {
 app.get('/blink1/lastColor', function(req, res) {
   var ledn = Number(req.query.get('ledn')) || 0;
   var blink1_id = getQueryBlink1Id(req);
-  var color = Blink1Service.getCurrentColor(blink1_id, ledn);
+  var color = _blink1.getCurrentColor(blink1_id, ledn);
   res.json( {
-      blink1_serialnums: Blink1Service.getAllSerials(),
+      blink1_serialnums: _blink1.getAllSerials(),
       lastColor: color.toHexString(),
       lastLedn: ledn,
       cmd: "lastColor",
@@ -163,13 +165,13 @@ app.get('/blink1/lastColor', function(req, res) {
 app.get('/blink1/pattern(s)?', function(req,res) {
     res.json({
         status: "pattern results",
-        patterns: PatternsService.getAllPatternsForOutput()
+        patterns: _patt.getAllPatternsForOutput()
     });
 });
 app.get('/blink1/pattern/queue', function(req,res) {
     res.json({
         status: "pattern queue results",
-        queue: PatternsService.getPlayingQueueForOutput()
+        queue: _patt.getPlayingQueueForOutput()
     });
 });
 
@@ -180,21 +182,21 @@ app.get('/blink1/pattern/:type(play|stop)', function(req,res) {
     if( req.params.type === 'play' ) {
         if( patt_name ) {
             // returns true on found pattern // FIXME: go back to using 'findPattern'
-            if( PatternsService.playPatternFrom( 'api', patt_name, blink1_id ) ) {
+            if( _patt.playPatternFrom( 'api', patt_name, blink1_id ) ) {
                 status = 'pattern play: playing ' +patt_name;
             }
         }
     }
     else { // stop
         if( !patt_name ) {
-            PatternsService.stopAllPatterns();
+            _patt.stopAllPatterns();
             status = 'pattern stop: stopping all patterns';
         }
         else {
-            var id = PatternsService.getIdForName( patt_name );
+            var id = _patt.getIdForName( patt_name );
             if( !id ) { id = patt_name; }
 
-            if( PatternsService.stopPattern( id ) ) {
+            if( _patt.stopPattern( id ) ) {
                 status = 'pattern stop: stopping ' +patt_name;
             }
         }
@@ -214,15 +216,15 @@ app.get('/blink1/pattern/add', function(req,res) {
         status = "must specify 'name' and 'pattern' string";
     }
     else {
-        var patt = PatternsService.newPatternFromString( patt_name, req.query.get('pattern'));
-        log.msg("patt:",patt, req.query.get('pattern'));
+        var patt = _patt.newPatternFromString( patt_name, req.query.get('pattern'));
+        _log.msg("patt:",patt, req.query.get('pattern'));
         if( patt ) {
-          PatternsService.savePattern(patt);
-          pattout = PatternsService.formatPatternForOutput(patt);
+          _patt.savePattern(patt);
+          pattout = _patt.formatPatternForOutput(patt);
           status = "pattern add: pattern '"+patt_name+"' added";
         }
         else {
-          log.msg("PatternsService: bad pattern specified: ", patt_name);
+          _log.msg("PatternsService: bad pattern specified: ", patt_name);
         }
     }
     res.json({
@@ -235,11 +237,11 @@ app.get('/blink1/pattern/del', function(req,res) {
     var patt_name = req.query.get('pname') || req.query.get('name') || '';
     var id = req.query.get('id') || '';
     if( patt_name ) {
-        id = PatternsService.getIdForName( patt_name );
+        id = _patt.getIdForName( patt_name );
         if( !id ) { id = patt_name; }
     }
     if( id ) {
-        PatternsService.deletePattern( id );
+        _patt.deletePattern( id );
         status = "pattern '"+id+"' deleted";
     }
     else {
@@ -263,6 +265,15 @@ app.get('/blink1/input*', function(req,res) {
 var apiServer = {
     server: null,
     config: {},
+
+    // Inject service dependencies. Call before start().
+    // When not called, falls back to hardcoded requires (backward compatible).
+    init: function(services) {
+        if( services.blink1Service )   { _blink1  = services.blink1Service; }
+        if( services.patternsService ) { _patt    = services.patternsService; }
+        if( services.log )             { _log     = services.log; }
+        if( services.eventer )         { _eventer = services.eventer; }
+    },
 
     reloadConfig: function() {
         var self = this;
@@ -291,12 +302,12 @@ var apiServer = {
         }
         this.server.on('error', function(err) {
             if( err.code === 'EADDRINUSE' ) {
-                log.msg("ApiServer: port", port, "already in use");
-                Eventer.addStatus({ type:'error', source:'api', id:'apiServer',
+                _log.msg("ApiServer: port", port, "already in use");
+                _eventer.addStatus({ type:'error', source:'api', id:'apiServer',
                                     text: 'port ' + port + ' already in use' });
             } else {
-                log.msg("ApiServer error:", err.message);
-                Eventer.addStatus({ type:'error', source:'api', id:'apiServer', text: err.message });
+                _log.msg("ApiServer error:", err.message);
+                _eventer.addStatus({ type:'error', source:'api', id:'apiServer', text: err.message });
             }
         });
     },

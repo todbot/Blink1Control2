@@ -457,6 +457,7 @@ app.on('ready', function () {
 
   // ── Service startup ──────────────────────────────────────────────
   Blink1Service.start();
+  ApiServer.init({ blink1Service: Blink1Service, patternsService: PatternsService, eventer: Eventer });
   ApiServer.start();
   PatternsService.initialize();
 
