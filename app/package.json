@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "author": "ThingM <blink1@thingm.com> (https://blink1.thingm.com/)",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "productName": "Blink1Control2",
@@ -25,5 +25,8 @@
     "skyweb": "^0.4.3",
     "tinycolor2": "^1.3.0",
     "node-blink1-server": "file:../packages/node-blink1-server"
+  },
+  "overrides": {
+    "node-addon-api": "^5.0.0"
   }
 }
