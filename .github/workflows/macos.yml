@@ -13,6 +13,7 @@ env:
 
 on:
   push:
+    branches: [main, main-es5]
   pull_request:
   release:
     types: [created]
