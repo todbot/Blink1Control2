@@ -1,5 +1,7 @@
 
 
+## Pattern strings
+
 
 Allowed patterns & meta-patterns for PatternsService:
 
