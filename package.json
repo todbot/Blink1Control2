@@ -39,7 +39,7 @@
     "dist:raspi": "electron-builder  --dir --armv7l --linux deb --publish=always",
     "clean": "rimraf app/node_modules node_modules package-lock.json app/package-lock.json packages/node-blink1-server/node_modules packages/node-blink1-server/package-lock.json",
     "env": "env",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-builder install-app-deps && npm install --prefix packages/node-blink1-server --no-audit",
     "test": "echo \"tested\""
   },
   "build": {
