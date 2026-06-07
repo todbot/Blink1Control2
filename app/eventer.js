@@ -44,7 +44,7 @@ var EventEmitter = require('events').EventEmitter;
 var util = require("util");
 
 var conf = require('./configuration');
-var logconfig = conf.readSettings('logger');
+var logconfig = conf.readSettings('logger') || {};
 if( !logconfig.maxEvents ) { logconfig.maxEvents = 200; }
 
 function Eventer() {

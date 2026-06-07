@@ -21,6 +21,7 @@ var config = require('./configuration');
 global.logconfig = config.readSettings('logger') || {};
 
 var Eventer = require('./eventer');
+var createBlink1Server = require('node-blink1-server');
 var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
 var ApiServer = require('./server/apiServer');
@@ -375,7 +376,7 @@ app.on('ready', function () {
   mainActions.openHelpWindow   = openHelpWindow;
   mainActions.quitnow             = quit;
   mainActions.checkForUpdates     = function() { updater.checkForUpdates(); };
-  mainActions.reloadBlink1Config  = function() { Blink1Service.reloadConfig(); };
+  mainActions.reloadBlink1Config  = function() { Blink1Service.reloadConfig(config.readSettings('blink1Service') || {}); };
 
   // Log window (from eventList.js)
   ipcMain.on('openLogWindow', function(event, html) {
@@ -456,10 +457,17 @@ app.on('ready', function () {
   });
 
   // ── Service startup ──────────────────────────────────────────────
-  Blink1Service.start();
-  ApiServer.init({ blink1Service: Blink1Service, patternsService: PatternsService, eventer: Eventer });
-  ApiServer.start();
-  PatternsService.initialize();
+  var b1server = createBlink1Server({
+    blink1Config:   config.readSettings('blink1Service')   || {},
+    patternsConfig: config.readSettings('patternsService') || {},
+    patterns:       config.readSettings('patterns')        || [],
+    apiConfig:      config.readSettings('apiServer')       || {},
+  });
+  b1server.on('status',          function(s)       { Eventer.addStatus(s); });
+  b1server.on('deviceUpdated',   function()         { Eventer.emit('deviceUpdated'); });
+  b1server.on('patternsChanged', function(patterns) { config.saveSettings('patterns', patterns); });
+  b1server.on('configChanged',   function(key, val) { config.saveSettings(key, val); });
+  b1server.start();
 
   // Wire services to push state to renderer whenever they change.
   // Called after initialize() so the initial push includes populated data.
@@ -511,7 +519,7 @@ app.on('ready', function () {
   ipcMain.on('blink1:setCurrentBlink1Id', function(event, id) { Blink1Service.setCurrentBlink1Id(id); });
   ipcMain.on('blink1:setCurrentLedN', function(event, n, id) { Blink1Service.setCurrentLedN(n, id); });
   ipcMain.on('blink1:setCurrentMillis', function(event, m, id) { Blink1Service.setCurrentMillis(m, id); });
-  ipcMain.on('blink1:reloadConfig', function() { Blink1Service.reloadConfig(); });
+  ipcMain.on('blink1:reloadConfig', function() { Blink1Service.reloadConfig(config.readSettings('blink1Service') || {}); });
   ipcMain.handle('blink1:setHostId', function(event, id) { return Blink1Service.setHostId(id); });
   ipcMain.handle('blink1:writePatternToBlink1', function(event, patt, save, serial) {
     return Blink1Service.writePatternToBlink1(patt, save, serial);
@@ -525,7 +533,7 @@ app.on('ready', function () {
   ipcMain.on('patterns:stopAllPatterns', function() { PatternsService.stopAllPatterns(); });
   ipcMain.on('patterns:savePattern', function(event, p) { PatternsService.savePattern(p); });
   ipcMain.on('patterns:deletePattern', function(event, id) { PatternsService.deletePattern(id); });
-  ipcMain.on('patterns:reloadConfig', function() { PatternsService.reloadConfig(); });
+  ipcMain.on('patterns:reloadConfig', function() { PatternsService.reloadConfig(config.readSettings('patternsService') || {}); });
   ipcMain.on('patterns:setInEditing', function(event, val) { PatternsService.setInEditing(val); });
   ipcMain.handle('patterns:newPattern', function() { return PatternsService.newPattern(); });
   ipcMain.handle('patterns:newPatternFromString', function(event, name, str) {
@@ -542,8 +550,8 @@ app.on('ready', function () {
     'skype':    function() { SkypeService.reloadConfig(); },
     'time':     function() { TimeService.reloadConfig(); },
     'mqtt':     function() { MqttService.reloadConfig(); },
-    'apiServer':function() { ApiServer.reloadConfig(); },
-    'blink1':   function() { Blink1Service.reloadConfig(); },
+    'apiServer':function() { ApiServer.reloadConfig(config.readSettings('apiServer') || {}); },
+    'blink1':   function() { Blink1Service.reloadConfig(config.readSettings('blink1Service') || {}); },
   };
   ipcMain.on('eventServices:reloadConfig', function(event, serviceType) {
     if (eventServiceReload[serviceType]) eventServiceReload[serviceType]();
