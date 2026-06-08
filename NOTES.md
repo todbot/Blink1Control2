@@ -1,6 +1,23 @@
 
 ## NOTES
 
+---
+## ⚠ WARNING: console.error is patched in maingui.js
+
+`app/maingui.js` overrides `console.error` to suppress React deprecation warnings
+from **`react-bootstrap@0.31.1`** and **`create-react-class`**. The filter silences
+messages containing: `'string ref'`, `'contextTypes'`, `'childContextTypes'`, `'legacy context'`, `'componentWillReceiveProps'`, `'componentWillMount'`, `'componentWillUpdate'`, `'has been renamed'`, `'unsafe-component-lifecycles'`.
+
+`Object.defineProperty` is used (not a plain assignment) because React 18 dev mode re-patches
+`console.error` internally during rendering, which would bypass a plain `console.error = ...` override.
+
+These are harmless on React 18 but generate enormous console noise. The filter must
+stay until `react-bootstrap` and `create-react-class` are upgraded to modern versions.
+
+**If you are debugging and missing expected console errors, check this filter first.**
+
+---
+
 Random notes / documentation while developing the app
 ===
 

@@ -40,7 +40,6 @@ var config = {
       process: 'process/browser',
       Buffer: ['buffer', 'Buffer'],
     }),
-   //new webpack.IgnorePlugin({ resourceRegExp: /vertx/ }),  // for skyweb (maybe not needed anymore?)
     new webpack.DefinePlugin({
       'process.env':{
         'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
@@ -59,8 +58,6 @@ var config = {
           }
         },
       },
-
-      { test: /mqtt\/.*\.js/, use: 'shebang-loader', include: [/node_modules\/mqtt/] },
 
       {
         test: /\.css$/,
