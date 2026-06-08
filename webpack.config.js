@@ -7,15 +7,25 @@ var DEV_PORT = require('./app/devPort');
 var config = {
   target: 'web',
   performance: { hints: false }, // bundle size limits don't apply to Electron (loads from disk, not network)
+  cache: { type: 'filesystem' },
+  node: { global: true }, // webpack 4 injected this shim by default; webpack 5 does not
   context: path.join(__dirname, '/app'),
-  // entry: path.join(__dirname, './src/maingui.js'),
-  // entry: __dirname + '/src' + './maingui.js',
   entry: './maingui.js',
 
   output: {
     filename: 'bundle.js',
     path: path.join(__dirname, '/app/build'),
-    // publicPath: 'http://localhost:8080/build/'
+  },
+  // webpack 5 no longer auto-polyfills Node core modules for target:'web'
+  resolve: {
+    fallback: {
+      "crypto": require.resolve("crypto-browserify"),
+      "buffer": require.resolve("buffer/"),
+      "events": require.resolve("events/"),
+      "stream": require.resolve("stream-browserify"),
+      "string_decoder": require.resolve("string_decoder/"),
+      "vm": false,
+    }
   },
   // see: https://github.com/chentsulin/webpack-target-electron-renderer/pull/7
   externals: {
@@ -25,11 +35,12 @@ var config = {
     'xml2js': 'commonjs xml2js' // this is to keep webpack from complaing about optional dep of 'needle'
   },
   plugins: [
-    // new webpack.HotModuleReplacementPlugin({multiStep:true}),
-    // new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /de|fr|hu/)  // moment
-    // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-    // new webpack.IgnorePlugin(/mqtt.min/),  //
-    new webpack.IgnorePlugin(/vertx/),  // for skyweb (maybe not needed anymore?)
+    // webpack 5 no longer provides process/Buffer globals; inject them for browser-polyfilled Node modules
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
+    }),
+   //new webpack.IgnorePlugin({ resourceRegExp: /vertx/ }),  // for skyweb (maybe not needed anymore?)
     new webpack.DefinePlugin({
       'process.env':{
         'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
@@ -55,8 +66,8 @@ var config = {
         test: /\.css$/,
         use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
       },
-      { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, use: "url-loader?limit=10000&mimetype=application/font-woff" },
-      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, use: "file-loader" },
+      { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, type: 'asset', parser: { dataUrlCondition: { maxSize: 10 * 1024 } } },
+      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, type: 'asset/resource' },
     ]
   }
 };
