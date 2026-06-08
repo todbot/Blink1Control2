@@ -59,10 +59,32 @@ var MailForm = createReactClass({
             triggerType: rule.triggerType || 'unread',
             triggerVal: rule.triggerVal || '1' ,
             triggerOff: rule.triggerOff || false,
-            errormsg: ''
+            errormsg: '',
+            testOutput: null,
+            testError: null,
+            testing: false,
         });
     },
 
+    handleTest: async function() {
+        this.setState({testing: true, testOutput: null, testError: null});
+        try {
+            var result = await window.electronAPI.mailService.test({
+                host:     this.state.host,
+                port:     this.state.port,
+                useSSL:   this.state.useSSL,
+                username: this.state.username,
+                password: this.state.password,
+            });
+            if( result.error ) {
+                this.setState({testing: false, testError: result.error});
+            } else {
+                this.setState({testing: false, testOutput: result.output || '(no output)'});
+            }
+        } catch(e) {
+            this.setState({testing: false, testError: e.message});
+        }
+    },
     handleBlink1SerialChange: function(blink1Id) {
         this.setState({blink1Id: blink1Id});
     },
@@ -170,6 +192,25 @@ var MailForm = createReactClass({
                                     </Checkbox>
                                 </Col>
                             </FormGroup>
+                            <FormGroup bsSize="small">
+                                <Col smOffset={3} sm={6}>
+                                    <Button bsSize="small" onClick={this.handleTest}
+                                        disabled={!this.state.host || !this.state.username || !this.state.password || this.state.testing}>
+                                        {this.state.testing ? 'Testing...' : 'Test Connection'}
+                                    </Button>
+                                </Col>
+                            </FormGroup>
+                            {(this.state.testOutput !== null || this.state.testError !== null) &&
+                                <FormGroup>
+                                    <Col smOffset={3} sm={9}>
+                                        <pre style={{fontSize:'0.8em', maxHeight:60, overflow:'auto',
+                                            background: this.state.testError ? '#fff0f0' : '#f5f5f5',
+                                            padding:6, margin:0, whiteSpace:'pre-wrap', wordBreak:'break-all'}}>
+                                            {this.state.testError ? 'Error: ' + this.state.testError : this.state.testOutput}
+                                        </pre>
+                                    </Col>
+                                </FormGroup>
+                            }
                         </Form>
                     </Col>
                     <Col xs={6}>

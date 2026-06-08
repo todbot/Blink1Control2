@@ -210,6 +210,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
         test: function(rule) { return ipcRenderer.invoke('scriptService:test', rule); },
     },
 
+    mailService: {
+        test: function(config) { return ipcRenderer.invoke('mailService:test', config); },
+    },
+
     menu: {
         setApplicationMenu: function(template) { ipcRenderer.send('setApplicationMenu', template); },
         setupTray:          function(data) { ipcRenderer.send('setupTray', data); },

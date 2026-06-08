@@ -19,6 +19,8 @@
 
 "use strict";
 
+var { ImapFlow } = require('imapflow');
+
 var conf = require('../configuration');
 var log = require('../logger');
 
@@ -48,6 +50,36 @@ var MailService = {
         this.stop();
         this.start();
     },
+    // One-shot connection test. config must have host, port, useSSL, username, password (plaintext).
+    // Calls callback(errorString, outputString).
+    testConnection: function(config, callback) {
+        var client = new ImapFlow({
+            host:              config.host,
+            port:              config.port,
+            secure:            config.useSSL,
+            auth:              { user: config.username, pass: config.password },
+            logger:            false,
+            connectionTimeout: 15000,
+            tls:               { rejectUnauthorized: false },
+        });
+        client.connect().then(function() {
+            return client.getMailboxLock('INBOX').then(function(lock) {
+                var exists = client.mailbox ? client.mailbox.exists : '?';
+                lock.release();
+                return client.logout().catch(function() { client.close(); }).then(function() {
+                    callback(null, 'Connected! INBOX has ' + exists + ' messages.');
+                });
+            });
+        }).catch(function(err) {
+            var msg = err.responseText || err.message || String(err);
+            if(      msg.indexOf('ENOTFOUND')    !== -1 ) { msg = 'server not found: ' + config.host; }
+            else if( msg.indexOf('ETIMEDOUT')    !== -1 ) { msg = 'connection timed out'; }
+            else if( msg.indexOf('ECONNREFUSED') !== -1 ) { msg = 'connection refused'; }
+            try { client.close(); } catch(e) {}
+            callback(msg, null);
+        });
+    },
+
     setupSearchers: function() {
         var self = this;
         self.config = conf.readSettings('eventServices:mailService');

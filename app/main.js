@@ -404,6 +404,15 @@ app.on('ready', function () {
     });
   });
 
+  // Mail connection test (from mailForm.js)
+  ipcMain.handle('mailService:test', function(event, config) {
+    return new Promise(function(resolve) {
+      MailService.testConnection(config, function(error, output) {
+        resolve({ error: error, output: output });
+      });
+    });
+  });
+
   // Context menus (from bigButton.js, blink1Status.js)
   ipcMain.on('showContextMenu', function(event, data) {
     var menu = Menu.buildFromTemplate(
