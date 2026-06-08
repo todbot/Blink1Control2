@@ -46,6 +46,7 @@
     "appId": "com.thingm.blink1control2",
     "asar": true,
     "npmRebuild": true,
+    "generateUpdatesFilesForAllChannels": false,
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "publish": {
       "provider": "github"
