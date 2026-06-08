@@ -10,8 +10,8 @@ const SUPPRESS_LEGACY_WARNINGS = true;
   if (!SUPPRESS_LEGACY_WARNINGS) return;
   const _consoleError = console.error.bind(console);
   const SUPPRESSED = ['string ref', 'contextTypes', 'childContextTypes', 'legacy context',
-    'componentWillReceiveProps', 'componentWillMount', 'componentWillUpdate',
-    'has been renamed', 'unsafe-component-lifecycles'];
+      'componentWillReceiveProps', 'componentWillMount', 'componentWillUpdate', 'findDOMNode',
+      'unsafe-component-lifecycles'];
   const filter = (...args) => {
     const full = args.filter(a => typeof a === 'string').join(' ');
     if (SUPPRESSED.some(w => full.includes(w))) return;

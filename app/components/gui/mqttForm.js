@@ -46,7 +46,28 @@ var MqttForm = createReactClass({
             url: rule.url || "",
             username: rule.username || "",
             password: rule.password || "",
+            testOutput: null,
+            testError: null,
+            testing: false,
          }); // FIXME: why
+    },
+
+    handleTest: async function() {
+        this.setState({testing: true, testOutput: null, testError: null});
+        try {
+            var result = await window.electronAPI.mqttService.test({
+                url:      this.state.url,
+                username: this.state.username,
+                password: this.state.password,
+            });
+            if( result.error ) {
+                this.setState({testing: false, testError: result.error});
+            } else {
+                this.setState({testing: false, testOutput: result.output || '(no output)'});
+            }
+        } catch(e) {
+            this.setState({testing: false, testError: e.message});
+        }
     },
     handleClose: function() {
         this.props.onSave(this.state);
@@ -120,6 +141,26 @@ var MqttForm = createReactClass({
                                   name="password" value={this.state.password} onChange={this.handleInputChange} />
                           </Col>
                         </FormGroup>
+
+                        <FormGroup>
+                          <Col smOffset={3} sm={6}>
+                              <Button bsSize="small" onClick={this.handleTest}
+                                  disabled={!this.state.url || this.state.testing}>
+                                  {this.state.testing ? 'Testing...' : 'Test Connection'}
+                              </Button>
+                          </Col>
+                        </FormGroup>
+                        {(this.state.testOutput !== null || this.state.testError !== null) &&
+                            <FormGroup>
+                                <Col smOffset={3} sm={9}>
+                                    <pre style={{fontSize:'0.8em', maxHeight:60, overflow:'auto',
+                                        background: this.state.testError ? '#fff0f0' : '#f5f5f5',
+                                        padding:6, margin:0, whiteSpace:'pre-wrap', wordBreak:'break-all'}}>
+                                        {this.state.testError ? 'Error: ' + this.state.testError : this.state.testOutput}
+                                    </pre>
+                                </Col>
+                            </FormGroup>
+                        }
 
                         <Grid >
                             <Row><Col xs={2}>

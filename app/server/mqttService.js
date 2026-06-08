@@ -153,6 +153,44 @@ var MqttService = {
      * @param  {String} str  the content to be parsed, potentially multiple lines
      * @return {[type]}      [description]
      */
+    testConnection: function(config, callback) {
+        var done = false;
+        var timer = setTimeout(function() {
+            if( done ) { return; }
+            done = true;
+            try { client.end(true); } catch(e) {}
+            callback('connection timed out', null);
+        }, 10000);
+
+        var mqttConfig = { username: config.username, password: config.password, connectTimeout: 8000 };
+        var client = mqtt.connect(config.url, mqttConfig);
+        client.on('connect', function() {
+            if( done ) { return; }
+            done = true;
+            clearTimeout(timer);
+            client.end(true, {}, function() {
+                callback(null, 'Connected to ' + config.url);
+            });
+        });
+        client.on('error', function(err) {
+            if( done ) { return; }
+            done = true;
+            clearTimeout(timer);
+            try { client.end(true); } catch(e) {}
+            var msg = err.message || String(err);
+            if( msg.indexOf('ENOTFOUND')    !== -1 ) { msg = 'broker not found: ' + config.url; }
+            else if( msg.indexOf('ETIMEDOUT')    !== -1 ) { msg = 'connection timed out'; }
+            else if( msg.indexOf('ECONNREFUSED') !== -1 ) { msg = 'connection refused'; }
+            callback(msg, null);
+        });
+        client.on('close', function() {
+            if( done ) { return; }
+            done = true;
+            clearTimeout(timer);
+            callback('connection closed (bad auth?)', null);
+        });
+    },
+
     parse: function(rule, str) {
         if( typeof str != "string" ) {
             str = (str) ? str.toString() : ''; // convert to string

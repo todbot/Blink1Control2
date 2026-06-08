@@ -404,6 +404,15 @@ app.on('ready', function () {
     });
   });
 
+  // MQTT connection test (from mqttForm.js)
+  ipcMain.handle('mqttService:test', function(event, config) {
+    return new Promise(function(resolve) {
+      MqttService.testConnection(config, function(error, output) {
+        resolve({ error: error, output: output });
+      });
+    });
+  });
+
   // Mail connection test (from mailForm.js)
   ipcMain.handle('mailService:test', function(event, config) {
     return new Promise(function(resolve) {
