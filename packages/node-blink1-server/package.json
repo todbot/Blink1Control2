@@ -1,0 +1,42 @@
+{
+  "name": "node-blink1-server",
+  "version": "2.0.1",
+  "description": "Standalone REST API server for blink(1) USB LED devices",
+  "author": "Tod Kurt",
+  "license": "MIT",
+  "homepage": "https://github.com/todbot/Blink1Control2/tree/main/packages/node-blink1-server",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/todbot/Blink1Control2.git",
+    "directory": "packages/node-blink1-server"
+  },
+  "keywords": ["blink1", "blink(1)", "led", "usb", "hid", "rest", "api", "server", "notification"],
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./lib/*": "./lib/*.js"
+  },
+  "bin": {
+    "node-blink1-server": "./cli.js",
+    "blink1-server": "./cli.js"
+  },
+  "files": [
+    "lib/",
+    "index.js",
+    "cli.js"
+  ],
+  "scripts": {
+    "start": "node cli.js",
+    "test": "node --test test/blink1Service.test.js test/patternsService.test.js test/apiServer.test.js",
+    "test:hardware": "node --test test/blink1Hardware.test.js",
+    "clean": "node -e \"require('fs').rmSync('node_modules', {recursive:true, force:true})\""
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "node-blink1": "0.5.1",
+    "tinycolor2": "^1.4.1"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}

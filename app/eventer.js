@@ -44,8 +44,8 @@ var EventEmitter = require('events').EventEmitter;
 var util = require("util");
 
 var conf = require('./configuration');
-var logconfig = conf.readSettings('logger');
-if( !logconfig.maxEvents || logconfig.maxEvents > 200 ) {logconfig.maxEvents = 200; }
+var logconfig = conf.readSettings('logger') || {};
+if( !logconfig.maxEvents ) { logconfig.maxEvents = 200; }
 
 function Eventer() {
     //Inherit from EventEmitter
@@ -80,6 +80,7 @@ Eventer.prototype.addStatus = function(status) {
 // replaces log.getLastEvents()
 Eventer.prototype.getStatuses = function(n) {
     var self = this;
+    if( n ) { return self._savedStatuses.slice(-n); }
     return self._savedStatuses;
 }
 

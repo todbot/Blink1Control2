@@ -4,7 +4,8 @@ var { contextBridge, ipcRenderer } = require('electron');
 var conf = require('./configuration'); // has Node access in preload context
 
 // ── App data ─────────────────────────────────────────────────────
-var appData = ipcRenderer.sendSync('getAppData');
+var appDataArg = process.argv.find(function(a) { return a.startsWith('--appData='); });
+var appData = appDataArg ? JSON.parse(appDataArg.slice('--appData='.length)) : { userData: '', appPath: '', appName: '' };
 
 // ── State caches ──────────────────────────────────────────────────
 var blink1State = {
@@ -178,9 +179,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     config: {
         readSettings:    function(key) { return conf.readSettings(key); },
-        saveSettings:    function(key, value) { conf.saveSettings(key, value); },
-        saveSettingsMem: function(key, value) { conf.saveSettingsMem(key, value); },
-        saveSettingsSync: function() { conf.saveSettingsSync(); },
+        saveSettings:    function(key, value) { conf.saveSettings(key, value); ipcRenderer.send('config:saveSettings', key, value); },
+        saveSettingsMem: function(key, value) { conf.saveSettingsMem(key, value); ipcRenderer.send('config:saveSettingsMem', key, value); },
+        saveSettingsSync: function() { conf.saveSettingsSync(); ipcRenderer.send('config:saveSettingsSync'); },
     },
 
     eventer: {
@@ -203,6 +204,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     dialog: {
         showOpenDialog: function(options) { return ipcRenderer.invoke('showOpenDialog', options); },
+    },
+
+    scriptService: {
+        test: function(rule) { return ipcRenderer.invoke('scriptService:test', rule); },
     },
 
     menu: {

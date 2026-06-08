@@ -21,6 +21,7 @@ var config = require('./configuration');
 global.logconfig = config.readSettings('logger') || {};
 
 var Eventer = require('./eventer');
+var createBlink1Server = require('node-blink1-server');
 var Blink1Service = require('./server/blink1Service');
 var PatternsService = require('./server/patternsService');
 var ApiServer = require('./server/apiServer');
@@ -63,11 +64,7 @@ var config = require('./configuration');
 
 //console.log("config: ", config);
 
-crashReporter.start({
-  productName: pkg.productName,
-  companyName: pkg.companyName,
-  submitURL: 'http://thingm.com/blink1/blink1control2-crash-reporter', // FIXME:
-});
+crashReporter.start({ uploadToServer: false });
 
 // turn off 'app-suspension' because it was causing bad timing in renderer
 // FIXME: check if this is still the case in Electron
@@ -188,7 +185,7 @@ var openAboutWindow = function () {
     }
   });
   //aboutWindow.webContents.openDevTools({mode:'detach'});
-  aboutWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
+  aboutWindow.webContents.setWindowOpenHandler(function(details) { electron.shell.openExternal(details.url); return { action: 'deny' }; });
   aboutWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
   var pkg = require('./package.json');
   var params = new URLSearchParams({
@@ -227,7 +224,7 @@ var openHelpWindow = function() {
     width: 800,
     webPreferences: { nodeIntegration: false, contextIsolation: true }
   });
-  helpWindow.webContents.on('new-window',    function(e,url) { handleUrl(e,url); } );
+  helpWindow.webContents.setWindowOpenHandler(function(details) { electron.shell.openExternal(details.url); return { action: 'deny' }; });
   helpWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
   helpWindow.on("closed", function() {
     // helpWindow = null;
@@ -236,18 +233,6 @@ var openHelpWindow = function() {
   helpWindow.loadURL( 'file://' + __dirname + '/help/index.html' );
 };
 
-// autoUpdater.on('checking-for-update', () => {
-//   console.log('Checking for update...');
-// });
-// autoUpdater.on('update-available', (info) => {
-//   console.log('Update available.');
-// });
-// autoUpdater.on('update-not-available', (info) => {
-//   console.log('Update not available.');
-// });
-// autoUpdater.on('error', (err) => {
-//   console.log('Error in auto-updater.');
-// });
 
 
 // ------------------------------------------------------------------------
@@ -272,13 +257,6 @@ var openLogWindow = function(html) {
 };
 
 app.on('ready', function () {
-
-    // autoUpdater.autoDownload = false;
-    // autoUpdater.checkForUpdates();
-
-  // if (!isDevelopment) {
-  //   launchAtStartup();
-  // }
 
   var hideDockIcon = config.readSettings('startup:hideDockIcon');
   if( hideDockIcon && process.platform === 'darwin' ) {
@@ -324,16 +302,6 @@ app.on('ready', function () {
   }
   console.log("loadurl:"+loadurl);
 
-  // Synchronous data request from renderer (used at module init time by configuration.js, about.html)
-  // Must be registered before BrowserWindow is created so the preload script can call it.
-  ipcMain.on('getAppData', function(event) {
-    event.returnValue = {
-      userData: app.getPath('userData'),
-      appPath:  app.getAppPath(),
-      appName:  app.getName()
-    };
-  });
-
   mainWindow = new BrowserWindow({
     icon: path.join(__dirname, 'images/icons/blink1mk2-icon2-128px.png'),
     title: "Blink1Control2",
@@ -348,6 +316,11 @@ app.on('ready', function () {
       sandbox: false,
       backgroundThrottling: false,
       preload: path.join(__dirname, 'preload.js'),
+      additionalArguments: ['--appData=' + JSON.stringify({
+        userData: app.getPath('userData'),
+        appPath:  app.getAppPath(),
+        appName:  app.getName()
+      })],
     }
   });
   mainWindow.loadURL(loadurl);
@@ -375,10 +348,9 @@ app.on('ready', function () {
     mainWindow.hide();
   });
 
-  mainWindow.webContents.on('new-window', function(e, url) {
-    //console.log("Blink1Control2: mainWindow.new-window");
-    e.preventDefault();
-      electron.shell.openExternal(url);
+  mainWindow.webContents.setWindowOpenHandler(function(details) {
+    electron.shell.openExternal(details.url);
+    return { action: 'deny' };
   });
 
   app.on('will-quit', function() {
@@ -404,16 +376,33 @@ app.on('ready', function () {
   mainActions.openHelpWindow   = openHelpWindow;
   mainActions.quitnow             = quit;
   mainActions.checkForUpdates     = function() { updater.checkForUpdates(); };
-  mainActions.reloadBlink1Config  = function() { Blink1Service.reloadConfig(); };
+  mainActions.reloadBlink1Config  = function() { Blink1Service.reloadConfig(config.readSettings('blink1Service') || {}); };
 
   // Log window (from eventList.js)
   ipcMain.on('openLogWindow', function(event, html) {
     openLogWindow(html);
   });
 
+  // Config write-through: keep main process nconf in sync with renderer saves.
+  // All services read conf.readSettings() from the main process nconf instance,
+  // which is separate from the preload's instance. Without this, reloadConfig()
+  // always sees stale config from app startup.
+  ipcMain.on('config:saveSettings',    function(event, key, value) { config.saveSettings(key, value); });
+  ipcMain.on('config:saveSettingsMem', function(event, key, value) { config.saveSettingsMem(key, value); });
+  ipcMain.on('config:saveSettingsSync', function()                  { config.saveSettingsSync(); });
+
   // File open dialog (from scriptForm.js)
   ipcMain.handle('showOpenDialog', async function(event, options) {
     return dialog.showOpenDialog(options);
+  });
+
+  // Script/file/url test (from scriptForm.js)
+  ipcMain.handle('scriptService:test', function(event, rule) {
+    return new Promise(function(resolve) {
+      ScriptService.testRule(rule, function(error, output) {
+        resolve({ error: error, output: output });
+      });
+    });
   });
 
   // Context menus (from bigButton.js, blink1Status.js)
@@ -468,9 +457,17 @@ app.on('ready', function () {
   });
 
   // ── Service startup ──────────────────────────────────────────────
-  Blink1Service.start();
-  ApiServer.start();
-  PatternsService.initialize();
+  var b1server = createBlink1Server({
+    blink1Config:   config.readSettings('blink1Service')   || {},
+    patternsConfig: config.readSettings('patternsService') || {},
+    patterns:       config.readSettings('patterns')        || [],
+    apiConfig:      config.readSettings('apiServer')       || {},
+  });
+  b1server.on('status',          function(s)       { Eventer.addStatus(s); });
+  b1server.on('deviceUpdated',   function()         { Eventer.emit('deviceUpdated'); });
+  b1server.on('patternsChanged', function(patterns) { config.saveSettings('patterns', patterns); });
+  b1server.on('configChanged',   function(key, val) { config.saveSettings(key, val); });
+  b1server.start();
 
   // Wire services to push state to renderer whenever they change.
   // Called after initialize() so the initial push includes populated data.
@@ -522,7 +519,7 @@ app.on('ready', function () {
   ipcMain.on('blink1:setCurrentBlink1Id', function(event, id) { Blink1Service.setCurrentBlink1Id(id); });
   ipcMain.on('blink1:setCurrentLedN', function(event, n, id) { Blink1Service.setCurrentLedN(n, id); });
   ipcMain.on('blink1:setCurrentMillis', function(event, m, id) { Blink1Service.setCurrentMillis(m, id); });
-  ipcMain.on('blink1:reloadConfig', function() { Blink1Service.reloadConfig(); });
+  ipcMain.on('blink1:reloadConfig', function() { Blink1Service.reloadConfig(config.readSettings('blink1Service') || {}); });
   ipcMain.handle('blink1:setHostId', function(event, id) { return Blink1Service.setHostId(id); });
   ipcMain.handle('blink1:writePatternToBlink1', function(event, patt, save, serial) {
     return Blink1Service.writePatternToBlink1(patt, save, serial);
@@ -536,7 +533,7 @@ app.on('ready', function () {
   ipcMain.on('patterns:stopAllPatterns', function() { PatternsService.stopAllPatterns(); });
   ipcMain.on('patterns:savePattern', function(event, p) { PatternsService.savePattern(p); });
   ipcMain.on('patterns:deletePattern', function(event, id) { PatternsService.deletePattern(id); });
-  ipcMain.on('patterns:reloadConfig', function() { PatternsService.reloadConfig(); });
+  ipcMain.on('patterns:reloadConfig', function() { PatternsService.reloadConfig(config.readSettings('patternsService') || {}); });
   ipcMain.on('patterns:setInEditing', function(event, val) { PatternsService.setInEditing(val); });
   ipcMain.handle('patterns:newPattern', function() { return PatternsService.newPattern(); });
   ipcMain.handle('patterns:newPatternFromString', function(event, name, str) {
@@ -553,8 +550,8 @@ app.on('ready', function () {
     'skype':    function() { SkypeService.reloadConfig(); },
     'time':     function() { TimeService.reloadConfig(); },
     'mqtt':     function() { MqttService.reloadConfig(); },
-    'apiServer':function() { ApiServer.reloadConfig(); },
-    'blink1':   function() { Blink1Service.reloadConfig(); },
+    'apiServer':function() { ApiServer.reloadConfig(config.readSettings('apiServer') || {}); },
+    'blink1':   function() { Blink1Service.reloadConfig(config.readSettings('blink1Service') || {}); },
   };
   ipcMain.on('eventServices:reloadConfig', function(event, serviceType) {
     if (eventServiceReload[serviceType]) eventServiceReload[serviceType]();

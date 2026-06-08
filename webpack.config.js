@@ -6,6 +6,7 @@ var DEV_PORT = require('./app/devPort');
 
 var config = {
   target: 'web',
+  performance: { hints: false }, // bundle size limits don't apply to Electron (loads from disk, not network)
   context: path.join(__dirname, '/app'),
   // entry: path.join(__dirname, './src/maingui.js'),
   // entry: __dirname + '/src' + './maingui.js',

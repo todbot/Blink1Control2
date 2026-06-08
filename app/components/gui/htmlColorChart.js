@@ -28,8 +28,8 @@ class HtmlColorChart extends React.Component {
     //     return false;
     // }
     determineColor(x,y) {
-      let c = Math.floor(x/cw);
-      let r = Math.floor(y/ch);
+      let c = Math.max(0, Math.min(Math.floor(x/cw), htmlcolors[0].length - 1));
+      let r = Math.max(0, Math.min(Math.floor(y/ch), htmlcolors.length - 1));
       let color = htmlcolors[r][c];
       return color;
     }

@@ -39,9 +39,10 @@ var MailService = {
         this.setupSearchers();
     },
     stop: function() {
-        this.searchers.map( function(searcher) {
+        this.searchers.forEach( function(searcher) {
             searcher.stop();
         });
+        this.searchers = [];
     },
     reloadConfig: function() {
         this.stop();

@@ -48,7 +48,10 @@ var ScriptForm = createReactClass({
             blink1Id: rule.blink1Id || "0",
             path: rule.path || '',
             intervalSecs: rule.intervalSecs || 10,
-            errormsg: ''
+            errormsg: '',
+            testOutput: null,
+            testError: null,
+            testing: false,
          });
     },
     handleClose: function() {
@@ -62,7 +65,23 @@ var ScriptForm = createReactClass({
         var self = this;
         const result = await window.electronAPI.dialog.showOpenDialog({ properties: ['openFile'] });
         if (result.filePaths && result.filePaths[0]) {
-            self.setState({path: result.filePaths[0]});
+            self.setState({path: result.filePaths[0], testOutput: null, testError: null});
+        }
+    },
+    handleTest: async function() {
+        this.setState({testing: true, testOutput: null, testError: null});
+        try {
+            var result = await window.electronAPI.scriptService.test({
+                type: this.state.type,
+                path: this.state.path
+            });
+            if( result.error ) {
+                this.setState({testing: false, testError: result.error});
+            } else {
+                this.setState({testing: false, testOutput: result.output || '(no output)'});
+            }
+        } catch(e) {
+            this.setState({testing: false, testError: e.message});
         }
     },
     handleActionType: function(e) {
@@ -116,7 +135,7 @@ var ScriptForm = createReactClass({
                             </FormGroup>
                             <FormGroup controlId="formPath" >
                                 <Col sm={3} componentClass={ControlLabel}> {pathlabel}  </Col>
-                                <Col sm={8} title="Click to change path">
+                                <Col sm={7} title="Click to change path">
                                     {type==='url'  ?
                                         <FormControl type="text" placeholder={pathplaceholder}
                                             name="path" value={this.state.path} onChange={this.handleInputChange} />
@@ -125,7 +144,24 @@ var ScriptForm = createReactClass({
                                             name="path" value={this.state.path} onClick={this.openFileDialog}/>
                                     }
                                 </Col>
+                                <Col sm={2}>
+                                    <Button bsSize="small" onClick={this.handleTest}
+                                        disabled={!this.state.path || this.state.testing}>
+                                        {this.state.testing ? 'Testing...' : 'Test'}
+                                    </Button>
+                                </Col>
                             </FormGroup>
+                            {(this.state.testOutput !== null || this.state.testError !== null) &&
+                                <FormGroup>
+                                    <Col smOffset={3} sm={9}>
+                                        <pre style={{fontSize:'0.8em', maxHeight:80, overflow:'auto',
+                                            background: this.state.testError ? '#fff0f0' : '#f5f5f5',
+                                            padding:6, margin:0, whiteSpace:'pre-wrap', wordBreak:'break-all'}}>
+                                            {this.state.testError ? 'Error: ' + this.state.testError : this.state.testOutput}
+                                        </pre>
+                                    </Col>
+                                </FormGroup>
+                            }
 
                             <FormGroup controlId="formInterval" >
                                 <Col sm={3} componentClass={ControlLabel}> Check interval </Col>

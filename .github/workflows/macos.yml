@@ -13,6 +13,7 @@ env:
 
 on:
   push:
+    branches: [main, main-es5]
   pull_request:
   release:
     types: [created]
@@ -41,10 +42,11 @@ jobs:
       - name: Install Node.js and NPM
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Codesign setup for macOS
+        if: env.MACOS_CERTIFICATE != ''
         run: |
           echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
           security create-keychain -p actions build.keychain
@@ -54,6 +56,8 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple: -s -k actions build.keychain
 
       - name: Build
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ env.MACOS_CERTIFICATE != '' }}
         run: |
           npm install
           npm run pack

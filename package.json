@@ -1,6 +1,6 @@
 {
   "name": "Blink1Control2",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "author": "ThingM <blink1@thingm.com> (https://blink1.thingm.com/)",
   "description": "Blink1Control2 GUI app for blink(1) devices",
   "keywords": [
@@ -37,9 +37,9 @@
     "release": "electron-builder",
     "dist:win32bit": "electron-builder --ia32 --win --publish=never",
     "dist:raspi": "electron-builder  --dir --armv7l --linux deb --publish=always",
-    "clean": "rimraf app/node_modules node_modules package-lock.json app/package-lock.json",
+    "clean": "rimraf app/node_modules node_modules package-lock.json app/package-lock.json packages/node-blink1-server/node_modules packages/node-blink1-server/package-lock.json",
     "env": "env",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-builder install-app-deps && npm install --prefix packages/node-blink1-server --no-audit",
     "test": "echo \"tested\""
   },
   "build": {
@@ -112,6 +112,7 @@
       ]
     },
     "linux": {
+      "icon": "build/icon.png",
       "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
       "category": "Utility",
       "target": [
@@ -133,8 +134,8 @@
     "cross-env": "^7.0.3",
     "css-loader": "^2.1.1",
     "devtron": "^1.4.0",
-    "electron": "^34.0.0",
-    "electron-builder": "^25.0.0",
+    "electron": "^41.0.0",
+    "electron-builder": "^26.8.1",
     "file-loader": "^3.0.1",
     "font-awesome": "^4.5.0",
     "json-loader": "^0.5.7",

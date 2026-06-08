@@ -49,6 +49,26 @@ patterns.length ? patterns[0].id : ''
 
 NOTE: consider notes below as historical info. most of these are out-of-date as of Nov 2017
 
+### IMAP searching issues
+
+- Gmail and others do not set UNSEEN correctly to mark read messages. 
+
+#### Debugging IMAP:
+```
+curl --url "imaps://imap.gmail.com/INBOX;UID=1:*" --user "testing@gmail.com:${GMAIL_APP_PASSWORDD" -X "SEARCH UNSEEN"
+# Fetch flags for a specific UID
+curl --url "imaps://mail.example.com/INBOX;UID=119" --user "user:pass" -X "FETCH 119 (FLAGS)"
+# python one-liner-ish
+python3 -c "
+  import imaplib
+  m = imaplib.IMAP4_SSL('mail.example.com')
+  m.login('user', 'pass')
+  m.select('INBOX')
+  print('UNSEEN:', m.search(None, 'UNSEEN'))
+  print('ALL:', m.search(None, 'ALL'))
+  "
+```
+
 ### App capability changes / To-do's
 - TODO: Entirely rethink color pattern architecture
     - maybe instead "assign pattern to blink1 ledn" is primary UI
