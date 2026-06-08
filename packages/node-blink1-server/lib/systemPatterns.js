@@ -1,3 +1,8 @@
+// systemPatterns.js — Built-in read-only patterns shipped with node-blink1-server.
+// Exported as an array of {name, patternstr} objects. PatternsService loads these
+// at startup, parses each patternstr, and marks them system/locked so they cannot
+// be edited or deleted by the user.
+
 module.exports = {
     patterns:
     [

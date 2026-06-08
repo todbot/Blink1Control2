@@ -23,6 +23,11 @@ var PatternView = createReactClass({
             showMenu: false
         };
     },
+    componentWillReceiveProps: function(nextProps) {
+        if (!this.state.editing) {
+            this.setState({ pattern: nextProps.pattern });
+        }
+    },
     onToggleMenu: function(e) {
         e.stopPropagation();
         this.setState(function(s) { return { showMenu: !s.showMenu }; });

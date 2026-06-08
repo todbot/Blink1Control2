@@ -1,3 +1,11 @@
+// blink1Service.js — Manages connected blink(1) USB devices via node-blink1.
+// Responsibilities: scanning for devices at startup, opening HID handles,
+// fading to color (with per-device current-state tracking across up to 4 devices
+// and 2 LEDs each), writing patterns to device flash, and "toy" animation modes
+// (moodlight, colorcycle, party, strobe). Notifies registered listeners and an
+// optional sendState callback on every state change.
+// Dependencies (log, emitter) are injected via init().
+
 "use strict";
 
 var Blink1   = require('node-blink1');

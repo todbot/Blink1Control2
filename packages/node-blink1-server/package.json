@@ -27,7 +27,7 @@
   ],
   "scripts": {
     "start": "node cli.js",
-    "test": "node --test test/blink1Service.test.js test/patternsService.test.js test/apiServer.test.js",
+    "test": "node --test test/blink1Service.test.js test/patternsService.test.js test/patternPlayback.test.js test/apiServer.test.js",
     "test:hardware": "node --test test/blink1Hardware.test.js",
     "clean": "node -e \"require('fs').rmSync('node_modules', {recursive:true, force:true})\""
   },

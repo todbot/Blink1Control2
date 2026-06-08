@@ -1,3 +1,13 @@
+// patternsService.js — Manages named color-sequence patterns and their playback.
+// Maintains three pattern lists: system (built-in, locked), user (saved), and
+// temp (created inline during playback). Plays patterns step-by-step via
+// setTimeout, cycling through {rgb, time, ledn} color entries for the specified
+// number of repeats.  Supports meta-pattern strings: #rrggbb (instant color),
+// ~off, ~blink:<color>-<count>-<secs>, and ~pattern:<name>:<patternstr>.
+// An optional serialize mode queues interrupting patterns rather than dropping them.
+// Persists user patterns by emitting 'patternsChanged' through the injected emitter.
+// Dependencies (log, emitter) are injected via init().
+
 'use strict';
 
 var tinycolor      = require('tinycolor2');
@@ -97,6 +107,7 @@ var PatternsService = {
         var patternsUserCfg = patterns || [];
         _log.msg('PatternsService.initialize, config patterns', patternsUserCfg);
         patternsUser = patternsUserCfg.map(function(patt) {
+            patt = Object.assign({}, patt); // copy so we don't mutate the nconf-owned object
             if (patt.pattern && patt.pattern !== '') {
                 var ppatt = _parsePatternStr(patt.pattern);
                 if (ppatt.colors) { patt.colors  = ppatt.colors; }
@@ -226,7 +237,7 @@ var PatternsService = {
         var self = this;
         _log.msg('PatternsService.stopPattern:', pattid, '/', playingPattern.id, "source:", sourceId, "blink1Id:", blink1Id);
         playingQueue = playingQueue.filter(function(qInfo) {
-            return qInfo.pattern.id === pattid && qInfo.source === sourceId;
+            return qInfo.pattern.id !== pattid || qInfo.source !== sourceId;
         });
         var rc = false;
         self.getAllPatterns().forEach(function(pattern) {

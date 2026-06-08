@@ -1,3 +1,8 @@
+// utils.js — Miscellaneous helper functions.
+// generateRandomHexColor: returns a random CSS hex color string (e.g. '#A3F700').
+// generateRandomHostId: returns a random 8-char uppercase hex string used as the
+//   host portion of the IFTTT key.
+
 'use strict';
 
 module.exports = {

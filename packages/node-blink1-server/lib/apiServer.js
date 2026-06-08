@@ -1,3 +1,8 @@
+// apiServer.js — Express HTTP server exposing the blink(1) REST API on port 8934.
+// Handles routes for device enumeration, color fading, named-color shortcuts,
+// blink, random, lastColor, and pattern play/stop/add/del.
+// Dependencies (blink1Service, patternsService, log, eventer) are injected via init().
+
 "use strict";
 
 var express   = require('express');
