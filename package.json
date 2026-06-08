@@ -112,6 +112,7 @@
       ]
     },
     "linux": {
+      "icon": "build/icon.png",
       "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
       "category": "Utility",
       "target": [
