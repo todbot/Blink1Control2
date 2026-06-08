@@ -22,7 +22,7 @@ jobs:
         run: |
           echo "event name: ${{ github.event_name }}"
           sudo apt update
-          sudo apt install pkg-config libudev-dev libusb-1.0-0-dev
+          sudo apt install pkg-config libudev-dev libusb-1.0-0-dev icnsutils
 
       - name: Setup Python
         uses: actions/setup-python@v5
