@@ -27,7 +27,6 @@ var PatternsService = require('./server/patternsService');
 var ApiServer = require('./server/apiServer');
 var IftttService = require('./server/iftttService');
 var MailService = require('./server/mailService');
-var SkypeService = require('./server/skypeService');
 var ScriptService = require('./server/scriptService');
 var TimeService = require('./server/timeService');
 var MqttService = require('./server/mqttService');
@@ -495,7 +494,6 @@ app.on('ready', function () {
   setTimeout(function() {
     IftttService.start();
     MailService.start();
-    SkypeService.start();
     ScriptService.start();
     TimeService.start();
     MqttService.start();
@@ -547,7 +545,6 @@ app.on('ready', function () {
     'script':   function() { ScriptService.reloadConfig(); },
     'url':      function() { ScriptService.reloadConfig(); },
     'file':     function() { ScriptService.reloadConfig(); },
-    'skype':    function() { SkypeService.reloadConfig(); },
     'time':     function() { TimeService.reloadConfig(); },
     'mqtt':     function() { MqttService.reloadConfig(); },
     'apiServer':function() { ApiServer.reloadConfig(config.readSettings('apiServer') || {}); },

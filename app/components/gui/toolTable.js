@@ -15,7 +15,6 @@ var log = require('../../logger');
 var IftttForm = require('./iftttForm');
 var MailForm = require('./mailForm');
 var ScriptForm = require('./scriptForm');
-var SkypeForm = require('./skypeForm');
 var TimeForm = require('./timeForm');
 var MqttForm = require('./mqttForm');
 
@@ -183,12 +182,6 @@ var ToolTable = createReactClass({
                     onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
                     onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
 
-                <SkypeForm show={this.state.showForm==='skype'}
-                    workingIndex={this.state.workingIndex}
-                    rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
-                    onSave={this.handleSaveForm} onCancel={this.handleCancelForm}
-                    onDelete={this.handleDeleteRule} onCopy={this.handleCopyRule} />
-
                 <TimeForm show={this.state.showForm==='time'}
                     workingIndex={this.state.workingIndex}
                     rule={workingRule} patterns={patterns} allowMultiBlink1={allowMultiBlink1}
@@ -232,9 +225,6 @@ var ToolTable = createReactClass({
                                 <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
                                     onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('mqtt'); }}>
                                     <i className="fa fa-share-alt"></i> Add MQTT</li>
-                                <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
-                                    onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('skype'); }}>
-                                    <i className="fa fa-skype"></i> Add Skype</li>
                                 <li className="dropdown-item" style={{padding:'4px 12px', cursor:'pointer'}}
                                     onClick={() => { this.setState({showAddMenu:false}); this.handleAddRule('time'); }}>
                                     <i className="fa fa-clock-o"></i> Add Alarm</li>

@@ -86,9 +86,6 @@ var ToolTableList = createReactClass({
                 desc = rule.intervalSecs +'s:' + rule.path;
                 // desc = rule.path + ' @' +rule.intervalSecs +'s';
             }
-            else if( rule.type === 'skype' ) {
-                desc = rule.username + ':' + rule.triggerType;
-            }
             else if( rule.type === 'time' ) {
                 if( rule.alarmType === 'countdown' ) {
                     desc = 'countdown to ' + rule.alarmHours +':'+ rule.alarmMinutes;
