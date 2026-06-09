@@ -34,7 +34,7 @@
   "dependencies": {
     "express": "^4.16.4",
     "node-blink1": "0.5.1",
-    "tinycolor2": "^1.4.1"
+    "tinycolor2": "^1.6.0"
   },
   "engines": {
     "node": ">=14"
