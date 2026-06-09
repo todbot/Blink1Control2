@@ -483,8 +483,10 @@ app.on('ready', function () {
   });
 
   // ── Service startup ──────────────────────────────────────────────
+  var blink1Config = config.readSettings('blink1Service') || {};
+  if (!blink1Config.hostId) { blink1Config.hostId = config.readSettings('hostId') || ''; }
   var b1server = createBlink1Server({
-    blink1Config:   config.readSettings('blink1Service')   || {},
+    blink1Config:   blink1Config,
     patternsConfig: config.readSettings('patternsService') || {},
     patterns:       config.readSettings('patterns')        || [],
     apiConfig:      config.readSettings('apiServer')       || {},
