@@ -67,6 +67,20 @@ npm install
 npm run dist:raspi
 ```
 
+### node-blink1-server
+
+The blink(1) device control and REST API layer is factored out into a standalone package called **[node-blink1-server](https://www.npmjs.com/package/node-blink1-server)**, which lives in `packages/node-blink1-server/` in this repo.
+
+Blink1Control2 uses it internally, but it can also be run on its own — useful for NodeJs-based headless setups (Raspberry Pi, servers) where you want HTTP control of blink(1) without the full desktop app.
+(For another headless server, check out the C-based [`blink1-tiny-server`](https://github.com/todbot/blink1-tool/blob/main/server/README.md) that's part of [`blink1-tool` repo](https://github.com/todbot/blink1-tool/))
+
+```
+npx node-blink1-server           # no install required, starts on port 8934
+npx node-blink1-server 8080      # custom port
+```
+
+See the [node-blink1-server README](packages/node-blink1-server/README.md) for full documentation.
+
 ### Other info
 - [Publishing.md](Publishing.md) for info on publishing binaries
 - [NOTES.md](NOTES.md) for random behind-the-scenes thoughts
