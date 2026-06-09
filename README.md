@@ -1,8 +1,6 @@
 # Blink1Control2
 
-Blink1Control is the desktop application for controlling and hooking events to blink(1). It is the primary user-level application for controlling blink(1). It is an event-based system for triggering blink(1) color patterns. Those events can be on your computer or on the Net.
-
-Blink1Control2 is the current version, written in Electron, Node.js, and React.
+Blink1Control2 is the desktop application for controlling and hooking events to blink(1). It is the primary user-level application for controlling blink(1). It is an event-based system for triggering blink(1) color patterns. Those events can be on your computer or on the Net.
 
 <img src="./docs/blink1control2-screenshot1.png" width="425"><img src="./docs/blink1control2-screenshot2.png" width="425">
 
@@ -47,13 +45,11 @@ sudo udevadm control --reload-rules
 ```
 Then unplug and replug the blink(1) device.
 
-Install the following pre-requisites:
+You may need to install the following pre-requisites, depending on your distro:
 
 ```sh
 sudo apt install pkg-config libgnome-keyring-dev icnsutils xz-utils rpm bsdtar libusb-1.0-0-dev libudev-dev
 ```
-
-(see: https://github.com/electron-userland/electron-builder/issues/1407)
 
 #### Raspberry Pi
 
