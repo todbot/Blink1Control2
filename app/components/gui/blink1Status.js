@@ -26,7 +26,9 @@ var Blink1Status = createReactClass({
             iftttKey: b1state.iftttKey,
             currentPattern: pstate.playingPatternName || '-',
             currentSource: pstate.playingPatternSource || '-',
-            showForm: false
+            showForm: false,
+            iftttTestMsg: null,
+            iftttTestError: false,
         };
     },
     componentDidMount: function() {
@@ -69,10 +71,25 @@ var Blink1Status = createReactClass({
         this.setState({ showForm: false });
     },
     showIfttContextMenu: function(event) {
-        log.msg("Blink1Status.showIfttContextMenu: ", event);
+        var self = this;
+        var menuId = 'ifttt-' + Date.now();
+        window.electronAPI.menu.onContextMenuResult(menuId, function(action) {
+            if( action === 'testConnection' ) {
+                window.electronAPI.iftttService.testConnection().then(function(result) {
+                    self.setState({
+                        iftttTestMsg: result.error ? 'Error: ' + result.error : result.output,
+                        iftttTestError: !!result.error,
+                    });
+                    setTimeout(function() { self.setState({iftttTestMsg: null}); }, 5000);
+                });
+            }
+        });
         window.electronAPI.menu.showContextMenu({
-            menuId: 'ifttt-' + Date.now(),
-            template: [{ label: 'Copy IFTTT Key', role: 'copy' }]
+            menuId: menuId,
+            template: [
+                { label: 'Copy IFTTT Key', role: 'copy' },
+                { label: 'Test IFTTT Connection', action: 'testConnection' },
+            ]
         });
     },
     render: function() {
@@ -114,6 +131,12 @@ var Blink1Status = createReactClass({
                             {this.state.iftttKey}
                         </code>
                     </div>
+                    {this.state.iftttTestMsg &&
+                        <div style={{paddingLeft: 85, fontSize:'0.8em', fontStyle:'italic',
+                            color: this.state.iftttTestError ? '#c00' : '#060'}}>
+                            {this.state.iftttTestMsg}
+                        </div>
+                    }
                     <div>
                         <span style={labelStyle}>Source:</span>
                         <span><b>{currentSource}</b></span>

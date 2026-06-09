@@ -404,6 +404,15 @@ app.on('ready', function () {
     });
   });
 
+  // IFTTT connection test (from blink1Status.js)
+  ipcMain.handle('iftttService:testConnection', function() {
+    return new Promise(function(resolve) {
+      IftttService.testConnection(function(error, output) {
+        resolve({ error: error, output: output });
+      });
+    });
+  });
+
   // MQTT connection test (from mqttForm.js)
   ipcMain.handle('mqttService:test', function(event, config) {
     return new Promise(function(resolve) {

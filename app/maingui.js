@@ -5,7 +5,7 @@
 // These are harmless on React 18. Remove when those packages are upgraded.
 // Uses Object.defineProperty so React 18's internal console patching can't bypass the filter.
 // Set to false to see all warnings (useful for checking nothing real is being hidden).
-const SUPPRESS_LEGACY_WARNINGS = true;
+const SUPPRESS_LEGACY_WARNINGS = false;
 (function() {
   if (!SUPPRESS_LEGACY_WARNINGS) return;
   const _consoleError = console.error.bind(console);

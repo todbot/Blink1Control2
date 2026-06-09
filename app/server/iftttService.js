@@ -123,6 +123,27 @@ var IftttService = {
         return proxyurl;
     },
 
+    testConnection: function(callback) {
+        var self = this;
+        self.iftttKey = Blink1Service.getIftttKey();
+        var url = self.config.baseUrl + self.iftttKey;
+        needle.get(url, { follow: 2 }, function(error, response) {
+            if( error ) {
+                var msg = error.message;
+                if( msg.indexOf('ENOTFOUND') !== -1 ) { msg = 'Cannot reach IFTTT gateway'; }
+                callback(msg, null);
+                return;
+            }
+            if( response.statusCode === 404 ) {
+                callback(null, 'Connected (no events yet)');
+            } else if( response.statusCode === 200 ) {
+                callback(null, 'Connection OK');
+            } else {
+                callback('HTTP ' + response.statusCode, null);
+            }
+        });
+    },
+
     fetch: function() {
         var self = this;
         var rules = self.rules; //self.getRules();

@@ -210,6 +210,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
         test: function(rule) { return ipcRenderer.invoke('scriptService:test', rule); },
     },
 
+    iftttService: {
+        testConnection: function() { return ipcRenderer.invoke('iftttService:testConnection'); },
+    },
+
     mqttService: {
         test: function(config) { return ipcRenderer.invoke('mqttService:test', config); },
     },
