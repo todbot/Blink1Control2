@@ -2,7 +2,7 @@
 
 Blink1Control2 is the desktop application for controlling and hooking events to blink(1). It is the primary user-level application for controlling blink(1). It is an event-based system for triggering blink(1) color patterns. Those events can be on your computer or on the Net.
 
-<img src="./docs/blink1control2-screenshot1.png" width="425"><img src="./docs/blink1control2-screenshot2.png" width="425">
+<img src="./docs/blink1control2-screenshot1.png" width="400"><img src="./docs/blink1control2-screenshot2.png" width="400">
 
 
 ### Features
