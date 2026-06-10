@@ -5,6 +5,15 @@ Blink1Control2 is the desktop application for controlling and hooking events to 
 <img src="./docs/blink1control2-screenshot1.png" width="425"><img src="./docs/blink1control2-screenshot2.png" width="425">
 
 
+### Features
+
+- **Event-driven color patterns** — define named color sequences and trigger them from any event source
+- **Multiple event sources** — IFTTT webhooks, email/IMAP monitoring, MQTT, time-based alarms, and custom scripts
+- **REST API** — local HTTP API on port 8934 lets any app, script, or automation tool control the blink(1); `curl http://localhost:8934/blink1/red` is all it takes
+- **Multiple blink(1) devices** — address each device individually by serial number
+- **System tray / menu bar** — runs quietly in the background; patterns play even when the window is closed
+- **Cross-platform** — Mac, Windows, Linux x86, and Raspberry Pi
+
 ### Downloads
 There are pre-built app downloads for Mac OS X, Windows, Linux, and Raspberry Pi in the [releases area](https://github.com/todbot/Blink1Control2/releases).
 
