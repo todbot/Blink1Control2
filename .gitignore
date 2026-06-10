@@ -7,6 +7,11 @@ dist
 node_modules
 app/build
 
+# generated help files (source is in docs/help/)
+app/help/index.html
+app/help/style.css
+app/help/images/
+
 # Logs
 logs
 *.log

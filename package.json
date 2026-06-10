@@ -39,7 +39,9 @@
     "dist:raspi": "electron-builder  --dir --armv7l --linux deb --publish=always",
     "clean": "npx rimraf app/node_modules node_modules packages/node-blink1-server/node_modules",
     "env": "env",
-    "postinstall": "electron-builder install-app-deps && npm install --prefix packages/node-blink1-server --no-audit",
+    "build:help": "node scripts/build-help.js",
+    "prewebpack": "npm run build:help",
+    "postinstall": "electron-builder install-app-deps && npm install --prefix packages/node-blink1-server --no-audit && npm run build:help",
     "test": "echo \"tested\""
   },
   "build": {
@@ -141,6 +143,7 @@
     "electron-builder": "^26.8.1",
     "events": "^3.3.0",
     "font-awesome": "^4.5.0",
+    "marked": "^18.0.3",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
     "react": "^18.3.0",
