@@ -32,7 +32,7 @@
     "clean": "node -e \"require('fs').rmSync('node_modules', {recursive:true, force:true})\""
   },
   "dependencies": {
-    "express": "^4.16.4",
+    "express": "^5.2.1",
     "node-blink1": "0.5.1",
     "tinycolor2": "^1.6.0"
   },
