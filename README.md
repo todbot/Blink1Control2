@@ -44,9 +44,7 @@ npm run dist:draft # create relocatable app and installer(s), in "dist" dir
 
 Install udev rules file in `/etc/udev/rules.d/51-blink1.rules` with contents:
 ```
-SUBSYSTEM=="input", GROUP="input", MODE="0666"
 SUBSYSTEM=="usb", ATTRS{idVendor}=="27b8", ATTRS{idProduct}=="01ed", MODE:="666", GROUP="plugdev"
-KERNEL=="hidraw*", ATTRS{idVendor}=="27b8", ATTRS{idProduct}=="01ed", MODE="0666", GROUP="plugdev"
 ```
 And install the rules with:
 ```
