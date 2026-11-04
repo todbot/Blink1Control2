@@ -47,6 +47,7 @@
   "build": {
     "appId": "com.thingm.blink1control2",
     "asar": true,
+    "electronLanguages": ["en"],
     "npmRebuild": true,
     "generateUpdatesFilesForAllChannels": false,
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
@@ -97,7 +98,11 @@
       ],
       "icon": "build/icon.ico"
     },
+    "nsis": {
+      "differentialPackage": false
+    },
     "dmg": {
+      "writeUpdateInfo": false,
       "title": "Blink1Control2 Install",
       "icon": "build/icon.icns",
       "background": "build/background.png",
