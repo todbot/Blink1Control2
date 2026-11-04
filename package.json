@@ -139,7 +139,7 @@
     "crypto-browserify": "^3.12.1",
     "css-loader": "^7.0.0",
     "devtron": "^1.4.0",
-    "electron": "^41.0.0",
+    "electron": "^43.7.7",
     "electron-builder": "^26.8.1",
     "events": "^3.3.0",
     "font-awesome": "^4.5.0",
