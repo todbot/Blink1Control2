@@ -1,5 +1,16 @@
 # node-blink1-server
 
+[![npm version][npm-badge]][npm-url]
+[![npm downloads][dl-badge]][npm-url]
+[![node version][node-badge]][npm-url]
+[![license][license-badge]][npm-url]
+
+[npm-url]: https://www.npmjs.com/package/node-blink1-server
+[npm-badge]: https://img.shields.io/npm/v/node-blink1-server.svg
+[dl-badge]: https://img.shields.io/npm/dm/node-blink1-server.svg
+[node-badge]: https://img.shields.io/node/v/node-blink1-server.svg
+[license-badge]: https://img.shields.io/npm/l/node-blink1-server.svg
+
 HTTP REST API server for [blink(1)](https://blink1.thingm.com/) USB LED notification devices.
 
 Version 2 — rewritten from the ground up to match the full
