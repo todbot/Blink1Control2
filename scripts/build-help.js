@@ -54,6 +54,10 @@ var html = `<!DOCTYPE html>
 </head>
 <body>
 <div class="markdown-body">
+<div class="help-toolbar" id="help-toolbar" hidden>
+  <button onclick="window.helpAPI.savePDF()">Save as PDF</button>
+</div>
+<script>if (window.helpAPI) { document.getElementById('help-toolbar').hidden = false; }</script>
 ${body}
 </div>
 </body>

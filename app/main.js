@@ -9,6 +9,7 @@ var BrowserWindow = electron.BrowserWindow;
 var Menu = electron.Menu;
 var crashReporter = electron.crashReporter;
 
+var fs = require('fs');
 var path = require('path');
 var isAccelerator = require("electron-is-accelerator");
 
@@ -221,7 +222,8 @@ var openHelpWindow = function() {
     center: true,
     height: 700,
     width: 800,
-    webPreferences: { nodeIntegration: false, contextIsolation: true }
+    webPreferences: { nodeIntegration: false, contextIsolation: true,
+                      preload: path.join(__dirname, 'helpPreload.js') }
   });
   helpWindow.webContents.setWindowOpenHandler(function(details) { electron.shell.openExternal(details.url); return { action: 'deny' }; });
   helpWindow.webContents.on('will-navigate', function(e,url) { handleUrl(e,url); } );
@@ -393,6 +395,19 @@ app.on('ready', function () {
   // File open dialog (from scriptForm.js)
   ipcMain.handle('showOpenDialog', async function(event, options) {
     return dialog.showOpenDialog(options);
+  });
+
+  // Save Help as PDF (from help/index.html via helpPreload.js)
+  ipcMain.handle('help:savePDF', async function(event) {
+    var win = BrowserWindow.fromWebContents(event.sender);
+    var result = await dialog.showSaveDialog(win, {
+      defaultPath: path.join(app.getPath('downloads'), 'Blink1Control2-Help.pdf'),
+      filters: [{ name: 'PDF', extensions: ['pdf'] }]
+    });
+    if( result.canceled || !result.filePath ) { return null; }
+    var data = await event.sender.printToPDF({ printBackground: true });
+    fs.writeFileSync(result.filePath, data);
+    return result.filePath;
   });
 
   // Script/file/url test (from scriptForm.js)

@@ -38,6 +38,14 @@ ul, ol { margin-top: 0; margin-bottom: 12px; padding-left: 2em; }
 li { margin-bottom: 4px; }
 li + li { margin-top: 4px; }
 
+/* TOC entries already carry section numbers */
+#in-this-manual + ul, #in-this-manual + ul ul { list-style: none; }
+#in-this-manual + ul { padding-left: 0; }
+#in-this-manual + ul ul { padding-left: 1.5em; }
+
+.help-toolbar { text-align: right; }
+@media print { .help-toolbar { display: none; } }
+
 img {
     max-width: 100%;
     height: auto;
