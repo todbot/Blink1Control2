@@ -4,8 +4,11 @@
 [![npm downloads][dl-badge]][npm-url]
 [![node version][node-badge]][npm-url]
 [![license][license-badge]][npm-url]
+[![tests][tests-badge]][tests-url]
 
 [npm-url]: https://www.npmjs.com/package/node-blink1-server
+[tests-url]: https://github.com/todbot/Blink1Control2/actions/workflows/node-blink1-server.yml
+[tests-badge]: https://github.com/todbot/Blink1Control2/actions/workflows/node-blink1-server.yml/badge.svg
 [npm-badge]: https://img.shields.io/npm/v/node-blink1-server.svg
 [dl-badge]: https://img.shields.io/npm/dm/node-blink1-server.svg
 [node-badge]: https://img.shields.io/node/v/node-blink1-server.svg

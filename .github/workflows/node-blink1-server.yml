@@ -1,0 +1,47 @@
+# Test node-blink1-server
+
+name: node-blink1-server
+
+on:
+  push:
+    branches: [main, main-es5]
+    paths:
+      - 'packages/node-blink1-server/**'
+      - '.github/workflows/node-blink1-server.yml'
+  pull_request:
+    paths:
+      - 'packages/node-blink1-server/**'
+      - '.github/workflows/node-blink1-server.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20, 22, 24]
+    defaults:
+      run:
+        working-directory: packages/node-blink1-server
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      # only needed if node-hid has to build from source
+      - name: Setup prerequisites
+        run: |
+          sudo apt update
+          sudo apt install pkg-config libudev-dev libusb-1.0-0-dev
+
+      - name: Install Node.js and NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: packages/node-blink1-server/package-lock.json
+
+      - name: Test
+        run: |
+          npm ci
+          npm test
