@@ -7,18 +7,28 @@
   "homepage": "https://github.com/todbot/Blink1Control2/tree/main/packages/node-blink1-server",
   "repository": {
     "type": "git",
-    "url": "https://github.com/todbot/Blink1Control2.git",
+    "url": "git+https://github.com/todbot/Blink1Control2.git",
     "directory": "packages/node-blink1-server"
   },
-  "keywords": ["blink1", "blink(1)", "led", "usb", "hid", "rest", "api", "server", "notification"],
+  "keywords": [
+    "blink1",
+    "blink(1)",
+    "led",
+    "usb",
+    "hid",
+    "rest",
+    "api",
+    "server",
+    "notification"
+  ],
   "main": "index.js",
   "exports": {
     ".": "./index.js",
     "./lib/*": "./lib/*.js"
   },
   "bin": {
-    "node-blink1-server": "./cli.js",
-    "blink1-server": "./cli.js"
+    "node-blink1-server": "cli.js",
+    "blink1-server": "cli.js"
   },
   "files": [
     "lib/",
