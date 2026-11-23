@@ -55,5 +55,4 @@ jobs:
             dist/Blink1Control2*tar.gz
             dist/Blink1Control2*deb
             dist/Blink1Control2*AppImage
-            dist/Blink1Control2*blockmap
             dist/latest*yml

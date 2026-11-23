@@ -69,5 +69,4 @@ jobs:
           path: |
             dist/Blink1Control2*zip
             dist/Blink1Control2*exe
-            dist/Blink1Control2*blockmap
             dist/latest*yml
