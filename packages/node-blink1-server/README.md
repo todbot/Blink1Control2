@@ -22,6 +22,8 @@ patterns, multi-device support, and a Node.js library interface.
 
 Supports plug and unplug of blink(1) while the server is running.
 
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
+
 
 ## Installation & running
 
