@@ -20,7 +20,28 @@ var destImgs = path.join(destDir, 'images');
 
 fs.mkdirSync(destDir, { recursive: true });
 
+// GitHub-style slugs so links also work on github.com
+function slug(text) {
+    return text.toLowerCase().replace(/[^\w\- ]/g, '').replace(/ /g, '-');
+}
+
+marked.use({
+    renderer: {
+        heading: function({ tokens, depth, text }) {
+            return '<h' + depth + ' id="' + slug(text) + '">' + this.parser.parseInline(tokens) + '</h' + depth + '>\n';
+        }
+    }
+});
+
 var md   = fs.readFileSync(srcMd, 'utf8');
+
+// only numbered headings go in the TOC
+var toc = marked.lexer(md)
+    .filter(function(t) { return t.type === 'heading' && (t.depth === 2 || t.depth === 3) && /^\d/.test(t.text); })
+    .map(function(t) { return (t.depth === 3 ? '  ' : '') + '- [' + t.text + '](#' + slug(t.text) + ')'; })
+    .join('\n');
+md = md.replace('<!-- toc -->', toc);
+
 var body = marked.parse(md);
 
 var html = `<!DOCTYPE html>
