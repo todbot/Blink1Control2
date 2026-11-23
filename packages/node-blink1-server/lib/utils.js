@@ -7,7 +7,7 @@
 
 module.exports = {
     generateRandomHexColor: function() {
-        return '#' + Math.floor(Math.random() * 0xffffff).toString(16).toUpperCase();
+        return '#' + Math.floor(Math.random() * 0x1000000).toString(16).padStart(6, '0').toUpperCase();
     },
     generateRandomHostId: function() {
         return ('000' + Math.floor(Math.random() * 0xffff).toString(16)).slice(-4).toUpperCase() +

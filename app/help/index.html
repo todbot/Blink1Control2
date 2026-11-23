@@ -8,10 +8,14 @@
 </head>
 <body>
 <div class="markdown-body">
-<h1>Blink1Control2 Manual</h1>
+<div class="help-toolbar" id="help-toolbar" hidden>
+  <button onclick="window.helpAPI.savePDF()">Save as PDF</button>
+</div>
+<script>if (window.helpAPI) { document.getElementById('help-toolbar').hidden = false; }</script>
+<h1 id="blink1control2-manual">Blink1Control2 Manual</h1>
 <p>Blink1Control2 is a GUI application for hooking notification events to blink(1) devices. It is the primary application for controlling blink(1). These notification events can be on your computer or on the Net, and these events trigger colors or color patterns to be played on the blink(1) device.</p>
 <p><img src="images/000001.png" alt="blink1control2 screenshot"></p>
-<h2>Blink1Control2 Features</h2>
+<h2 id="blink1control2-features">Blink1Control2 Features</h2>
 <ul>
 <li>Full 24-bit control of both top and bottom RGB LEDs of blink(1) devices</li>
 <li>Control up to 8 different blink(1) devices</li>
@@ -20,49 +24,53 @@
 <li>Create and use on-the-fly &quot;meta-pattern&quot; color patterns in any event source</li>
 <li>Entirely open-source</li>
 </ul>
-<h2>In this Manual</h2>
+<h2 id="in-this-manual">In this Manual</h2>
 <ul>
-<li>Overview</li>
-<li>Installation<ul>
-<li>Installing the blink(1) hardware</li>
-<li>Installing the Blink1Control2 software</li>
-<li>Running Blink1Control2 (and quitting)</li>
+<li><a href="#1-overview">1. Overview</a><ul>
+<li><a href="#11-how-blink1control2-works">1.1 How Blink1Control2 works</a></li>
 </ul>
 </li>
-<li>Device Information<ul>
-<li>Device Status</li>
-<li>Serial number and IFTTT Key</li>
-<li>Multiple blink(1) display</li>
-<li>Preferences</li>
+<li><a href="#2-installation">2. Installation</a><ul>
+<li><a href="#21-installing-the-blink1-hardware">2.1 Installing the blink(1) hardware</a></li>
+<li><a href="#22-installing-the-blink1control2-software">2.2 Installing the Blink1Control2 software</a></li>
+<li><a href="#23-running-blink1control2-and-quitting">2.3 Running Blink1Control2 (and quitting)</a></li>
 </ul>
 </li>
-<li>Big Buttons</li>
-<li>Color Picker</li>
-<li>Color Patterns<ul>
-<li>Patterns in general</li>
-<li>Editing patterns</li>
-<li>Meta-patterns</li>
+<li><a href="#3-device-information">3. Device Information</a><ul>
+<li><a href="#31-device-status">3.1 Device Status</a></li>
+<li><a href="#32-serial-number-and-ifttt-key">3.2 Serial number and IFTTT key</a></li>
+<li><a href="#33-multiple-blink1-display">3.3 Multiple blink(1) display</a></li>
+<li><a href="#34-preferences-gear-icon">3.4 Preferences (gear icon)</a></li>
 </ul>
 </li>
-<li>Event Sources<ul>
-<li>IFTTT</li>
-<li>Email</li>
-<li>File / Scripts / URLs</li>
+<li><a href="#4-big-buttons">4. Big Buttons</a></li>
+<li><a href="#5-color-picker">5. Color Picker</a></li>
+<li><a href="#6-color-patterns">6. Color Patterns</a><ul>
+<li><a href="#61-patterns-in-general">6.1 Patterns in General</a></li>
+<li><a href="#62-editing-patterns">6.2 Editing Patterns</a></li>
+<li><a href="#63-meta-patterns">6.3 Meta-patterns</a></li>
 </ul>
 </li>
-<li>Recent Events</li>
-<li>Tray Menu</li>
-<li>Preferences<ul>
-<li>Start at login</li>
-<li>Start minimized</li>
-<li>Pattern play serialize</li>
-<li>Enable API server</li>
-<li>Allow multi blink(1) devices in rules</li>
+<li><a href="#7-event-sources">7. Event Sources</a><ul>
+<li><a href="#71-ifttt">7.1 IFTTT</a></li>
+<li><a href="#72-email">7.2 Email</a></li>
+<li><a href="#73-urls-scripts-and-files">7.3 URLs, Scripts and Files</a></li>
+<li><a href="#74-mqtt">7.4 MQTT</a></li>
 </ul>
 </li>
-<li>Configuration File</li>
+<li><a href="#8-recent-events">8. Recent Events</a></li>
+<li><a href="#9-tray-menu">9. Tray Menu</a></li>
+<li><a href="#10-preferences">10. Preferences</a><ul>
+<li><a href="#101-start-minimized">10.1 Start minimized</a></li>
+<li><a href="#102-start-at-login">10.2 Start at login</a></li>
+<li><a href="#103-pattern-play-serialize">10.3 Pattern play serialize</a></li>
+<li><a href="#104-start-api-server">10.4 Start API server</a></li>
+<li><a href="#105-use-multi-blink1-devices-in-rules">10.5 Use multi blink(1) devices in rules</a></li>
 </ul>
-<h2>1. Overview</h2>
+</li>
+<li><a href="#11-configuration-file">11. Configuration file</a></li>
+</ul>
+<h2 id="1-overview">1. Overview</h2>
 <p>The blink(1) is a small USB device with two independently-addressable RGB LEDs and a tiny computer that runs a color mixing and color pattern state machine. It is designed to be unobtrusive yet can be very bright when lit to get your attention.</p>
 <p><img src="images/000000.jpg" alt="blink(1) device"></p>
 <p>While blink(1) requires no drivers (thanks to it being a HID-class USB device), it does need a program to control it. Blink1Control2 is the primary GUI-based program designed to be used with blink(1) devices. It acts as a conduit to blink(1), looking for events you tell it you want to be notified about and controlling the blink(1) hardware.</p>
@@ -73,62 +81,66 @@
 <li>Files or URLs containing text or JSON data structs</li>
 <li>Executable programs or scripts that emit text or JSON data structs</li>
 </ul>
-<p>The Blink1Control2 application uses these events to trigger colors or color patterns on the blink(1). The application can independently control both LEDs in a blink(1) device and multiple blink(1) devices are supported, allowing you to assign different events to different devices.</p>
-<h3>1.1 How Blink1Control2 works</h3>
+<h3 id="11-how-blink1control2-works">1.1 How Blink1Control2 works</h3>
+<p>The Blink1Control2 application uses events from the event sources you configure
+to trigger colors or color patterns on the blink(1). The application can independently
+control both LEDs in a blink(1) device and multiple blink(1) devices are supported, 
+allowing you to assign different events to different devices.</p>
 <p>Events trigger color patterns, color patterns change blink(1):</p>
-<pre><code>Event Source --&gt; Color Pattern plays --&gt; blink(1) changes color
-</code></pre>
-<h2>2. Installation</h2>
-<h3>2.1 Installing the blink(1) hardware</h3>
+<blockquote>
+<p>Event from Event Source --&gt; Color Pattern plays --&gt; blink(1) device changes color</p>
+</blockquote>
+<h2 id="2-installation">2. Installation</h2>
+<h3 id="21-installing-the-blink1-hardware">2.1 Installing the blink(1) hardware</h3>
 <p>To install the blink(1) hardware, just plug in the blink(1) device into any open USB port. No driver installation required! On Windows, you will see it say &quot;installing hardware&quot; but it&#39;s not actually doing anything.</p>
-<h3>2.2 Installing the Blink1Control2 software</h3>
+<h3 id="22-installing-the-blink1control2-software">2.2 Installing the Blink1Control2 software</h3>
 <p>The Blink1Control2 software comes as either a zip bundle for installation in any directory you want, or a DMG (Mac) or EXE (Windows) installer for system-wide installation.</p>
-<h3>2.3 Running Blink1Control2 (and quitting)</h3>
+<h3 id="23-running-blink1control2-and-quitting">2.3 Running Blink1Control2 (and quitting)</h3>
 <p>Once you have the application installed how you like it, double-click its application icon to launch it. It will open up its main window (see first screenshot) and auto-detect any blink(1) devices that are plugged in.</p>
 <p><strong>Note:</strong> Closing the Blink1Control2 window will not quit the app, just hides it. You can access it again via its Menu Bar / System Tray Menu. This is also how you quit Blink1Control2 (see Section 9 &quot;Tray Menu&quot;).</p>
-<h2>3. Device Information</h2>
+<h2 id="3-device-information">3. Device Information</h2>
 <p>The Device Information panel in Blink1Control2 is the first area you should look at when running Blink1Control. It consists of a &quot;virtual blink(1)&quot; that mirrors the colors displayed on a real blink(1) if present and a status area that includes information about device connection, its serial number and the IFTTT key used with <a href="http://ifttt.com">IFTTT.com</a>.</p>
 <p><img src="images/000003.png" alt="Device Information panel"></p>
-<h3>3.1 Device Status</h3>
+<h3 id="31-device-status">3.1 Device Status</h3>
 <p>The &quot;Status&quot; field indicates how many blink(1) devices Blink1Control2 can see and has control of.</p>
 <p><strong>Note:</strong> Once Blink1Control2 sees a blink(1) device, that device cannot be used by other programs that access the device directly (like the command-line program &quot;blink1-tool&quot;).</p>
-<h3>3.2 Serial number and IFTTT key</h3>
+<h3 id="32-serial-number-and-ifttt-key">3.2 Serial number and IFTTT key</h3>
 <p>The serial number field is the 8-hexdigit serial number of the primary (highest numbered) blink(1) device plugged into the system. Every blink(1) ships with a unique serial number. This allows you to easily and repeatably address a specific blink(1), as well as provide a unique identifier to online services such as IFTTT.</p>
 <p>The <strong>IFTTT key</strong> is a 16-hexdigit identifier composed of a 8-hexdigit &quot;Host Id&quot; and the 8-hexdigit blink(1) serial number. The Host Id is randomly generated and if you would like the same Host Id so you can use the same blink(1) on multiple computers, you can edit the &quot;hostId&quot; value to match.</p>
 <p>When activating the IFTTT blink(1) channel, you will be asked for the IFTTT Key — copy and paste the key from Blink1Control2 to IFTTT.</p>
 <p><img src="images/000002.png" alt="IFTTT key entry"></p>
 <p><strong>Note:</strong> The &quot;hostId&quot; config value is in the config file &quot;blink1control-config.json&quot;. The path to the config file is available in the &quot;About&quot; menu. For more details, see Section 11 &quot;Configuration file&quot;.</p>
-<h3>3.3 Multiple blink(1) display</h3>
+<h3 id="33-multiple-blink1-display">3.3 Multiple blink(1) display</h3>
 <p>If you have multiple blink(1) devices plugged in, colored icons for each blink(1) will be displayed to the left of the primary blink(1) image. These icons mirror the color state of the blink(1) devices.</p>
 <p>To see the serial number of the non-primary blink(1)s, hover over the color spots with the mouse cursor to see detailed info about each blink(1).</p>
 <p>With multiple blink(1)s installed, event sources can now be configured to use a specific blink(1).</p>
 <p><strong>Note:</strong> Blink1Control2 only does a full USB rescan on application startup or if there are no devices plugged in. If you plug in an additional blink(1) with one already plugged in, please restart the application.</p>
-<h3>3.4 Preferences (gear icon)</h3>
+<h3 id="34-preferences-gear-icon">3.4 Preferences (gear icon)</h3>
 <p>This panel also includes a gear icon button to bring up more advanced Preferences. For more information, see Section 10 &quot;Preferences&quot;.</p>
-<h2>5. Big Buttons</h2>
+<h2 id="4-big-buttons">4. Big Buttons</h2>
 <p><img src="images/000004.png" alt="Big Buttons panel"></p>
 <p>When Blink1Control is started, you are most notably presented with a collection of big buttons that we call &quot;Big Buttons&quot;. These buttons are in two groups: an upper set of demos &amp; tools to play around with blink(1), and a lower set of customizable buttons that come pre-configured for common presence indications like &quot;Away&quot;, &quot;Busy&quot; or &quot;Meeting&quot;. These Big Buttons can be assigned any color or color pattern.</p>
 <p>Right-click on an existing button to edit its parameters.</p>
 <p><img src="images/000005.png" alt="Button context menu"></p>
-<h2>6. Color Picker</h2>
+<h2 id="5-color-picker">5. Color Picker</h2>
 <p>The Blink1Control2 color picker lets you select colors via a color grid, a hex string text field, or a red/green/blue numbers. Changing the color in any way using the color picker will also change the color on the blink(1), to let you easily try out new colors.</p>
 <p><img src="images/000006.png" alt="Color Picker"></p>
 <p>Click on any of the colors in the picker to select a new color. Or enter a specific color in the R,G,B text fields or a hex color string.</p>
 <p>You can also pick which LED of the blink(1) to control (AB == both LEDs, A = top LED, B = bottom LED). When multiple blink(1) devices are plugged in, you can also select which blink(1) to address. The time field determines how long it will take to fade to that color.</p>
-<h2>7. Color Patterns</h2>
-<h3>7.1 Patterns in General</h3>
+<h2 id="6-color-patterns">6. Color Patterns</h2>
+<h3 id="61-patterns-in-general">6.1 Patterns in General</h3>
 <p>Blink1Control2 ships with a collection of color patterns and you can create your own.</p>
 <p><img src="images/000007.png" alt="Color Patterns panel"></p>
 <p>A color pattern is list of colors, where each color contains a time duration and which LED (A, B, or both AB) to be that color. A color pattern also contains a number of times to repeat. The repeat symbols have the following meaning:</p>
 <p><img src="images/000008.png" alt="Repeat symbols"></p>
 <p>To try out a pattern, click on the triangular play button to the left of the pattern name. The pattern will start playing and the play button turns into a rectangular stop button.</p>
-<h3>7.2 Editing Patterns</h3>
+<h3 id="62-editing-patterns">6.2 Editing Patterns</h3>
 <p>The patterns that come with Blink1Control2 are read-only and cannot be edited. However, they can be copied and edited. To copy or edit a pattern, click on the right-hand arrow next to the pattern in question and pick an option from the drop-down menu.</p>
 <p><img src="images/000009.png" alt="Pattern drop-down menu"></p>
 <p>To edit a pattern, choose &quot;Edit pattern&quot; from the drop-down menu. Now the pattern line will change and you can inline-edit the name, add more colors to the pattern (based on the current setting in the Color Picker).</p>
 <p><img src="images/000011.png" alt="Pattern editing"></p>
 <p>To delete or change an existing color, click on its color spot. The Color Picker will change to reflect that color and any changes made in the Color Picker will be reflected in the color spot. When done, click the right-hand checkmark to finish editing.</p>
-<h3>7.3 Meta-patterns</h3>
+<h3 id="63-meta-patterns">6.3 Meta-patterns</h3>
 <p>The URL, Script, and File event sources (and the API server) can specify an existing pattern name or a &quot;meta-pattern&quot;. A meta-pattern is a special pattern name that is actually a command into Blink1Control2 for on-the-fly creation of new temporary color patterns.</p>
 <p>Allowed meta-patterns:</p>
 <ul>
@@ -156,7 +168,7 @@
 </li>
 <li><code>~off</code> — stop all patterns and make all blink(1)s go dark</li>
 </ul>
-<h2>8. Event Sources</h2>
+<h2 id="7-event-sources">7. Event Sources</h2>
 <p>Events sources in Blink1Control generate events that result in color patterns playing. The event source most people will use is the free IFTTT service. You can have multiple event sources of the same type and Blink1Control ships with two demonstration IFTTT sources configured called &quot;red demo&quot; and &quot;green demo&quot;.</p>
 <p>To see a list of your configured event sources, click on the &quot;Event Sources&quot; tab.</p>
 <p><img src="images/000012.png" alt="Event Sources tab"></p>
@@ -165,7 +177,7 @@
 <p><img src="images/000013.png" alt="Add event source dialog"></p>
 <p>Choose the event source type and a dialog of options for that event source will open.</p>
 <p>Every event source dialog will allow you to enable/disable the event source, rename it, delete it, or copy it.</p>
-<h3>8.1 IFTTT</h3>
+<h3 id="71-ifttt">7.1 IFTTT</h3>
 <p>The IFTTT event source is the simplest and only has two fields: Rule Name and Pattern. (If you have multiple blink(1)s, there is an optional third field of which blink(1) to use.) The Pattern is a list of the currently available color patterns, and is an option that is common to most every Event Source.</p>
 <p><img src="images/000014.png" alt="IFTTT event source dialog"></p>
 <p>The Rule Name is a text field and should match what you have configured in your IFTTT recipe&#39;s action.</p>
@@ -173,7 +185,7 @@
 <p><img src="images/000015.png" alt="IFTTT recipe configuration"></p>
 <p><strong>Note:</strong> Be sure to activate the blink(1) channel on IFTTT.</p>
 <p><strong>Note:</strong> When using multiple blink(1) devices with IFTTT, the IFTTT Key is based off of the first blink(1), but you can use IFTTT to trigger Event Sources bound to different blink(1) devices.</p>
-<h3>8.2 Email</h3>
+<h3 id="72-email">7.2 Email</h3>
 <p>The Email Event Source is one of the most complex because there are many different settings for email and many different ways to trigger off email events. Some users find the way IFTTT works with email easier, so that is always an option instead of using Blink1Control&#39;s built-in email support.</p>
 <p><img src="images/000016.png" alt="Email event source dialog"></p>
 <p>The Email settings dialog is divided into two halves: on the left is typical email login credentials info needed for any system that checks mail, on the right are settings on how to trigger on changes to your mail&#39;s state.</p>
@@ -191,39 +203,60 @@
 <li>Click &quot;GENERATE&quot;</li>
 <li>Use the resulting password as the IMAP/Gmail password in Blink1Control2, with your Gmail address as the username.</li>
 </ol>
-<h3>8.3 URLs, Scripts and Files</h3>
+<h3 id="73-urls-scripts-and-files">7.3 URLs, Scripts and Files</h3>
 <p>The dialog for URLs, Scripts and Files is almost identical, differing only in the source (Script path, File path, or URL) field.</p>
 <p>In every case, you can choose how you want the output to be parsed. The <strong>output as JSON</strong> option looks for a JSON object with either a &quot;pattern&quot; key or a &quot;color&quot; key.</p>
 <p>For more details on the output formats, see:
 <a href="https://github.com/todbot/blink1/blob/master/docs/blink1control-file-script-url-format.md">https://github.com/todbot/blink1/blob/master/docs/blink1control-file-script-url-format.md</a></p>
 <p><img src="images/000017.png" alt="URLs/Scripts/Files dialog"></p>
-<h2>9. Recent Events</h2>
+<h3 id="74-mqtt">7.4 MQTT</h3>
+<p>The MQTT event source subscribes to a topic on an MQTT broker and plays a color or pattern whenever a message arrives on that topic. This is a good fit for home-automation systems like Home Assistant or Node-RED, cloud brokers like Adafruit IO, or your own Mosquitto server.</p>
+<p>The MQTT dialog has these fields:</p>
+<ul>
+<li><strong>Rule Name</strong> — a name for this rule. Each MQTT rule must have a unique name.</li>
+<li><strong>MQTT Topic</strong> — the topic to subscribe to, e.g. <code>home/office/blink1</code>. MQTT wildcards (<code>+</code> and <code>#</code>) can be used.</li>
+<li><strong>MQTT URL</strong> — the broker&#39;s address, e.g. <code>mqtt://192.168.1.10</code> or <code>mqtts://io.adafruit.com</code>. Use <code>mqtts://</code> for a TLS connection.</li>
+<li><strong>MQTT username</strong> and <strong>MQTT password</strong> — leave these blank if your broker doesn&#39;t require a login. The password is stored encrypted on disk.</li>
+</ul>
+<p>Click <strong>Test Connection</strong> to check the broker URL and login before saving. This only checks that Blink1Control2 can connect to the broker; it does not subscribe to the topic or play anything.</p>
+<p>Choose how incoming messages are parsed:</p>
+<ul>
+<li><strong>JSON</strong> — the message is a JSON object with a &quot;color&quot; or &quot;pattern&quot; key, e.g. <code>{&quot;color&quot;: &quot;#ff00ff&quot;}</code> or <code>{&quot;pattern&quot;: &quot;policecar&quot;}</code>. The pattern can also be a meta-pattern, e.g. <code>{&quot;pattern&quot;: &quot;~blink:red-3&quot;}</code>.</li>
+<li><strong>Pattern name</strong> — the message contains <code>pattern:</code> followed by a pattern name, e.g. <code>pattern: policecar</code>. Use quotes for names with spaces, e.g. <code>pattern: &quot;good to go&quot;</code>. Meta-patterns work here too.</li>
+<li><strong>Color</strong> — the message contains a hex color like <code>#ff0000</code> or <code>#f00</code>, or the whole message is a color name like <code>red</code> or <code>forestgreen</code>.</li>
+</ul>
+<p>Only the first 200 characters of a message are looked at. If the connection to the broker drops, Blink1Control2 tries to reconnect every 10 seconds.</p>
+<p>For example, with a rule set to parse as color and the Mosquitto command-line tools, this turns the blink(1) green:</p>
+<pre><code>mosquitto_pub -h 192.168.1.10 -t home/office/blink1 -m &#39;#00ff00&#39;
+</code></pre>
+<p><strong>Note:</strong> Messages that trigger a color or pattern appear in Recent Events, but connection status and errors do not. If nothing happens when you publish a message, use <strong>Test Connection</strong> to check the broker settings.</p>
+<h2 id="8-recent-events">8. Recent Events</h2>
 <p>The Recent Events panel shows a timestamped text view of events created by event sources. It also shows when Big Buttons are pressed. This can help with time tracking.</p>
 <p><img src="images/000019.png" alt="Recent Events panel"></p>
-<h2>10. Tray Menu</h2>
+<h2 id="9-tray-menu">9. Tray Menu</h2>
 <p>Blink1Control2 has a Menu Bar icon on Mac OS X and a System Tray icon on Windows. Click (Mac) or right-click (Windows) on this icon to bring up a menu to manage Blink1Control2 without opening up its main window.</p>
 <p>The tray menu is also primarily how you quit Blink1Control2, as closing the main window only hides it.</p>
 <p><img src="images/000021.png" alt="Tray menu"></p>
-<h2>11. Preferences</h2>
+<h2 id="10-preferences">10. Preferences</h2>
 <p>From the gear icon above in the Device section or the Preferences menu option, you can open up the advanced Preferences window.</p>
 <p><img src="images/000020.png" alt="Preferences window"></p>
 <p>Most of these settings you will not need to modify (and some do not yet fully work).</p>
-<h3>11.1 Start minimized</h3>
+<h3 id="101-start-minimized">10.1 Start minimized</h3>
 <p>When checked, this option will cause the application to not show any window on startup. It will still create a tray menu icon to let you open the window.</p>
-<h3>11.2 Start at login</h3>
+<h3 id="102-start-at-login">10.2 Start at login</h3>
 <p>When checked, this option will set the application to automatically start when the computer is restarted. On most systems, you will have to configure it to do automatic user login too.</p>
-<h3>11.3 Pattern play serialize</h3>
+<h3 id="103-pattern-play-serialize">10.3 Pattern play serialize</h3>
 <p>In previous versions of Blink1Control, multiple patterns could play simultaneously. This could be very confusing. With this option checked, a new event triggering a new pattern will cause the current pattern to pause, play this new pattern, then resume the previous pattern.</p>
-<h3>11.4 Start API server</h3>
+<h3 id="104-start-api-server">10.4 Start API server</h3>
 <p>Blink1Control2 has a full HTTP REST API. This option enables it. For details on the REST API see:</p>
 <ul>
 <li><a href="https://github.com/todbot/blink1/blob/master/docs/app-url-api-examples.md">https://github.com/todbot/blink1/blob/master/docs/app-url-api-examples.md</a></li>
 <li><a href="https://github.com/todbot/blink1/blob/master/docs/app-url-api.md">https://github.com/todbot/blink1/blob/master/docs/app-url-api.md</a></li>
 </ul>
 <p>Some aspects of the API are not implemented yet by Blink1Control2.</p>
-<h3>11.5 Use multi blink(1) devices in rules</h3>
+<h3 id="105-use-multi-blink1-devices-in-rules">10.5 Use multi blink(1) devices in rules</h3>
 <p>If multiple blink(1) devices are present and this option is checked, a new option will appear when configuring Event Sources to allow specifying a blink(1) device to be used.</p>
-<h2>12. Configuration file</h2>
+<h2 id="11-configuration-file">11. Configuration file</h2>
 <p>The configuration file for Blink1Control contains the settings for color patterns, event sources, and preferences. This file is a JSON text file, editable by any text editor. The &quot;About&quot; window will give the path to this file.</p>
 <p>Any login credentials are encrypted.</p>
 <p><strong>Note:</strong> If you edit this file, make sure Blink1Control2 is not running, or your edits may be over-written.</p>

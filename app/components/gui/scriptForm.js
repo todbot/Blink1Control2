@@ -63,7 +63,9 @@ var ScriptForm = createReactClass({
     },
     openFileDialog: async function() {
         var self = this;
-        const result = await window.electronAPI.dialog.showOpenDialog({ properties: ['openFile'] });
+        var opts = { properties: ['openFile'] };
+        if( this.state.path ) { opts.defaultPath = this.state.path; }
+        const result = await window.electronAPI.dialog.showOpenDialog(opts);
         if (result.filePaths && result.filePaths[0]) {
             self.setState({path: result.filePaths[0], testOutput: null, testError: null});
         }
