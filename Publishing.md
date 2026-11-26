@@ -1,72 +1,118 @@
 ### Publishing Releases
 
-Steps:
-- Update version in `package.json` and `app/package.json` (they must match!)
-- Build release:
+Releases are built, signed, and uploaded by GitHub Actions
+(`.github/workflows/macos.yml`, `windows.yml`, `linux.yml`).
+Nothing needs to be built locally.
+
+#### Steps
+
+1. Update `version` in `package.json` and `app/package.json`
+   (they must match!), commit, and push.
+
+2. Optional: test signing without publishing, from the Actions tab
+   or the command line:
     ```
-    rimraf dist    # delete previous dist products (optional)
-    npm run clean  # removes node_modules so they get rebuilt, does not remove 'dist' dir
-    npm install    # installs & builds node_modules
-    npm run pack   # bundles app code using webpack to bundle.js
-    npm run dist   # build the dist products, and publish, must do it on each OS (Mac,Win,Linux)
+    gh workflow run windows.yml --ref main -f sign=true
+    gh workflow run macos.yml   --ref main -f notarize=true
     ```
-    To test "pack" run `npm run dist:draft`.
-    Note: must set GH_TOKEN for `npm run dist` to publish to github
-    (e.g. `export GH_TOKEN=...` on Mac & Linux, `$env:GH_TOKEN=...` on Windows Powershell)
+   Then download and check the artifacts (see "Checking signatures").
 
-- Edit release on github (tag created by 'dist' above)
-- Write release notes (changelog)
-- Publish release
-- Check release
-    - Download each version, unzip / install / launch to test
-- Publish announcement
-
-#### Current build machines
-- Mac OS X 10.14.6 on Macbook Pro 2015
-- Windows 10 Pro (in VM)
-- Ubuntu 18 (in VM)  (but must be 14.04 for earlier libc)
-
-
-
-#### Notes
-
-- Mac signed apps:
-    - Before running `npm run dist`, set three environment variables:
-      ```
-      export APPLEID="appleid@appleid.com" (but real appleId)
-      export APPLEIDPASSWD="app-specific-password" (generated from appleid.apple.com)
-      export TEAM_SHORT_NAME="MyTeamShortName" (obtained from iTMSTransporter below)
-      export GH_TOKEN=ghp_abcdabcd12341234
-      ```
-
-- Windows signed apps:
-    - Get Code Signing cert.
-    - Set env vars described in https://www.electron.build/code-signing#windows, e.g.:
-      ```
-      $env:CSC_LINK="c:\users\biff\desktop\projects\codesign\thingm_corporation_2022.p12"
-      $env:CSC_KEY_PASSWORD="hunter2"  # no not really
-      $env:GH_TOKEN=ghp_abcdabcd12341234
-      ```
-    - Run `npm run dist`
-
-- For actual publishing, use github releases (default), which requires `GH_TOKEN` secure environment variable and:
+3. Create a draft release *before* publishing, so the three jobs
+   don't each create their own draft:
     ```
-    "build": {
-      "publish": {
-        "provider": "github"
-       }
-     }
+    gh release create vX.Y.Z --draft --title "Blink1Control2 vX.Y.Z" \
+      --notes-file notes.md
     ```
 
-- Mac signing notes:
+4. Trigger the publish builds with `[publish]` in a commit message:
+    ```
+    git commit --allow-empty -m "release X.Y.Z [publish]"
+    git push
+    gh run list --limit 4
+    ```
+   Or run a single platform by hand, e.g. to redo one that failed:
+    ```
+    gh workflow run linux.yml --ref main -f publish=true
+    ```
 
-  - To get 'short name' ("ascProvider" to electron-notarize):
+5. Check the draft has every file:
     ```
-    /Applications/Transporter.app/Contents/itms/bin/iTMSTransporter -m provider -u $APPLEID -p $APPLEIDPASSWD
+    gh release view vX.Y.Z --json assets --jq '.assets[].name'
     ```
+   Expect: mac x64 + arm64 `.dmg` and `.zip`; win `win.exe`,
+   `win-x64.exe`, `win-ia32.exe`, `win-x64.zip`, `win-ia32.zip`;
+   linux `.deb`, `.tar.gz`, `.AppImage` (plus `.yml`/`.blockmap`).
+
+6. Download and test each platform (install / unzip / launch).
+
+7. Publish the release:
+    ```
+    gh release edit vX.Y.Z --draft=false --latest
+    ```
+   This creates the `vX.Y.Z` tag. Running copies of the app check
+   `releases/latest` and will now offer the update.
+
+8. Publish announcement.
+
+#### Release notes
+
+Follow the v2.4.0 layout: "New in this release", "Fixes in this
+release", requirements, a "Full Changelog" compare link, then the
+per-platform download list. Start from
+`git log --no-merges --oneline vPREV..HEAD` and keep only
+user-facing changes.
+
+#### How CI signs and publishes
+
+- Each run does one electron-builder build. The mode depends on how
+  it was triggered:
+  - push / PR: unsigned `npm run dist:draft`
+  - `sign` / `notarize` input: signed, not published
+  - `[publish]` commit or `publish` input: signed and published
+- **macOS**: signed with the Developer ID cert and notarized by
+  electron-builder (secrets `MACOS_CERTIFICATE`,
+  `MACOS_CERTIFICATE_PWD`, `CSC_NAME`, `APPLE_ID`,
+  `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`).
+- **Windows**: signed with Azure Trusted Signing *inside* the
+  electron-builder build, via `-c.win.azureSignOptions.*` on the
+  command line in `windows.yml` (secrets `AZURE_TENANT_ID`,
+  `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`). This signs the app exe,
+  installer, and uninstaller. Don't sign as a separate step after
+  the build: `npm run dist` rebuilds and would publish unsigned files.
+- **Uploading**: electron-builder uploads into the draft release
+  using the built-in `GITHUB_TOKEN` (`permissions: contents: write`).
+  No personal access token is needed.
+
+#### Checking signatures
+
+- macOS: electron-builder signs and notarizes the `.app`, not the
+  `.dmg`, so `spctl -t install` on the DMG says "rejected". Check the
+  app inside it instead:
+    ```
+    spctl -a -vv -t exec /Volumes/Blink1Control2*/Blink1Control2.app
+    # → accepted, source=Notarized Developer ID
+    xcrun stapler validate /Volumes/Blink1Control2*/Blink1Control2.app
+    ```
+- Windows: on Windows, in PowerShell:
+    ```
+    Get-AuthenticodeSignature .\Blink1Control2-X.Y.Z-win.exe
+    # Status should be Valid
+    ```
+  On a Mac, `osslsigncode verify -in file.exe` shows the ThingM
+  signer but reports chain errors ("unable to get local issuer
+  certificate"). That's expected: macOS doesn't ship Microsoft's
+  code-signing root. Check that "Current message digest" matches
+  "Calculated message digest".
+  The Azure cert is only valid for ~3 days; the timestamp keeps
+  signatures valid after it expires.
+- `gh run download` prints nothing while it downloads; the Windows
+  artifact is ~600 MB, so give it time (or use the browser).
+
+#### Mac signing notes
+
   - To get appId / bundleId, do one of:
     ```
-    mdls -name kMDItemCFBundleIdentifier -r ~/Desktop/Blink1Control2-2.2.1.app`
+    mdls -name kMDItemCFBundleIdentifier -r ~/Desktop/Blink1Control2-2.2.1.app
     osascript -e 'id of app "Blink1Control2-2.2.1"'
     osascript -e "id of app \"`pwd`/dist/mac/Blink1Control2.app\""
     ```
@@ -88,33 +134,14 @@ Steps:
     ```
     security find-identity -v -p codesigning
     ```
-  - Which can then be used to sign command-line apps with:
-    ```
-    codesign -s (identity from above) /path/to/executable
-    ```
+
   - Check codesigning:
     ```
     codesign -dv --verbose=4 ./dist/mac/Blink1Control2.app
     ```
 
-  - In some cases, may need to sign native hared library with your developer credentials and copy it into the app:
+#### Local builds
 
-    ```
-    npm install -g electron-osx-sign
-    cp node_modules/node-hid/build/Release/HID.node dist/mac/
-    electron-hid-toy.app/Contents/MacOS
-    electron-osx-sign dist/mac/electron-hid-toy.app  dist/mac/electron-hid-toy.app/Contents/MacOS/HID.node
-
-- Windows signing notes:
-
-  - Sign by hand on command-line:
-    ```
-    SignTool sign /f MyCert.pfx /p MyPassword MyApp.exe
-    ```
-    See: https://docs.microsoft.com/en-us/windows/win32/seccrypto/using-signtool-to-sign-a-file
-    and https://docs.microsoft.com/en-us/dotnet/framework/tools/signtool-exe
-
-  - Electron-builder uses its own codesign:
-
-    Downloaded from https://github.com/electron-userland/electron-builder-binaries/releases/tag/winCodeSign-2.6.0
-
+`npm run dist:draft` builds unsigned, un-notarized installers in
+`dist/` for local testing. Local mac builds sign automatically if a
+Developer ID cert is in your keychain.
