@@ -9,10 +9,19 @@ on:
   push:
     branches: [main, main-es5]
   pull_request:
+  # To trigger manually: go to Actions tab → linux → Run workflow
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish to the draft release'
+        type: boolean
+        default: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PUBLISH: ${{ contains(github.event.head_commit.message, '[publish]') || inputs.publish || false }}
 
     steps:
       - name: Check out Git repository
@@ -35,15 +44,17 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Build
+      - name: Install and bundle
         run: |
           npm install
           npm run pack
-          npm run dist:draft
 
-      - name: Publish
-        continue-on-error: true
-        if: "contains(github.event.head_commit.message, '[publish]')"
+      - name: Build
+        if: env.PUBLISH != 'true'
+        run: npm run dist:draft
+
+      - name: Build and publish
+        if: env.PUBLISH == 'true'
         run: npm run dist
 
       - name: Upload artifacts

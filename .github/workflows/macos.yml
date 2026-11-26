@@ -1,4 +1,4 @@
-# Build macOS, optionally sign
+# Build macOS, optionally sign+notarize and publish
 
 name: macos
 
@@ -18,17 +18,23 @@ on:
   release:
     types: [created]
   # To trigger manually: go to Actions tab → macos → Run workflow
-  # Check "Notarize and publish" to do a full notarized build without a commit
   workflow_dispatch:
     inputs:
       notarize:
-        description: 'Notarize and publish'
+        description: 'Sign and notarize (no publish)'
+        type: boolean
+        default: false
+      publish:
+        description: 'Sign, notarize, and publish to the draft release'
         type: boolean
         default: false
 
 jobs:
   build:
     runs-on: macos-latest
+    env:
+      PUBLISH: ${{ contains(github.event.head_commit.message, '[publish]') || inputs.publish || false }}
+      NOTARIZE: ${{ contains(github.event.head_commit.message, '[publish]') || inputs.publish || inputs.notarize || false }}
 
     steps:
       - name: Check out Git repository
@@ -55,21 +61,23 @@ jobs:
           security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple: -s -k actions build.keychain
 
-      - name: Build
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ env.MACOS_CERTIFICATE != '' }}
+      - name: Install and bundle
         run: |
           npm install
           npm run pack
-          npm run dist:draft
 
-      - name: Notarize
-        if: "contains(github.event.head_commit.message, '[publish]') || inputs.notarize"
+      - name: Build
+        if: env.NOTARIZE != 'true'
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ env.MACOS_CERTIFICATE != '' }}
+        run: npm run dist:draft
+
+      - name: Build and notarize
+        if: env.NOTARIZE == 'true' && env.PUBLISH != 'true'
         run: npm run dist:nopub
 
-      - name: Publish
-        continue-on-error: true
-        if: "contains(github.event.head_commit.message, '[publish]') || inputs.notarize"
+      - name: Build, notarize, and publish
+        if: env.PUBLISH == 'true'
         run: npm run dist
 
       - name: Upload artifacts

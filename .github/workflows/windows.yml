@@ -1,4 +1,4 @@
-# Build Windows, optionally sign
+# Build Windows, optionally sign and publish
 
 name: windows
 
@@ -11,17 +11,24 @@ on:
   pull_request:
   release:
     types: [created]
-  # To test signing without publishing: go to Actions tab → windows → Run workflow → check "Sign artifacts"
+  # To trigger manually: go to Actions tab → windows → Run workflow
   workflow_dispatch:
     inputs:
       sign:
-        description: 'Sign artifacts'
+        description: 'Sign artifacts (no publish)'
+        type: boolean
+        default: false
+      publish:
+        description: 'Sign and publish to the draft release'
         type: boolean
         default: false
 
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      PUBLISH: ${{ contains(github.event.head_commit.message, '[publish]') || inputs.publish || false }}
+      SIGN: ${{ contains(github.event.head_commit.message, '[publish]') || inputs.publish || inputs.sign || false }}
 
     steps:
       - name: Check out Git repository
@@ -38,29 +45,30 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Build
+      - name: Install and bundle
         run: |
           npm install
           npm run pack
-          npm run dist:draft
 
-      - name: Sign artifacts
-        if: "contains(github.event.head_commit.message, '[publish]') || inputs.sign"
-        uses: azure/trusted-signing-action@v0
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: https://wus2.codesigning.azure.net/
-          trusted-signing-account-name: thingm-signing
-          certificate-profile-name: ThingMProfile
-          files-folder: dist
-          files-folder-filter: exe
+      - name: Build
+        if: env.SIGN != 'true'
+        run: npm run dist:draft
 
-      - name: Publish
-        continue-on-error: true
-        if: "contains(github.event.head_commit.message, '[publish]')"
-        run: npm run dist
+      # Signing happens inside electron-builder, so app exe, installer, and
+      # uninstaller are all signed before anything is published
+      - name: Build and sign (and publish)
+        if: env.SIGN == 'true'
+        shell: bash
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: |
+          npx electron-builder --publish=$([ "$PUBLISH" = "true" ] && echo always || echo never) \
+            "-c.win.azureSignOptions.publisherName=ThingM Corporation" \
+            -c.win.azureSignOptions.endpoint=https://wus2.codesigning.azure.net/ \
+            -c.win.azureSignOptions.codeSigningAccountName=thingm-signing \
+            -c.win.azureSignOptions.certificateProfileName=ThingMProfile
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
