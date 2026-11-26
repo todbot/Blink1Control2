@@ -6,6 +6,12 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Pattern strings where only some steps have a `ledn`
+  (e.g. `3,#00ff00,1.5,1,#000000,0.5`) were parsed incorrectly; each step
+  is now `color[,time[,ledn]]` independently.
+  ([#154](https://github.com/todbot/Blink1Control2/issues/154))
+
 ## [2.0.1] - 2026-11-23
 
 ### Fixed

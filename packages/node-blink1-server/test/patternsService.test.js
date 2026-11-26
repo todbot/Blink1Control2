@@ -260,6 +260,59 @@ describe('getIdForName() / getNameForId()', function() {
     });
 });
 
+// ─── newPatternFromString() parsing ──────────────────────────────────────────
+
+describe('newPatternFromString() parsing', function() {
+    before(function() {
+        PatternsService.init({ emitter: noopEmitter });
+        PatternsService.initialize({}, []);
+    });
+
+    const parse = function(str) {
+        return PatternsService.newPatternFromString('t', str).colors;
+    };
+
+    it('parses steps without ledn', function() {
+        assert.deepEqual(parse('3,#00ff00,1.5,#000000,0.5'), [
+            { rgb: '#00ff00', time: 1.5, ledn: 0 },
+            { rgb: '#000000', time: 0.5, ledn: 0 },
+        ]);
+    });
+
+    it('parses steps that all have ledn', function() {
+        assert.deepEqual(parse('3,#00ff00,1.5,1,#000000,0.5,0'), [
+            { rgb: '#00ff00', time: 1.5, ledn: 1 },
+            { rgb: '#000000', time: 0.5, ledn: 0 },
+        ]);
+    });
+
+    it('parses steps where only some have ledn', function() {
+        assert.deepEqual(parse('3,#00ff00,1.5,1,#000000,0.5'), [
+            { rgb: '#00ff00', time: 1.5, ledn: 1 },
+            { rgb: '#000000', time: 0.5, ledn: 0 },
+        ]);
+    });
+
+    it('parses steps where only some have ledn (no-ledn first)', function() {
+        assert.deepEqual(parse('2,#ff0000,0.3,#0000ff,0.3,2,#000000,0.1'), [
+            { rgb: '#ff0000', time: 0.3, ledn: 0 },
+            { rgb: '#0000ff', time: 0.3, ledn: 2 },
+            { rgb: '#000000', time: 0.1, ledn: 0 },
+        ]);
+    });
+
+    it('defaults time to 0.1 when a step has no time', function() {
+        assert.deepEqual(parse('1,#ff0000,#00ff00,0.5'), [
+            { rgb: '#ff0000', time: 0.1, ledn: 0 },
+            { rgb: '#00ff00', time: 0.5, ledn: 0 },
+        ]);
+    });
+
+    it('reads repeats', function() {
+        assert.equal(PatternsService.newPatternFromString('t', '4,#00ff00,1.5').repeats, 4);
+    });
+});
+
 // ─── Change listeners ─────────────────────────────────────────────────────────
 
 describe('addChangeListener() / removeChangeListener()', function() {

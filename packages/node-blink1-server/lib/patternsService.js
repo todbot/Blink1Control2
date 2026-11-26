@@ -42,14 +42,12 @@ var _parsePatternStr = function(patternstr) {
     var pattparts = patternstr.split(/\s*,\s*/g);
     var repeats   = parseInt(pattparts[0]);
     var colorlist = [];
-    var isLedNStyle = Number.isInteger((pattparts.length - 1) / 3);
-    var stride = isLedNStyle ? 3 : 2;
-    for (var i = 1; i < pattparts.length; i += stride) {
-        var color = {
-            rgb:  pattparts[i + 0],
-            time: Number(pattparts[i + 1]),
-            ledn: isLedNStyle ? Number(pattparts[i + 2]) : 0,
-        };
+    // each step is "color[,time[,ledn]]"; a step can omit ledn even if others have it
+    var isStepValue = function(i) { return i < pattparts.length && pattparts[i].charAt(0) !== '#'; };
+    for (var i = 1; i < pattparts.length; ) {
+        var color = { rgb: pattparts[i++], time: 0.1, ledn: 0 };
+        if (isStepValue(i)) { color.time = Number(pattparts[i++]); }
+        if (isStepValue(i)) { color.ledn = Number(pattparts[i++]); }
         if (isNaN(color.time)) { color.time = 0.1; }
         if (isNaN(color.ledn)) { color.ledn = 0; }
         colorlist.push(color);
