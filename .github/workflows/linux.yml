@@ -2,8 +2,12 @@
 
 name: linux
 
+# needed to upload release assets with GITHUB_TOKEN
+permissions:
+  contents: write
+
 env:
-  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 on:
   push:
