@@ -6,11 +6,16 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.2] - 2026-11-26
+
 ### Fixed
 - Pattern strings where only some steps have a `ledn`
   (e.g. `3,#00ff00,1.5,1,#000000,0.5`) were parsed incorrectly; each step
   is now `color[,time[,ledn]]` independently.
   ([#154](https://github.com/todbot/Blink1Control2/issues/154))
+
+### Added
+- `CHANGELOG.md` is now included in the package and linked from the README.
 
 ## [2.0.1] - 2026-11-23
 
@@ -43,6 +48,7 @@ Rewritten from the ground up to match the full
 - CLI options for port and host.
 - Plug and unplug of blink(1) while the server is running.
 
-[Unreleased]: https://github.com/todbot/Blink1Control2/compare/node-blink1-server-v2.0.1...HEAD
+[Unreleased]: https://github.com/todbot/Blink1Control2/compare/node-blink1-server-v2.0.2...HEAD
+[2.0.2]: https://github.com/todbot/Blink1Control2/compare/node-blink1-server-v2.0.1...node-blink1-server-v2.0.2
 [2.0.1]: https://github.com/todbot/Blink1Control2/compare/node-blink1-server-v2.0.0...node-blink1-server-v2.0.1
 [2.0.0]: https://github.com/todbot/Blink1Control2/tree/node-blink1-server-v2.0.0/packages/node-blink1-server
